@@ -1143,7 +1143,6 @@ console.log("Email do usuário:", usuario[0].EMAIL_USUARIO,);
         tipo: "success"
       };
       
-      // pega a página de origem
       const redirectTo = req.get('referer') || '/';
       console.log("Redirecionando para:", redirectTo);
       res.redirect(redirectTo); // volta para a página que chamou a função
@@ -1151,7 +1150,13 @@ console.log("Email do usuário:", usuario[0].EMAIL_USUARIO,);
 
   } catch (error) {
     console.error("Erro ao enviar e-mail de ativação:", error);
-    res.status(500).send("Erro ao enviar e-mail.");
+     req.session.dadosNotificacao = {
+      titulo: "Erro!",
+      mensagem: "Não foi possível enviar o e-mail de ativação. Tente novamente mais tarde.",
+      tipo: "error"
+    };
+    res.redirect(req.get('referer') || '/');
+  
   }
 },
 
