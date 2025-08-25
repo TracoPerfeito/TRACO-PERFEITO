@@ -1,5 +1,4 @@
 
-
 main{
     margin: 30px;
     font-family: "Josefin Sans";
@@ -178,6 +177,22 @@ select option {
 
 
 
+
+
+
+.tagify--custom-dropdow{
+     background-color: transparent !important;
+    border-radius: 5px !important;
+    border: 1px solid var(--cor-borda-n-pub) !important;
+    width: 100% !important; 
+    height: 45px !important;
+    margin-bottom: 0px !important;
+    color: var(--text-color);
+}
+
+
+
+
 .form-grupo-1 input:hover {
     border: 1px solid var(--cor-borda-n-pub);
 }
@@ -193,7 +208,7 @@ select option {
     max-height: 500px;
     height: fit-content;
     overflow-y: auto;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .form-grupo-1 textarea:hover {
@@ -359,6 +374,7 @@ input[type="file"] {
         justify-content: space-around;
         padding: 0px 20px;
         margin-bottom: 20px;
+        width: 90%;
     }
 
 
@@ -369,10 +385,17 @@ input[type="file"] {
        
     }
 
+   #confirm-modal{
+  display:none; 
+  position:fixed; 
+  top:0; left:0; 
+  margin-top: 10%;
+  width:90%; 
+  height:100%;
+   background:rgba(0,0,0,0.5);
+   z-index: 9;
+}
 
-
-
-  
 
 
     
@@ -414,26 +437,51 @@ input[type="file"] {
        
       }
 
+      .dentro-modal{
+      
+        margin: auto;
+       min-width: none;
+       width: 90%; /* largura fixa */
+        height: 470px;    /* altura fixa */
+        border-radius: 10px;
+        z-index: 10;
+        color: rgb(18, 18, 18);
+        font-family: "Montserrat";
+        overflow-y: auto; /* rolagem se precisar */
+      }
+      
+      
+
 
    }
 
-.tagify__dropdown {
-  font-family: 'Josefin Sans', sans-serif;
+
+
+.tags-look .tagify__dropdown__item{
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 3px;
+    padding: .3em .5em;
+    border: 1px solid #CCC;
+    background: #F3F3F3;
+    margin: .2em;
+    font-size: .85em;
+    color: black;
+    transition: 0s;
 }
 
-
-.tags-look + .tagify .tagify__input::before {
-  color: var(--text-color);
-  font-family: 'Josefin Sans', sans-serif;
-  opacity: 0.7; /* opcional: para deixar mais suave */
+.tags-look::placeholder{
+     color: var(--text-color);
 }
-
 
 .tags-look .tagify__dropdown__item--active{
-    border-color: rgb(57, 57, 57);
+    border-color: black;
 }
 
-
+.tags-look .tagify__dropdown__item:hover{
+    background: lightyellow;
+    border-color: gold;
+}
 
 .tags-look .tagify__dropdown__item--hidden {
     max-width: 0;
@@ -446,7 +494,10 @@ input[type="file"] {
      color: var(--text-color);
 }
 
-
+.advance-options .tagify__tag {
+  background-color: var(--tag-bg);
+  color: white;
+}
 
 
 
@@ -487,48 +538,6 @@ input[type="file"] {
   background: var(--cor-av-borda-n-pub)
 
 }
-
-
-
-
-
-/* Estilização dos itens do dropdown */
-.tags-look .tagify__dropdown__item {
-  display: inline-block;
-  vertical-align: middle;
-  border-radius: 6px;
-  padding: .3em .5em;
-  border: 1px solid #CCC;
-  background: transparent !important; 
-  margin: .2em;
-  font-size: .85em;
-  color: black;
-  transition: background-color 0.2s ease;
-}
-
-/* Hover dos itens do dropdown */
-.tags-look .tagify__dropdown__item:hover {
-  background: #e5d4ff; /* roxo claro */
-  border-color: #c3a9f5; /* opcional: borda roxa clara */
-  cursor: pointer;
-}
-
-/* Item selecionado via teclado ou mouse */
-.tags-look .tagify__dropdown__item--active {
-  background-color: #e5d4ff !important; /* roxo claro */
-  border-color: #c3a9f5 !important;
-  color: black;
-}
-
-
-
-
-
-
-
-
-
-
 
 .pre-view-imgs {
   margin-top: 10px;
@@ -578,6 +587,8 @@ input[type="file"] {
 }
 
 
+
+
 #confirm-modal{
   display:none; 
   position:fixed; 
@@ -589,18 +600,21 @@ input[type="file"] {
 }
 
 .dentro-modal{
-  background:#fff;
-   margin:5% auto; 
-   padding:20px;
-    max-width: 450px;
-    border-radius: 10px;
-    z-index: 10;
-    color: rgb(18, 18, 18);
-font-family: "Montserrat";
+  background: #fff;
+  margin: 7% auto;
+  padding: 20px;
+  max-width: 450px; /* largura fixa */
+  height: 470px;    /* altura fixa */
+  border-radius: 10px;
+  z-index: 10;
+  color: rgb(18, 18, 18);
+  font-family: "Montserrat";
+  overflow-y: auto; /* rolagem se precisar */
 }
 
+
 .dentro-modal p{
-  margin-bottom: 7px;
+  margin: 20px;
 }
 
 #confirm-description{
@@ -610,24 +624,39 @@ word-wrap: break-word;     /* Compatibilidade antiga */
 }
 .dentro-modal h2 {
 color: rgb(18, 18, 18);
-font-family: "Montserrat";
-margin-bottom: 10px;
+  font-family: "Montserrat";
+  margin-bottom: 10px;
+  font-size: 20px;
+  text-align: center;
 }
 
-#confirm-images{
-  display:flex; gap:10px; flex-wrap:wrap;
+#confirm-images {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 colunas sempre */
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
 }
 
-#confirm-images img{
-  border-radius: 5px;
-    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+#confirm-images img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
 }
+
+
 
 .btns-modal {
   display: flex;
   width: 100%;
   justify-content: space-between;
-  margin-top: 15px;
+  margin-top: 25px;
+}
+
+.btns-modal button:hover{
+  cursor: pointer;
 }
 
 .btns-modal button{
@@ -639,12 +668,23 @@ margin-bottom: 10px;
 
 #cancel-btn{
  background-color: red;
+ width: 25%;
+ margin-left: 20px;
+}
+
+#cancel-btn:hover{
+  background-color: darkred;
 }
 
 #send-btn{
-  background-color: rgb(19, 35, 82);
+  background-color: #132d46;
+  width: 25%;
+  margin-right: 10px;
 }
 
+#send-btn:hover{
+  background-color: #060c11;
+}
 
 
 
@@ -785,54 +825,13 @@ margin-bottom: 10px;
 
 
 .mensagem-erro {
-  color: #d62246 !important;
+  color: red;
   font-size: 0.9em;
   margin-top: 4px;
-  transform: translateY(-20px);
 }
 
-
-.erro-img-msg {
-  background-color: #ffe5e5;
-  padding: 15px;
-  border-radius: 4px;
-  color: #900;
-  margin-top: 10px;
-  transform: none;
-  text-align: center;
-  width: 50%;
-  justify-self: center;
-  font-size: 110%;
-}
-
-#erro-tags{
-  transform: none !important;
-}
 input.erro,
 textarea.erro,
 select.erro {
-  border: 2px solid #d62246 !important;
-}
-
-.tagify.erro {
-  border: 2px solid #d62246 !important;
-}
-
-
-
-
-
-
-
-
-
-/* 
-
-novas partes pag de pedidos */
-
-.conteudo-form-pedido{
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  width: 100%;
+  border: 1px solid red !important;
 }

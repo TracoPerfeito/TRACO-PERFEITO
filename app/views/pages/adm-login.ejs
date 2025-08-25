@@ -5,28 +5,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Administrador</title>
   <link rel="stylesheet" href="../css/login-adm.css">
+  <link rel="shortcut icon" href="../imagens/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+
 </head>
-<body><main>
+<body>
+
+  <% 
+	let cssErros = {email: "", password: ""};
+    let msgErros = {email: "", password: ""};
+    if (errosLogin && Array.isArray(errosLogin)) {
+    errosLogin.forEach(function (elemento) {
+        if(elemento.path == "email"){
+            cssErros.email = "erro-form";
+            msgErros.email = elemento.msg;
+        }
+
+        if(elemento.path == "password"){
+            cssErros.password = "erro-form";
+            msgErros.password = elemento.msg;
+        }
+
+    });
+}
+ %>
     
       
-      <section class="login-container">
-        <img src="imagens/logo.png" id="logo">
-        <h1>Área Administrativa</h1>
+      <img class="wave" src="">
+	<section class="container">
+		<section class="img">
+			<img src="../imagens/undraw_online_art_re_f1pk.svg">
+        
+        </section>
+            
+		<section class="login-content">
+			<form action="adm-inicial.ejs" method="POST">
+				<img src="../imagens/logo.png">
+				<h2 class="title">Login Administrativo</h2>
 
-        <form action="/adm/adm-login" method="POST" class="login-form">
-          <section class="form-group">
-            <label for="email">Usuário (Email):</label>
-            <input type="email" id="email" name="email" placeholder="Digite seu email" required>
-          </section>
-          <section class="form-group">
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
-          </section>
-          <button type="submit" class="btn-login">ENTRAR</button>
-        </form>
-      </section>
-</main>
+
+
+                <% if (retorno) { %>
+                    <section class="mensagem-erro-global">
+                        <p><%= retorno %></p>
+                    </section>
+                <% } %>
+
+				 <!-- CAMPO DE E-MAIL -->
+
+           		<section class="input-section one">
+           		   <section class="i">
+           		   		<i class="fas fa-user"></i>
+           		   </section>
+           		   <section class="section">
+           		   		<h5>Email</h5>
+           		   		<input type="email" class="input" name="email" id="email"  value="<%= valores.email %>" class="<%= cssErros.email %>">
+						<span class="msg-erro"><%= msgErros.email %></span> <br>
+         		   
+					</section>
+           		</section>
+
+				<!-- FIM DO CAMPO DE E-MAIL -->
+
+
+
+
+				<!-- CAMPO DE SENHA -->
+
+           		<section class="input-section pass">
+           		   <section class="i"> 
+           		    	<i class="fas fa-lock"></i>
+           		   </section>
+           		   <section class="section">
+           		    	<h5>Senha</h5>
+           		    	<input type="password" class="input" name="password" id="password"  value="<%= valores.password %>" class="<%= cssErros.password %>" required>
+						<span class="msg-erro"><%= msgErros.password %></span> <br>
+
+					</section>
+            	</section>
+
+				<!-- FIM DO CAMPO DE SENHA -->
+
+        
+
+            	<input type="submit" class="btn" value="Login">
+            
+
+            </form>
+        </section>
+    </section>
+    <script src="voltar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Pega os inputs
+            const inputs = document.querySelectorAll('.input-section > section > input');
+            
+            // Vai olhat cada campo
+            inputs.forEach(input => {
+                // Verifica se o campo já tem algum valor preenchido
+                if (input.value.trim() !== '') {
+                    // se o campo tiver sido preenchido, a classe focus será adicionada
+                    input.parentNode.parentNode.classList.add('focus');
+                }
+    
+        
+                input.addEventListener('focus', () => {
+                    input.parentNode.parentNode.classList.add('focus');
+                });
+                input.addEventListener('blur', () => {
+                    if (input.value.trim() === '') {
+                        input.parentNode.parentNode.classList.remove('focus');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
