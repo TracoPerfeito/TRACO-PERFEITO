@@ -1294,8 +1294,9 @@ recuperarSenha: async (req, res) => {
   { expiresIn: "40m" } 
 );
 
+       const nomeUsuario = user[0].NOME_USUARIO;
       //enviar e-mail com link usando o token
-      const html = require("../util/email-reset-senha")(process.env.URL_BASE, token)
+      const html = require("../util/email-reset-senha")(process.env.URL_BASE, token, nomeUsuario)
       enviarEmail(req.body.email_usu, "Pedido de recuperação de senha", null, html, ()=>{
          res.redirect("/");
       });
