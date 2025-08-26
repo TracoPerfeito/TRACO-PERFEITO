@@ -233,14 +233,18 @@ if (Array.isArray(listaErros)) {
                           <p class="msg-erro"></p>
                           <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
                           <br>
-                          <section class="button-container-submit">
+                        <section class="button-container-submit">
                               <% if (!tipo_usuario) { %>
                                   <button class="enviar-comentario" disabled>Enviar</button>
                                   <p class="tooltip">Crie uma conta para publicar um comentário.</p>
+                              <% } else if (status_usuario === 'pendente') { %>
+                                  <button class="enviar-comentario" disabled>Enviar</button>
+                                  <p class="tooltip">Verifique seu e-mail para comentar.</p>
                               <% } else { %>
                                   <button class="enviar-comentario">Enviar</button>
                               <% } %>
-                          </section>
+                        </section>
+
                         </form>
                     </section>
                    

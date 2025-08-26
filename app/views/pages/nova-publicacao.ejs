@@ -157,9 +157,14 @@ select.addEventListener('change', () => {
     </section>
              <!-------------------------------------------------------------------------->
             
-                <section class="btn-publicar-area">
-                    <button class="btn-publicar" id="prosseguir">Prosseguir</button>
-                </section>
+<section class="btn-publicar-area">
+  <% if (status_usuario === 'pendente') { %>
+      <button class="btn-publicar" disabled>Prosseguir</button>
+      <p class="tooltip">Verifique seu e-mail para ativar a conta.</p>
+  <% } else { %>
+      <button class="btn-publicar">Prosseguir</button>
+  <% } %>
+</section>
 
 
                                 

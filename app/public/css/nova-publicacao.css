@@ -835,3 +835,44 @@ textarea.erro,
 select.erro {
   border: 1px solid red !important;
 }
+
+
+.btn-publicar-area {
+  position: relative; 
+ 
+}
+
+.btn-publicar-area .tooltip {
+  visibility: hidden;
+  width: 220px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 8px;
+  position: absolute;
+  top: -50px;
+  left: 10%;
+
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+  z-index: 1;
+  pointer-events: none; 
+}
+
+.btn-publicar-area .tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.btn-publicar-area:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
