@@ -56,29 +56,41 @@ if(dadosNotificacao){
     <div class="container">
      <div class="header">
             
-             <img classs= "imgTraco" src="tracoperfeitoazul.png" width="70%" height="60%">
+             <img classs= "imgTraco" src="/imagens/tracoperfeitoazul.png" width="70%" height="60%">
 
         </div>
 
-        
-        
-            <p class="instructions">Preencha os campos a baixo para definir nova senha</p>
-                <div class="login-page">
-                    <div class="form-cadastro">
-                        <h2>Resetar senha</h2>
-<form action="/reset-senha" method="post">
-                            <input type="hidden" name="id_usuario" value="<%= id_usuario %>">
-                            <input type="password" name="senha_usu" placeholder="Nova senha" value=""
-                                class="<%= avisoErro.senha_usu %>" /><br>
-                                 <p class="erro-campo"><%= mensagensErro.senha_usu %></p>
-                           <input type="password" name="csenha_usu" placeholder="Repita a senha" value=""
-                                class="<%=  avisoErro.csenha_usu %>" /><br>
-                                 <p class="erro-campo"><%= mensagensErro.csenha_usu %></p>
-                           <button type="submit">Entrar</button><br>
-                        </form>
-                    </div>
-                </div>
+        <section class="form-container">
+            
+            
+                <p class="instructions">Preencha os campos a baixo para definir nova senha</p>
+            
+                    
+                       
+                
+            <form action="/reset-senha" method="post">
 
-   
+
+
+                                <input type="hidden" name="id_usuario" value="<%= id_usuario %>">
+
+                                <section class="input-group">
+                                    <label for="email">Digite nova Senha</label>
+                                    <input type="password" name="senha_usu" placeholder="Nova senha" value=""
+                                        class="<%= avisoErro.senha_usu %>" /><br>
+                                         <p class="erro-campo"><%= mensagensErro.senha_usu %></p>
+                                </section>
+                               
+                                <section class="input-group">
+                                    <label for="email">Confirmar nova Senha</label>
+                                         <input type="password" name="csenha_usu" placeholder="Repita a senha" value=""
+                                        class="<%=  avisoErro.csenha_usu %>" /><br>
+                                         <p class="erro-campo"><%= mensagensErro.csenha_usu %></p>
+                                </section>
+                               <section class="button-group"><button type="submit" class="btn btn-primary">Entrar</button></section>
+                            </form>
+                            <div class="divider"></div>
+                   
+        </section>
 </body>
 </html>

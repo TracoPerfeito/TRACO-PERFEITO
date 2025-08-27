@@ -137,7 +137,7 @@ const sessao = req.session.autenticado;
       comentarios,
       listaErros: null,
       usuario: usuario || null,
-      autenticado: !!usuario, // true se logado, false se não
+      autenticado: !!usuario, 
       dadosNotificacao: null,
      
  
@@ -230,7 +230,8 @@ listarPropostas: async (req, res) => {
     const usuario = await listagensModel.findIdusuario(id);
     const portfolios = await listagensModel.listarPortfoliosUsuario(id);
 
-    const imgBase = '/imagens/img-portfolio-base.png'; // imagem de placeholder
+    console.log(portfolios)
+    const imgBase = '/imagens/img-portfolio-base.png'; //se n tiver imgs
 
     const portfoliosComImagens = portfolios.map(p => {
       // converter blobs em base64
@@ -242,7 +243,7 @@ listarPropostas: async (req, res) => {
         p.imagensCapa = [];
       }
 
-      // garantir 4 imagens
+     
       while (p.imagensCapa.length < 4) {
         p.imagensCapa.push(imgBase);
       }
@@ -252,6 +253,14 @@ listarPropostas: async (req, res) => {
 
     if (!usuario) return res.status(404).send('Usuário não encontrado');
 
+    console.log("Portfólios encontrados: ", portfoliosComImagens.map(port => ({
+      ID_PORTFOLIO: port.ID_PORTFOLIO,
+      NOME_PORTFOLIO: port.NOME_PORTFOLIO,
+      DESCRICAO_PORTFOLIO:  port.DESCRICAO_PORTFOLIO,
+      TAGS: port.TAGS_PORTFOLIO,
+      qtdImagens: (port.imagensCapa || []).length,
+      qtdImagensUrls: (port.imagensCapa || []).length,
+    })))
     res.render('pages/portfolios', {
       portfolios: portfoliosComImagens,
       usuario,

@@ -329,7 +329,7 @@ listarPropostas: async () => {
 
 listarPortfoliosUsuario: async (idUsuario) => {
   try {
-    // 1 - Buscar os portfolios do usuário
+    // Busca os portfolios do usuário 
     const [portfolios] = await pool.query(`
       SELECT 
         pf.ID_PORTFOLIO,
@@ -344,25 +344,28 @@ listarPortfoliosUsuario: async (idUsuario) => {
 
     if (portfolios.length === 0) return [];
 
-    // 2 - Pegar todas as publicações que fazem parte desses portfolios
+    // Pegar todas as publicações que fazem parte desses portfolios
     const idsPortfolios = portfolios.map(p => p.ID_PORTFOLIO);
+
+   
+    console.log(idsPortfolios);
 
     const [publisPortfolio] = await pool.query(`
      SELECT 
-  pp.ID_PORTFOLIO,
-  pp.ID_PUBLICACAO,
-  MIN(cp.IMG_PUBLICACAO) AS IMG_PUBLICACAO
-FROM PUBLICACAO_PORTFOLIO pp
-INNER JOIN CONTEUDOS_PUBLICACAO_PROFISSIONAL cp 
-  ON pp.ID_PUBLICACAO = cp.ID_PUBLICACAO
-WHERE pp.ID_PORTFOLIO IN (5, 4, 3, 2, 1)
-GROUP BY pp.ID_PORTFOLIO, pp.ID_PUBLICACAO
-ORDER BY pp.ID_PUBLICACAO ASC;
+      pp.ID_PORTFOLIO,
+      pp.ID_PUBLICACAO,
+      MIN(cp.IMG_PUBLICACAO) AS IMG_PUBLICACAO
+    FROM PUBLICACAO_PORTFOLIO pp
+    INNER JOIN CONTEUDOS_PUBLICACAO_PROFISSIONAL cp 
+      ON pp.ID_PUBLICACAO = cp.ID_PUBLICACAO
+    WHERE pp.ID_PORTFOLIO IN (?)
+    GROUP BY pp.ID_PORTFOLIO, pp.ID_PUBLICACAO
+    ORDER BY pp.ID_PUBLICACAO ASC;
 
 
     `, [idsPortfolios]);
 
-    // 3 - Organizar imagens por portfólio (limitar a 4)
+    //  Organiz imagens por portfólio (pelo menos 4 imgs)
     const imagensPorPortfolio = {};
     publisPortfolio.forEach(pub => {
       if (!imagensPorPortfolio[pub.ID_PORTFOLIO]) imagensPorPortfolio[pub.ID_PORTFOLIO] = [];
@@ -371,7 +374,7 @@ ORDER BY pp.ID_PUBLICACAO ASC;
       }
     });
 
-    // 4 - Juntar imagens ao portfolio
+    // Juntar imagens ao portfolio
     portfolios.forEach(p => {
       p.imagensCapa = imagensPorPortfolio[p.ID_PORTFOLIO] || [];
     });
