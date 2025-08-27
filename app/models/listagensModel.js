@@ -319,6 +319,159 @@ listarPropostas: async () => {
 
 
 
+
+
+
+
+
+
+
+
+listarPortfoliosUsuario: async (idUsuario) => {
+  try {
+    // 1 - Buscar os portfolios do usuário
+    const [portfolios] = await pool.query(`
+      SELECT 
+        pf.ID_PORTFOLIO,
+        pf.NOME_PORTFOLIO,
+        pf.DESCRICAO_PORTFOLIO,
+        pf.ID_USUARIO
+      FROM PORTFOLIOS pf
+      INNER JOIN USUARIOS u ON pf.ID_USUARIO = u.ID_USUARIO
+      WHERE pf.ID_USUARIO = ?
+      ORDER BY pf.ID_PORTFOLIO DESC
+    `, [idUsuario]);
+
+    if (portfolios.length === 0) return [];
+
+    // 2 - Pegar todas as publicações que fazem parte desses portfolios
+    const idsPortfolios = portfolios.map(p => p.ID_PORTFOLIO);
+
+    const [publisPortfolio] = await pool.query(`
+     SELECT 
+  pp.ID_PORTFOLIO,
+  pp.ID_PUBLICACAO,
+  MIN(cp.IMG_PUBLICACAO) AS IMG_PUBLICACAO
+FROM PUBLICACAO_PORTFOLIO pp
+INNER JOIN CONTEUDOS_PUBLICACAO_PROFISSIONAL cp 
+  ON pp.ID_PUBLICACAO = cp.ID_PUBLICACAO
+WHERE pp.ID_PORTFOLIO IN (5, 4, 3, 2, 1)
+GROUP BY pp.ID_PORTFOLIO, pp.ID_PUBLICACAO
+ORDER BY pp.ID_PUBLICACAO ASC;
+
+
+    `, [idsPortfolios]);
+
+    // 3 - Organizar imagens por portfólio (limitar a 4)
+    const imagensPorPortfolio = {};
+    publisPortfolio.forEach(pub => {
+      if (!imagensPorPortfolio[pub.ID_PORTFOLIO]) imagensPorPortfolio[pub.ID_PORTFOLIO] = [];
+      if (imagensPorPortfolio[pub.ID_PORTFOLIO].length < 4) {
+        imagensPorPortfolio[pub.ID_PORTFOLIO].push(pub.IMG_PUBLICACAO);
+      }
+    });
+
+    // 4 - Juntar imagens ao portfolio
+    portfolios.forEach(p => {
+      p.imagensCapa = imagensPorPortfolio[p.ID_PORTFOLIO] || [];
+    });
+
+    return portfolios;
+
+  } catch (error) {
+    console.error("Erro ao listar portfólios do usuário:", error);
+    return [];
+  }
+},
+
+
+
+
+ 
+
+
+
+buscarPortfolioPorId: async (idPortfolio) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        pf.ID_PORTFOLIO,
+        pf.NOME_PORTFOLIO,
+        pf.DESCRICAO_PORTFOLIO,
+        pf.ID_USUARIO,
+        u.NOME_USUARIO
+      FROM PORTFOLIOS pf
+      INNER JOIN USUARIOS u ON pf.ID_USUARIO = u.ID_USUARIO
+      WHERE pf.ID_PORTFOLIO = ?
+    `, [idPortfolio]);
+
+    return rows[0] || null;
+  } catch (error) {
+    console.error("Erro ao buscar portfolio:", error);
+    return null;
+  }
+},
+
+
+
+
+
+listarPublicacoesdoPortfolio: async (idPortfolio) => {
+  try {
+    // 1) Buscar publicações que estão nesse portfolio
+    const [publicacoes] = await pool.query(`
+      SELECT 
+        p.ID_PUBLICACAO,
+        p.ID_USUARIO,
+        p.NOME_PUBLICACAO,
+        p.DESCRICAO_PUBLICACAO,
+        p.CATEGORIA,
+        u.NOME_USUARIO,
+        u.FOTO_PERFIL_PASTA_USUARIO,
+        GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS
+      FROM PUBLICACOES_PROFISSIONAL p
+      INNER JOIN PUBLICACAO_PORTFOLIO pp ON p.ID_PUBLICACAO = pp.ID_PUBLICACAO
+      LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
+      LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
+      LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      WHERE pp.ID_PORTFOLIO = ?
+      GROUP BY p.ID_PUBLICACAO
+      ORDER BY p.ID_PUBLICACAO DESC
+    `, [idPortfolio]);
+
+    // 2) Buscar todas as imagens das publicações listadas
+    const ids = publicacoes.map(pub => pub.ID_PUBLICACAO);
+    if (ids.length === 0) return [];
+
+    const [imgs] = await pool.query(`
+      SELECT ID_PUBLICACAO, IMG_PUBLICACAO
+      FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL
+      WHERE ID_PUBLICACAO IN (?)
+    `, [ids]);
+
+    // 3) Mapear imagens para cada publicação
+    const imagensPorPublicacao = {};
+    imgs.forEach(img => {
+      if (!imagensPorPublicacao[img.ID_PUBLICACAO]) imagensPorPublicacao[img.ID_PUBLICACAO] = [];
+      imagensPorPublicacao[img.ID_PUBLICACAO].push(img.IMG_PUBLICACAO);
+    });
+
+    // 4) Adicionar o array de imagens em cada publicação
+    publicacoes.forEach(pub => {
+      pub.imagens = imagensPorPublicacao[pub.ID_PUBLICACAO] || [];
+    });
+
+    return publicacoes;
+
+  } catch (error) {
+    console.error("Erro ao listar publicações do portfolio:", error);
+    return [];
+  }
+},
+
+
+
+
 };
 
 

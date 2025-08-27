@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfólios de Jaqueline</title>
+    <title>Portfólio <%= portfolio.NOME_PORTFOLIO %></title>
 
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -19,8 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
 
-    <link rel="stylesheet" href="css/menu.css">
-    <link rel="stylesheet" href="css/portfolio-pag.css">
+    <link rel="stylesheet" href="/css/menu.css">
+    <link rel="stylesheet" href="/css/portfolio-pag.css">
 
     </head>
     <body>
@@ -46,120 +46,184 @@
     
     <section class="botao-de-voltar">   
         <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
-        <p class="lado-botao"> Portfólio de Jaqueline Maria - Logotipos</p>
+        <p class="lado-botao"> Portfólio de <%= portfolioDono.NOME_USUARIO %> - <%= portfolio.NOME_PORTFOLIO %></p>
     </section>
 
     <section class="nome-desc">
         
-            <h1> Logotipos</h1>
-        
-            <p> Este portfólio contém todos os meus trabalhos voltados à produção de logotipos e identidades visuais. Ao longo dos anos, tive o privilégio de trabalhar com diversas marcas e criar designs que não só refletem a essência de cada empresa, mas também buscam estabelecer uma conexão forte com o público-alvo.</p>
-        
-    </section>
+            <h1><%= portfolio.NOME_PORTFOLIO %></h1>
 
-    <section class="container-conteudo">
-
-
-        <section class="item-explorar item-1">
-
-            <a href=/publicacao> <img src="imagens/10.jpg" class="publicacao-img"></a>
-            
-                <section class="nome-e-btn-like">
-
-                    <section class="foto-nome-dono-publi">
-                        <img src="imagens/fotoperfil1.jpeg" class="foto-perfil-explorar">
-                        <p class="nome-dono-post-ex"><a href=/perfil >Jaqueline Maria</a></p>
-                    </section>
-
-                    <button class="like-button">
-                        <i class="far fa-heart"></i>
-                    </button>
-
-                </section>
-
-                <p class="descricao-item-explorar">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-        
-        </section>
-
-
-        <section class="item-explorar item-1">
-
-            <a href=/publicacao> <img src="imagens/2.jpg" class="publicacao-img"></a>
-            
-                <section class="nome-e-btn-like">
-
-                    <section class="foto-nome-dono-publi">
-                        <img src="imagens/fotoperfil1.jpeg" class="foto-perfil-explorar">
-                        <p class="nome-dono-post-ex"><a href=/perfil >Jaqueline Maria</a></p>
-                    </section>
-
-                    <button class="like-button">
-                        <i class="far fa-heart"></i>
-                    </button>
-
-                </section>
-
-                <p class="descricao-item-explorar">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-        
-        </section>
-
-
-        <section class="item-explorar item-1">
-
-            <a href=/publicacao> <img src="imagens/aad.jpg" class="publicacao-img"></a>
-            
-                <section class="nome-e-btn-like">
-
-                    <section class="foto-nome-dono-publi">
-                        <img src="imagens/fotoperfil1.jpeg" class="foto-perfil-explorar">
-                        <p class="nome-dono-post-ex"><a href=/perfil >Jaqueline Maria</a></p>
-                    </section>
-
-                    <button class="like-button">
-                        <i class="far fa-heart"></i>
-                    </button>
-
-                </section>
-
-                <p class="descricao-item-explorar">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-        
-        </section>
-
-
-        <section class="item-explorar item-1">
-
-            <a href=/publicacao> <img src="imagens/7.jpg" class="publicacao-img"></a>
-            
-                <section class="nome-e-btn-like">
-
-                    <section class="foto-nome-dono-publi">
-                        <img src="imagens/fotoperfil1.jpeg" class="foto-perfil-explorar">
-                        <p class="nome-dono-post-ex"><a href=/perfil >Jaqueline Maria</a></p>
-                    </section>
-
-                    <button class="like-button">
-                        <i class="far fa-heart"></i>
-                    </button>
-
-                </section>
-
-                <p class="descricao-item-explorar">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-        
-        </section>
+            <p><%= portfolio.DESCRICAO_PORTFOLIO %></p>
 
     </section>
+
+  <section class="container-conteudo">
+
+  <% if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) { %>
+    <section class="sem-publicacoes">
+      <p>Não há publicações neste portfólio.</p>
+    </section>
+  <% } else { %>
+    <% publicacoesPortfolio.forEach(pub => { %>
+      <section class="item-explorar item-1">
+
+        <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
+          <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
+            <div class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
+              <% pub.imagens.forEach((img, idx) => { %>
+                <img 
+                  src="data:image/jpeg;base64,<%= img.toString('base64') %>" 
+                  class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>" 
+                  alt="Imagem da publicação"/>
+              <% }) %>
+            </div>
+
+            <% if (pub.imagens.length > 1) { %>
+              <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </button>
+              <button class="seta-carrossel direita" onclick="event.preventDefault();nextImg(this)">
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+              <div class="indicadores">
+                <% pub.imagens.forEach((_, idx) => { %>
+                  <span class="indicador<%= idx === 0 ? ' ativo' : '' %>"></span>
+                <% }) %>
+              </div>
+            <% } %>
+          </section>
+        </a>
+
+        <!-- Menu de opções: Editar, Compartilhar, Denunciar -->
+        <section class="menu-opcoes">
+          <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff">
+            <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
+          </svg>
+
+          <section class="opcoes-menu">
+            <% if (autenticado && id_usuario === pub.ID_USUARIO) { %>
+              <button 
+                class="btn-editar" 
+                title="Editar publicação" 
+                data-id="<%= pub.ID_PUBLICACAO %>"
+                data-titulo="<%= pub.NOME_PUBLICACAO %>"
+                data-categoria="<%= pub.CATEGORIA %>"
+                data-descricao="<%= pub.DESCRICAO_PUBLICACAO %>"
+                data-tags="<%= pub.TAGS %>"
+                data-imagens='<%- JSON.stringify(pub.imagensUrls || []) %>'>
+                <ion-icon name="create-outline"></ion-icon>
+                Editar
+              </button>
+            <% } %>
+
+            <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal('<%= pub.ID_PUBLICACAO %>')">
+              <ion-icon name="share-social-outline"></ion-icon>
+              Compartilhar
+            </button>
+            <button class="btn-denunciar" title="Denunciar">
+              <ion-icon name="flag-outline"></ion-icon>
+              Denunciar
+            </button>
+          </section>
+        </section>
+
+        <!-- Foto e botão de like -->
+        <section class="nome-e-btn-like">
+
+            <p class="descricao-item-explorar"><%= pub.DESCRICAO_PUBLICACAO %></p>
+         
+          <button class="like-button"><i class="far fa-heart"></i></button>
+        </section>
+
+        <!-- Descrição da publicação -->
+        
+
+        <!-- Modal de denúncia -->
+        <section id="modalDenuncia" class="modal">
+          <section class="modal-content">
+            <h3>Qual o motivo da denúncia?</h3>
+            <form id="formDenuncia">
+              <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
+              <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+              <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+              <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+              <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+              <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+              <button type="submit">Enviar denúncia</button>
+              <button type="button" id="fecharModal">Cancelar</button>
+            </form>
+          </section>
+        </section>
+
+        <!-- Modal de compartilhamento -->
+        <section id="modal-share">
+          <section class="modal-content-share">
+            <h2>Compartilhar link da publicação</h2>
+            <section class="link-container">
+              <section id="shareLink">
+                tracoperfeito.onrender.com/publicacao/<%= pub.ID_PUBLICACAO %>
+              </section>
+              <button class="copy-button" onclick="copyToClipboard()">
+                <section id="copyIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px; margin-right: 4px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M16 8h2a2 2 0 012 2v8a2 2 0 01-2 2h-8a2 2 0 01-2-2v-2"/>
+                  </svg>
+                </section>
+                <section id="copyText">Copiar link</section>
+                <section id="tooltip">Copiado!</section>
+              </button>
+            </section>
+            <button class="close-modal-btn" onclick="closeModal()">×</button>
+          </section>
+        </section>
+
+      </section>
+    <% }) %>
+  <% } %>
+
+</section>
 
     </body>
 
     <%- include('../partials/rodape'); %>
 
 
+
+    <script>
+
+  
+
+// autoplay
+document.addEventListener('DOMContentLoaded', () => {
+  const carrosseis = document.querySelectorAll('.carrossel-imagens-explorar');
+
+  carrosseis.forEach(carrossel => {
+    let idx = 0;
+    const total = carrossel.querySelectorAll('.publicacao-img').length;
+
+    if (total > 1 && window.innerWidth > 500) {
+      setInterval(() => {
+        idx = (parseInt(carrossel.dataset.idx || '0') + 1) % total;
+        updateCarrossel(carrossel, idx);
+      }, 10000);
+    }
+
+    updateCarrossel(carrossel, 0);
+  });
+});
+</script>
+
     
 
-    <script src="js/like.js"></script>
+    <script src="/js/like.js"></script>
     <script src="https://kit.fontawesome.com/2fcd7931ea.js" crossorigin="anonymous"></script>
-    <script src="js/mobile-navbar.js"></script>
-    <script src="js/voltar.js"></script>
+    <script src="/js/mobile-navbar.js"></script>
+    <script src="/js/voltar.js"></script>
     
+    
+    <script src="/js/publicacoesindex.js"></script>
+
+
+    <script src="/js/denuncia-compartilhamento.js"></script>
 
 </html>
