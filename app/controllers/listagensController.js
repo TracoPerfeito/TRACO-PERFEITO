@@ -137,7 +137,7 @@ const sessao = req.session.autenticado;
       comentarios,
       listaErros: null,
       usuario: usuario || null,
-      autenticado: !!usuario, // true se logado, false se não
+      autenticado: !!usuario, 
       dadosNotificacao: null,
      
  
@@ -194,8 +194,150 @@ listarPropostas: async (req, res) => {
 },
 
  
+
+  listarPublicacoesParaColocarNoPortfolio: async (req, res) => {
+  
+  try {
+ 
+  const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id);
+ 
+
+    
+    console.log("Página Novo Portfólio carregada! Publicações: ", publicacoes);
+    res.render('pages/novo-portfolio', {
+      publicacoes,
+      dadosNotificacao: null
+    });
+  } catch (erro) {
+    console.log("Não foi possível listar suas publicações. ", erro);
+    res.render('pages/novo-portfolio', {
+      publicacoes: [],
+      dadosNotificacao:{
+          titulo: 'Não foi possível carregar suas publicações.',
+          mensagem: 'Tente novamente mais tarde.',
+          tipo: 'error'
+      }
+    });
+  }
+},
  
  
+
+ 
+  listarPortfoliosdoUsuario: async (req, res) => {
+  const id = req.params.id;
+  try {
+    const usuario = await listagensModel.findIdusuario(id);
+    const portfolios = await listagensModel.listarPortfoliosUsuario(id);
+
+    console.log(portfolios)
+    const imgBase = '/imagens/img-portfolio-base.png'; //se n tiver imgs
+
+    const portfoliosComImagens = portfolios.map(p => {
+      // converter blobs em base64
+      if (p.imagensCapa && p.imagensCapa.length > 0) {
+        p.imagensCapa = p.imagensCapa.map(img => 
+          `data:image/jpeg;base64,${img.toString('base64')}`
+        );
+      } else {
+        p.imagensCapa = [];
+      }
+
+     
+      while (p.imagensCapa.length < 4) {
+        p.imagensCapa.push(imgBase);
+      }
+
+      return p;
+    });
+
+    if (!usuario) return res.status(404).send('Usuário não encontrado');
+
+    console.log("Portfólios encontrados: ", portfoliosComImagens.map(port => ({
+      ID_PORTFOLIO: port.ID_PORTFOLIO,
+      NOME_PORTFOLIO: port.NOME_PORTFOLIO,
+      DESCRICAO_PORTFOLIO:  port.DESCRICAO_PORTFOLIO,
+      TAGS: port.TAGS_PORTFOLIO,
+      qtdImagens: (port.imagensCapa || []).length,
+      qtdImagensUrls: (port.imagensCapa || []).length,
+    })))
+    res.render('pages/portfolios', {
+      portfolios: portfoliosComImagens,
+      usuario,
+      dadosNotificacao: null
+    });
+  } catch (erro) {
+    console.log(erro);
+    res.render('pages/portfolios', {
+      portfolios: [],
+      usuario: [],
+      dadosNotificacao: {
+        titulo: 'Não foi possível carregar os portfólios.',
+        mensagem: 'Tente novamente mais tarde.',
+        tipo: 'error'
+      }
+    });
+  }
+},
+
+
+
+
+
+
+
+
+exibirPortfolio: async (req, res) => {
+  const id = req.params.id;
+  try {
+    // 1) Buscar publicações do portfolio
+    const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id);
+
+    // 2) Buscar dados do portfolio (nome, descrição, tags, etc.)
+    const portfolio = await listagensModel.buscarPortfolioPorId(id);
+
+    if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) {
+      return res.render('pages/portfolio', {
+        publicacoesPortfolio: [],
+        portfolio,
+        portfolioDono: portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null,
+        dadosNotificacao: {
+          titulo: 'Portfólio vazio',
+          mensagem: 'Nenhuma publicação encontrada neste portfólio.',
+          tipo: 'info'
+        }
+      });
+    }
+
+    // 3) Pega o dono do portfolio a partir do portfolio
+    const portfolioDono = portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null;
+
+    console.log("Dados do portfólio sendo exibido:", portfolio);
+
+    res.render('pages/portfolio', {
+      publicacoesPortfolio,
+      portfolio,
+      portfolioDono,
+      dadosNotificacao: null
+    });
+
+  } catch (erro) {
+    console.log(erro);
+    res.render('pages/portfolio', {
+      publicacoesPortfolio: [],
+      portfolio: null,
+      portfolioDono: null,
+      dadosNotificacao: {
+        titulo: 'Erro ao carregar o portfólio',
+        mensagem: 'Tente novamente mais tarde.',
+        tipo: 'error'
+      }
+    });
+  }
+}
+
+
+
  
  
  

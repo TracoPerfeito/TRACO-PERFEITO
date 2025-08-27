@@ -70,19 +70,17 @@ router.get("/publicacao/:id", function (req, res) { //publicacao
 });
  
 router.post(
-    "/salvarcomentario",
-    comentariosController.regrasValidacaoComentario,
-    async function (req, res) {
-      comentariosController.criarComentario(req, res);
-    }
-  );
- 
-  router.post(
-    "/excluircomentario",
-    async function (req, res) {
-      comentariosController.excluirComentario(req, res);
-    }
-  );
+  "/salvarcomentario",
+  comentariosController.regrasValidacaoComentario,
+  comentariosController.criarComentario
+);
+
+// Excluir comentário
+router.post(
+  "/excluir-comentario",
+  comentariosController.excluirComentario
+);
+
 
 
 

@@ -1,204 +1,116 @@
 const comentariosModel = require("../models/comentariosModel");
 const listagensModel = require("../models/listagensModel");
 const { body, validationResult } = require("express-validator");
-const moment = require("moment");
- 
- 
- 
+
 const comentariosController = {
- 
-  regrasValidacaoComentario:[
+
+  // Middleware de validação
+  regrasValidacaoComentario: [
     body('conteudo')
-    .trim()
-    .isLength({min: 1, max: 2000})
-    .withMessage('O comentário deve ter no mínimo 1 caractere e no máximo 2000')
+      .trim()
+      .isLength({ min: 1, max: 2000 })
+      .withMessage('O comentário deve ter no mínimo 1 caractere e no máximo 2000')
   ],
- 
- 
- criarComentario: async (req, res) => {
-  try {
-    console.log("Chegou no criarComentario");
-    console.log('Body:', req.body);
 
-    const erros = validationResult(req);
-    const { conteudo, idPublicacao } = req.body;
+  // Criar comentário
+  criarComentario: async (req, res) => {
+    try {
+      const erros = validationResult(req);
+      const { conteudo, idPublicacao } = req.body;
 
-    if (!erros.isEmpty()) {
-      console.log("Deu erro na validação af");
+      if (!erros.isEmpty()) {
+        const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
+        const comentarios = await comentariosModel.listarComentarios(idPublicacao);
+        return res.render('pages/publicacao', {
+          listaErros: erros.array(),
+          dadosNotificacao: { titulo: 'Erro', mensagem: 'Comentário inválido', tipo: 'error' },
+          publicacao: publicacao || {},
+          comentarios,
+          usuario: req.session.autenticado || null,
+          autenticado: !!req.session.autenticado
+        });
+      }
 
-      const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-      const comentarios = await comentariosModel.listarComentarios(idPublicacao);
+      const idUsuario = req.session.autenticado.id;
 
-      return res.render('pages/publicacao', {
-        listaErros: erros,
-        dadosNotificacao: {
-          titulo: 'Erro ao enviar comentário',
-          mensagem: 'O comentário deve ter no mínimo 1 caractere e no máximo 2000',
-          tipo: 'error'
-        },
-        publicacao,
-        comentarios,
-        usuario: req.session.autenticado || null,
-        autenticado: !!req.session.autenticado,
+      await comentariosModel.criarComentario({
+        ID_USUARIO: idUsuario,
+        ID_PUBLICACAO: idPublicacao,
+        CONTEUDO_COMENTARIO: conteudo,
+        DATA_COMENTARIO: new Date()
       });
-    }
-
-    const idUsuario = req.session.autenticado.id;
-
-    const resultado = await comentariosModel.criarComentario({
-      ID_USUARIO: idUsuario,
-      ID_PUBLICACAO: idPublicacao,
-      CONTEUDO_COMENTARIO: conteudo,
-      DATA_COMENTARIO: new Date()
-    });
-    console.log(resultado);
-
-    if (!resultado) {
-      console.log("Deu erro ao salvar comentário");
 
       const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
       const comentarios = await comentariosModel.listarComentarios(idPublicacao);
 
       return res.render('pages/publicacao', {
         listaErros: null,
-        dadosNotificacao: {
-          titulo: 'Erro ao enviar comentário.',
-          mensagem: 'Não foi possível salvar seu comentário.',
-          tipo: 'error'
-        },
-        publicacao,
+        dadosNotificacao: { titulo: 'Comentário enviado', mensagem: 'Seu comentário foi salvo', tipo: 'success' },
+        publicacao: publicacao || {},
         comentarios,
         usuario: req.session.autenticado || null,
-        autenticado: !!req.session.autenticado,
+        autenticado: !!req.session.autenticado
+      });
+
+    } catch (erro) {
+      console.error("Erro ao criar comentário:", erro);
+      return res.render('pages/publicacao', {
+        listaErros: [{ msg: 'Erro ao criar comentário' }],
+        dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível salvar o comentário', tipo: 'error' },
+        publicacao: {},
+        comentarios: [],
+        usuario: req.session.autenticado || null,
+        autenticado: !!req.session.autenticado
       });
     }
+  },
 
-    const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-    const comentarios = await comentariosModel.listarComentarios(idPublicacao);
-
-    return res.render('pages/publicacao', {
-      listaErros: null,
-      dadosNotificacao: {
-        titulo: 'Comentário enviado!',
-        mensagem: "Seu comentário foi salvo",
-        tipo: "success"
-      },
-      publicacao,
-      comentarios,
-      usuario: req.session.autenticado || null,
-      autenticado: !!req.session.autenticado,
-    });
-
-  } catch (erro) {
-    console.error("Erro ao criar comentario:", erro);
-
-    // Tente buscar publicacao e comentarios para a renderização mesmo em caso de erro
-    let publicacao = null;
-    let comentarios = [];
-
-    try {
-      const { idPublicacao } = req.body;
-      publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-      comentarios = await comentariosModel.listarComentarios(idPublicacao);
-    } catch (e) {
-      console.error("Erro ao buscar publicação/comentários no catch:", e);
-    }
-
-    return res.render('pages/publicacao', {
-      listaErros: erro,
-      dadosNotificacao: {
-        titulo: 'Erro',
-        mensagem: "Seu comentário não foi salvo",
-        tipo: "error"
-      },
-      publicacao,
-      comentarios,
-      usuario: req.session.autenticado || null,
-      autenticado: !!req.session.autenticado,
-    });
-  }
-},
+  // Excluir comentário
+  // Excluir comentário
 excluirComentario: async (req, res) => {
   try {
-    console.log("Chegou no excluirComentario");
-    console.log('Body:', req.body);
+    const { id_comentario, idPublicacao } = req.body; // nomes do form
 
-    const { idComentario, idPublicacao } = req.body; // idPublicacao precisa ser extraído aqui
-    const idUsuario = req.session.autenticado.id;
-
-    const dadosForm = { idComentario, idUsuario };
-    console.log("olja aqui", dadosForm.idComentario)
-    const resultado = await comentariosModel.excluirComentario(dadosForm.idComentario);
-
-    console.log(resultado);
-
-    if (!resultado) {
-      console.log("Deu erro ao excluir comentário");
-
-      const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-      const comentarios = await comentariosModel.listarComentarios(idPublicacao);
-
-      return res.render('pages/publicacao', {
-        listaErros: null,
-        dadosNotificacao: {
-          titulo: 'Erro ao excluir comentário.',
-          mensagem: 'Não foi possível excluir o comentário.',
-          tipo: 'error'
-        },
-        publicacao,
-        comentarios,
-        usuario: req.session.autenticado || null,
-        autenticado: !!req.session.autenticado,
-      });
+    if (!id_comentario || !idPublicacao) {
+      return res.status(400).send("ID do comentário ou da publicação não enviado.");
     }
+
+    const idUsuario = req.session.autenticado.id;
+    const isAdmin = req.session.autenticado.tipo === 'administrador';
+
+    const resultado = await comentariosModel.excluirComentario(id_comentario, idUsuario, isAdmin);
 
     const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
     const comentarios = await comentariosModel.listarComentarios(idPublicacao);
 
     return res.render('pages/publicacao', {
       listaErros: null,
-      dadosNotificacao: {
-        titulo: 'Comentário excluído.',
-        mensagem: "O comentário foi excluído.",
-        tipo: "success"
-      },
+      dadosNotificacao: resultado.error
+        ? { titulo: 'Erro', mensagem: resultado.error, tipo: 'error' }
+        : { titulo: 'Comentário excluído', mensagem: 'Comentário excluído com sucesso', tipo: 'success' },
       publicacao,
       comentarios,
       usuario: req.session.autenticado || null,
-      autenticado: !!req.session.autenticado,
+      autenticado: !!req.session.autenticado
     });
 
   } catch (erro) {
     console.error("Erro ao excluir comentário:", erro);
-
-    let publicacao = null;
-    let comentarios = [];
-
-    try {
-      const { idPublicacao } = req.body;
-      publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-      comentarios = await comentariosModel.listarComentarios(idPublicacao);
-    } catch (e) {
-      console.error("Erro ao buscar publicação/comentários no catch:", e);
-    }
+    const { idPublicacao } = req.body;
+    const publicacao = await listagensModel.findIdPublicacao(idPublicacao) || {};
+    const comentarios = await comentariosModel.listarComentarios(idPublicacao);
 
     return res.render('pages/publicacao', {
-      listaErros: erro,
-      dadosNotificacao: {
-        titulo: 'Erro',
-        mensagem: "Não foi possível excluir o comentário.",
-        tipo: "error"
-      },
+      listaErros: [{ msg: 'Erro ao excluir comentário' }],
+      dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível excluir o comentário', tipo: 'error' },
       publicacao,
       comentarios,
       usuario: req.session.autenticado || null,
-      autenticado: !!req.session.autenticado,
+      autenticado: !!req.session.autenticado
     });
   }
 }
-
-
-
 };
- 
+
+
 module.exports = comentariosController;

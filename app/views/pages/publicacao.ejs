@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
    <script src="js/simple-notify.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+   <script src="js/excluir-comentario"></script>
  
    
  
@@ -140,22 +141,32 @@ if (Array.isArray(listaErros)) {
  
 <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
   <section class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
-    <% publicacao.imagens.forEach((img, idx) => { %>
-      <img
-        src="data:image/jpeg;base64,<%= img.toString('base64') %>"
-        class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>"
-        alt="Imagem da publicação"/>
-    <% }) %>
+    
+    <% if (publicacao && publicacao.imagens && publicacao.imagens.length > 0) { %>
+      <% publicacao.imagens.forEach((img, idx) => { %>
+        <img
+          src="data:image/jpeg;base64,<%= img.toString('base64') %>"
+          class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>"
+          alt="Imagem da publicação"/>
+      <% }) %>
+    <% } else { %>
+      <p class="sem-imagens">Não há imagens para esta publicação.</p>
+    <% } %>
+
   </section>
- 
+
   <section class="aviso-zoom">
     <ion-icon name="expand-outline"></ion-icon> <p>Clique para abrir a imagem</p>
   </section>
- 
-  <% if (publicacao.imagens.length > 1) { %>
-    <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)"><ion-icon name="chevron-back-outline"></ion-icon></button>
-    <button class="seta-carrossel direita" onclick="event.preventDefault();nextImg(this)"><ion-icon name="chevron-forward-outline"></ion-icon></button>
- 
+
+  <% if (publicacao && publicacao.imagens && publicacao.imagens.length > 1) { %>
+    <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+    <button class="seta-carrossel direita" onclick="event.preventDefault();nextImg(this)">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+
     <section class="indicadores">
       <% publicacao.imagens.forEach((_, idx) => { %>
         <p class="indicador<%= idx === 0 ? ' ativo' : '' %>"></p>
@@ -163,7 +174,7 @@ if (Array.isArray(listaErros)) {
     </section>
   <% } %>
 </section>
- 
+
 <section class="con-img-expandida" id="con-img-expandida">
   <p class="fechar" id="fechar">&times;</p>
  <img src="" id="imgExpandida" alt="Imagem expandida">
@@ -187,32 +198,30 @@ if (Array.isArray(listaErros)) {
   </section>
  
   <!-- Descrição da publicação -->
-  <p class="descricao-publi-prin"><%= publicacao.DESCRICAO_PUBLICACAO %></p>
+  <p class="descricao-publi-prin"><%= publicacao?.DESCRICAO_PUBLICACAO || '' %></p>
 </section>
 
 <% 
-  
   const cores = [
-  '#7490C9', 
-  '#969ED0',  
-  '#92C4E2', 
-  '#B8D9BD', 
-  '#9BB7CF', 
-  '#C3E3DF',
-  '#C2E5F0', 
-  '#ADBCE2', ];
-  const tagsArray = publicacao.TAGS.split(',');
+    '#7490C9', 
+    '#969ED0',  
+    '#92C4E2', 
+    '#B8D9BD', 
+    '#9BB7CF', 
+    '#C3E3DF',
+    '#C2E5F0', 
+    '#ADBCE2'
+  ];
+
+  const tagsArray = (publicacao && publicacao.TAGS) ? publicacao.TAGS.split(',') : [];
 %>
 
 <section class="tags">
   <% tagsArray.forEach(tag => { %>
-    <% 
-    
-      const cor = cores[Math.floor(Math.random() * cores.length)];
-    %>
-    <span class="tag" style="background-color: <%= cor %>">
+    <% const cor = cores[Math.floor(Math.random() * cores.length)]; %>
+    <p class="tag" style="background-color: <%= cor %>">
       #<%= tag.trim() %>
-    </span>
+    </p>
   <% }) %>
 </section>
 
@@ -224,78 +233,76 @@ if (Array.isArray(listaErros)) {
  
  
                 <section class="comentarios">
-                    <h2 id="comentarios-nome-secao"> Comentários</h2>
-                    <section class="adicionar-comentario">
- 
-                        <form action="/salvarcomentario" method="post">
-                          <label for="adicionar-comentario">Adicionar comentário:</label>
-                          <textarea id="ad-comentario" name="conteudo" rows="4" cols="50" placeholder="Digite seu comentário aqui..." class="<%= cssErros.conteudo %>"></textarea>
-                          <p class="msg-erro"></p>
-                          <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
-                          <br>
-                        <section class="button-container-submit">
-                              <% if (!tipo_usuario) { %>
-                                  <button class="enviar-comentario" disabled>Enviar</button>
-                                  <p class="tooltip">Crie uma conta para publicar um comentário.</p>
-                              <% } else if (status_usuario === 'pendente') { %>
-                                  <button class="enviar-comentario" disabled>Enviar</button>
-                                  <p class="tooltip">Verifique seu e-mail para comentar.</p>
-                              <% } else { %>
-                                  <button class="enviar-comentario">Enviar</button>
-                              <% } %>
-                        </section>
+  <h2 id="comentarios-nome-secao"> Comentários</h2>
 
-                        </form>
-                    </section>
-                   
+  <!-- Adicionar comentário -->
+  <section class="adicionar-comentario">
+    <form action="/salvarcomentario" method="post">
+      <label for="adicionar-comentario">Adicionar comentário:</label>
+      <textarea id="ad-comentario" name="conteudo" rows="4" cols="50" placeholder="Digite seu comentário aqui..." class="<%= cssErros.conteudo %>"></textarea>
+      <p class="msg-erro"></p>
+      <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
+      <br>
+      <section class="button-container-submit">
+        <% if (!tipo_usuario) { %>
+          <button class="enviar-comentario" disabled>Enviar</button>
+          <p class="tooltip">Crie uma conta para publicar um comentário.</p>
+        <% } else if (status_usuario === 'pendente') { %>
+          <button class="enviar-comentario" disabled>Enviar</button>
+          <p class="tooltip">Verifique seu e-mail para comentar.</p>
+        <% } else { %>
+          <button class="enviar-comentario">Enviar</button>
+        <% } %>
+      </section>
+    </form>
+  </section>
 
-                   
- 
-                    <section class="comentarios-caixa" id="comentariosSection">
-                      <% if (comentarios && comentarios.length > 0) { %>
-                        <% comentarios.forEach(comentario => { %>
-                          <section class="comentario">
-                            <section class="comentario-info-total">
-                              <section class="comentario-info">
-                                <img src="/<%= comentario.FOTO_PERFIL_PASTA_USUARIO || 'imagens/img.png' %>" class="foto-de-perfil" >
-                                <a href="<%= (autenticado && id_usuario === comentario.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + comentario.ID_USUARIO %>">
-                                  <p class="nome-comentario"><%= comentario.NOME_USUARIO %></p>
-                                </a>
-                              </section>
-                              <small  class="data-comentario" data-data="<%= comentario.DATA_COMENTARIO %>"></small>
-                                   
-                                                          
-                            
-<section class="menu-opcoes-coment" data-id-comentario="123">
-  <svg class="icone-menu-coment" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
-    <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
-  </svg>
+  <!-- Lista de comentários -->
+  <section class="comentarios-caixa" id="comentariosSection">
+    <% if (comentarios && comentarios.length > 0) { %>
+      <% comentarios.forEach(comentario => { %>
+        <section class="comentario">
+          <section class="comentario-info-total">
+            <section class="comentario-info">
+              <img src="/<%= comentario.FOTO_PERFIL_PASTA_USUARIO || 'imagens/img.png' %>" class="foto-de-perfil" >
+              <a href="<%= (autenticado && id_usuario === comentario.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + comentario.ID_USUARIO %>">
+                <p class="nome-comentario"><%= comentario.NOME_USUARIO %></p>
+              </a>
+            </section>
 
-  <section class="opcoes-menu-coment">
-    <button class="btn-excluir-comentario" title="Excluir Comentário"> <ion-icon name="trash-outline"></ion-icon>Excluir</button>
-    <button class="btn-denunciar-comentario" title="Denunciar">  <ion-icon name="flag-outline"></ion-icon>Denunciar</button>
+            <small class="data-comentario" data-data="<%= comentario.DATA_COMENTARIO %>"></small>
+
+            <!-- Menu de opções do comentário -->
+            <section class="menu-opcoes-coment" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
+              <svg class="icone-menu-coment" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
+              </svg>
+
+              <section class="opcoes-menu-coment">
+                <% if (autenticado && (id_usuario === comentario.ID_USUARIO || tipo_usuario === 'administrador')) { %>
+                  <button class="btn-excluir-comentario" title="Excluir Comentário"> 
+                    <ion-icon name="trash-outline"></ion-icon>Excluir
+                  </button>
+                <% } %>
+                <button class="btn-denunciar-comentario" title="Denunciar">  
+                  <ion-icon name="flag-outline"></ion-icon>Denunciar
+                </button>
+              </section>
+            </section>
+
+          </section>
+
+          <!-- Conteúdo do comentário -->
+          <section class="escrita-comentario">
+            <p><%= comentario.CONTEUDO_COMENTARIO %></p>
+          </section>
+        </section>
+      <% }) %>
+    <% } else { %>
+      <p>Não há comentários.</p>
+    <% } %>
   </section>
 </section>
-
-
-                                </section>
-                                <section class="escrita-comentario">
-                                  <p><%= comentario.CONTEUDO_COMENTARIO %></p>
-                                </section>
-
-
-                          </section>
-
-
-                       
-                        <% }) %>
-                      <% } else { %>
-                        <p>Não há comentários.</p>
-                      <% } %>
-                    </section>
-                   
-                </section>
-
 
              
  

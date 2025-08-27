@@ -1,65 +1,45 @@
+// Abrir/fechar menu de opções do comentário
 document.querySelectorAll('.icone-menu-coment').forEach(icone => {
   icone.addEventListener('click', e => {
     e.stopPropagation();
     const menu = icone.parentElement.querySelector('.opcoes-menu-coment');
-    if (menu.style.display === 'block') {
-      menu.style.display = 'none';
-    } else {
-      // Fecha todos os outros menus antes de abrir este
-      document.querySelectorAll('.opcoes-menu-coment').forEach(m => m.style.display = 'none');
-      menu.style.display = 'block';
-    }
+    const aberto = menu.style.display === 'block';
+    // Fecha todos os outros menus
+    document.querySelectorAll('.opcoes-menu-coment').forEach(m => m.style.display = 'none');
+    menu.style.display = aberto ? 'none' : 'block';
   });
 });
 
 // Fecha menus ao clicar fora
 document.addEventListener('click', () => {
-  document.querySelectorAll('.opcoes-menu-coment').forEach(menu => {
-    menu.style.display = 'none';
-  });
+  document.querySelectorAll('.opcoes-menu-coment').forEach(menu => menu.style.display = 'none');
 });
 
+// Modal de exclusão
 const modalExcluirComentario = document.getElementById('modalExcluirComentario');
-const modalDenunciarComentario = document.getElementById('modalDenunciarComentario');
-
 const inputExcluirComentario = document.getElementById('excluirComentarioId');
-const inputDenunciarComentario = document.getElementById('denunciarComentarioId');
 
-// Abre modal Excluir ao clicar no botão
+// Abre modal de exclusão ao clicar no botão
 document.querySelectorAll('.btn-excluir-comentario').forEach(btn => {
   btn.addEventListener('click', e => {
     e.stopPropagation();
-    const id = btn.closest('.menu-opcoes-coment').dataset.idComentario;
-    inputExcluirComentario.value = id;
+    const comentarioEl = btn.closest('.comentario');
+    inputExcluirComentario.value = comentarioEl.dataset.idComentario;
     modalExcluirComentario.classList.remove('hidden');
     btn.closest('.opcoes-menu-coment').style.display = 'none';
   });
 });
 
-// Abre modal Denunciar ao clicar no botão
-document.querySelectorAll('.btn-denunciar-comentario').forEach(btn => {
-  btn.addEventListener('click', e => {
-    e.stopPropagation();
-    const id = btn.closest('.menu-opcoes-coment').dataset.idComentario;
-    inputDenunciarComentario.value = id;
-    modalDenunciarComentario.classList.remove('hidden');
-    btn.closest('.opcoes-menu-coment').style.display = 'none';
-  });
-});
-
-// Fecha modais ao clicar no botão cancelar
-document.querySelectorAll('.btn-fechar-modal-coment').forEach(btn => {
-  btn.addEventListener('click', () => {
-    modalExcluirComentario.classList.add('hidden');
-    modalDenunciarComentario.classList.add('hidden');
-  });
+// Fecha modal ao clicar no botão cancelar
+modalExcluirComentario.querySelector('.btn-fechar-modal-coment').addEventListener('click', () => {
+  modalExcluirComentario.classList.add('hidden');
+  inputExcluirComentario.value = '';
 });
 
 // Fecha modal clicando fora do conteúdo
-[modalExcluirComentario, modalDenunciarComentario].forEach(modal => {
-  modal.addEventListener('click', e => {
-    if (e.target === modal) {
-      modal.classList.add('hidden');
-    }
-  });
+modalExcluirComentario.addEventListener('click', e => {
+  if (e.target === modalExcluirComentario) {
+    modalExcluirComentario.classList.add('hidden');
+    inputExcluirComentario.value = '';
+  }
 });

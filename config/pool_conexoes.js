@@ -1,4 +1,4 @@
-/*
+
 const mysql = require('mysql2')
 require('dotenv').config();
 
@@ -27,11 +27,11 @@ pool.getConnection((err, conn) => {
 module.exports = pool.promise()
 
 
-*/
+
 // VERSAO ANTERIOR DO POOL (Giovani no teams)
 
 
-const mysql = require('mysql2')
+/*const mysql = require('mysql2')
 require('dotenv').config();
  try {
     var pool = mysql.createConnection({
@@ -47,5 +47,5 @@ require('dotenv').config();
  }
  
  module.exports = pool.promise();
- 
+ */
 
