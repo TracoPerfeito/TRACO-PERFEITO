@@ -219,23 +219,7 @@ router.get(
 
 
 
-router.get("/contratar-logado", function (req, res) {  //contratar logado
-    res.render('pages/contratar-logado')
- 
-});
 
-
-router.get("/publicacaologado", function (req, res) { //publicação logado
-    res.render('pages/publicacaologado')
- 
-});
-
-
-
-router.get("/perfilalogado", function (req, res) { //perfil alheio logado
-    res.render('pages/perfilalogado')
- 
-});
 
 
 
@@ -281,6 +265,27 @@ router.post(
   }
 );
 
+
+
+router.get(
+  "/novo-portfolio", //novo portfolio
+  async function (req, res) {
+    listagensController.listarPublicacoesParaColocarNoPortfolio(req, res);
+  }
+);
+
+router.post(
+  "/criar-portfolio",
+ publicacoesController.regrasValidacaoCriarPortfolio,
+  async function (req, res) {
+    publicacoesController.criarPortfolio(req, res);
+  }
+);
+
+
+
+
+
 router.get("/chat-logado", function (req, res) { //chat
     res.render('pages/chat-logado')
  
@@ -296,48 +301,13 @@ router.get("/avaliacoes", function (req, res) { //pagina das avaliações
  
 });
 
-router.get("/explorar-c-c", function (req, res) { //explorar conta comum logada
-    res.render('pages/explorar-c-c')
- 
-});
 
 
 
-router.get("/contratar-c-c", function (req, res) { // contratar conta comum
-    res.render('pages/contratar-c-c')
- 
-});
 
 
 
-router.get("/nova-publi-c-c", function (req, res) { //nova publicacao conta comum
-    res.render('pages/nova-publi-c-c')
- 
-});
 
-
-router.get("/publicacao-c-c", function (req, res) { //publicacao conta comum
-    res.render('pages/publicacao-c-c')
- 
-});
-
-
-router.get("/perfil-a-c-c", function (req, res) { //perfil alheio conta comum
-    res.render('pages/perfil-a-c-c')
- 
-});
-
-
-router.get("/meu-perfil-c-c", function (req, res) { //meu perfil conta comum
-    res.render('pages/meu-perfil-c-c')
- 
-});
-
-
-router.get("/chat-c-c", function (req, res) { //chat conta comum
-    res.render('pages/chat-c-c')
- 
-});
 
 
 router.get("/tabela-pagamentos", function (req, res) { //Tabela de pagamentos
@@ -419,16 +389,19 @@ router.get("/adm-lista-denuncias", function (req, res) { //adm teste
  
 // });
 
-router.get("/portfolios", function (req, res) { //portfolios
-    res.render('pages/portfolios');
 
- 
+
+router.get("/portfolios/:id", function (req, res) { //portfolios
+
+    listagensController.listarPortfoliosdoUsuario(req, res);
+
 });
 
 
-router.get("/portfolio", function (req, res) { //portfolios
-    res.render('pages/portfolio');
-
+router.get("/portfolio/:id", function (req, res) { //portfolio
+ 
+    listagensController.exibirPortfolio(req, res);
+   
  
 });
 

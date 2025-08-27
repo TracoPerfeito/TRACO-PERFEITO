@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfólios de Jaqueline</title>
+    <title>Portfólios de <%= usuario.NOME_USUARIO %></title>
 
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -19,8 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
 
-    <link rel="stylesheet" href="css/menu.css">
-    <link rel="stylesheet" href="css/portfolios.css">
+    <link rel="stylesheet" href="/css/menu.css">
+    <link rel="stylesheet" href="/css/portfolios.css">
 
 </head>
 <body>
@@ -46,110 +46,43 @@
     
     <section class="botao-de-voltar">   
         <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
-        <p class="lado-botao"> Portfólios de Jaqueline Maria</p>
+        <p class="lado-botao"> Portfólios de <%= usuario.NOME_USUARIO %></p>
     </section>
 
     <main>
 
-        <h1 id="nome-pagina">Portfólios de Jaqueline Maria</h1>
+        <h1 id="nome-pagina">Portfólios de <%= usuario.NOME_USUARIO %></h1>
 
 
-    
-          <section class="container-portfolios">
-              
-              <section class="portfolio"  onclick="location.href='/portfolio'">
-                <section class="portfolio-item">
-                  <section class="image-container">
+    <section class="container-portfolios">
+  <% if (portfolios.length > 0) { %>
+    <% portfolios.forEach(portfolio => { %>
+      <section class="portfolio" onclick="location.href='/portfolio/<%= portfolio.ID_PORTFOLIO %>'">
+        <section class="portfolio-item">
+          <section class="image-container">
 
-                    <section class="image-row" >
-                      <img src="imagens/7.jpg" alt="Imagem 1" class="portfolio-image">
-                      <img src="imagens/2.jpg" alt="Imagem 2" class="portfolio-image">
-                    </section>
-
-                    <section class="image-row">
-                      <img src="imagens/3.jpg" alt="Imagem 3" class="portfolio-image">
-                      <img src="imagens/4.jpg" alt="Imagem 4" class="portfolio-image">
-                    </section>
-
-                    <section class="overlay">
-                      <h3 class="portfolio-name">Logotipos</h3>
-                      <p class="prev-descrip">Este portfólio contém todos os meus trabalhos voltados à produção de logotipos e...</p>
-                    </section>
-                 </section>
-              </section>
-             </section>
+          <section class="image-row">
+  <img src="<%= portfolio.imagensCapa[0] %>" class="portfolio-image">
+  <img src="<%= portfolio.imagensCapa[1] %>" class="portfolio-image">
+</section>
+<section class="image-row">
+  <img src="<%= portfolio.imagensCapa[2] %>" class="portfolio-image">
+  <img src="<%= portfolio.imagensCapa[3] %>" class="portfolio-image">
+</section>
 
 
-
-             <section class="portfolio" onclick="location.href='/portfolio'">
-                <section class="portfolio-item">
-                  <section class="image-container">
-
-                    <section class="image-row">
-                      <img src="imagens/arte1.jpg" alt="Imagem 1" class="portfolio-image">
-                      <img src="imagens/arte2.jpg" alt="Imagem 2" class="portfolio-image">
-                    </section>
-
-                    <section class="image-row">
-                      <img src="imagens/arte3.jpg" alt="Imagem 3" class="portfolio-image">
-                      <img src="imagens/arte4.jpg" alt="Imagem 4" class="portfolio-image">
-                    </section>
-
-                    <section class="overlay">
-                      <h3 class="portfolio-name">Ilustrações Livres</h3>
-                      <p class="prev-descrip">Este portfólio contém ilustrações livres ao longo de minha carreira ...</p>
-                    </section>
-                 </section>
-              </section>
-             </section>
-
-
-             <section class="portfolio" onclick="location.href='/portfolio'">
-                <section class="portfolio-item">
-                  <section class="image-container">
-
-                    <section class="image-row">
-                      <img src="imagens/7.jpg" alt="Imagem 1" class="portfolio-image">
-                      <img src="imagens/2.jpg" alt="Imagem 2" class="portfolio-image">
-                    </section>
-
-                    <section class="image-row">
-                      <img src="imagens/3.jpg" alt="Imagem 3" class="portfolio-image">
-                      <img src="imagens/4.jpg" alt="Imagem 4" class="portfolio-image">
-                    </section>
-
-                    <section class="overlay">
-                      <h3 class="portfolio-name">Logotipos</h3>
-                      <p class="prev-descrip">Este portfólio contém todos os meus trabalhos voltados à produção de logotipos...</p>
-                    </section>
-                 </section>
-              </section>
-             </section>
-
-             <section class="portfolio" onclick="location.href='/portfolio'">
-                <section class="portfolio-item">
-                  <section class="image-container">
-
-                    <section class="image-row">
-                      <img src="imagens/arte1.jpg" alt="Imagem 1" class="portfolio-image">
-                      <img src="imagens/arte2.jpg" alt="Imagem 2" class="portfolio-image">
-                    </section>
-
-                    <section class="image-row">
-                      <img src="imagens/arte3.jpg" alt="Imagem 3" class="portfolio-image">
-                      <img src="imagens/arte4.jpg" alt="Imagem 4" class="portfolio-image">
-                    </section>
-
-                    <section class="overlay">
-                      <h3 class="portfolio-name">Ilustrações Livres</h3>
-                      <p class="prev-descrip">Este portfólio contém ilustrações livres ao longo de minha carreira ...</p>
-                    </section>
-                 </section>
-              </section>
-             </section>
-              
+            <section class="overlay">
+              <h3 class="portfolio-name"><%= portfolio.NOME_PORTFOLIO %></h3>
+              <p class="prev-descrip"><%= portfolio.DESCRICAO_PORTFOLIO %></p>
+            </section>
           </section>
-
+        </section>
+      </section>
+    <% }) %>
+  <% } else { %>
+    <p class="sem-portfolio">Nenhum portfólio enviado ainda.</p>
+  <% } %>
+</section>
 
 
     </main>
@@ -162,10 +95,10 @@
 
     
 
- <script src="js/like.js"></script>
+ <script src="/js/like.js"></script>
  <script src="https://kit.fontawesome.com/2fcd7931ea.js" crossorigin="anonymous"></script>
- <script src="js/mobile-navbar.js"></script>
- <script src="js/voltar.js"></script>
+ <script src="/js/mobile-navbar.js"></script>
+ <script src="/js/voltar.js"></script>
  
 
     

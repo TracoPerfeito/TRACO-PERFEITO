@@ -63,6 +63,17 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
         }
     },
 
+       associarTagPortfolio: async (idTag, idPortfolio) => {
+        try {
+            await pool.query(
+                'INSERT INTO TAGS_PORTFOLIOS (ID_TAG, ID_PORTFOLIO) VALUES (?, ?)',
+                [idTag, idPortfolio]
+            );
+        } catch (error) {
+            console.error('Erro ao associar tag com portfólio:', error);
+        }
+    },
+
 
       deletarPublicacao: async (idPublicacao) => {
         try {
@@ -101,7 +112,31 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
     }
 },
 
+inserirPublisPortfolio: async (idPublicacao, idPortfolio) => {
+    try {
+        await pool.query(
+            'INSERT INTO PUBLICACAO_PORTFOLIO (ID_PUBLICACAO, ID_PORTFOLIO) VALUES (?, ?)',
+            [idPublicacao, idPortfolio]
+        );
+        console.log(`Publicação ${idPublicacao} associada ao portfólio ${idPortfolio}`);
+    } catch (error) {
+        console.error('Erro ao associar publicação com portfólio:', error);
+    }
+},
 
+  
+  criarPortfolio: async (dados) => {
+        try {
+            const [result] = await pool.query(
+    'INSERT INTO PORTFOLIOS (ID_USUARIO, NOME_PORTFOLIO, DESCRICAO_PORTFOLIO) VALUES (?, ?, ?)',
+    [dados.ID_USUARIO, dados.NOME_PORTFOLIO, dados.DESCRICAO_PORTFOLIO]
+  );
+  return result.insertId; 
+        } catch (error) {
+            console.error('Erro ao criar portfólio:', error);
+            return null;
+        }
+    },
 
 
    

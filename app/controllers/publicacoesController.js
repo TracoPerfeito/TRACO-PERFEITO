@@ -82,6 +82,41 @@ const publicacoesController = {
 
   ],
 
+
+
+    regrasValidacaoCriarPortfolio: [
+    body("titulo")
+      .trim()
+      .isLength({ min: 2, max: 70 })
+      .withMessage("O título deve ter entre 2 e 70 caracteres."),
+    body("descricao")
+      .trim()
+      .isLength({ min: 2, max: 2000 })
+      .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+    body("tags")
+      .custom((value) => {
+        try {
+          const tags = JSON.parse(value);
+          if (!Array.isArray(tags)) throw new Error();
+          if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+          return true;
+        } catch {
+          throw new Error("Tags inválidas, envie um array JSON.");
+        }
+      }),
+
+  ],
+
+
+
+
+
+
+
+
+
+
+
   criarPublicacao: async (req, res) => {
 
     try {
@@ -274,7 +309,149 @@ const publicacoesController = {
       console.error("Erro ao criar proposta de projeto:", erro);
       return res.status(500).json({ erro: "Erro interno ao criar proposta de projeto." });
     }
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+  criarPortfolio: async (req, res) => {
+
+    try {
+
+      // Avisa que chegou aqui e mostra os valores recebidos.
+      console.log("Chegou no criarPortfolio.");
+      console.log("Body:", req.body);
+    
+
+
+      //Verifica se a validação retornou algum erro.
+      const erros = validationResult(req);
+      if (!erros.isEmpty()) {
+        console.log("Deu erro na validação af");
+        return res.status(400).json({ erros: erros.array() });
+      
+      }
+
+      // titulo, descricao, categoria e tags são retirados do body.
+      const { titulo, descricao, tags } = req.body;
+      // Pega o ID do usuário logado.
+      const idUsuario = req.session.autenticado.id;
+
+      // Cria a publicação com seus dados base, na tabela 
+      const resultado = await publicacoesModel.criarPortfolio({
+        ID_USUARIO: idUsuario,
+        NOME_PORTFOLIO: titulo,
+        DESCRICAO_PORTFOLIO: descricao,
+
+      });
+
+      console.log(resultado) // Mostra o que foi inserido na tabela
+
+      // Se não houver resultado, ou seja, nada foi inserido, retorna um erro. 
+      if (!resultado) {
+        return res.status(500).json({ erro: "Erro ao criar o portfolio." });
+      }
+
+        
+      const idPortfolio = resultado; // resultado já é o insertId
+      console.log("Id inserido:", idPortfolio); // Mostra o ID da publicação inserida.
+ 
+
+  
+
+
+const tagsRecebidas = req.body.tags
+  ? req.body.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+  : []; // Monta um const com as tags que vieram do body
+ console.log("Tags recebidas:", tagsRecebidas); //Mostra pra nois no terminal
+
+ for (const tag of tagsRecebidas) { //agora vamos fazer certas instruções para cada uma das tags do array
+  console.log("Tag:", tag); //Mostra no terminal a tag do momento
+
+  let tagExistente = await publicacoesModel.buscarTagPorNome(tag);  // Confere no banco se já tem uma tag com esse nome. Se não tiver, fica undefined.
+  console.log("Tag encontrada no buscarTagPorNome:", tagExistente);// Mostra o retorno
+
+
+  if(!tagExistente){// Se a tag ainda não existe
+    const novaTag = await publicacoesModel.criarTag(tag); //Define novaTag como o resultado da criação de uma nova tag com o nome
+    console.log("Tag criada:", novaTag); // Mostra a tag que foi criada
+
+    let tagPortfolio = novaTag; //Agora define tagPortfolio como a novaTag que acabou de ser criada
+    console.log(tagPortfolio); //Mostra qual é a tagPortfolio
+
+    const resultado = await publicacoesModel.associarTagPortfolio(tagPortfolio, idPortfolio); //Insere uma linha na tabela de relacionamento: o id da tag e o id da publicação
+    console.log(resultado) //Resultado da tentativa de associar tags a publicação
+
+  } else {// Se a tag já existe
+    console.log("Tag já existe:", tagExistente); // Mostra que ela já existe
+     
+    let tagPortfolio = tagExistente.ID_TAG; //Define tagPortfolio como o ID da tag já existente
+
+    console.log(tagPortfolio); //Mostra o id da tag
+
+    const resultado = await publicacoesModel.associarTagPortfolio(tagPortfolio, idPortfolio);//Insere uma linha na tabela de relacionamento: o id da tag e o id da publicação
+    console.log(resultado) //Resultado da tentativa de associar tags a publicação
+
+
+
+
   }
+}
+
+// Pega os ids das publicações selecionadas
+const idsPublis = req.body.publicacoesSelecionadas ? req.body.publicacoesSelecionadas.split(',') : [];
+
+for (const idPub of idsPublis) {
+  await publicacoesModel.inserirPublisPortfolio(idPub, idPortfolio);
+}
+
+   return res.render('pages/novo-portfolio', {
+      listaErros: null,
+      dadosNotificacao: {
+        titulo: 'Portfólio criado!',
+        mensagem: "Seu portfólio foi criado com sucesso.",
+        tipo: "success"
+      },
+      publicacoes: [],
+
+      usuario: req.session.autenticado || null,
+      autenticado: !!req.session.autenticado,
+    });
+
+    } catch (erro) {
+      console.error("Erro ao criar portfólio:", erro);
+     
+      return res.render('pages/novo-portfolio', {
+      listaErros: erro,
+      dadosNotificacao: {
+        titulo: 'Não foi possível criar portfólio.',
+        mensagem: "Tente novamente mais tarde.",
+        tipo: "error"
+      },
+      publicacoes: [],
+
+      usuario: req.session.autenticado || null,
+      autenticado: !!req.session.autenticado,
+    });
+    }
+  },
+
+
+
+
+
 
 
 
