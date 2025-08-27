@@ -40,39 +40,24 @@
                             }                        
                     </script>
                 <% } %>              
-                <div class="login-page">
-                    <div class="form-cadastro">
-                        <h2>Recuperar a senha</h2>
-                        <form action="/recuperar-senha" method="post">
-                            <input type="text" name="email_usu" placeholder="e-mail" value=""
-                                class="<%= avisoErro.email_usu %>" /><br>
-                           <button type="submit">Enviar</button><br>
-                        </form>
+              
+              
+              <section class="container">
+                  
+                <section class="img"><img src="favicon.ico" alt="Ilustração">
+                </section>
+                <h2>Recuperar Senha</h2>
+                    <div class="login-page">
+                        <div class="form-cadastro">
+                            <h2>Recuperar a senha</h2>
+                            <form action="/recuperar-senha" method="post">
+                                <input type="text" name="email_usu" placeholder="e-mail" value=""
+                                    class="<%= avisoErro.email_usu %>" /><br>
+                               <button type="submit">Enviar</button><br>
+                            </form>
+                        </div>
                     </div>
-                </div>
-    </main>
+              </section>
 
- <!-- <section class="container">
-  
-   
-    <section class="img"><img src="favicon.ico" alt="Ilustração">
-    </section>
-     
-
-    <h2>Recuperar Senha</h2>
-    <form>
-      <section class="input-group">
-        <section class="tamanho">
-          <label for="email">Digite seu e-mail para que possamos enviar um link para recuperar a senha:</label>
-        </section>
-        <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
-      </section>
-      
-      <button type="submit">Enviar link de recuperação</button>
-
-      
-      <p><a href="#" class="cancelar">Cancelar</a></p>
-    </form>
-</section> -->
 </body>
 </html>
