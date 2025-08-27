@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traço Perfeito - ADM</title>
+    <link rel="stylesheet" href="css/adm-css-home.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- LINK DO FAVICON -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   
+  <!-- LINK DA FONTE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+<body>
+
+
+    <!--INICIO DO MENU ADM -->
+
+    <%- include('../partials/adm-home.ejs'); %>
+
+    <!--FIM DO MENU ADM  -->
+
+
+
+
+
+
+<!-- PAGINA INICIAL MENU LATERAL DO COISO -->
+
+  <%- include('.../partials/menu_lateral_adm.ejs'); %>
+
+<!-- FIM DA PAGINA INICIAL MENU LATERAL DO COISO -->
+
+
+
+    <!--Inicio Sidebar-->
+    <section class="sidebar close">
+      
+      <section class="logo-details"> 
+        <i class="bx bx-menu"></i>
+        <span class="logo_name">Menu</span>
+      </section>
+            
+        <ul class="nav-links">
+          <li>  
+            <a href="#">
+              <i class='bx bx-grid-alt' ></i>
+              <span class="link_name">Dashboard</span>
+            </a>
+              
+            <ul class="sub-menu blank">
+              <li><a class="link_name" href="#">Home</a></li>
+            </ul>
+                
+          </li>
+              
+              <li>
+                
+                <section class="iocn-link">
+                  
+                  <a href="#">
+                    <i class='bx bx-collection' ></i>
+                    <span class="link_name">Usuários</span>
+                  </a>
+                  
+                  <i class='bx bxs-chevron-down arrow' ></i>
+                
+                </section>
+                
+                <ul class="sub-menu">
+                  
+                  <li><a class="link_name" href="todos_usuarios.html">Usuários</a></li>
+                  <li><a href="usuarios_comuns.html">Comum</a></li>
+                  <li><a href="usuarios_profissionais.html">Profissional</a></li>
+                  <li><a href="usuarios_adms.html">Administradores</a></li>                  
+                </ul>
+                
+              </li>
+              
+              <li>
+                
+                <section class="iocn-link">
+                  
+                  <a href="#">
+                    <i class='bx bx-book-alt' ></i>
+                    <span class="link_name">Posts</span>
+                  </a>
+                  
+                  <i class='bx bxs-chevron-down arrow' ></i>
+                
+                </section>
+                
+                <ul class="sub-menu">
+                
+                  <li><a class="link_name" href="#">Posts</a></li>
+                  <li><a href="#">Proposta de Projetos</a></li>
+                  <li><a href="#">Publicações</a></li>
+                
+                </ul>
+      
+              </li>
+      
+              <li>
+                
+
+                <section class="iocn-link">
+
+                <a href="#">
+                  <i class='bx bx-pie-chart-alt-2' ></i>
+                  <span class="link_name">Denúncias</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+
+                </section>
+
+                <ul class="sub-menu">
+                  
+                    <li><a class="link_name" href="#">Denúncias</a></li>
+                    <li><a href="#">Usuário</a></li>
+                    <li><a href="#">Comentário</a></li>
+                    <li><a href="#">Publicação</a></li>                  
+                  </ul>
+      
+              </li>
+                    
+              <li>
+                
+                <section class="iocn-link">
+                
+                  <a href="#">
+                    <i class='bx bx-plug' ></i>
+                    <span class="link_name">Plugins</span>
+                  </a>
+                  
+                  <i class='bx bxs-chevron-down arrow' ></i>
+                  
+                </section>
+                
+                <ul class="sub-menu">
+                  <li><a class="link_name" href="#">Ajustes</a></li>
+                  <li><a href="#">SEO</a></li>
+                  <li><a href="#">Domínio</a></li>
+                  <li><a href="#">Permissão de Dados</a></li>
+                </ul>
+      
+              </li>
+              
+                                
+              <li>
+                
+                <a href="#">
+                  <i class='bx bx-cog' ></i>
+                  <span class="link_name">Configurações</span>
+                </a>
+                
+                <ul class="sub-menu blank">
+                  <li><a class="link_name" href="#">Configurações</a></li>
+                </ul>
+      
+              </li>
+      
+              <li>
+            
+                <section class="profile-details">
+                  
+                  <section class="profile-content">
+                    <!--<img src="image/profile.jpg" alt="profileImg">-->
+                  </section>
+                  
+                  <section class="name-job">
+                    
+                    <section class="profile_name">Sthefany R.</section>
+                    <section class="job">Front-end</section>
+                  
+                  </section>
+                  
+                  <i class="bx bx-log-out"></i>
+                
+                </section>
+              
+              </li>
+      
+            </ul><!--Fecha ul-->
+      
+          </section>
+          <!--Fecha Sidebar-->
+
+   
+
+
+
+          <!-- TITULO -->
+
+<section class="title-page-principal">
+  <h2 class="page-principal-titulo">Dashboard Traço Perfeito</h2>
+</section>
+  
+
+
+
+
+
+
+
+
+
+<section class="main-content">
+    <section class="dashboard">
+      <!-- Card 1 -->
+      <section class="card">
+        <section class="icon-box">
+          <i class="fa fa-users" aria-hidden="true"></i>
+        </section>
+        <section class="title">Total de Usuários</section>
+        <section class="value todos-perfis">120</section>
+        <section class="change">+20% a mais do que mês passado</section>
+      </section>
+
+      <!-- Card 2 -->
+      <section class="card">
+        <section class="icon-box">
+          <i class="fa fa-user" aria-hidden="true"></i>
+        </section>
+        <section class="title">Usuários Comuns</section>
+        <section class="value perfil-comum">5,934</section>
+        <section class="change negative">+10% a menos do que mês passado</section>
+      </section>
+
+      <!-- Card 3 -->
+      <section class="card">
+        <section class="icon-box">
+        <i class="fa fa-user-plus" aria-hidden="true"></i>
+        </section>
+        <section class="title">Usuários Profissionais</section>
+        <section class="value perfil-profissional">$9,758</section>
+        <section class="change">+15% a mais do que mês passado</section>
+      </section>
+  </section>
+
+          
+          
+    <!-- GRÁFICO DE FREQUÊNCIA DE USUÁRIOS (PROTÓTIPO) -->
+  <section class="card-grafico">
+    <section class="header-grafico">
+      <section class="header-left">
+        <h2>Criação de Perfis</h2>
+        <p>Jan - Dez, 2025</p>
+      </section>
+      <section class="header-right">
+        <section class="value">2.430 Perfis</section>
+        <section class="change">+12.5% este ano</section>
+      </section>
+    </section>
+    <canvas id="perfilChart"></canvas>
+  </section>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="js/menu-adm.js"></script>
+      <!-- SCRIPT DO GRÁFICO -->
+     <script src="js/grafico-adm-dashboard.js"></script>
+
+
+</body>
+</html>
