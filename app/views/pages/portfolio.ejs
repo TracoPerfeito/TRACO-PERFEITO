@@ -67,27 +67,27 @@
               '#ADBCE2'
             ];
           
-            // garantir array limpo de tags
-            let tagsPortfolioArray = publicacoesPortfolio[0]?.tagsPortfolio || [];
+            // garantir array limpo de 
+            let PortfolioArray = publicacoesPortfolio[0]?.Portfolio || [];
           
-            if (typeof tagsPortfolioArray === 'string') {
+            if (typeof PortfolioArray === 'string') {
               try {
                 // tenta transformar string JSON em array
-                tagsPortfolioArray = JSON.parse(tagsPortfolioArray);
+                PortfolioArray = JSON.parse(PortfolioArray);
               } catch (e) {
                 // fallback: separar por vírgula e limpar espaços
-                tagsPortfolioArray = tagsPortfolioArray.split(',').map(t => t.replace(/[\[\]"]+/g,'').trim()).filter(Boolean);
+                PortfolioArray = PortfolioArray.split(',').map(t => t.replace(/[\[\]"]+/g,'').trim()).filter(Boolean);
               }
             }
           
             // garantir array final
-            if (!Array.isArray(tagsPortfolioArray)) tagsPortfolioArray = [];
+            if (!Array.isArray(PortfolioArray)) PortfolioArray = [];
           %>
           
           
-            <% tagsPortfolioArray.forEach(tag => { %>
+            <% PortfolioArray.forEach(tag => { %>
               <% const cor = cores[Math.floor(Math.random() * cores.length)]; %>
-              <section class="tags">
+              <section class="">
                 <p class="tag" style="background-color: <%= cor %>">
                   #<%= tag %>
                 </p>
@@ -151,7 +151,7 @@
                 data-titulo="<%= pub.NOME_PUBLICACAO %>"
                 data-categoria="<%= pub.CATEGORIA %>"
                 data-descricao="<%= pub.DESCRICAO_PUBLICACAO %>"
-                data-tags="<%= pub.TAGS %>"
+                data-="<%= pub. %>"
                 data-imagens='<%- JSON.stringify(pub.imagensUrls || []) %>'>
                 <ion-icon name="create-outline"></ion-icon>
                 Editar

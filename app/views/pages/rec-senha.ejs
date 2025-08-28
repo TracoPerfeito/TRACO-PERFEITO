@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar Senha </title>
     <link rel="stylesheet" href="/css/recuperarsenhaenvio.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+
 </head>
 
 <body>
@@ -39,25 +43,44 @@
                                 setTimeout(function(){window.location="/"}, 3000)
                             }                        
                     </script>
-                <% } %>              
+                <% } %>     
+                
+                
+
+                 
+    <section class="botao-de-voltar">   
+        <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
+        <p class="lado-botao"> Voltar</p>
+    </section>
+
               
-              
-              <section class="container">
-                  
-                <section class="img"><img src="favicon.ico" alt="Ilustração">
-                </section>
-                <h2>Recuperar Senha</h2>
-                    <div class="login-page">
-                        <div class="form-cadastro">
-                            <h2>Recuperar a senha</h2>
-                            <form action="/recuperar-senha" method="post">
-                                <input type="text" name="email_usu" placeholder="e-mail" value=""
-                                    class="<%= avisoErro.email_usu %>" /><br>
-                               <button type="submit">Enviar</button><br>
-                            </form>
-                        </div>
-                    </div>
-              </section>
+           <main>
+               
+               <section class="container">
+               
+                 <section class="img"><img src="/imagens/favicon.ico" alt="Ilustração">
+                 </section>
+                 <h2>Recuperar Senha</h2>
+               
+                     <form action="/recuperar-senha" method="post">
+                         <section class="input-group">
+                             <section class="tamanho">
+                                 <label for="email">Digite seu e-mail para que possamos enviar um link para recuperar a senha:</label>
+                               </section>
+               
+                                     <input type="email" name="email_usu" placeholder="seuemail@exemplo.com" value=""
+                                         class="<%= avisoErro.email_usu %>" id="email"/>
+               
+                         </section>
+                         <button type="submit">Enviar link de recuperação</button>
+               
+               
+                     </form>
+               </section>
+           </main>
+
+
+              <script src="/js/voltar.js"></script>
 
 </body>
 </html>
