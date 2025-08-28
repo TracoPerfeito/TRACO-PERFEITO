@@ -1032,6 +1032,7 @@ body{
   border-radius: 8px;
   max-width: 400px;
   width: 100%;
+
 }
 
 .btn-compartilhar{
@@ -1100,9 +1101,11 @@ body{
     max-width: 90%;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   }
+
   .modal-content-coment h2 {
     margin-top: 0;
     margin-bottom: 15px;
+    color: #810606;
   }
   .modal-content-coment textarea {
     width: 100%;

@@ -1,5 +1,7 @@
 const comentariosModel = require("../models/comentariosModel");
 const listagensModel = require("../models/listagensModel");
+const denunciasModel = require("../models/denunciasModel");
+const notificacoesModel = require("../models/notificacoesModel");
 const { body, validationResult } = require("express-validator");
 
 const comentariosController = {
@@ -109,7 +111,45 @@ excluirComentario: async (req, res) => {
       autenticado: !!req.session.autenticado
     });
   }
-}
+
+  },
+
+  // Denunciar comentário
+  denunciarComentario: async (req, res) => {
+    try {
+      const { idComentario, idPublicacao, motivo } = req.body;
+      if (!idComentario || !idPublicacao) {
+        return res.status(400).send("ID do comentário ou da publicação não enviado.");
+      }
+      const idUsuario = req.session.autenticado.id;
+  await denunciasModel.criarDenuncia({ idComentario, idUsuario, motivo });
+  // Notificar administradores
+  await notificacoesModel.notificarAdmins(`Novo comentário denunciado (ID: ${idComentario}). Motivo: ${motivo || 'não informado'}`);
+      const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
+      const comentarios = await comentariosModel.listarComentarios(idPublicacao);
+      return res.render('pages/publicacao', {
+        listaErros: null,
+        dadosNotificacao: { titulo: 'Denúncia enviada', mensagem: 'Sua denúncia foi registrada e será analisada.', tipo: 'success' },
+        publicacao: publicacao || {},
+        comentarios,
+        usuario: req.session.autenticado || null,
+        autenticado: !!req.session.autenticado
+      });
+    } catch (erro) {
+      console.error("Erro ao denunciar comentário:", erro);
+      const { idPublicacao } = req.body;
+      const publicacao = await listagensModel.findIdPublicacao(idPublicacao) || {};
+      const comentarios = await comentariosModel.listarComentarios(idPublicacao);
+      return res.render('pages/publicacao', {
+        listaErros: [{ msg: 'Erro ao denunciar comentário' }],
+        dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível registrar a denúncia', tipo: 'error' },
+        publicacao,
+        comentarios,
+        usuario: req.session.autenticado || null,
+        autenticado: !!req.session.autenticado
+      });
+    }
+  }
 };
 
 
