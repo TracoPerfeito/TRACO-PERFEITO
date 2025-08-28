@@ -55,6 +55,48 @@
 
             <p><%= portfolio.DESCRICAO_PORTFOLIO %></p>
 
+            <%
+            const cores = [
+              '#7490C9', 
+              '#969ED0',  
+              '#92C4E2', 
+              '#B8D9BD', 
+              '#9BB7CF', 
+              '#C3E3DF',
+              '#C2E5F0', 
+              '#ADBCE2'
+            ];
+          
+            // garantir array limpo de tags
+            let tagsPortfolioArray = publicacoesPortfolio[0]?.tagsPortfolio || [];
+          
+            if (typeof tagsPortfolioArray === 'string') {
+              try {
+                // tenta transformar string JSON em array
+                tagsPortfolioArray = JSON.parse(tagsPortfolioArray);
+              } catch (e) {
+                // fallback: separar por vírgula e limpar espaços
+                tagsPortfolioArray = tagsPortfolioArray.split(',').map(t => t.replace(/[\[\]"]+/g,'').trim()).filter(Boolean);
+              }
+            }
+          
+            // garantir array final
+            if (!Array.isArray(tagsPortfolioArray)) tagsPortfolioArray = [];
+          %>
+          
+          
+            <% tagsPortfolioArray.forEach(tag => { %>
+              <% const cor = cores[Math.floor(Math.random() * cores.length)]; %>
+              <section class="tags">
+                <p class="tag" style="background-color: <%= cor %>">
+                  #<%= tag %>
+                </p>
+              </section>
+            <% }) %>
+       
+          
+          
+
     </section>
 
   <section class="container-conteudo">

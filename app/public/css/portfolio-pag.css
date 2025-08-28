@@ -394,3 +394,27 @@ responsividade */
 
 }
 
+
+
+
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 95%;
+  margin: auto;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: rgb(63, 63, 63);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+
+
+
