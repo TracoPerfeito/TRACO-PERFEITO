@@ -1,17 +1,31 @@
+@import url(cores.css);
+
+
+
+
+
 * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+     
     }
 
     body {
-      height: 100vh;
-      display: flex;
+   
+     
       align-items: center;
       justify-content: center;
       
       background: linear-gradient(135deg, #97d4ca, #b1aae0, #9ec4db);
+    }
+
+
+    main{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 95vh;
     }
 
     .container {
@@ -22,6 +36,7 @@
       width: 100%;
       max-width: 500px;
       text-align: center;
+      padding: 1.5rem;
       
     }
 
@@ -37,6 +52,7 @@
       font-size: 1.3rem;
       margin-bottom: 1rem;
       color: #333;
+      font-family: "Montserrat", sans-serif;
     }
 
     .input-group {
@@ -46,8 +62,9 @@
 
     label {
       width: 70%;
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: #444;
+      font-family: "Josefin Sans", sans-serif;
     }
 
     input {
@@ -58,6 +75,7 @@
       border-radius: 10px;
       outline: none;
       transition: 0.3s;
+      font-family: "Josefin Sans", sans-serif;
     }
 
     input:focus {
@@ -75,6 +93,7 @@
       font-size: 1rem;
       cursor: pointer;
       transition: 0.3s;
+      font-family: "Montserrat", sans-serif;
     }
 
     button:hover {
@@ -115,3 +134,40 @@
 
 
 
+.botao-de-voltar{
+  width: 100%;
+  background-color: var(--cor-btn-voltar-section);
+  height: 5vh;
+  display: flex;
+  align-items: center;
+  
+}
+
+.btn-voltar{
+  border-radius: 50%;
+  border: 1px solid var(--cor-btn-voltar-borda);
+  width: 30px;
+  height: 30px;
+  background-color: var(--cor-btn-voltar);
+  color: var(--cor-btn-voltar-seta);
+  margin: 0px 0px 0px 60px;
+  font-size: 17px;
+  align-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-voltar:hover {
+  background-color: var(--cor-btn-voltar-hover);
+  cursor: pointer;
+  
+}
+
+.lado-botao {
+  margin: 0px 10px;
+  font-family: "Josefin Sans";
+  font-weight: 400;
+  font-size: 15px;
+  color: var( --cor-btn-voltar-texto);
+}

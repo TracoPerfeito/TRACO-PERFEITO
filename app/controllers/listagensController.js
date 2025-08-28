@@ -300,6 +300,7 @@ exibirPortfolio: async (req, res) => {
       return res.render('pages/portfolio', {
         publicacoesPortfolio: [],
         portfolio,
+        
         portfolioDono: portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null,
         dadosNotificacao: {
           titulo: 'Portfólio vazio',
@@ -313,11 +314,13 @@ exibirPortfolio: async (req, res) => {
     const portfolioDono = portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null;
 
     console.log("Dados do portfólio sendo exibido:", portfolio);
-
+    
+console.log(publicacoesPortfolio[0].tagsPortfolio);
     res.render('pages/portfolio', {
       publicacoesPortfolio,
       portfolio,
       portfolioDono,
+     
       dadosNotificacao: null
     });
 
@@ -327,6 +330,7 @@ exibirPortfolio: async (req, res) => {
       publicacoesPortfolio: [],
       portfolio: null,
       portfolioDono: null,
+     
       dadosNotificacao: {
         titulo: 'Erro ao carregar o portfólio',
         mensagem: 'Tente novamente mais tarde.',

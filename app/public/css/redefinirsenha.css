@@ -50,6 +50,7 @@ body {
 
 .form-container {
     padding: 30px;
+    font-family: "Josefin Sans", sans-serif;
 }
 
 .instructions {
@@ -104,6 +105,7 @@ body {
 .btn-primary {
     background: #a77dc4;
     color: white;
+    font-family: "Montserrat", sans-serif;
 }
 
 .btn-primary:hover {
@@ -171,3 +173,8 @@ body {
         padding: 20px;
     }
 }
+
+h1{
+    font-family: "Montserrat", sans-serif;
+}
+

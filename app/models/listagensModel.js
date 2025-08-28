@@ -391,7 +391,6 @@ buscarPortfolioPorId: async (idPortfolio) => {
 
 
 
-
 listarPublicacoesdoPortfolio: async (idPortfolio) => {
   try {
     // 1) Buscar publicações que estão nesse portfolio
@@ -428,13 +427,26 @@ listarPublicacoesdoPortfolio: async (idPortfolio) => {
     // 3) Mapear imagens para cada publicação
     const imagensPorPublicacao = {};
     imgs.forEach(img => {
-      if (!imagensPorPublicacao[img.ID_PUBLICACAO]) imagensPorPublicacao[img.ID_PUBLICACAO] = [];
+      if (!imagensPorPublicacao[img.ID_PUBLICACAO]) {
+        imagensPorPublicacao[img.ID_PUBLICACAO] = [];
+      }
       imagensPorPublicacao[img.ID_PUBLICACAO].push(img.IMG_PUBLICACAO);
     });
 
-    // 4) Adicionar o array de imagens em cada publicação
+    // 4) Buscar tags do portfólio
+    const [tagsPortfolio] = await pool.query(`
+      SELECT t.NOME_TAG 
+      FROM TAGS_PORTFOLIOS tp
+      INNER JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
+      WHERE tp.ID_PORTFOLIO = ?
+    `, [idPortfolio]);
+
+    const tagsDoPortfolio = tagsPortfolio.map(t => t.NOME_TAG);
+
+    // 5) Montar resultado final adicionando imagens e tags do portfólio
     publicacoes.forEach(pub => {
       pub.imagens = imagensPorPublicacao[pub.ID_PUBLICACAO] || [];
+      pub.tagsPortfolio = tagsDoPortfolio; // mesmo conjunto em todas publicações
     });
 
     return publicacoes;
@@ -443,7 +455,7 @@ listarPublicacoesdoPortfolio: async (idPortfolio) => {
     console.error("Erro ao listar publicações do portfolio:", error);
     return [];
   }
-},
+}
 
 
 

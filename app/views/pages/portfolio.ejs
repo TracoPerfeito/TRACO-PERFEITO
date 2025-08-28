@@ -55,6 +55,48 @@
 
             <p><%= portfolio.DESCRICAO_PORTFOLIO %></p>
 
+            <%
+            const cores = [
+              '#7490C9', 
+              '#969ED0',  
+              '#92C4E2', 
+              '#B8D9BD', 
+              '#9BB7CF', 
+              '#C3E3DF',
+              '#C2E5F0', 
+              '#ADBCE2'
+            ];
+          
+            // garantir array limpo de 
+            let PortfolioArray = publicacoesPortfolio[0]?.Portfolio || [];
+          
+            if (typeof PortfolioArray === 'string') {
+              try {
+                // tenta transformar string JSON em array
+                PortfolioArray = JSON.parse(PortfolioArray);
+              } catch (e) {
+                // fallback: separar por vírgula e limpar espaços
+                PortfolioArray = PortfolioArray.split(',').map(t => t.replace(/[\[\]"]+/g,'').trim()).filter(Boolean);
+              }
+            }
+          
+            // garantir array final
+            if (!Array.isArray(PortfolioArray)) PortfolioArray = [];
+          %>
+          
+          
+            <% PortfolioArray.forEach(tag => { %>
+              <% const cor = cores[Math.floor(Math.random() * cores.length)]; %>
+              <section class="">
+                <p class="tag" style="background-color: <%= cor %>">
+                  #<%= tag %>
+                </p>
+              </section>
+            <% }) %>
+       
+          
+          
+
     </section>
 
   <section class="container-conteudo">
@@ -109,7 +151,7 @@
                 data-titulo="<%= pub.NOME_PUBLICACAO %>"
                 data-categoria="<%= pub.CATEGORIA %>"
                 data-descricao="<%= pub.DESCRICAO_PUBLICACAO %>"
-                data-tags="<%= pub.TAGS %>"
+                data-="<%= pub. %>"
                 data-imagens='<%- JSON.stringify(pub.imagensUrls || []) %>'>
                 <ion-icon name="create-outline"></ion-icon>
                 Editar
