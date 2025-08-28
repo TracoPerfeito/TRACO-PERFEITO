@@ -69,16 +69,16 @@ const comentariosController = {
   // Excluir comentário
 excluirComentario: async (req, res) => {
   try {
-    const { id_comentario, idPublicacao } = req.body; // nomes do form
+    const {  idComentario, idPublicacao } = req.body; // nomes do form
 
-    if (!id_comentario || !idPublicacao) {
+    if (!idComentario || !idPublicacao) {
       return res.status(400).send("ID do comentário ou da publicação não enviado.");
     }
 
     const idUsuario = req.session.autenticado.id;
     const isAdmin = req.session.autenticado.tipo === 'administrador';
 
-    const resultado = await comentariosModel.excluirComentario(id_comentario, idUsuario, isAdmin);
+    const resultado = await comentariosModel.excluirComentario(idComentario, idUsuario, isAdmin);
 
     const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
     const comentarios = await comentariosModel.listarComentarios(idPublicacao);

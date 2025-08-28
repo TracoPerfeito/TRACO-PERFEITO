@@ -1,79 +1,124 @@
 
-// Seleciona elementos do modal
-const modalExcluirComentario = document.getElementById('modalExcluirComentario');
-const inputExcluirComentario = document.getElementById('inputExcluirComentario');
-const btnCancelarModal = document.querySelectorAll('.btn-fechar-modal-coment');
+document.addEventListener('DOMContentLoaded', () => {
+  const modalExcluirComentario = document.getElementById('modalExcluirComentario');
+  const inputExcluirComentario = document.getElementById('excluirComentarioId');
 
-// Botão "Excluir comentário" dentro do menu de cada comentário
-document.querySelectorAll('.btn-excluir-comentario').forEach(btn => {
-  btn.addEventListener('click', e => {
-    e.stopPropagation(); // evita propagação para outros eventos
-    const comentarioEl = btn.closest('.comentario');
-    
-    // Pega ID do comentário e ID da publicação
-    const idComentario = comentarioEl.dataset.idComentario;
-    const idPublicacao = document.querySelector('input[name="idPublicacao"]').value;
+  const modalDenunciarComentario = document.getElementById('modalDenunciarComentario');
+  const inputDenunciarComentario = document.getElementById('denunciarComentarioId');
 
-    if (!idComentario || !idPublicacao) {
-      alert("Não foi possível identificar o comentário ou a publicação.");
-      return;
-    }
+  const btnCancelarModal = document.querySelectorAll('.btn-fechar-modal-coment');
 
-    // Guarda no input hidden do modal
-    inputExcluirComentario.value = JSON.stringify({ idComentario, idPublicacao });
+  const fecharModal = (modal, input) => {
+    modal.classList.add('hidden');
+    if (input) input.value = '';
+  };
 
-    // Exibe modal
-    modalExcluirComentario.classList.remove('hidden');
+  // -------------------------
+  // EXCLUIR COMENTÁRIO
+  // -------------------------
+  document.querySelectorAll('.btn-excluir-comentario').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
 
-    // Esconde o menu do comentário
-    btn.closest('.opcoes-menu-coment').style.display = 'none';
+      const comentarioEl = btn.closest('.comentario');
+      const idComentario = comentarioEl.dataset.idComentario;
+
+      // Buscar ID da publicação de forma segura
+      const publicacaoEl = document.querySelector('.principal-pag-publi');
+      const idPublicacao = publicacaoEl ? publicacaoEl.dataset.idPublicacao : null;
+
+      if (!idComentario || !idPublicacao) {
+        alert("Não foi possível identificar o comentário ou a publicação.");
+        return;
+      }
+
+      inputExcluirComentario.value = JSON.stringify({ idComentario, idPublicacao });
+      modalExcluirComentario.classList.remove('hidden');
+
+      const menuOpcoes = btn.closest('.opcoes-menu-coment');
+      if (menuOpcoes) menuOpcoes.style.display = 'none';
+    });
   });
-});
 
-// Botão "Confirmar exclusão" dentro do modal
-document.getElementById('btnConfirmarExcluir').addEventListener('click', async () => {
-  const { idComentario, idPublicacao } = JSON.parse(inputExcluirComentario.value);
+  document.querySelector('#modalExcluirComentario form').addEventListener('submit', e => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch('/excluir-comentario', {
-      method: 'POST', // ou DELETE, dependendo do seu controller
+    const { idComentario, idPublicacao } = JSON.parse(inputExcluirComentario.value);
+
+    fetch('/excluir-comentario', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ idComentario, idPublicacao })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.sucesso) {
+          document.querySelector(`.comentario[data-id-comentario="${idComentario}"]`)?.remove();
+          alert(data.mensagem || 'Comentário excluído com sucesso!');
+        } else {
+          alert(data.mensagem || 'Erro ao excluir comentário.');
+        }
+      })
+      .catch(() => alert('Erro ao excluir comentário.'))
+      .finally(() => fecharModal(modalExcluirComentario, inputExcluirComentario));
+  });
+
+  // -------------------------
+  // DENUNCIAR COMENTÁRIO
+  // -------------------------
+  document.querySelectorAll('.btn-denunciar-comentario').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+
+      const menuOpcoes = btn.closest('.opcoes-menu-coment');
+      const idComentario = menuOpcoes.dataset.idComentario;
+
+      if (!idComentario) {
+        alert("Não foi possível identificar o comentário.");
+        return;
+      }
+
+      inputDenunciarComentario.value = idComentario;
+      modalDenunciarComentario.classList.remove('hidden');
+      menuOpcoes.style.display = 'none';
     });
+  });
 
-    const data = await res.json();
+  // -------------------------
+  // FECHAR MODAIS
+  // -------------------------
+  btnCancelarModal.forEach(btn => {
+    btn.addEventListener('click', () => {
+      fecharModal(modalExcluirComentario, inputExcluirComentario);
+      fecharModal(modalDenunciarComentario, inputDenunciarComentario);
+    });
+  });
 
-    if (res.ok) {
-      // Remove comentário da página
-      document.querySelector(`.comentario[data-id-comentario="${idComentario}"]`).remove();
-      alert(data.mensagem || 'Comentário excluído com sucesso!');
-    } else {
-      alert(data.mensagem || 'Erro ao excluir comentário.');
-    }
+  [modalExcluirComentario, modalDenunciarComentario].forEach(modal => {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        if (modal === modalExcluirComentario) fecharModal(modalExcluirComentario, inputExcluirComentario);
+        else if (modal === modalDenunciarComentario) fecharModal(modalDenunciarComentario, inputDenunciarComentario);
+      }
+    });
+  });
 
-  } catch (err) {
-    console.error(err);
-    alert('Erro ao excluir comentário.');
-  } finally {
-    // Fecha modal
-    modalExcluirComentario.classList.add('hidden');
-    inputExcluirComentario.value = '';
-  }
-});
+  // -------------------------
+  // MENU DE OPÇÕES DO COMENTÁRIO
+  // -------------------------
+  document.querySelectorAll('.icone-menu-coment').forEach(icone => {
+    icone.addEventListener('click', e => {
+      e.stopPropagation();
+      const menu = icone.parentElement.querySelector('.opcoes-menu-coment');
+      if (menu.style.display === 'block') menu.style.display = 'none';
+      else {
+        document.querySelectorAll('.opcoes-menu-coment').forEach(m => m.style.display = 'none');
+        menu.style.display = 'block';
+      }
+    });
+  });
 
-// Fechar modais ao clicar no botão "Cancelar"
-btnCancelarModal.forEach(btn => {
-  btn.addEventListener('click', () => {
-    modalExcluirComentario.classList.add('hidden');
-    inputExcluirComentario.value = '';
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.opcoes-menu-coment').forEach(menu => menu.style.display = 'none');
   });
 });
-
-// Fechar modal clicando fora do conteúdo
-modalExcluirComentario.addEventListener('click', e => {
-  if (e.target === modalExcluirComentario) {
-    modalExcluirComentario.classList.add('hidden');
-    inputExcluirComentario.value = '';
-  }
-});
-

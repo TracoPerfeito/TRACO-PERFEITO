@@ -19,6 +19,10 @@ document.addEventListener('click', () => {
 const modalExcluirComentario = document.getElementById('modalExcluirComentario');
 const inputExcluirComentario = document.getElementById('excluirComentarioId');
 
+// Modal de denúncia
+const modalDenunciarComentario = document.getElementById('modalDenunciarComentario');
+const inputDenunciarComentario = document.getElementById('denunciarComentarioId');
+
 // Abre modal de exclusão ao clicar no botão
 document.querySelectorAll('.btn-excluir-comentario').forEach(btn => {
   btn.addEventListener('click', e => {
@@ -30,16 +34,41 @@ document.querySelectorAll('.btn-excluir-comentario').forEach(btn => {
   });
 });
 
-// Fecha modal ao clicar no botão cancelar
+// Abre modal de denúncia ao clicar no botão
+document.querySelectorAll('.btn-denunciar-comentario').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const comentarioEl = btn.closest('.comentario');
+    inputDenunciarComentario.value = comentarioEl.dataset.idComentario;
+    modalDenunciarComentario.classList.remove('hidden');
+    btn.closest('.opcoes-menu-coment').style.display = 'none';
+  });
+});
+
+// Fecha modal de exclusão ao clicar no botão cancelar
 modalExcluirComentario.querySelector('.btn-fechar-modal-coment').addEventListener('click', () => {
   modalExcluirComentario.classList.add('hidden');
   inputExcluirComentario.value = '';
 });
 
-// Fecha modal clicando fora do conteúdo
+// Fecha modal de denúncia ao clicar no botão cancelar
+modalDenunciarComentario.querySelector('.btn-fechar-modal-coment').addEventListener('click', () => {
+  modalDenunciarComentario.classList.add('hidden');
+  inputDenunciarComentario.value = '';
+});
+
+// Fecha modal de exclusão clicando fora do conteúdo
 modalExcluirComentario.addEventListener('click', e => {
   if (e.target === modalExcluirComentario) {
     modalExcluirComentario.classList.add('hidden');
     inputExcluirComentario.value = '';
+  }
+});
+
+// Fecha modal de denúncia clicando fora do conteúdo
+modalDenunciarComentario.addEventListener('click', e => {
+  if (e.target === modalDenunciarComentario) {
+    modalDenunciarComentario.classList.add('hidden');
+    inputDenunciarComentario.value = '';
   }
 });

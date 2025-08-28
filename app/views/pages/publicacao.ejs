@@ -232,7 +232,7 @@ if (Array.isArray(listaErros)) {
  
  
  
-                <section class="comentarios">
+              <section class="comentarios">
   <h2 id="comentarios-nome-secao"> Comentários</h2>
 
   <!-- Adicionar comentário -->
@@ -261,10 +261,10 @@ if (Array.isArray(listaErros)) {
   <section class="comentarios-caixa" id="comentariosSection">
     <% if (comentarios && comentarios.length > 0) { %>
       <% comentarios.forEach(comentario => { %>
-        <section class="comentario">
+        <section class="comentario" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
           <section class="comentario-info-total">
             <section class="comentario-info">
-              <img src="/<%= comentario.FOTO_PERFIL_PASTA_USUARIO || 'imagens/img.png' %>" class="foto-de-perfil" >
+              <img src="/<%= comentario.FOTO_PERFIL_PASTA_USUARIO || 'imagens/img.png' %>" class="foto-de-perfil">
               <a href="<%= (autenticado && id_usuario === comentario.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + comentario.ID_USUARIO %>">
                 <p class="nome-comentario"><%= comentario.NOME_USUARIO %></p>
               </a>
@@ -273,18 +273,18 @@ if (Array.isArray(listaErros)) {
             <small class="data-comentario" data-data="<%= comentario.DATA_COMENTARIO %>"></small>
 
             <!-- Menu de opções do comentário -->
-            <section class="menu-opcoes-coment" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
+            <section class="menu-opcoes-coment">
               <svg class="icone-menu-coment" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
                 <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
               </svg>
 
-              <section class="opcoes-menu-coment">
+              <section class="opcoes-menu-coment" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
                 <% if (autenticado && (id_usuario === comentario.ID_USUARIO || tipo_usuario === 'administrador')) { %>
-                  <button class="btn-excluir-comentario" title="Excluir Comentário"> 
+                  <button class="btn-excluir-comentario" title="Excluir Comentário">
                     <ion-icon name="trash-outline"></ion-icon>Excluir
                   </button>
                 <% } %>
-                <button class="btn-denunciar-comentario" title="Denunciar">  
+                <button class="btn-denunciar-comentario" title="Denunciar">
                   <ion-icon name="flag-outline"></ion-icon>Denunciar
                 </button>
               </section>
@@ -496,7 +496,8 @@ if (Array.isArray(listaErros)) {
   <div class="modal-content-coment">
     <h2>Excluir Comentário</h2>
     <form action="/excluir-comentario" method="POST">
-      <input type="hidden" name="id_comentario" id="excluirComentarioId" value="">
+  <input type="hidden" name="idComentario" id="excluirComentarioId" value="">
+  <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
       <p>Tem certeza que deseja excluir este comentário?</p>
       <button type="submit">Sim, excluir</button>
       <button type="button" class="btn-fechar-modal-coment">Cancelar</button>
@@ -509,7 +510,8 @@ if (Array.isArray(listaErros)) {
   <div class="modal-content-coment">
     <h2>Denunciar Comentário</h2>
     <form action="/denunciar-comentario" method="POST">
-      <input type="hidden" name="id_comentario" id="denunciarComentarioId" value="">
+  <input type="hidden" name="idComentario" id="denunciarComentarioId" value="">
+  <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
       <label for="motivoDenuncia">Motivo:</label>
       <textarea id="motivoDenuncia" name="motivo" required></textarea>
       <button type="submit">Enviar Denúncia</button>
