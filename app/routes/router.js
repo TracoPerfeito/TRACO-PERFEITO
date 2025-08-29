@@ -241,6 +241,12 @@ router.post(
   }
 );
 
+router.post(
+  "/excluir-publicacao",
+  publicacoesController.excluirPublicacao
+);
+
+
 
 
 
