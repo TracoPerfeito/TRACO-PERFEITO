@@ -1,72 +1,52 @@
 const express = require("express");
 const router = express.Router();
-const admController = require("../controllers/admController");
-const roteadorAutenticacao = express.Router();
+
+const {
+  mostrarPaginaDeLoginADM,
+  processarLoginADM,
+  mostrarPainelAdmin,
+  encerrarSessaoADM,
+  RegrasLoginADM
+} = require("../controllers/admController");
+
+const {
+  verificarUsuAutenticado,
+  verificarUsuAutorizado
+} = require("../models/autenticador_adm_middleware");
+const { verificarDuplicidade } = require("../models/usuariosModel");
 
 
-// router.get("/", verificarUsuAutorizado(["administrador"], "pages/acesso-negado"), function (req, res) { 
-//     res.render('pages/adm-inicial', req.session.autenticado)
- 
+// router.get("/adm-login", function (req, res) { //login do adm
+//   res.render('adm-login', {retorno: null, valores: {email: "", password: ""}, listaErros: null});
+
 // });
 
-
-// router.get("/adm-login", function (req, res) { //login
-//     res.render('pages/adm-login',  {retorno: null, valores: {email: "", password: ""}, errosLogin: null});
-
- 
-// });
-
-
-
-// router.post( //validações login
-//     "/adm-login",
-//     function (req, res, next) {
-//       console.log("POST /adm-login recebido");
-//       next();
-//     },
-//     admController.regrasValidacaoLogin, 
-//     gravarUsuAutenticado,
-//     function (req, res) {
-//       admController.logar(req, res);
-//     }
+// router.get(
+//   "/adm-home",
+//   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+//   async function (req, res) {
+//     usuariosController.mostrarPerfil(req, res);
+//   }
 // );
 
-
-
-
-router.get("/adm-login", function (req, res) { //login do adm
-  res.render('pages/adm-login', {retorno: null, valores: {email: "", password: ""}, listaErros: null});
+// Mostrar página de login do administrador
+router.get("/adm-login", function (req, res) { //login
+  res.render('pages/login',  {retorno: null, valores: {email: "", password: ""}, errosLogin: null});
 
 });
 
+// Processar login do administrador
+router.post("/adm-login", RegrasLoginADM, processarLoginADM);
+
+// ADM / Home - Painel do Administrador
 router.get(
   "/adm-home",
-  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
-  async function (req, res) {
-    usuariosController.mostrarPerfil(req, res);
-  }
+  verificarUsuAutenticado,    // checa se existe sessão
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"), // checa se é admin
+  mostrarPainelAdmin
 );
 
-
-
-const {mostrarPaginaDeLoginADM, processarLoginADM, mostrarPainelAdmin, encerrarSessaoADM} = 
-  require('../controllers/admController');
-
-const {RegrasLoginADM} = require('../controllers/admController');
-const {garantirAutenticacao} = require('../models/autenticador_middleware');
-
-// GET: página de Login
-roteadorAutenticacao.get('/', mostrarPaginaDeLoginADM);
-
-// POST: processar Login
-roteadorAutenticacao.post('/login-adm', RegrasLoginADM, processarLoginADM);
-
-// GET: painel do administrador (Dashboard protegido)
-roteadorAutenticacao.get('/dashboard', verificarUsuAutenticado, mostrarPainelAdmin);
-
-// GET: encerrar sessão do administrador
-roteadorAutenticacao.get('/logout', encerrarSessaoADM);
-
-
+// Logout do administrador
+router.get("/adm-logout", encerrarSessaoADM);
 
 module.exports = router;
