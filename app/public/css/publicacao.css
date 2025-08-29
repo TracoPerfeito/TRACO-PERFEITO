@@ -1089,6 +1089,8 @@ body{
     justify-content: center;
     align-items: center;
     z-index: 2000;
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 15px;
   }
   .modal-coment.hidden {
     display: none;
@@ -1105,7 +1107,8 @@ body{
   .modal-content-coment h2 {
     margin-top: 0;
     margin-bottom: 15px;
-    color: #810606;
+    color: #000000;
+    text-align: center;
   }
   .modal-content-coment textarea {
     width: 100%;
