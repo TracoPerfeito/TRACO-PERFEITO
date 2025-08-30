@@ -39,14 +39,14 @@ router.get("/adm-login", function (req, res) { //login
 router.post("/adm-login", RegrasLoginADM, processarLoginADM);
 
 // ADM / Home - Painel do Administrador
-router.get(
-  "/adm-home",
-  verificarUsuAutenticado,    // checa se existe sessão
-  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"), // checa se é admin
-  mostrarPainelAdmin
-);
+// router.get(
+//   "/adm-home",
+//   verificarUsuAutenticado,    // checa se existe sessão
+//   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"), // checa se é admin
+//   mostrarPainelAdmin
+// );
 
 // Logout do administrador
-router.get("/adm-logout", encerrarSessaoADM);
+// router.get("/adm-logout", encerrarSessaoADM);
 
-module.exports = router;
+// module.exports = router;
