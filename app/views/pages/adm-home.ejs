@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traço Perfeito - ADM</title>
-    <link rel="stylesheet" href="css/adm-css-home.css">
+    <title>Área Administrativa - Traço Perfeito</title>
+    <link rel="stylesheet" href="/css/pag-adm.css">
+   
 
+    
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="js/simple-notify.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -24,9 +29,27 @@
 <body>
 
 
+    <% if (typeof logado !== 'undefined' && logado != null) { %>
+    <% if (logado == 2) { %>
+        <script>
+            notify("Login efetuado com sucesso", 
+              "Olá, <%= autenticado.autenticado%>!","success");
+        </script>
+    <% } %>
+<% } %>
+
+ 
+ <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
+
+
     <!--INICIO DO MENU ADM -->
 
-    <%- include('../partials/adm-home.ejs'); %>
+    <%- include('../partials/menu_top_adm.ejs'); %>
 
     <!--FIM DO MENU ADM  -->
 
@@ -37,7 +60,7 @@
 
 <!-- PAGINA INICIAL MENU LATERAL DO COISO -->
 
-  <%- include('.../partials/menu_lateral_adm.ejs'); %>
+  <%- include('../partials/menu_lateral_adm.ejs'); %>
 
 <!-- FIM DA PAGINA INICIAL MENU LATERAL DO COISO -->
 
@@ -281,7 +304,7 @@
 
 <script src="js/menu-adm.js"></script>
       <!-- SCRIPT DO GRÁFICO -->
-     <script src="js/grafico-adm-dashboard.js"></script>
+     <script src="/js/grafico-adm-dashboard.js"></script>
 
 
 </body>

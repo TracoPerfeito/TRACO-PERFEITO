@@ -387,11 +387,6 @@ router.get("/adm-lista-denuncias", function (req, res) { //adm teste
  
 });
 
-// router.get("/adm-login", function (req, res) { //adm teste
-//     res.render('pages/adm-login');
-
- 
-// });
 
 
 

@@ -43,7 +43,7 @@
         </section>
             
 		<section class="login-content">
-			<form action="adm-inicial.ejs" method="POST">
+			<form action="/adm/logar-como-adm" method="POST">
 				<img src="../imagens/logo.png">
 				<h2 class="title">Login Administrativo</h2>
 
@@ -63,7 +63,7 @@
            		   </section>
            		   <section class="section">
            		   		<h5>Email</h5>
-           		   		<input type="email" class="input" name="email" id="email"  value="<%= valores.email %>" class="<%= cssErros.email %>">
+           		   		<input type="email" class="input" name="emailADM" id="email"  value="<%= valores.email %>" class="<%= cssErros.email %>">
 						<span class="msg-erro"><%= msgErros.email %></span> <br>
          		   
 					</section>
@@ -82,7 +82,7 @@
            		   </section>
            		   <section class="section">
            		    	<h5>Senha</h5>
-           		    	<input type="password" class="input" name="password" id="password"  value="<%= valores.password %>" class="<%= cssErros.password %>" required>
+           		    	<input type="password" class="input" name="senhaADM" id="password"  value="<%= valores.password %>" class="<%= cssErros.password %>" required>
 						<span class="msg-erro"><%= msgErros.password %></span> <br>
 
 					</section>

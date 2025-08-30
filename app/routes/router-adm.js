@@ -1,18 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-  mostrarPaginaDeLoginADM,
-  processarLoginADM,
-  mostrarPainelAdmin,
-  encerrarSessaoADM,
-  RegrasLoginADM
-} = require("../controllers/admController");
+const admController = require("../controllers/admController");
 
 const {
   verificarUsuAutenticado,
-  verificarUsuAutorizado
+  limparSessao,
+  gravarUsuAutenticado,
+  verificarUsuAutorizado,
 } = require("../models/autenticador_adm_middleware");
+
 const { verificarDuplicidade } = require("../models/usuariosModel");
 
 
@@ -29,24 +26,48 @@ const { verificarDuplicidade } = require("../models/usuariosModel");
 //   }
 // );
 
+
+
 // Mostrar página de login do administrador
-router.get("/adm-login", function (req, res) { //login
-  res.render('pages/login',  {retorno: null, valores: {email: "", password: ""}, errosLogin: null});
+router.get("/", function (req, res) { //login
+  res.render('pages/adm-login',  {retorno: null, valores: {email: "", password: ""}, errosLogin: null});
 
 });
 
-// Processar login do administrador
-router.post("/adm-login", RegrasLoginADM, processarLoginADM);
 
-// ADM / Home - Painel do Administrador
-// router.get(
-//   "/adm-home",
-//   verificarUsuAutenticado,    // checa se existe sessão
-//   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"), // checa se é admin
-//   mostrarPainelAdmin
-// );
+router.post( //validações login
+    "/logar-como-adm",
+
+   admController.regrasLoginADM, 
+   gravarUsuAutenticado,
+   function (req, res) {
+     admController.logar(req, res);
+   }
+);
+
+router.get("/adm-home", verificarUsuAutenticado, function (req, res) {
+    // pega notificação que veio da sessão
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+req.session.dadosNotificacao = null;
+
+    res.render("pages/adm-home", { autenticado: req.session.autenticado,
+        logado: req.session.logado,
+       
+        dadosNotificacao });
+        console.log(req.session.logado);
+
+});
+
+
+
+
+
+
+// Processar login do administrador
+
+
 
 // Logout do administrador
-// router.get("/adm-logout", encerrarSessaoADM);
 
-// module.exports = router;
+
+module.exports = router;
