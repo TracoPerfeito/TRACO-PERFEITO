@@ -12,6 +12,9 @@
 
         <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 
+
+
+    <link rel="stylesheet" href="/css/adm-lista-usuarios.css">
    
 </head>
 <body>
@@ -32,87 +35,78 @@
 
 
 
-    <main class="content">
-        <h1>Usuários</h1>
+  <!-- LISTAGEM DOS USUÁRIOS -->
 
-        <section class="filter-bar">
-            <form>
-                <!-- Campo de pesquisa para nome ou e-mail -->
-                <input type="text" name="search" placeholder="Pesquisar por nome ou e-mail" id="search-user" >
-                
+  <section class="usuarios-section">
+  <header>
+    <h2>Usuários</h2>
+  </header>
 
-                <select name="tipo" id="tipo-filter">
-                    <option value="">Tipo</option>
-                    <option value="comum">Comum</option>
-                    <option value="profissional" >Profissional</option>
-                    <option value="administrador" >Administrador</option>
-                </select>
+  <section class="usuarios-list">
 
-                <!-- Filtro de status -->
-                <select name="status" id="status-filter">
-                    <option value="">Status</option>
-                    <option value="ativo">Ativo</option>
-                    <option value="inativo" >Inativo</option>
-                </select>
-
-                <!-- Botão para aplicar o filtro -->
-                <button type="submit" class="btn-filter">Filtrar</button>
-            </form>
+    <% var usuarios = typeof usuarios !== 'undefined' ? usuarios : []; %>
+    
+    <% usuarios.forEach(usuario => { %>
+      <section class="usuario-card">
+        <section class="usuario-foto">
+          <% if (usuario.FOTO_PERFIL_PASTA_USUARIO) { %>
+            <img src="/uploads/<%= usuario.FOTO_PERFIL_PASTA_USUARIO %>" 
+                 alt="Foto de <%= usuario.NOME_USUARIO %>" 
+                 width="50" height="50" 
+                 style="border-radius:50%;">
+          <% } else { %>
+            <img src="/images/default-avatar.png" 
+                 alt="Sem foto" 
+                 width="50" height="50" 
+                 style="border-radius:50%;">
+          <% } %>
         </section>
-       
-        
-        <table class="user-table">
-            <thead>
-                <tr>
-                    <th>Foto</th>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>User</th>
-                    <th>Tipo</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Exemplo de usuário 1 -->
-                <tr>
-                    <td><img src="imagens/fotoperfil3.jpeg" alt="Foto de perfil" class="user-photo"></td>
-                    <td>João da Silva</td>
-                    <td>joao@example.com</td>
-                    <td>jao_desenhosanime</td>
-                    <td>Profissional</td>
-                    <td><span class="status active">Ativo</span></td>
-                    <td>
-                        <a href=""  class="btn-info-edit tooltip"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg> <span class="tooltiptext">Ver Detalhes</span></a>
-                        <a href="/editar-usuario/1" class="btn-info-edit tooltip"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg> <span class="tooltiptext">Editar</span></a>
-                        <a href="/remover-usuario/1" class="btn-remove tooltip"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg> <span class="tooltiptext">Remover Usuário</span></a>
-                    </td>
-                </tr>
 
-                 <!-- Exemplo de usuário 1 -->
-                 <tr>
-                    <td><img src="imagens/fotoperfil4.jpg" alt="Foto de perfil" class="user-photo"></td>
-                    <td>Ellie Williams</td>
-                    <td>williams@ellie.com</td>
-                    <td>ellie_w</td>
-                    <td>Comum</td>
-                    <td><span class="status active">Ativo</span></td>
-                    <td>
-                        <a href=""  class="btn-info-edit tooltip"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>   <span class="tooltiptext">Ver Detalhes</span></a>
-                        <a href="/editar-usuario/1" class="btn-info-edit tooltip"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg> <span class="tooltiptext">Editar</span></a>
-                        <a href="/remover-usuario/1" class="btn-remove tooltip"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg> <span class="tooltiptext">Remover Usuário</span></a>
-                    </td>
-                </tr>
+        <section class="usuario-info">
+          <p><strong>Nome:</strong> <%= usuario.NOME_USUARIO %></p>
+          <p><strong>E-mail:</strong> <%= usuario.EMAIL_USUARIO %></p>
+          <p><strong>User:</strong> <%= usuario.USER_USUARIO %></p>
+          <p><strong>Tipo:</strong> <%= usuario.TIPO_USUARIO.charAt(0).toUpperCase() + usuario.TIPO_USUARIO.slice(1) %></p>
+          <p><strong>Status:</strong> 
+            <% if (usuario.STATUS_USUARIO === 'ativo') { %>
+              <span class="status ativo">Ativo</span>
+            <% } else if (usuario.STATUS_USUARIO === 'inativo') { %>
+              <span class="status inativo">Inativo</span>
+            <% } else { %>
+              <span class="status pendente"><%= usuario.STATUS_USUARIO %></span>
+            <% } %>
+          </p>
+        </section>
 
-            
-                <!-- Outros usuários... -->
-            </tbody>
-        </table>
-
-    </main>
+        <section class="usuario-acoes">
+          <a href="/adm-usuarios/ver/<%= usuario.ID_USUARIO %>">🔍</a>
+          <a href="/adm-usuarios/editar/<%= usuario.ID_USUARIO %>">✏️</a>
+          <a href="/adm-usuarios/excluir/<%= usuario.ID_USUARIO %>" onclick="return confirm('Tem certeza?')">🗑️</a>
+        </section>
+      </section>
+    <% }) %>
+  </section>
 </section>
-  
-  
+    <!-- FIM DA LISTAGEM DOS USUÁRIOS -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
     <!-- LINK DO MENU LATERAL -->
       <script src="/js/menu-lateral-adm.js"></script>

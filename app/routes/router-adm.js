@@ -80,6 +80,45 @@ router.get(
 );
 
 
+router.get(
+  "/adm-lista-usuarios",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+
+  async (req, res) => {
+    try {
+
+      const listarUsuarios = await admModel.listarUsuarios();
+      console.log({listarUsuarios});
+
+      res.render("pages/adm-lista-usuarios", {
+        autenticado: req.session.autenticado,
+        logado: req.session.logado,
+        usuarios: listarUsuarios || []
+      });
+
+    } catch (error) {
+      console.error("Erro ao listar usuários:", error);
+      res.status(500).send("Erro ao listar usuários");
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

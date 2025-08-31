@@ -31,7 +31,6 @@ const admModel = {
 
 
 
-    // Ver se deixa aqui ou no admModel...
 
     contarUsuarios: async () => {
     try {
@@ -55,6 +54,22 @@ const admModel = {
         return error; //ou tentar colocar 0
     }
  },
+
+
+    listarUsuarios: async () => {
+        try {
+            const [linhas] = await pool.query(
+                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_PASTA_USUARIO FROM USUARIOS WHERE STATUS_USUARIO = 'ativo'"
+            );
+            return linhas;
+        } catch (error) {
+            console.log(error);
+            return error; //ou []
+        }
+    },
+
+
+
 
 
 
