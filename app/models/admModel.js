@@ -30,6 +30,34 @@ const admModel = {
     },
 
 
+
+    // Ver se deixa aqui ou no admModel...
+
+    contarUsuarios: async () => {
+    try {
+        const [resultados] = await pool.query(
+        "SELECT COUNT(*) AS total FROM USUARIOS");
+        return resultados[0].total;
+    } catch(error) {
+        console.log(error);
+        return error; //ou tentar colocar 0 
+    }
+ },
+
+
+    contarUsuariosPorTipo: async (tipo) => {
+    try {
+        const [resultados] = await pool.query(
+        "SELECT COUNT(*) AS total FROM USUARIOS WHERE TIPO_USUARIO = ?", [tipo]);
+        return resultados[0].total;
+    } catch(error) {
+        console.log(error);
+        return error; //ou tentar colocar 0
+    }
+ },
+
+
+
 };
 
 module.exports = admModel;

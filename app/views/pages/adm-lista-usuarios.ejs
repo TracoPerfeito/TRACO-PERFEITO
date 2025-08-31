@@ -3,16 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/pag-adm.css">
+    <link rel="stylesheet" href="/css/pag-adm.css">
+
     <title>Página do Administrador</title>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+
+
+        <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 
    
 </head>
 <body>
     
-  <%- include('../partials/menu-adm'); %>
+    <!--INICIO DO MENU TOP ADM -->
+
+    <%- include('../partials/menu_top_adm.ejs'); %>
+
+    <!--FIM DO MENU TOP ADM  -->
+
+
+    <!-- MENU LATERAL DO ADM -->
+
+    <%- include('../partials/menu_lateral_adm.ejs'); %>
+
+    <!-- MENU LATERAL DO ADM -->
+
+
+
 
     <main class="content">
         <h1>Usuários</h1>
@@ -95,6 +113,9 @@
 </section>
   
   
-    
+  
+    <!-- LINK DO MENU LATERAL -->
+      <script src="/js/menu-lateral-adm.js"></script>
+
 </body>
 </html>

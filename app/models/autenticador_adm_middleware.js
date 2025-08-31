@@ -179,6 +179,8 @@ const verificarUsuAutorizado = (tipoPermitido, destinoFalha) => {
 };
 
 
+
+
 module.exports = {
   verificarUsuAutenticado,
   limparSessao,
