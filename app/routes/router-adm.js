@@ -45,29 +45,27 @@ router.post( //validações login
    }
 );
 
-router.get("/adm-home", verificarUsuAutenticado, function (req, res) {
-    // pega notificação que veio da sessão
-  const dadosNotificacao = req.session.dadosNotificacao || null;
-req.session.dadosNotificacao = null;
+router.get(
+    "/adm-home",
+    verificarUsuAutenticado, // primeiro garante que está logado
+    verificarUsuAutorizado(["administrador"], "pages/acesso-negado"), // depois verifica se é admin
+    (req, res) => {
+        // pega notificação que veio da sessão
+        const dadosNotificacao = req.session.dadosNotificacao || null;
+        req.session.dadosNotificacao = null;
 
-    res.render("pages/adm-home", { autenticado: req.session.autenticado,
-        logado: req.session.logado,
-       
-        dadosNotificacao });
+        res.render("pages/adm-home", { 
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            dadosNotificacao 
+        });
+
         console.log(req.session.logado);
-
-});
-
-
+    }
+);
 
 
 
-
-// Processar login do administrador
-
-
-
-// Logout do administrador
 
 
 module.exports = router;

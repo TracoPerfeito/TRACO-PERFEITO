@@ -167,18 +167,16 @@ const gravarUsuAutenticado = async (req, res, next) => {
 
 const verificarUsuAutorizado = (tipoPermitido, destinoFalha) => {
     return (req, res, next) => {
-        if (
-            req.session.autenticado &&                 // garante que a sessão existe
-            req.session.autenticado.autenticado != null &&
-            tipoPermitido.includes(req.session.autenticado.tipo)
-        ) {
-            next();
-        } else {
-            res.render(destinoFalha, req.session.autenticado || {});
+        if (req.session.autenticado && tipoPermitido.includes(req.session.autenticado.tipo)) {
+            return next();
         }
+        // Não passa o objeto da sessão inteiro!
+        return res.render(destinoFalha, { 
+            autenticado: req.session.autenticado ? { nome: req.session.autenticado.nome, tipo: req.session.autenticado.tipo } : null,
+            erro: "Acesso restrito"
+        });
     };
-}
-
+};
 
 
 module.exports = {
