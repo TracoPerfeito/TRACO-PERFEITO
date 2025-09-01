@@ -259,13 +259,12 @@ cadastrarUsuario: async (req, res) => {
         }
 
      
-            req.session.autenticado = {
-            autenticado: true,
-            id: idUsuario,
-            tipo: dadosForm.tipo_usuario,
-            nome: dadosForm.nome_usuario,
-            user: dadosForm.user_usuario
-        };
+      req.session.autenticado = {
+        id: idUsuario,
+        tipo: dadosForm.tipo_usuario,
+        nome: dadosForm.nome_usuario,
+        user: dadosForm.user_usuario
+      };
 
         const nome = dadosForm.nome_usuario;
         

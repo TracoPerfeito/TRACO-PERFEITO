@@ -1,6 +1,12 @@
-
 var express = require("express");
 var router = express.Router();
+// Editar publicação
+router.post(
+  "/editar-publicacao",
+  async function (req, res) {
+    publicacoesController.editarPublicacao(req, res);
+  }
+);
 const { body, validationResult } = require("express-validator");
 const usuariosController = require("../controllers/usuariosController");
 const listagensController = require("../controllers/listagensController");
@@ -81,6 +87,11 @@ router.post(
   comentariosController.excluirComentario
 );
 
+// Denunciar comentário
+router.post(
+  "/denunciar-comentario",
+  comentariosController.denunciarComentario
+);
 
 
 
@@ -343,7 +354,6 @@ router.get("/contacomum", function (req, res) {
  
 });
 
-
 router.get("/cadastroArtista", function (req, res) {
     res.render('pages/cadastroArtista');
 
@@ -532,11 +542,21 @@ router.get('/verificar', async (req, res) => { //jogar essa validação para o u
 });
 
 
+// Excluir publicação (apenas dono)
+router.post(
+  "/excluir-publicacao",
+  async function (req, res) {
+    const publicacoesController = require("../controllers/publicacoesController");
+    publicacoesController.excluirPublicacao(req, res);
+  }
+);
 
 
-
-
-
+router.get(
+  '/adm/denuncias',
+  verificarUsuAutorizado(['administrador'], 'pages/acesso-negado'),
+  listagensController.listarDenuncias
+);
 
 module.exports = router;
 

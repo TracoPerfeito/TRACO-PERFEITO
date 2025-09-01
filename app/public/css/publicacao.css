@@ -1,3 +1,40 @@
+/* Centralizar botões de ação dentro do modal de comentário */
+/* Centralizar botões de ação dentro do modal de comentário */
+.modal-excluir-comentario .botoes-modal,
+.modal-excluir-comentario .botoes-modal-excluir {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+/* Botão de excluir comentário */
+.btn-excluir-comentario {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    color: #e74c3c;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    margin: 2px 0;
+}
+
+.btn-excluir-comentario ion-icon {
+    font-size: 16px;
+    margin-right: 2px;
+}
+
+.btn-excluir-comentario:hover {
+    background: #e74c3c;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(231,76,60,0.12);
+}
 * {
     margin: 0;
     padding: 0;
@@ -1100,12 +1137,18 @@ body{
     width: 320px;
     max-width: 90%;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    font-family: josefin sans;
   }
 
   .modal-content-coment h2 {
     margin-top: 0;
     margin-bottom: 15px;
-    color: #810606;
+    color: #000000;
+    text-align: center;
+  }
+
+  .modal-content-coment p{
+    font-size: 14.5px;
   }
   .modal-content-coment textarea {
     width: 100%;
@@ -1114,14 +1157,33 @@ body{
     resize: vertical;
   }
   .modal-content-coment button {
-    margin-right: 10px;
+    /*margin-left: 0px;*/
     padding: 8px 14px;
+    margin-top: 20px;
     cursor: pointer;
     border: none;
     border-radius: 4px;
     background-color: #eee;
     transition: background-color 0.2s ease;
   }
-  .modal-content-coment button:hover {
-    background-color: #ddd;
+
+ button[type="submit"] {
+    background-color: rgb(9, 9, 82);
+    color: white;
+    margin-left: 70px;
   }
+
+  .modal-content-coment button:hover {
+    background-color: #ccc;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #ccc;
+  }
+
+  button[type="button"] {
+    background-color: #be1502;
+    color: white;
+    margin-left: 30px;
+  }
+

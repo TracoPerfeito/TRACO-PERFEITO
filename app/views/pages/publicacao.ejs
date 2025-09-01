@@ -111,20 +111,28 @@ if (Array.isArray(listaErros)) {
     </svg>
  
     <section class="opcoes-menu">
+
       <% if (autenticado && id_usuario === publicacao.ID_USUARIO) { %>
-  <button 
-    class="btn-editar" 
-    title="Editar publicação" 
-      data-id="<%= publicacao.ID_PUBLICACAO %>"
-  data-titulo="<%= publicacao.NOME_PUBLICACAO %>"
-  data-categoria="<%= publicacao.CATEGORIA %>"
-  data-descricao="<%= publicacao.DESCRICAO_PUBLICACAO %>"
-  data-tags="<%= publicacao.TAGS %>"
- data-imagens='<%- JSON.stringify(publicacao.imagensUrls || []) %>'>
-    <ion-icon name="create-outline"></ion-icon>
-    Editar
-  </button>
-<% } %>
+        <button 
+          class="btn-editar" 
+          title="Editar publicação" 
+          data-id="<%= publicacao.ID_PUBLICACAO %>"
+          data-titulo="<%= publicacao.NOME_PUBLICACAO %>"
+          data-categoria="<%= publicacao.CATEGORIA %>"
+          data-descricao="<%= publicacao.DESCRICAO_PUBLICACAO %>"
+          data-tags="<%= publicacao.TAGS %>"
+          data-imagens='<%- JSON.stringify(publicacao.imagensUrls || []) %>'>
+          <ion-icon name="create-outline"></ion-icon>
+          Editar
+        </button>
+        <form action="/excluir-publicacao" method="POST" style="display:inline;">
+          <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
+          <button type="submit" class="btn-excluir-publicacao" title="Excluir publicação" onclick="return confirm('Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.');">
+            <ion-icon name="trash-outline"></ion-icon>
+            Excluir
+          </button>
+        </form>
+      <% } %>
 
       <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal()">
         <ion-icon name="share-social-outline"></ion-icon>
@@ -499,8 +507,10 @@ if (Array.isArray(listaErros)) {
   <input type="hidden" name="idComentario" id="excluirComentarioId" value="">
   <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
       <p>Tem certeza que deseja excluir este comentário?</p>
-      <button type="submit">Sim, excluir</button>
-      <button type="button" class="btn-fechar-modal-coment">Cancelar</button>
+      <div class="botoes-modal">
+        <button type="button" class="btn-fechar-modal-coment" >Cancelar</button>
+        <button type="submit">Sim, excluir</button>
+      </div>
     </form>
   </div>
 </div>
