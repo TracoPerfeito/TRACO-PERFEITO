@@ -142,7 +142,7 @@ const sessao = req.session.autenticado;
         tipo: usuario.TIPO_USUARIO || usuario.tipo
       } : null,
       autenticado: !!usuario,
-      dadosNotificacao: null,
+      dadosNotificacao: req.session.dadosNotificacao || null,
     });
   } catch (erro) {
     console.log(erro);

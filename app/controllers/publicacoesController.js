@@ -1,4 +1,5 @@
 const publicacoesModel = require("../models/publicacoesModel");
+const listagensController = require("../controllers/listagensController");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
 const { removeImg } = require("../util/removeImg");
@@ -292,6 +293,9 @@ editarPublicacao: async (req, res) => {
   
   try {
 
+    const { id_publicacao, titulo_publicacao, descricao_publicacao, categoria, tags } = req.body;
+
+
     const idPublicacao = req.body.id_publicacao;
     const idUsuario = req.session.autenticado.id;
     console.log("Editando publicação:", idPublicacao);
@@ -314,7 +318,7 @@ editarPublicacao: async (req, res) => {
     }
 
     // 1) Atualiza os dados básicos da publicação
-    const { titulo, descricao, categoria, tags, imagensExistentes } = req.body;
+
     console.log("Passou pela validação uhuuu.");
 
     // Verifica que a publicação pertence ao usuário logado
@@ -333,11 +337,11 @@ editarPublicacao: async (req, res) => {
 
     }
 
-    await publicacoesModel.atualizarPublicacao({
-      ID_PUBLICACAO: idPublicacao,
-      NOME_PUBLICACAO: titulo,
-      DESCRICAO_PUBLICACAO: descricao,
-      CATEGORIA_PUBLICACAO: categoria
+    const resultado = await publicacoesModel.atualizarPublicacao({
+      ID_PUBLICACAO: id_publicacao,
+      NOME_PUBLICACAO: titulo_publicacao,
+      DESCRICAO_PUBLICACAO: descricao_publicacao,
+      CATEGORIA: categoria
     });
 
     console.log("Dados básicos atualizados!");
@@ -349,48 +353,53 @@ editarPublicacao: async (req, res) => {
     await publicacoesModel.removerTagsDaPublicacao(idPublicacao); 
     console.log("Chegou na parte de atualizar a tags");
 
-    const tagsRecebidas = JSON.parse(tags);
-    for (const tag of tagsRecebidas) {
-      let tagExistente = await publicacoesModel.buscarTagPorNome(tag);
-      if (!tagExistente) {
-        const novaTagId = await publicacoesModel.criarTag(tag);
-        await publicacoesModel.associarTagPublicacao(novaTagId, idPublicacao);
-      } else {
-        await publicacoesModel.associarTagPublicacao(tagExistente.ID_TAG, idPublicacao);
-      }
-    }
+    let tagsRecebidas = [];
+if (tags && tags.trim() !== "") {
+  tagsRecebidas = JSON.parse(tags);
+}
+
+  for (const tag of tagsRecebidas) {
+  const nomeTag = tag.value; // só o nome da tag
+  let tagExistente = await publicacoesModel.buscarTagPorNome(nomeTag);
+  if (!tagExistente) {
+    const novaTagId = await publicacoesModel.criarTag(tag.value, tag.color, tag.style);
+    await publicacoesModel.associarTagPublicacao(novaTagId, idPublicacao);
+  } else {
+    await publicacoesModel.associarTagPublicacao(tagExistente.ID_TAG, idPublicacao);
+  }
+}
+
+
 
     // 4) Sucesso
     console.log("Se chegou aqui, deu certo!");
-      res.render("publicacao", {
-        publicacao: dados,
-        usuario: req.session.usuario,
-        idPublicacao: idPublicacao, 
-        listaErros: [],
-        dadosNotificacao: {
-          titulo: "Sucesso",
-          mensagem: "Publicação editada com sucesso.",
-          tipo: "success"
-        }
-});
+    
+  req.params.id = idPublicacao; 
 
+
+req.session.dadosNotificacao = {
+  titulo: "Atualização feita!",
+  mensagem: "Sua publicação foi atualizada com sucesso.",
+  tipo: "success"
+};
+
+await listagensController.exibirPublicacao(req, res);
 
   } catch (erro) {
     console.error("Erro ao editar publicação:", erro);
-    const idPublicacao = req.params.id;
-          
-            
-        res.render("publicacao", {
-          publicacao: dados,
-          usuario: req.session.usuario,
-          idPublicacao: idPublicacao, 
-          listaErros: [],
-          dadosNotificacao: {
-            titulo: "Merda!",
-            mensagem: "Deu errado essa bosta",
-            tipo: "error"
-          }
-        });
+  
+
+      req.params.id = idPublicacao; 
+
+
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível atualizar sua publicação.",
+        tipo: "error"
+      };
+
+      await listagensController.exibirPublicacao(req, res);
+
   }
 },
 

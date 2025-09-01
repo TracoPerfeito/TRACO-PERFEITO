@@ -62,7 +62,7 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
 
     buscarTagPorNome: async (nomeTag) => {
         try {
-            const [rows] = await pool.query('SELECT * FROM TAGS WHERE NOME_TAG = ?', [nomeTag]);
+            const [rows] = await pool.query('SELECT * FROM TAGS WHERE NOME_TAG = ?', nomeTag);
             return rows[0]; // retorna a tag se existir
         } catch (error) {
             console.error('Erro ao buscar tag:', error);
@@ -72,7 +72,7 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
 
     criarTag: async (nomeTag) => {
         try {
-            const [result] = await pool.query('INSERT INTO TAGS (NOME_TAG) VALUES (?)', [nomeTag]);
+            const [result] = await pool.query('INSERT INTO TAGS (NOME_TAG) VALUES (?)', nomeTag);
             return result.insertId;
         } catch (error) {
             console.error('Erro ao criar tag:', error);
@@ -149,34 +149,6 @@ buscarPublicacaoPorId: async (idPublicacao) => {
   }
 },
 
-
-
-deletarImagem: async (idImagem) => {
-  try {
-    const [result] = await pool.query(
-      `DELETE FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL WHERE ID_IMG = ?`,
-      [idImagem]
-    );
-    return result;
-  } catch (error) {
-    console.error("Erro ao deletar imagem:", error);
-    return null;
-  }
-},
-
-deletarImagemPorBlob: async (idPublicacao, imagemBlob) => {
-  try {
-    const [result] = await pool.query(
-      `DELETE FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL 
-       WHERE ID_PUBLICACAO = ? AND IMG_PUBLICACAO = ?`,
-      [idPublicacao, imagemBlob]
-    );
-    return result;
-  } catch (error) {
-    console.error("Erro ao deletar imagem:", error);
-    return null;
-  }
-},
 
 
 
