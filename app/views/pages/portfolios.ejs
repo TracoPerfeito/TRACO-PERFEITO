@@ -43,15 +43,28 @@
 
 
 
-    
     <section class="botao-de-voltar">   
-        <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
-        <p class="lado-botao"> Portfólios de <%= usuario.NOME_USUARIO %></p>
-    </section>
+    <button class="btn-voltar" onclick="voltarPagina()"> 
+        <ion-icon name="arrow-back-outline" id="seta"></ion-icon>
+    </button>
+    <p class="lado-botao">
+        <% if (id_usuario === usuario.ID_USUARIO) { %>
+            Meus Portfólios
+        <% } else { %>
+            Portfólios de <%= usuario.NOME_USUARIO %>
+        <% } %>
+    </p>
+</section>
 
-    <main>
+<main>
+    <h1 id="nome-pagina">
+        <% if (id_usuario === usuario.ID_USUARIO) { %>
+            Meus Portfólios
+        <% } else { %>
+            Portfólios de <%= usuario.NOME_USUARIO %>
+        <% } %>
+    </h1>
 
-        <h1 id="nome-pagina">Portfólios de <%= usuario.NOME_USUARIO %></h1>
 
 
     <section class="container-portfolios">
@@ -98,11 +111,8 @@
  <script src="/js/like.js"></script>
  <script src="https://kit.fontawesome.com/2fcd7931ea.js" crossorigin="anonymous"></script>
  <script src="/js/mobile-navbar.js"></script>
+  <script src="/js/voltar.js"></script>
  
- <section class="botao-de-voltar">   
-  <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
-  <p class="lado-botao"> Portfólios de <%= usuario.NOME_USUARIO %></p>
-</section>
 
  
 

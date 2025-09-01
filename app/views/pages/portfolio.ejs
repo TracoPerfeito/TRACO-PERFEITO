@@ -14,13 +14,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js">
 
-        
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
 
     <link rel="stylesheet" href="/css/menu.css">
     <link rel="stylesheet" href="/css/portfolio-pag.css">
+     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
 
     </head>
     <body>
@@ -55,44 +57,30 @@
 
             <p><%= portfolio.DESCRICAO_PORTFOLIO %></p>
 
-            <%
-            const cores = [
-              '#7490C9', 
-              '#969ED0',  
-              '#92C4E2', 
-              '#B8D9BD', 
-              '#9BB7CF', 
-              '#C3E3DF',
-              '#C2E5F0', 
-              '#ADBCE2'
-            ];
-          
-            // garantir array limpo de 
-            let PortfolioArray = publicacoesPortfolio[0]?.Portfolio || [];
-          
-            if (typeof PortfolioArray === 'string') {
-              try {
-                // tenta transformar string JSON em array
-                PortfolioArray = JSON.parse(PortfolioArray);
-              } catch (e) {
-                // fallback: separar por vírgula e limpar espaços
-                PortfolioArray = PortfolioArray.split(',').map(t => t.replace(/[\[\]"]+/g,'').trim()).filter(Boolean);
-              }
-            }
-          
-            // garantir array final
-            if (!Array.isArray(PortfolioArray)) PortfolioArray = [];
-          %>
-          
-          
-            <% PortfolioArray.forEach(tag => { %>
-              <% const cor = cores[Math.floor(Math.random() * cores.length)]; %>
-              <section class="">
-                <p class="tag" style="background-color: <%= cor %>">
-                  #<%= tag %>
-                </p>
-              </section>
-            <% }) %>
+       
+<%
+  const cores = [
+    '#7490C9', '#969ED0', '#92C4E2', '#B8D9BD',
+    '#9BB7CF', '#C3E3DF', '#C2E5F0', '#ADBCE2'
+  ];
+
+  let tagsArray = [];
+  if (publicacoesPortfolio && publicacoesPortfolio.length > 0) {
+    tagsArray = publicacoesPortfolio[0].tagsPortfolio || [];
+    // Limpar colchetes e aspas de cada tag
+    tagsArray = tagsArray.map(tag => tag.replace(/[\[\]"]+/g,'').trim());
+  }
+%>
+
+<section class="tags">
+  <% tagsArray.forEach(tag => { 
+       const cor = cores[Math.floor(Math.random() * cores.length)]; %>
+    <p class="tag" style="background-color: <%= cor %>">
+      #<%= tag %>
+    </p>
+  <% }) %>
+</section>
+
        
           
           
@@ -151,7 +139,7 @@
                 data-titulo="<%= pub.NOME_PUBLICACAO %>"
                 data-categoria="<%= pub.CATEGORIA %>"
                 data-descricao="<%= pub.DESCRICAO_PUBLICACAO %>"
-                data-="<%= pub. %>"
+                data-tags="<%= pub.TAGS %>"
                 data-imagens='<%- JSON.stringify(pub.imagensUrls || []) %>'>
                 <ion-icon name="create-outline"></ion-icon>
                 Editar

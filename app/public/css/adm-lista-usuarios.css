@@ -1,0 +1,72 @@
+.usuarios-section {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.usuarios-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* espaço entre os cards */
+}
+
+.usuario-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  background-color: #fff; /* opcional */
+  border-radius: 6px;
+}
+
+.usuario-foto img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.usuario-info p {
+  margin: 2px 0;
+}
+
+.status.ativo {
+  color: #fff;
+  background-color: #4caf50;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.status.inativo {
+  color: #fff;
+  background-color: #f44336;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.status.pendente {
+  color: #fff;
+  background-color: #ff9800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.usuario-acoes a {
+  margin-right: 5px;
+  text-decoration: none;
+  font-size: 1.2em;
+}
+
+/* Opcional: responsividade para mobile */
+@media (max-width: 600px) {
+  .usuario-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .usuario-acoes {
+    margin-top: 5px;
+  }
+}
