@@ -8,47 +8,7 @@ const https = require('https');
 const fs = require('fs');
 
 const publicacoesController = {
-  editarPublicacao: async (req, res) => {
-    try {
-      const { id_publicacao, titulo_publicacao, categoria, descricao_publicacao, tags, outraCategoria } = req.body;
-      // Se categoria for 'outro', usa o campo outraCategoria
-      const categoriaFinal = categoria === 'outro' && outraCategoria ? outraCategoria : categoria;
 
-      // Atualiza publicação
-      const resultado = await publicacoesModel.editarPublicacao({
-        ID_PUBLICACAO: id_publicacao,
-        NOME_PUBLICACAO: titulo_publicacao,
-        DESCRICAO_PUBLICACAO: descricao_publicacao,
-        CATEGORIA: categoriaFinal
-      });
-
-      // Atualiza tags (remove todas e adiciona as novas)
-      if (tags) {
-        let tagsArray = tags;
-        if (typeof tags === 'string') {
-          try { tagsArray = JSON.parse(tags); } catch { tagsArray = tags.split(','); }
-        }
-        await publicacoesModel.removerTagsPublicacao(id_publicacao);
-        for (const tag of tagsArray) {
-          let tagExistente = await publicacoesModel.buscarTagPorNome(tag);
-          let tagId;
-          if (!tagExistente) {
-            const novaTag = await publicacoesModel.criarTag(tag);
-            tagId = novaTag;
-          } else {
-            tagId = tagExistente.ID_TAG;
-          }
-          await publicacoesModel.associarTagPublicacao(tagId, id_publicacao);
-        }
-      }
-
-      // Redireciona ou responde
-      return res.redirect("/publicacao/" + id_publicacao);
-    } catch (erro) {
-      console.error("Erro ao editar publicação:", erro);
-      return res.status(500).json({ erro: "Erro ao editar publicação." });
-    }
-  },
 
   regrasValidacaoCriarPublicacao: [
     body("titulo")
@@ -145,10 +105,7 @@ const publicacoesController = {
     .isLength({ min: 2, max: 70 })
     .withMessage("O título deve ter entre 2 e 70 caracteres."),
   
-  body("categoria")
-    .trim()
-    .notEmpty()
-    .withMessage("A categoria é obrigatória."),
+  
 
   body("descricao_publicacao")
     .trim()
@@ -321,27 +278,19 @@ editarPublicacao: async (req, res) => {
 
     console.log("Passou pela validação uhuuu.");
 
-    // Verifica que a publicação pertence ao usuário logado
-    const publicacaoAtual = await publicacoesModel.buscarPublicacaoPorId(idPublicacao);
-    if (!publicacaoAtual || publicacaoAtual.ID_USUARIO !== idUsuario) {
-      console.log("Está vendo se a validação é do usuário logado mesmo.");
-     return res.render("pages/publicacao", {
-    idPublicacao,
-    listaErros: [],
-    dadosNotificacao: { 
-    titulo: "Erro", 
-    mensagem: "Publicação não encontrada ou sem permissão.", 
-    tipo: "error" 
-  }
-});
+    
 
-    }
+    let categoriaFinal = req.body.categoria;
+if (req.body.outraCategoria && req.body.outraCategoria.trim() !== '') {
+    categoriaFinal = req.body.outraCategoria.trim();
+}
+
 
     const resultado = await publicacoesModel.atualizarPublicacao({
       ID_PUBLICACAO: id_publicacao,
       NOME_PUBLICACAO: titulo_publicacao,
       DESCRICAO_PUBLICACAO: descricao_publicacao,
-      CATEGORIA: categoria
+      CATEGORIA: categoriaFinal,
     });
 
     console.log("Dados básicos atualizados!");

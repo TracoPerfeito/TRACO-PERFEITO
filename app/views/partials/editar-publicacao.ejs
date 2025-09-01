@@ -31,6 +31,7 @@
                   <section class="form-grupo-1" id="titulo-editar-publicacao-container">
                     <label for="titulo-editar-publicacao">Título:</label>
                     <input type="text" id="titulo-editar-publicacao" name="titulo_publicacao" class="caixa-texto" required>
+                    
                   </section>
         
                   <!-- Categoria -->
@@ -53,10 +54,37 @@
                       <option value="fotografia">Fotografia</option>
                       <option value="outro">Outros</option>
                     </select>
-                    <section id="outra-categoria-container-editar" style="display:none; margin-top:10px;">
-                      <label for="outraCategoria-editar">Digite a categoria:</label>
-                      <input type="text" id="outraCategoria-editar" name="outraCategoria" placeholder="Ex: Lettering">
-                    </section>
+                                                      
+                          
+<section id="outra-categoria-container" style="display:none; margin-top:10px;">
+  <label for="outraCategoria">Digite a categoria:</label>
+  <input type="text" id="outraCategoria" name="outraCategoria" placeholder="Ex: Lettering">
+</section>
+
+<script>
+const select = document.getElementById('categoria-editar-publicacao');
+const container = document.getElementById('outra-categoria-container');
+const inputOutra = document.getElementById('outraCategoria');
+
+select.addEventListener('change', () => {
+  if (select.value === 'outro') {
+    container.style.display = 'block';
+    inputOutra.required = true; // torna obrigatório
+  } else {
+    container.style.display = 'none';
+    inputOutra.required = false;
+    inputOutra.value = ""; // limpa caso mude
+  }
+});
+
+// Antes de enviar o form, se "outro" estiver preenchido, envia o valor do input
+const form = document.querySelector('#modal-editar-publicacao form');
+form.addEventListener('submit', () => {
+  if (select.value === 'outro' && inputOutra.value.trim() !== '') {
+    select.value = inputOutra.value.trim(); // substitui o valor do select pelo input
+  }
+});
+</script>
                   </section>
         
                   <!-- Descrição -->
@@ -234,4 +262,31 @@ window.addEventListener("resize", function() {
 });
 
 
+
+
+
+
+
+
 </script>
+
+
+<script src="/js/editar-publi-validacoes.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
