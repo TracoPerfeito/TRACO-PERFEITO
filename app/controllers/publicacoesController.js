@@ -34,16 +34,7 @@ const publicacoesController = {
           throw new Error("Tags inválidas, envie um array JSON.");
         }
       }),
-    body("images")
-      .custom((value, { req }) => {
-        if (!req.files || !req.files.images || req.files.images.length === 0) {
-          throw new Error("Pelo menos uma imagem deve ser enviada.");
-        }
-        if (req.files.images.length > 10) {
-          throw new Error("Máximo 10 imagens permitidas.");
-        }
-        return true;
-      })
+   
   ],
 
 
@@ -106,6 +97,39 @@ const publicacoesController = {
       }),
 
   ],
+
+
+    regrasValidacaoEditarPublicacao: [
+  body("titulo_publicacao")
+    .trim()
+    .isLength({ min: 2, max: 70 })
+    .withMessage("O título deve ter entre 2 e 70 caracteres."),
+  
+  body("categoria")
+    .trim()
+    .notEmpty()
+    .withMessage("A categoria é obrigatória."),
+
+  body("descricao_publicacao")
+    .trim()
+    .isLength({ min: 2, max: 2000 })
+    .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+
+  body("tags")
+    .custom((value) => {
+      try {
+        const tags = JSON.parse(value);
+        if (!Array.isArray(tags)) throw new Error();
+        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+        return true;
+      } catch {
+        throw new Error("Tags inválidas, envie um array JSON.");
+      }
+    }),
+
+
+],
+
 
 
 
@@ -223,196 +247,112 @@ const publicacoesController = {
 
 
 
-  salvarSAlteracoesPublicacao: async (req, res) => {
-    console.log("Chegou no salvarAlteracoesPublicacao.");
-    console.log("Body:", req.body);
+editarPublicacao: async (req, res) => {
+
+  console.log("Chegou no editarPublicação");
+  
+  try {
+
+    const idPublicacao = req.body.id_publicacao;
+    const idUsuario = req.session.autenticado.id;
+    console.log("Editando publicação:", idPublicacao);
+    console.log("Body recebido:", req.body);
+   
 
     const erros = validationResult(req);
-
-
     if (!erros.isEmpty()) {
-        let lista = !erros.isEmpty() ? erros : { formatter: null, errors: [] };
-      
-        console.log("Deu erro!");
-        console.log("Erros de validação:", erros.array());
-       
-        return  { 
-            listaErros: lista,
-            dadosNotificacao: {
-              titulo: "Ocorreu um erro.",
-              mensagem: "Verifique se todos os campos estão preenchidos corretamente.",
-              tipo: "error"
-            },
-            valores: req.body,
-          
-        };
-        
-    }
-
-    try {
-        let dadosForm = {};
-
-
-       
-        if (req.body.titulo) dadosForm.TITULO_PUBLICACAO = req.body.titulo;
-        if (req.body.categoria) dadosForm.CATEGORIA_PUBLICACAO = req.body.categoria;
-        if (req.body.descricao) dadosForm.DESCRICAO_PUBLICACAO = req.body.descricao;
-        if (req.body.tags) dadosForm.TAGS_PUBLICACAO = req.body.tags;
-     
-    
-
-
-
-let categoriaFinal = req.body.categoria;
-
-if (categoriaFinal === "Outro") {
- categoriaFinal = req.body.customCathegory?.trim() || "";
-}
-
-console.log("Categoria final enviada:", categoriaFinal);
-
-// Atualizar especialização no banco
-if (categoriaFinal) {
-  const resultUpdateProfissional = await usuariosModel.updateProfissional(
-    { ESPECIALIZACAO_DESIGNER: especializacaoFinal },
-    req.session.autenticado.id
-  );
-  console.log("Profissional atualizado:", resultUpdateProfissional);
-}
-
-
-
-const { titulo, descricao, tags } = req.body;
-const idAtual = req.body.id_publicacao;
-
-const duplicado = await usuariosModel.verificarDuplicidade(email_usu, celular_usu, nomeusu_usu, idAtual);
-
-if (duplicado) {
-  let listaErros = [];
-
-  duplicado.forEach(user => {
-    if (user.EMAIL_USUARIO === email_usu) {
-      listaErros.push({ msg: "Este e-mail já está em uso.", path: "email_usu" });
-    }
-    if (user.CELULAR_USUARIO === celular_usu) {
-      listaErros.push({ msg: "Este número de celular já está em uso.", path: "celular_usu" });
-    }
-    if (user.USER_USUARIO === nomeusu_usu) {
-      listaErros.push({ msg: "Este nome de usuário já está em uso.", path: "nomeusu_usu" });
-    }
-  });
-
-  return res.render("pages/editar-perfil", {
-    listaErros: { errors: listaErros },
-     dadosNotificacao: {
-              titulo: "Ocorreu um erro.",
-              mensagem: "Não foi possível atualizar seu perfil.",
-              tipo: "error"
-            },
-            valores: req.body,
-            abaAtiva: "dados-pessoais"
-  });
-}
-
-
-
-        
-        if (Object.keys(dadosForm).length === 0) {
-            return res.render("pages/meu-perfil-artista", {
-                 listaErros: { errors: [{ msg: "Nenhum dado para atualizar." }] },
-                valores: req.body,
-                console: console.log("Nenhum dado para atualizar."),
-                 dadosNotificacao: null
-            });
+      console.log("Deu erro na validação !!");
+      console.log("Erros de validação:", erros.array());
+      return res.render('pages/publicacao', {
+        idPublicacao,
+        listaErros: erros.array(),
+        dadosNotificacao: {
+          titulo: "Erro na validação",
+          mensagem: "Alguns campos estão inválidos.",
+          tipo: "error"
         }
-
-
-        console.log("Campos para update:", dadosForm);
-      console.log("ID do usuário:", req.session.autenticado.id);
-    
-      
-const resultUpdateUsuario = await usuariosModel.update(dadosForm, req.session.autenticado.id);
-
-let resultUpdateProfissional = null;
-if (especializacaoFinal) {
-  resultUpdateProfissional = await usuariosModel.updateProfissional(
-    { ESPECIALIZACAO_DESIGNER: especializacaoFinal },
-    req.session.autenticado.id
-  );
-  console.log("Profissional atualizado:", resultUpdateProfissional);
-}
-
-console.log("Usuário atualizado:", resultUpdateUsuario);
-
-      
-        req.session.autenticado.nome = req.body.nome_usu;
-        req.session.autenticado.user = req.body.nomeusu_usu;
-        req.session.autenticado.email = req.body.email_usu;
-        req.session.autenticado.celular = req.body.celular_usu;
-        req.session.autenticado.descricao_perfil = req.body.descricao_perfil;
-        req.session.autenticado.especializacao = especializacaoFinal;
-        req.session.autenticado.linkedin = req.body.linkedin;
-        req.session.autenticado.pinterest = req.body.pinterest;
-        req.session.autenticado.instagram = req.body.instagram;
-        req.session.autenticado.whatsapp = req.body.whatsapp;
-
-
-const usuarioSucesso = resultUpdateUsuario.affectedRows > 0;
-const profissionalSucesso = resultUpdateProfissional ? resultUpdateProfissional.affectedRows > 0 : false;
-
-console.log("Resultado updateProfissional:", resultUpdateProfissional);
-
-if (usuarioSucesso || profissionalSucesso) {
-  
-  if (dadosForm.nome_usu) req.session.autenticado.nome = dadosForm.nome_usu;
-  if (dadosForm.nomeusu_usu) req.session.autenticado.user = dadosForm.nomeusu_usu;
-  if (dadosForm.email_usu) req.session.autenticado.email = dadosForm.email_usu;
-  if (dadosForm.celular_usu) req.session.autenticado.celular = dadosForm.celular_usu;
-  if (dadosForm.descricao_perfil) req.session.autenticado.descricao_perfil = dadosForm.descricao_perfil;
-  
-  if (especializacaoFinal) req.session.autenticado.especializacao = especializacaoFinal;
-  
-  if (dadosForm.linkedin) req.session.autenticado.linkedin = dadosForm.linkedin;
-  if (dadosForm.pinterest) req.session.autenticado.pinterest = dadosForm.pinterest;
-  if (dadosForm.instagram) req.session.autenticado.instagram = dadosForm.instagram;
-  if (dadosForm.whatsapp) req.session.autenticado.whatsapp = dadosForm.whatsapp;
-
-  req.session.notificacao = {
-    titulo: "Perfil atualizado!",
-    mensagem: "Seus dados foram salvos e já estão visíveis no seu perfil.",
-    tipo: "success"
-  };
-
-  req.session.save(() => {
-    res.redirect("/meu-perfil-artista");
-  });
-} else {
-  // nenhuma alteração em nenhuma tabela
-  res.render("pages/meu-perfil-artista", {
-    listaErros: [{ msg: "Nada foi alterado." }],
-    dadosNotificacao: {
-      titulo: "Ocorreu um erro.",
-      mensagem: "Não foi possível atualizar seu perfil.",
-      tipo: "error"
-    },
-    valores: req.body,
-    abaAtiva: "dados-pessoais"
-  });
-}
-
-    } catch (e) {
-        console.log(e);
-        res.render("pages/editar-perfil", {
-           listaErros:  [{ msg: "Ocorreu um erro ao salvar as alterações." }],
-            dadosNotificacao: {
-              titulo: "Ocorreu um erro.",
-              mensagem: "Não foi possível atualizar seu perfil.",
-              tipo: "error"
-            },
-            valores: req.body,
-            abaAtiva: "dados-pessoais"
-          });
+      });
     }
+
+    // 1) Atualiza os dados básicos da publicação
+    const { titulo, descricao, categoria, tags, imagensExistentes } = req.body;
+    console.log("Passou pela validação uhuuu.");
+
+    // Verifica que a publicação pertence ao usuário logado
+    const publicacaoAtual = await publicacoesModel.buscarPublicacaoPorId(idPublicacao);
+    if (!publicacaoAtual || publicacaoAtual.ID_USUARIO !== idUsuario) {
+      console.log("Está vendo se a validação é do usuário logado mesmo.");
+     return res.render("pages/publicacao", {
+    idPublicacao,
+    listaErros: [],
+    dadosNotificacao: { 
+    titulo: "Erro", 
+    mensagem: "Publicação não encontrada ou sem permissão.", 
+    tipo: "error" 
+  }
+});
+
+    }
+
+    await publicacoesModel.atualizarPublicacao({
+      ID_PUBLICACAO: idPublicacao,
+      NOME_PUBLICACAO: titulo,
+      DESCRICAO_PUBLICACAO: descricao,
+      CATEGORIA_PUBLICACAO: categoria
+    });
+
+    console.log("Dados básicos atualizados!");
+
+   
+
+  
+    // Atualiza as tags
+    await publicacoesModel.removerTagsDaPublicacao(idPublicacao); 
+    console.log("Chegou na parte de atualizar a tags");
+
+    const tagsRecebidas = JSON.parse(tags);
+    for (const tag of tagsRecebidas) {
+      let tagExistente = await publicacoesModel.buscarTagPorNome(tag);
+      if (!tagExistente) {
+        const novaTagId = await publicacoesModel.criarTag(tag);
+        await publicacoesModel.associarTagPublicacao(novaTagId, idPublicacao);
+      } else {
+        await publicacoesModel.associarTagPublicacao(tagExistente.ID_TAG, idPublicacao);
+      }
+    }
+
+    // 4) Sucesso
+    console.log("Se chegou aqui, deu certo!");
+      res.render("publicacao", {
+        publicacao: dados,
+        usuario: req.session.usuario,
+        idPublicacao: idPublicacao, 
+        listaErros: [],
+        dadosNotificacao: {
+          titulo: "Sucesso",
+          mensagem: "Publicação editada com sucesso.",
+          tipo: "success"
+        }
+});
+
+
+  } catch (erro) {
+    console.error("Erro ao editar publicação:", erro);
+    const idPublicacao = req.params.id;
+          
+            
+        res.render("publicacao", {
+          publicacao: dados,
+          usuario: req.session.usuario,
+          idPublicacao: idPublicacao, 
+          listaErros: [],
+          dadosNotificacao: {
+            titulo: "Merda!",
+            mensagem: "Deu errado essa bosta",
+            tipo: "error"
+          }
+        });
+  }
 },
 
 

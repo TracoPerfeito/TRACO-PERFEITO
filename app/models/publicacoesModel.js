@@ -89,6 +89,96 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
         }
     },
 
+
+
+
+    atualizarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
+  try {
+    const [result] = await pool.query(
+      `UPDATE PUBLICACOES_PROFISSIONAL
+       SET NOME_PUBLICACAO = ?, DESCRICAO_PUBLICACAO = ?, CATEGORIA = ?
+       WHERE ID_PUBLICACAO = ?`,
+      [NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA, ID_PUBLICACAO]
+    );
+    return result;
+  } catch (error) {
+    console.error("Erro ao atualizar publicação:", error);
+    return null;
+  }
+},
+
+
+
+buscarPublicacaoPorId: async (idPublicacao) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT * FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?`,
+      [idPublicacao]
+    );
+    return rows[0] || null;
+  } catch (error) {
+    console.error("Erro ao buscar publicação:", error);
+    return null;
+  }
+},
+
+
+
+deletarImagem: async (idImagem) => {
+  try {
+    const [result] = await pool.query(
+      `DELETE FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL WHERE ID_IMG = ?`,
+      [idImagem]
+    );
+    return result;
+  } catch (error) {
+    console.error("Erro ao deletar imagem:", error);
+    return null;
+  }
+},
+
+deletarImagemPorBlob: async (idPublicacao, imagemBlob) => {
+  try {
+    const [result] = await pool.query(
+      `DELETE FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL 
+       WHERE ID_PUBLICACAO = ? AND IMG_PUBLICACAO = ?`,
+      [idPublicacao, imagemBlob]
+    );
+    return result;
+  } catch (error) {
+    console.error("Erro ao deletar imagem:", error);
+    return null;
+  }
+},
+
+
+
+removerTagsDaPublicacao: async (idPublicacao) => {
+  try {
+    await pool.query(
+      `DELETE FROM TAGS_PUBLICACOES WHERE ID_PUBLICACAO = ?`,
+      [idPublicacao]
+    );
+  } catch (error) {
+    console.error("Erro ao remover tags da publicação:", error);
+  }
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    criarPropostadeProjeto: async (dados) => {
     try {
         const [result] = await pool.query(
