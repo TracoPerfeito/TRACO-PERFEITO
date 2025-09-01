@@ -1,10 +1,38 @@
-var pool = require("../../config/pool_conexoes");
+const pool = require("../../config/pool_conexoes");
 
+const publicacoesModel = {
+    findIdPublicacao: async (idPublicacao) => {
+        try {
+            const [rows] = await pool.query('SELECT * FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?', [idPublicacao]);
+            return rows[0] || null;
+        } catch (error) {
+            console.error('Erro ao buscar publicação por ID:', error);
+            return null;
+        }
+    },
+    findIdPublicacao: async (idPublicacao) => {
+        try {
+            const [rows] = await pool.query('SELECT * FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?', [idPublicacao]);
+            return rows[0] || null;
+        } catch (error) {
+            console.error('Erro ao buscar publicação por ID:', error);
+            return null;
+        }
+    },
+    // Editar publicação
+    editarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
+        const sql = `UPDATE PUBLICACOES_PROFISSIONAL SET NOME_PUBLICACAO=?, DESCRICAO_PUBLICACAO=?, CATEGORIA=? WHERE ID_PUBLICACAO=?`;
+        await pool.query(sql, [NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA, ID_PUBLICACAO]);
+        return true;
+    },
 
-const publicacoesModel = { 
-    
-    
-  criarPublicacao: async (dados) => {
+    // Remover todas as tags de uma publicação
+        removerTagsPublicacao: async (idPublicacao) => {
+            await pool.query('DELETE FROM TAGS_PUBLICACOES WHERE ID_PUBLICACAO=?', [idPublicacao]);
+            return true;
+        },
+
+    criarPublicacao: async (dados) => {
         try {
             const [result] = await pool.query(
     'INSERT INTO PUBLICACOES_PROFISSIONAL (ID_USUARIO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA) VALUES (?, ?, ?, ?)',
@@ -73,7 +101,6 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
             console.error('Erro ao associar tag com portfólio:', error);
         }
     },
-
 
       deletarPublicacao: async (idPublicacao) => {
         try {
@@ -228,8 +255,16 @@ inserirPublisPortfolio: async (idPublicacao, idPortfolio) => {
         }
     },
 
-
-   
+    excluirPublicacao: async (idPublicacao) => {
+        try {
+            const sql = 'DELETE FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?';
+            await pool.query(sql, [idPublicacao]);
+            return true;
+        } catch (error) {
+            console.error('Erro ao excluir publicação:', error);
+            return false;
+        }
+    }
 };
 
 

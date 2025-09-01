@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const admController = require("../controllers/admController");
+const admModel = require("../models/admModel");
 
 const {
   verificarUsuAutenticado,
@@ -46,23 +47,76 @@ router.post( //validações login
 );
 
 router.get(
-    "/adm-home",
-    verificarUsuAutenticado, // primeiro garante que está logado
-    verificarUsuAutorizado(["administrador"], "pages/acesso-negado"), // depois verifica se é admin
-    (req, res) => {
-        // pega notificação que veio da sessão
-        const dadosNotificacao = req.session.dadosNotificacao || null;
-        req.session.dadosNotificacao = null;
+  "/adm-home",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  async (req, res) => { // async é obrigatório aqui
+    try {
+      const dadosNotificacao = req.session.dadosNotificacao || null;
+      req.session.dadosNotificacao = null;
 
-        res.render("pages/adm-home", { 
-            autenticado: req.session.autenticado,
-            logado: req.session.logado,
-            dadosNotificacao 
-        });
+      // Chama funções do ADM MODEL, não usuariosModel
+      const totalUsuarios = await admModel.contarUsuarios();
+      const totalComuns = await admModel.contarUsuariosPorTipo('comum');
+      const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
 
-        console.log(req.session.logado);
+      // DEBUG: verifica se os números chegaram
+      console.log({ totalUsuarios, totalComuns, totalProfissionais });
+
+      res.render("pages/adm-home", { 
+        autenticado: req.session.autenticado,
+        logado: req.session.logado,
+        dadosNotificacao,
+        totalUsuarios,
+        totalComuns,
+        totalProfissionais
+      });
+
+    } catch (error) {
+      console.error("Erro ao carregar dashboard:", error);
+      res.status(500).send("Erro ao carregar Dashboard");
     }
+  }
 );
+
+
+router.get(
+  "/adm-lista-usuarios",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+
+  async (req, res) => {
+    try {
+
+      const listarUsuarios = await admModel.listarUsuarios();
+      console.log({listarUsuarios});
+
+      res.render("pages/adm-lista-usuarios", {
+        autenticado: req.session.autenticado,
+        logado: req.session.logado,
+        usuarios: listarUsuarios || []
+      });
+
+    } catch (error) {
+      console.error("Erro ao listar usuários:", error);
+      res.status(500).send("Erro ao listar usuários");
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

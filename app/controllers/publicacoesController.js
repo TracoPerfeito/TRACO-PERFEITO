@@ -6,9 +6,48 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const https = require('https');
 const fs = require('fs');
 
-
-
 const publicacoesController = {
+  editarPublicacao: async (req, res) => {
+    try {
+      const { id_publicacao, titulo_publicacao, categoria, descricao_publicacao, tags, outraCategoria } = req.body;
+      // Se categoria for 'outro', usa o campo outraCategoria
+      const categoriaFinal = categoria === 'outro' && outraCategoria ? outraCategoria : categoria;
+
+      // Atualiza publicação
+      const resultado = await publicacoesModel.editarPublicacao({
+        ID_PUBLICACAO: id_publicacao,
+        NOME_PUBLICACAO: titulo_publicacao,
+        DESCRICAO_PUBLICACAO: descricao_publicacao,
+        CATEGORIA: categoriaFinal
+      });
+
+      // Atualiza tags (remove todas e adiciona as novas)
+      if (tags) {
+        let tagsArray = tags;
+        if (typeof tags === 'string') {
+          try { tagsArray = JSON.parse(tags); } catch { tagsArray = tags.split(','); }
+        }
+        await publicacoesModel.removerTagsPublicacao(id_publicacao);
+        for (const tag of tagsArray) {
+          let tagExistente = await publicacoesModel.buscarTagPorNome(tag);
+          let tagId;
+          if (!tagExistente) {
+            const novaTag = await publicacoesModel.criarTag(tag);
+            tagId = novaTag;
+          } else {
+            tagId = tagExistente.ID_TAG;
+          }
+          await publicacoesModel.associarTagPublicacao(tagId, id_publicacao);
+        }
+      }
+
+      // Redireciona ou responde
+      return res.redirect("/publicacao/" + id_publicacao);
+    } catch (erro) {
+      console.error("Erro ao editar publicação:", erro);
+      return res.status(500).json({ erro: "Erro ao editar publicação." });
+    }
+  },
 
   regrasValidacaoCriarPublicacao: [
     body("titulo")
@@ -233,7 +272,7 @@ const publicacoesController = {
 
 
 
-      return res.status(200).json({ mensagem: "Publicação criada com sucesso!" });
+  return res.status(200).json({ sucesso: true, mensagem: "Publicação criada com sucesso!" });
 
     } catch (erro) {
       console.error("Erro ao criar publicação:", erro);
@@ -441,7 +480,11 @@ editarPublicacao: async (req, res) => {
         tipo: "success"
       },
     
-      usuario: req.session.autenticado || null,
+      usuario: req.session.autenticado ? {
+        id: req.session.autenticado.id,
+        nome: req.session.autenticado.nome,
+        tipo: req.session.autenticado.tipo
+      } : null,
       autenticado: !!req.session.autenticado,
     });
     } catch (erro) {
@@ -458,11 +501,6 @@ editarPublicacao: async (req, res) => {
 
 
 
-
-
-
-
-  
 
 
   criarPortfolio: async (req, res) => {
@@ -588,13 +626,30 @@ for (const idPub of idsPublis) {
   },
 
 
-
-
-
-
-
-
-  
+  // Excluir publicação (apenas dono)
+  excluirPublicacao: async (req, res) => {
+    try {
+      const { idPublicacao } = req.body;
+      if (!idPublicacao) {
+        return res.status(400).send("ID da publicação não enviado.");
+      }
+      const publicacao = await publicacoesModel.findIdPublicacao(idPublicacao);
+      if (!publicacao) {
+        return res.status(404).send("Publicação não encontrada.");
+      }
+      const idUsuario = req.session.autenticado.id;
+      const tipoUsuario = req.session.autenticado.tipo;
+      // Permitir exclusão se for dono OU administrador
+      if (publicacao.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
+        return res.status(403).send("Você não tem permissão para excluir esta publicação.");
+      }
+      await publicacoesModel.excluirPublicacao(idPublicacao);
+      return res.redirect("/explorar-logado");
+    } catch (erro) {
+      console.error("Erro ao excluir publicação:", erro);
+      return res.status(500).send("Erro ao excluir publicação.");
+    }
+  },
 };
 
 module.exports = publicacoesController;

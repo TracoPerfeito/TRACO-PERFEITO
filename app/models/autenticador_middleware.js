@@ -79,17 +79,21 @@ gravarUsuAutenticado = async (req, res, next) => {
     }
 
     // Se chegou aqui, está tudo certo
-    req.session.autenticado = {
-        autenticado: usuarioEncontrado.NOME_USUARIO,
-        nome: usuarioEncontrado.NOME_USUARIO,
-        user: usuarioEncontrado.USER_USUARIO,
-        id: usuarioEncontrado.ID_USUARIO,
-        tipo: usuarioEncontrado.TIPO_USUARIO,
-        status: usuarioEncontrado.STATUS_USUARIO,
-        img_perfil_pasta: usuarioEncontrado.FOTO_PERFIL_PASTA_USUARIO,
-        img_capa_pasta: usuarioEncontrado.IMG_BANNER_PASTA_USUARIO,
-        descricao_perfil: usuarioEncontrado.DESCRICAO_PERFIL_USUARIO
-    };
+    // Função para garantir que só dados simples vão para a sessão
+    function sanitizarUsuario(usuario) {
+        return {
+            autenticado: usuario.NOME_USUARIO,
+            nome: usuario.NOME_USUARIO,
+            user: usuario.USER_USUARIO,
+            id: usuario.ID_USUARIO,
+            tipo: usuario.TIPO_USUARIO,
+            status: usuario.STATUS_USUARIO,
+            img_perfil_pasta: usuario.FOTO_PERFIL_PASTA_USUARIO,
+            img_capa_pasta: usuario.IMG_BANNER_PASTA_USUARIO,
+            descricao_perfil: usuario.DESCRICAO_PERFIL_USUARIO
+        };
+    }
+    req.session.autenticado = sanitizarUsuario(usuarioEncontrado);
 
     console.log("✅ Login realizado com sucesso:", req.session.autenticado);
     req.session.logado = 0;
