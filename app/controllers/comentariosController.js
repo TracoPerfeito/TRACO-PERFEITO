@@ -25,7 +25,7 @@ const comentariosController = {
         const comentarios = await comentariosModel.listarComentarios(idPublicacao);
         return res.render('pages/publicacao', {
           listaErros: erros.array(),
-          dadosNotificacao: { titulo: 'Erro', mensagem: 'Comentário inválido', tipo: 'error' },
+          dadosNotificacao: { titulo: 'Erro no preenchimento!', mensagem: 'Comentário inválido. Verifique os campos.', tipo: 'error' },
           publicacao: publicacao || {},
           comentarios,
           usuario: req.session.autenticado || null,
@@ -47,7 +47,7 @@ const comentariosController = {
 
       return res.render('pages/publicacao', {
         listaErros: null,
-        dadosNotificacao: { titulo: 'Comentário enviado', mensagem: 'Seu comentário foi salvo', tipo: 'success' },
+        dadosNotificacao: { titulo: 'Comentário enviado!', mensagem: 'Seu comentário foi salvo.', tipo: 'success' },
         publicacao: publicacao || {},
         comentarios,
         usuario: req.session.autenticado || null,
@@ -58,7 +58,7 @@ const comentariosController = {
       console.error("Erro ao criar comentário:", erro);
       return res.render('pages/publicacao', {
         listaErros: [{ msg: 'Erro ao criar comentário' }],
-        dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível salvar o comentário', tipo: 'error' },
+        dadosNotificacao: { titulo: 'Ocorreu um erro.', mensagem: 'Não foi possível salvar seu comentário.', tipo: 'error' },
         publicacao: {},
         comentarios: [],
         usuario: req.session.autenticado || null,
@@ -77,10 +77,29 @@ excluirComentario: async (req, res) => {
       return res.status(400).send("ID do comentário ou da publicação não enviado.");
     }
 
+
     const idUsuario = req.session.autenticado.id;
     const isAdmin = req.session.autenticado.tipo === 'administrador';
 
-    const resultado = await comentariosModel.excluirComentario(idComentario, idUsuario, isAdmin);
+    // Buscar o comentário para pegar o ID do autor e o ID da publicação
+    const comentario = await comentariosModel.pegarComentarioPorId(idComentario);
+    if (!comentario) {
+      return res.status(404).send("Comentário não encontrado.");
+    }
+
+    // Buscar o dono da publicação
+    const publicacaoDono = await listagensModel.findIdPublicacao(idPublicacao);
+    if (!publicacaoDono) {
+      return res.status(404).send("Publicação não encontrada.");
+    }
+
+    // Permitir exclusão se for: autor do comentário, admin, ou dono da publicação
+    const podeExcluir = (comentario.ID_USUARIO === idUsuario) || isAdmin || (publicacaoDono.ID_USUARIO === idUsuario);
+    if (!podeExcluir) {
+      return res.status(403).send("Você não tem permissão para excluir este comentário.");
+    }
+
+    const resultado = await comentariosModel.excluirComentario(idComentario);
 
     const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
     const comentarios = await comentariosModel.listarComentarios(idPublicacao);
@@ -89,7 +108,7 @@ excluirComentario: async (req, res) => {
       listaErros: null,
       dadosNotificacao: resultado.error
         ? { titulo: 'Erro', mensagem: resultado.error, tipo: 'error' }
-        : { titulo: 'Comentário excluído', mensagem: 'Comentário excluído com sucesso', tipo: 'success' },
+        : { titulo: 'Comentário excluído.', mensagem: 'Seu comentário foi excluído com sucesso.', tipo: 'success' },
       publicacao,
       comentarios,
       usuario: req.session.autenticado || null,
@@ -104,7 +123,7 @@ excluirComentario: async (req, res) => {
 
     return res.render('pages/publicacao', {
       listaErros: [{ msg: 'Erro ao excluir comentário' }],
-      dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível excluir o comentário', tipo: 'error' },
+      dadosNotificacao: { titulo: 'Ocorreu um erro.', mensagem: 'Não foi possível excluir o comentário.', tipo: 'error' },
       publicacao,
       comentarios,
       usuario: req.session.autenticado || null,
@@ -118,36 +137,15 @@ excluirComentario: async (req, res) => {
   denunciarComentario: async (req, res) => {
     try {
       const { idComentario, idPublicacao, motivo } = req.body;
-      if (!idComentario || !idPublicacao) {
-        return res.status(400).send("ID do comentário ou da publicação não enviado.");
-      }
       const idUsuario = req.session.autenticado.id;
-  await denunciasModel.criarDenuncia({ idComentario, idUsuario, motivo });
-  // Notificar administradores
-  await notificacoesModel.notificarAdmins(`Novo comentário denunciado (ID: ${idComentario}). Motivo: ${motivo || 'não informado'}`);
-      const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-      const comentarios = await comentariosModel.listarComentarios(idPublicacao);
-      return res.render('pages/publicacao', {
-        listaErros: null,
-        dadosNotificacao: { titulo: 'Denúncia enviada', mensagem: 'Sua denúncia foi registrada e será analisada.', tipo: 'success' },
-        publicacao: publicacao || {},
-        comentarios,
-        usuario: req.session.autenticado || null,
-        autenticado: !!req.session.autenticado
-      });
+      // Salva a denúncia no banco
+      await denunciasModel.criarDenuncia({ idComentario, idUsuario, motivo });
+      // Notifica os administradores
+      await notificacoesModel.notificarAdmins(`Novo comentário denunciado! Motivo: ${motivo}`);
+      return res.status(200).json({ sucesso: true, mensagem: "Denúncia registrada com sucesso!" });
     } catch (erro) {
       console.error("Erro ao denunciar comentário:", erro);
-      const { idPublicacao } = req.body;
-      const publicacao = await listagensModel.findIdPublicacao(idPublicacao) || {};
-      const comentarios = await comentariosModel.listarComentarios(idPublicacao);
-      return res.render('pages/publicacao', {
-        listaErros: [{ msg: 'Erro ao denunciar comentário' }],
-        dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível registrar a denúncia', tipo: 'error' },
-        publicacao,
-        comentarios,
-        usuario: req.session.autenticado || null,
-        autenticado: !!req.session.autenticado
-      });
+      return res.status(500).json({ erro: "Erro ao registrar denúncia." });
     }
   }
 };

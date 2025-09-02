@@ -111,3 +111,90 @@ ul {
 .link-desc:hover {
   text-decoration: underline;
 }
+
+
+
+ 
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+ 
+    .plano {
+      display: flex;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: 40px auto 60px auto; 
+      overflow: hidden;
+    }
+ 
+    .imagem {
+      background: #000;
+      color: #fff;
+      width: 40%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+ 
+    .imagem img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+ 
+    .plano article {
+      padding: 15px;
+      width: 60%;
+    }
+ 
+    .plano strong {
+      font-size: 1.3em;
+      display: block;
+      margin: 10px 0;
+    }
+ 
+    .plano ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+ 
+    .plano footer {
+      display: flex;
+      gap: 10px;
+    }
+ 
+    button {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+ 
+    button.assinar {
+      background: black;
+      color: white;
+    }
+ 
+    table {
+      border-collapse: collapse;
+      width: 100%;             
+      margin-left: 0;  
+      margin-right: 0;     
+      text-align: center;
+      background-color: #316886bb;
+    }
+ 
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+    }
+ 
+    details {
+      width: 80%;
+      margin: 20px auto;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }

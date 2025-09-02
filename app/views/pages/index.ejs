@@ -46,7 +46,8 @@
     <% if (logado == 2) { %>
         <script>
             notify("Login efetuado com sucesso", 
-              "Olá, <%= autenticado.autenticado%>!","success");
+              "Olá, <%= nome_usuario%>!","success");
+              // antes tava autenticado.autenticado, mas parou de funcionar do nada ai troquei
         </script>
     <% } %>
 <% } %>

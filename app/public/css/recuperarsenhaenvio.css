@@ -145,13 +145,14 @@
 
 .btn-voltar{
   border-radius: 50%;
-  border: 1px solid var(--cor-btn-voltar-borda);
-  width: 30px;
-  height: 30px;
-  background-color: var(--cor-btn-voltar);
-  color: var(--cor-btn-voltar-seta);
+  border: 1px solid #444;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  color: #444;
   margin: 0px 0px 0px 60px;
-  font-size: 17px;
+  font-size: 25px;
+  font-weight: 800;
   align-items: center;
   display: flex;
   align-items: center;
@@ -159,7 +160,9 @@
 }
 
 .btn-voltar:hover {
-  background-color: var(--cor-btn-voltar-hover);
+  background-color: #ddd8ffd0;
+  border: 1px solid #9b90e4;
+  color: #9b90e4;
   cursor: pointer;
   
 }
