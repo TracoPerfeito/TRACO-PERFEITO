@@ -704,7 +704,7 @@ for (const idPub of idsPublis) {
         return res.status(403).send("Você não tem permissão para excluir esta publicação.");
       }
       await publicacoesModel.excluirPublicacao(idPublicacao);
-      return res.redirect("/explorar-logado");
+      return res.redirect("/"); // Redireciona para a página inicial (index)
     } catch (erro) {
       console.error("Erro ao excluir publicação:", erro);
       return res.status(500).send("Erro ao excluir publicação.");
