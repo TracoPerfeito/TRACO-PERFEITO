@@ -56,11 +56,14 @@ if(dadosNotificacao){
     <div class="container">
      <div class="header">
             
-             <img classs= "imgTraco" src="/imagens/tracoperfeitoazul.png" width="70%" height="60%">
+        <section class="img"><img src="favicon.ico" alt="Ilustração">
+        </section>
 
         </div>
 
         <section class="form-container">
+
+            <h2>Resetar Senha</h2>
             
             
                 <p class="instructions">Preencha os campos a baixo para definir nova senha</p>
@@ -68,7 +71,7 @@ if(dadosNotificacao){
                     
                        
                 
-            <form action="/reset-senha" method="post">
+            <form action="/reset-senha" method="post" >
 
 
 
@@ -77,19 +80,19 @@ if(dadosNotificacao){
                                 <section class="input-group">
                                     <label for="email">Digite nova Senha</label>
                                     <input type="password" name="senha_usu" placeholder="Nova senha" value=""
-                                        class="<%= avisoErro.senha_usu %>" /><br>
+                                        class="<%= avisoErro.senha_usu %> input-field" /><br>
                                          <p class="erro-campo"><%= mensagensErro.senha_usu %></p>
                                 </section>
                                
                                 <section class="input-group">
                                     <label for="email">Confirmar nova Senha</label>
                                          <input type="password" name="csenha_usu" placeholder="Repita a senha" value=""
-                                        class="<%=  avisoErro.csenha_usu %>" /><br>
+                                        class="<%=  avisoErro.csenha_usu %> input-field" /><br>
                                          <p class="erro-campo"><%= mensagensErro.csenha_usu %></p>
                                 </section>
                                <section class="button-group"><button type="submit" class="btn btn-primary">Entrar</button></section>
                             </form>
-                            <div class="divider"></div>
+                            
                    
         </section>
 </body>

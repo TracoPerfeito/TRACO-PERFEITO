@@ -25,7 +25,7 @@ const comentariosController = {
         const comentarios = await comentariosModel.listarComentarios(idPublicacao);
         return res.render('pages/publicacao', {
           listaErros: erros.array(),
-          dadosNotificacao: { titulo: 'Erro', mensagem: 'Comentário inválido', tipo: 'error' },
+          dadosNotificacao: { titulo: 'Erro no preenchimento!', mensagem: 'Comentário inválido. Verifique os campos.', tipo: 'error' },
           publicacao: publicacao || {},
           comentarios,
           usuario: req.session.autenticado || null,
@@ -47,7 +47,7 @@ const comentariosController = {
 
       return res.render('pages/publicacao', {
         listaErros: null,
-        dadosNotificacao: { titulo: 'Comentário enviado', mensagem: 'Seu comentário foi salvo', tipo: 'success' },
+        dadosNotificacao: { titulo: 'Comentário enviado!', mensagem: 'Seu comentário foi salvo.', tipo: 'success' },
         publicacao: publicacao || {},
         comentarios,
         usuario: req.session.autenticado || null,
@@ -58,7 +58,7 @@ const comentariosController = {
       console.error("Erro ao criar comentário:", erro);
       return res.render('pages/publicacao', {
         listaErros: [{ msg: 'Erro ao criar comentário' }],
-        dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível salvar o comentário', tipo: 'error' },
+        dadosNotificacao: { titulo: 'Ocorreu um erro.', mensagem: 'Não foi possível salvar seu comentário.', tipo: 'error' },
         publicacao: {},
         comentarios: [],
         usuario: req.session.autenticado || null,
@@ -108,7 +108,7 @@ excluirComentario: async (req, res) => {
       listaErros: null,
       dadosNotificacao: resultado.error
         ? { titulo: 'Erro', mensagem: resultado.error, tipo: 'error' }
-        : { titulo: 'Comentário excluído', mensagem: 'Comentário excluído com sucesso', tipo: 'success' },
+        : { titulo: 'Comentário excluído.', mensagem: 'Seu comentário foi excluído com sucesso.', tipo: 'success' },
       publicacao,
       comentarios,
       usuario: req.session.autenticado || null,
@@ -123,7 +123,7 @@ excluirComentario: async (req, res) => {
 
     return res.render('pages/publicacao', {
       listaErros: [{ msg: 'Erro ao excluir comentário' }],
-      dadosNotificacao: { titulo: 'Erro', mensagem: 'Não foi possível excluir o comentário', tipo: 'error' },
+      dadosNotificacao: { titulo: 'Ocorreu um erro.', mensagem: 'Não foi possível excluir o comentário.', tipo: 'error' },
       publicacao,
       comentarios,
       usuario: req.session.autenticado || null,
