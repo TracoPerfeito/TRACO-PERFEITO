@@ -1126,8 +1126,6 @@ body{
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    font-family: "Josefin Sans", sans-serif;
-    font-size: 15px;
   }
   .modal-coment.hidden {
     display: none;
