@@ -608,6 +608,62 @@ for (const idPub of idsPublis) {
       return res.status(500).send("Erro ao excluir publicação.");
     }
   },
+
+
+
+  // retirarPublisdoPortfolio: async (req, res) => {
+  //   console.log("Chegou no retirarPublisdoPortfolio");
+
+    
+
+  //   try{
+
+    
+  //     const idPortfolio = req.body.id_portfolio; 
+  //     console.log("Id do portfolio:", idPortfolio); 
+ 
+
+  
+        
+  //     const idPublicacao = 
+
+  //     for (const idPub of idsPublis) {
+  //       await publicacoesModel.retirarPublicacaoDoPortfolio(idPub, idPortfolio);
+  //     }
+
+  //       return res.render('pages/portfolio', {
+  //           listaErros: null,
+  //           dadosNotificacao: {
+  //             titulo: 'Portfólio atualizado!',
+  //             mensagem: "Seu portfólio foi atualizado com sucesso.",
+  //             tipo: "success"
+  //           },
+  //           publicacoes: [],
+
+  //           usuario: req.session.autenticado || null,
+  //           autenticado: !!req.session.autenticado,
+  //         });
+
+
+  //         } catch {
+
+  //           console.error("Erro ao retirar publicações do portfolio:", erro);
+     
+  //     return res.render('pages/portfolio', {
+  //       listaErros: null,
+  //       dadosNotificacao: {
+  //         titulo: 'Ocorreu um erro.',
+  //         mensagem: "Não foi possível retirar a publicação.",
+  //         tipo: "error"
+  //       },
+  //       publicacoes: [],
+
+  //       usuario: req.session.autenticado || null,
+  //       autenticado: !!req.session.autenticado,
+  //   });
+
+  //         }
+  // }
 };
 
 module.exports = publicacoesController;
