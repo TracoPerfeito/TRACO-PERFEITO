@@ -259,13 +259,12 @@ cadastrarUsuario: async (req, res) => {
         }
 
      
-            req.session.autenticado = {
-            autenticado: true,
-            id: idUsuario,
-            tipo: dadosForm.tipo_usuario,
-            nome: dadosForm.nome_usuario,
-            user: dadosForm.user_usuario
-        };
+      req.session.autenticado = {
+        id: idUsuario,
+        tipo: dadosForm.tipo_usuario,
+        nome: dadosForm.nome_usuario,
+        user: dadosForm.user_usuario
+      };
 
         const nome = dadosForm.nome_usuario;
         
@@ -335,6 +334,7 @@ cadastrarUsuario: async (req, res) => {
         let results = await usuariosModel.findId(req.session.autenticado.id);
         const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
         const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id);
+      
 
 
         let campos = {
@@ -342,6 +342,7 @@ cadastrarUsuario: async (req, res) => {
 
           
 
+           id_usu: results[0].ID_USUARIO,
             nome_usu: results[0].NOME_USUARIO,
             email_usu: results[0].EMAIL_USUARIO,
             celular_usu: results[0].CELULAR_USUARIO, 

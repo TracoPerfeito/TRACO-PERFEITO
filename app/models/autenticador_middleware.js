@@ -78,7 +78,8 @@ gravarUsuAutenticado = async (req, res, next) => {
         });
     }
 
-    // Se chegou aqui, está tudo certo
+
+   // Se chegou aqui, está tudo certo
     req.session.autenticado = {
         autenticado: usuarioEncontrado.NOME_USUARIO,
         nome: usuarioEncontrado.NOME_USUARIO,
@@ -90,7 +91,6 @@ gravarUsuAutenticado = async (req, res, next) => {
         img_capa_pasta: usuarioEncontrado.IMG_BANNER_PASTA_USUARIO,
         descricao_perfil: usuarioEncontrado.DESCRICAO_PERFIL_USUARIO
     };
-
     console.log("✅ Login realizado com sucesso:", req.session.autenticado);
     req.session.logado = 0;
     next();

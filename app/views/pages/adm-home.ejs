@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traço Perfeito - ADM</title>
-    <link rel="stylesheet" href="css/adm-css-home.css">
+    <title>Área Administrativa - Traço Perfeito</title>
+    <link rel="stylesheet" href="/css/pag-adm.css">
+   
 
+    
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -18,185 +22,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 
+      
+
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 
 </head>
 <body>
 
 
-    <!--INICIO DO MENU ADM -->
+    <% if (typeof logado !== 'undefined' && logado != null) { %>
+    <% if (logado == 2) { %>
+        <script>
+            notify("Login efetuado com sucesso", 
+              "Olá, <%= autenticado.autenticado%>!","success");
+        </script>
+    <% } %>
+<% } %>
 
-    <%- include('../partials/adm-home.ejs'); %>
-
-    <!--FIM DO MENU ADM  -->
-
-
-
-
-
-
-<!-- PAGINA INICIAL MENU LATERAL DO COISO -->
-
-  <%- include('.../partials/menu_lateral_adm.ejs'); %>
-
-<!-- FIM DA PAGINA INICIAL MENU LATERAL DO COISO -->
+ 
+ <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
 
 
+    <!--INICIO DO MENU TOP ADM -->
 
-    <!--Inicio Sidebar-->
-    <section class="sidebar close">
-      
-      <section class="logo-details"> 
-        <i class="bx bx-menu"></i>
-        <span class="logo_name">Menu</span>
-      </section>
-            
-        <ul class="nav-links">
-          <li>  
-            <a href="#">
-              <i class='bx bx-grid-alt' ></i>
-              <span class="link_name">Dashboard</span>
-            </a>
-              
-            <ul class="sub-menu blank">
-              <li><a class="link_name" href="#">Home</a></li>
-            </ul>
-                
-          </li>
-              
-              <li>
-                
-                <section class="iocn-link">
-                  
-                  <a href="#">
-                    <i class='bx bx-collection' ></i>
-                    <span class="link_name">Usuários</span>
-                  </a>
-                  
-                  <i class='bx bxs-chevron-down arrow' ></i>
-                
-                </section>
-                
-                <ul class="sub-menu">
-                  
-                  <li><a class="link_name" href="todos_usuarios.html">Usuários</a></li>
-                  <li><a href="usuarios_comuns.html">Comum</a></li>
-                  <li><a href="usuarios_profissionais.html">Profissional</a></li>
-                  <li><a href="usuarios_adms.html">Administradores</a></li>                  
-                </ul>
-                
-              </li>
-              
-              <li>
-                
-                <section class="iocn-link">
-                  
-                  <a href="#">
-                    <i class='bx bx-book-alt' ></i>
-                    <span class="link_name">Posts</span>
-                  </a>
-                  
-                  <i class='bx bxs-chevron-down arrow' ></i>
-                
-                </section>
-                
-                <ul class="sub-menu">
-                
-                  <li><a class="link_name" href="#">Posts</a></li>
-                  <li><a href="#">Proposta de Projetos</a></li>
-                  <li><a href="#">Publicações</a></li>
-                
-                </ul>
-      
-              </li>
-      
-              <li>
-                
+    <%- include('../partials/menu_top_adm.ejs'); %>
 
-                <section class="iocn-link">
+    <!--FIM DO MENU TOP ADM  -->
 
-                <a href="#">
-                  <i class='bx bx-pie-chart-alt-2' ></i>
-                  <span class="link_name">Denúncias</span>
-                </a>
-                <i class='bx bxs-chevron-down arrow' ></i>
 
-                </section>
+<!-- MENU LATERAL DO ADM -->
 
-                <ul class="sub-menu">
-                  
-                    <li><a class="link_name" href="#">Denúncias</a></li>
-                    <li><a href="#">Usuário</a></li>
-                    <li><a href="#">Comentário</a></li>
-                    <li><a href="#">Publicação</a></li>                  
-                  </ul>
-      
-              </li>
-                    
-              <li>
-                
-                <section class="iocn-link">
-                
-                  <a href="#">
-                    <i class='bx bx-plug' ></i>
-                    <span class="link_name">Plugins</span>
-                  </a>
-                  
-                  <i class='bx bxs-chevron-down arrow' ></i>
-                  
-                </section>
-                
-                <ul class="sub-menu">
-                  <li><a class="link_name" href="#">Ajustes</a></li>
-                  <li><a href="#">SEO</a></li>
-                  <li><a href="#">Domínio</a></li>
-                  <li><a href="#">Permissão de Dados</a></li>
-                </ul>
-      
-              </li>
-              
-                                
-              <li>
-                
-                <a href="#">
-                  <i class='bx bx-cog' ></i>
-                  <span class="link_name">Configurações</span>
-                </a>
-                
-                <ul class="sub-menu blank">
-                  <li><a class="link_name" href="#">Configurações</a></li>
-                </ul>
-      
-              </li>
-      
-              <li>
-            
-                <section class="profile-details">
-                  
-                  <section class="profile-content">
-                    <!--<img src="image/profile.jpg" alt="profileImg">-->
-                  </section>
-                  
-                  <section class="name-job">
-                    
-                    <section class="profile_name">Sthefany R.</section>
-                    <section class="job">Front-end</section>
-                  
-                  </section>
-                  
-                  <i class="bx bx-log-out"></i>
-                
-                </section>
-              
-              </li>
-      
-            </ul><!--Fecha ul-->
-      
-          </section>
-          <!--Fecha Sidebar-->
+  <%- include('../partials/menu_lateral_adm.ejs'); %>
 
-   
-
+<!-- MENU LATERAL DO ADM -->
 
 
           <!-- TITULO -->
@@ -208,42 +71,40 @@
 
 
 
-
-
-
-
-
-
 <section class="main-content">
     <section class="dashboard">
-      <!-- Card 1 -->
+      <!-- Card Total Geral -->
       <section class="card">
         <section class="icon-box">
           <i class="fa fa-users" aria-hidden="true"></i>
         </section>
-        <section class="title">Total de Usuários</section>
-        <section class="value todos-perfis">120</section>
-        <section class="change">+20% a mais do que mês passado</section>
+
+        <a href="/adm/adm-lista-usuarios" style="text-decoration: none; color: inherit;">
+        <section class="title-card">Total de Usuários</section>
+        </a>
+
+        <section class="value todos-perfis"> <%= totalUsuarios %> </section>
+        <!-- <section class="change">+20% a mais do que mês passado</section> -->
       </section>
 
-      <!-- Card 2 -->
+      <!-- Card Usuários Comuns -->
       <section class="card">
         <section class="icon-box">
           <i class="fa fa-user" aria-hidden="true"></i>
         </section>
-        <section class="title">Usuários Comuns</section>
-        <section class="value perfil-comum">5,934</section>
-        <section class="change negative">+10% a menos do que mês passado</section>
+        <section class="title-card">Usuários Comuns</section>
+        <section class="value perfil-comum"> <%= totalComuns %> </section>
+        <!-- <section class="change negative">+10% a menos do que mês passado</section> -->
       </section>
 
-      <!-- Card 3 -->
+      <!-- Card Usuários Profissionais -->
       <section class="card">
         <section class="icon-box">
         <i class="fa fa-user-plus" aria-hidden="true"></i>
         </section>
-        <section class="title">Usuários Profissionais</section>
-        <section class="value perfil-profissional">$9,758</section>
-        <section class="change">+15% a mais do que mês passado</section>
+        <section class="title-card">Usuários Profissionais</section>
+        <section class="value perfil-profissional"> <%= totalProfissionais %> </section>
+        <!-- <section class="change">+15% a mais do que mês passado</section> -->
       </section>
   </section>
 
@@ -279,9 +140,19 @@
 
 
 
-<script src="js/menu-adm.js"></script>
-      <!-- SCRIPT DO GRÁFICO -->
-     <script src="js/grafico-adm-dashboard.js"></script>
+
+
+    <!-- SCRIPT DO GRÁFICO -->
+      <script src="/js/grafico-adm-dashboard.js"></script>
+
+    <!-- LINK DO MENU LATERAL -->
+      <script src="/js/menu-lateral-adm.js"></script>
+
+    <!-- LINK DAS NOTIFICAÇÕES -->
+      <script src="js/simple-notify.js"></script>
+
+    <!-- LINK DO GRÁFICO -->
+      <script src="js/grafico-adm-dashboard.js"></script>
 
 
 </body>

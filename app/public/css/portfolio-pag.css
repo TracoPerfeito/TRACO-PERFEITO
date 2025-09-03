@@ -63,6 +63,7 @@ body {
 .nome-desc{
     margin: 30px 50px;
     color: var(--text-color);
+    display: flex;
 }
 
 h1 {
@@ -228,6 +229,7 @@ responsividade */
     .nome-desc{
         margin: 30px 25px;
         color: var(--text-color);
+     
     }
 
 
@@ -294,6 +296,7 @@ responsividade */
 
   }
   
+
 
  
 .carrossel-imagens-explorar {
@@ -402,8 +405,8 @@ responsividade */
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  width: 95%;
-  margin: auto;
+  width: 100%;
+  margin: 10px auto;
   font-family: "Josefin Sans", sans-serif;
 }
 
@@ -415,6 +418,126 @@ responsividade */
   white-space: nowrap;
 }
 
+.botao-edit-add {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.botao-edit-add button {
+  border-radius: 10px;
+  border: none;
+  font-family: "Montserrat", sans-serif;
+  padding: 10px 15px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+/* Texto escondido começa invisível e sem largura */
+.botao-edit-add .escondido {
+  opacity: 0;
+  width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-left: 0;
+  transition: all 0.4s ease;
+}
+
+/* No hover, o texto aparece e o botão cresce suavemente */
+.botao-edit-add button:hover .escondido {
+  opacity: 1;
+  width: auto;
+  margin-left: 8px;
+}
+
+.botoes-edit-add{
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  gap:10px;
+}
 
 
 
+.dados-portfolio{
+  max-width: 80%;
+}
+
+
+
+
+
+@media (max-width: 900px){
+  .nome-desc{
+    margin: 30px 25px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+}
+
+
+.dados-portfolio{
+max-width: 100%;
+}
+
+
+.botao-edit-add {
+  width: 100%;
+  display: block;
+  
+}
+
+.botao-edit-add button {
+  border-radius: 10px;
+  border: none;
+  font-family: "Montserrat", sans-serif;
+  font-size: larger;
+  padding: 10px 15px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  background-color: #0f253d;
+  color: white;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  overflow: hidden;
+  max-width: 40px;
+}
+
+
+
+
+.botao-edit-add .escondido {
+  opacity: 0;
+  width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-left: 0;
+  transition: all 0.4s ease;
+}
+
+/* No hover, o texto aparece e o botão cresce suavemente */
+.botao-edit-add button:hover .escondido {
+  opacity: 0;
+  width: auto;
+  margin-left: 0px;
+  display: none;
+}
+
+.botoes-edit-add{
+  display: flex;
+  justify-content: start;
+  flex-direction: row;
+  gap: 10px;
+  
+}
+
+
+
+}

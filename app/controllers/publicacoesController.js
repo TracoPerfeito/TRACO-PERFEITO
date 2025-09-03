@@ -1,4 +1,5 @@
 const publicacoesModel = require("../models/publicacoesModel");
+const listagensController = require("../controllers/listagensController");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
 const { removeImg } = require("../util/removeImg");
@@ -6,9 +7,8 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const https = require('https');
 const fs = require('fs');
 
-
-
 const publicacoesController = {
+
 
   regrasValidacaoCriarPublicacao: [
     body("titulo")
@@ -34,16 +34,7 @@ const publicacoesController = {
           throw new Error("Tags inválidas, envie um array JSON.");
         }
       }),
-    body("images")
-      .custom((value, { req }) => {
-        if (!req.files || !req.files.images || req.files.images.length === 0) {
-          throw new Error("Pelo menos uma imagem deve ser enviada.");
-        }
-        if (req.files.images.length > 10) {
-          throw new Error("Máximo 10 imagens permitidas.");
-        }
-        return true;
-      })
+   
   ],
 
 
@@ -106,6 +97,36 @@ const publicacoesController = {
       }),
 
   ],
+
+
+    regrasValidacaoEditarPublicacao: [
+  body("titulo_publicacao")
+    .trim()
+    .isLength({ min: 2, max: 70 })
+    .withMessage("O título deve ter entre 2 e 70 caracteres."),
+  
+  
+
+  body("descricao_publicacao")
+    .trim()
+    .isLength({ min: 2, max: 2000 })
+    .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+
+  body("tags")
+    .custom((value) => {
+      try {
+        const tags = JSON.parse(value);
+        if (!Array.isArray(tags)) throw new Error();
+        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+        return true;
+      } catch {
+        throw new Error("Tags inválidas, envie um array JSON.");
+      }
+    }),
+
+
+],
+
 
 
 
@@ -209,13 +230,128 @@ const publicacoesController = {
 
 
 
-      return res.status(200).json({ mensagem: "Publicação criada com sucesso!" });
+  return res.status(200).json({ sucesso: true, mensagem: "Publicação criada com sucesso!" });
 
     } catch (erro) {
       console.error("Erro ao criar publicação:", erro);
       return res.status(500).json({ erro: "Erro interno ao criar publicação." });
     }
   },
+
+
+
+
+
+
+
+editarPublicacao: async (req, res) => {
+
+  console.log("Chegou no editarPublicação");
+  
+  try {
+
+    const { id_publicacao, titulo_publicacao, descricao_publicacao, categoria, tags } = req.body;
+
+
+    const idPublicacao = req.body.id_publicacao;
+    const idUsuario = req.session.autenticado.id;
+    console.log("Editando publicação:", idPublicacao);
+    console.log("Body recebido:", req.body);
+   
+
+    const erros = validationResult(req);
+    if (!erros.isEmpty()) {
+      console.log("Deu erro na validação !!");
+      console.log("Erros de validação:", erros.array());
+      return res.render('pages/publicacao', {
+        idPublicacao,
+        listaErros: erros.array(),
+        dadosNotificacao: {
+          titulo: "Erro na validação",
+          mensagem: "Alguns campos estão inválidos.",
+          tipo: "error"
+        }
+      });
+    }
+
+    // 1) Atualiza os dados básicos da publicação
+
+    console.log("Passou pela validação uhuuu.");
+
+    
+
+    let categoriaFinal = req.body.categoria;
+if (req.body.outraCategoria && req.body.outraCategoria.trim() !== '') {
+    categoriaFinal = req.body.outraCategoria.trim();
+}
+
+
+    const resultado = await publicacoesModel.atualizarPublicacao({
+      ID_PUBLICACAO: id_publicacao,
+      NOME_PUBLICACAO: titulo_publicacao,
+      DESCRICAO_PUBLICACAO: descricao_publicacao,
+      CATEGORIA: categoriaFinal,
+    });
+
+    console.log("Dados básicos atualizados!");
+
+   
+
+  
+    // Atualiza as tags
+    await publicacoesModel.removerTagsDaPublicacao(idPublicacao); 
+    console.log("Chegou na parte de atualizar a tags");
+
+    let tagsRecebidas = [];
+if (tags && tags.trim() !== "") {
+  tagsRecebidas = JSON.parse(tags);
+}
+
+  for (const tag of tagsRecebidas) {
+  const nomeTag = tag.value; // só o nome da tag
+  let tagExistente = await publicacoesModel.buscarTagPorNome(nomeTag);
+  if (!tagExistente) {
+    const novaTagId = await publicacoesModel.criarTag(tag.value, tag.color, tag.style);
+    await publicacoesModel.associarTagPublicacao(novaTagId, idPublicacao);
+  } else {
+    await publicacoesModel.associarTagPublicacao(tagExistente.ID_TAG, idPublicacao);
+  }
+}
+
+
+
+    // 4) Sucesso
+    console.log("Se chegou aqui, deu certo!");
+    
+  req.params.id = idPublicacao; 
+
+
+req.session.dadosNotificacao = {
+  titulo: "Atualização feita!",
+  mensagem: "Sua publicação foi atualizada com sucesso.",
+  tipo: "success"
+};
+
+await listagensController.exibirPublicacao(req, res);
+
+  } catch (erro) {
+    console.error("Erro ao editar publicação:", erro);
+  
+
+      req.params.id = idPublicacao; 
+
+
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível atualizar sua publicação.",
+        tipo: "error"
+      };
+
+      await listagensController.exibirPublicacao(req, res);
+
+  }
+},
+
 
 
 
@@ -302,7 +438,11 @@ const publicacoesController = {
         tipo: "success"
       },
     
-      usuario: req.session.autenticado || null,
+      usuario: req.session.autenticado ? {
+        id: req.session.autenticado.id,
+        nome: req.session.autenticado.nome,
+        tipo: req.session.autenticado.tipo
+      } : null,
       autenticado: !!req.session.autenticado,
     });
     } catch (erro) {
@@ -319,11 +459,6 @@ const publicacoesController = {
 
 
 
-
-
-
-
-  
 
 
   criarPortfolio: async (req, res) => {
@@ -449,13 +584,30 @@ for (const idPub of idsPublis) {
   },
 
 
-
-
-
-
-
-
-  
+  // Excluir publicação (apenas dono)
+  excluirPublicacao: async (req, res) => {
+    try {
+      const { idPublicacao } = req.body;
+      if (!idPublicacao) {
+        return res.status(400).send("ID da publicação não enviado.");
+      }
+      const publicacao = await publicacoesModel.findIdPublicacao(idPublicacao);
+      if (!publicacao) {
+        return res.status(404).send("Publicação não encontrada.");
+      }
+      const idUsuario = req.session.autenticado.id;
+      const tipoUsuario = req.session.autenticado.tipo;
+      // Permitir exclusão se for dono OU administrador
+      if (publicacao.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
+        return res.status(403).send("Você não tem permissão para excluir esta publicação.");
+      }
+      await publicacoesModel.excluirPublicacao(idPublicacao);
+      return res.redirect("/"); // Redireciona para a página inicial (index)
+    } catch (erro) {
+      console.error("Erro ao excluir publicação:", erro);
+      return res.status(500).send("Erro ao excluir publicação.");
+    }
+  },
 };
 
 module.exports = publicacoesController;

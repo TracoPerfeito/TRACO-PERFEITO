@@ -41,7 +41,37 @@
             </form>
         </section>
   
-  
+        <!-- Lista de denúncias -->
+        <section class="denuncias-lista">
+          <% if (denuncias && denuncias.length > 0) { %>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Comentário</th>
+                  <th>Usuário Denunciante</th>
+                  <th>Motivo</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% denuncias.forEach(denuncia => { %>
+                  <tr>
+                    <td><%= denuncia.ID_DENUNCIA %></td>
+                    <td><%= denuncia.CONTEUDO_COMENTARIO %></td>
+                    <td><%= denuncia.NOME_USUARIO %></td>
+                    <td><%= denuncia.MOTIVO || '-' %></td>
+                    <td><%= denuncia.STATUS %></td>
+                    <td><%= denuncia.DATA_DENUNCIA ? new Date(denuncia.DATA_DENUNCIA).toLocaleString('pt-BR') : '-' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } else { %>
+            <p>Nenhuma denúncia encontrada.</p>
+          <% } %>
+        </section>
     
 </body>
 </html>

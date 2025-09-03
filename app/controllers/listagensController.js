@@ -68,19 +68,27 @@ const listagensController = {
 
  
    
+    let id_usuario = null;
+    let tipo_usuario = null;
+    if (req.session && req.session.autenticado) {
+      id_usuario = req.session.autenticado.ID_USUARIO || req.session.autenticado.id || req.session.autenticado.ID;
+      tipo_usuario = req.session.autenticado.TIPO_USUARIO || req.session.autenticado.tipo;
+    }
     res.render('pages/index', {
       publicacoes,
-      autenticado: req.session.autenticado,
-        logado: req.session.logado,
-        listaErros:null,
-       dadosNotificacao
+      autenticado: !!req.session.autenticado,
+      logado: req.session.logado,
+      id_usuario,
+      tipo_usuario,
+      listaErros: null,
+      dadosNotificacao
     });
  
   } catch (error) {
     console.error("Erro no controller ao listar publicações:", error);
     res.status(500).send("Erro interno ao buscar publicações");
      res.render('pages/index', {
-      autenticado: req.session.autenticado,
+      autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       listaErros: ['Erro ao carregar publicações'],
       dadosNotificacao,
@@ -136,11 +144,15 @@ const sessao = req.session.autenticado;
       publicacao,
       comentarios,
       listaErros: null,
-      usuario: usuario || null,
-      autenticado: !!usuario, 
-      dadosNotificacao: null,
-     
- 
+      usuario: usuario ? {
+        id: usuario.ID_USUARIO || usuario.id,
+        nome: usuario.NOME_USUARIO || usuario.nome,
+        tipo: usuario.TIPO_USUARIO || usuario.tipo
+      } : null,
+      autenticado: !!usuario,
+      id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
+      tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
+      dadosNotificacao: req.session.dadosNotificacao || null,
     });
   } catch (erro) {
     console.log(erro);
@@ -170,18 +182,17 @@ listarPropostas: async (req, res) => {
 
     res.render('pages/oportunidades', {
       propostas,
-      autenticado: req.session.autenticado,
+      autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       listaErros: null,
       dadosNotificacao: null
-   
     });
 
   } catch (error) {
     console.error("Erro no controller ao listar propostas:", error);
     res.status(500).render('pages/oportunidades', {
       propostas: [],
-      autenticado: req.session.autenticado,
+      autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       listaErros: ['Erro ao carregar propostas'],
       dadosNotificacao:{
@@ -338,7 +349,20 @@ console.log(publicacoesPortfolio[0].tagsPortfolio);
       }
     });
   }
-}
+},
+
+ 
+
+// Listar denúncias para o admin
+listarDenuncias: async (req, res) => {
+  try {
+    const denuncias = await require('../models/denunciasModel').listarDenuncias();
+    res.render('pages/adm-lista-denuncias', { denuncias });
+  } catch (erro) {
+    console.error('Erro ao listar denúncias:', erro);
+    res.render('pages/adm-lista-denuncias', { denuncias: [], erro: 'Erro ao listar denúncias.' });
+  }
+},
 
 
 
