@@ -601,7 +601,22 @@ for (const idPub of idsPublis) {
       if (publicacao.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
         return res.status(403).send("Você não tem permissão para excluir esta publicação.");
       }
-      await publicacoesModel.excluirPublicacao(idPublicacao);
+
+
+
+      let resultado = await publicacoesModel.excluirPublicacao(idPublicacao);
+      console.log(resultado);
+
+      
+req.session.dadosNotificacao = {
+  titulo: " Publicação Excluída!",
+  mensagem: "Sua publicação foi excluída com sucesso.",
+  tipo: "success"
+};
+
+
+
+
       return res.redirect("/"); // Redireciona para a página inicial (index)
     } catch (erro) {
       console.error("Erro ao excluir publicação:", erro);
