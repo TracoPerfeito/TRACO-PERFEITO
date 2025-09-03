@@ -68,10 +68,18 @@ const listagensController = {
 
  
    
+    let id_usuario = null;
+    let tipo_usuario = null;
+    if (req.session && req.session.autenticado) {
+      id_usuario = req.session.autenticado.ID_USUARIO || req.session.autenticado.id || req.session.autenticado.ID;
+      tipo_usuario = req.session.autenticado.TIPO_USUARIO || req.session.autenticado.tipo;
+    }
     res.render('pages/index', {
       publicacoes,
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
+      id_usuario,
+      tipo_usuario,
       listaErros: null,
       dadosNotificacao
     });
@@ -142,6 +150,8 @@ const sessao = req.session.autenticado;
         tipo: usuario.TIPO_USUARIO || usuario.tipo
       } : null,
       autenticado: !!usuario,
+      id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
+      tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
       dadosNotificacao: req.session.dadosNotificacao || null,
     });
   } catch (erro) {

@@ -245,7 +245,38 @@ verificarPublisNoPortfolio: async (idPublicacao, portfolioId) => {
             console.error('Erro ao excluir publicação:', error);
             return false;
         }
+    },
+
+
+    criarPublicacao: async (dados) => {
+        try {
+            const [result] = await pool.query(
+    'INSERT INTO PUBLICACOES_PROFISSIONAL (ID_USUARIO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA) VALUES (?, ?, ?, ?)',
+    [dados.ID_USUARIO, dados.NOME_PUBLICACAO, dados.DESCRICAO_PUBLICACAO, dados.CATEGORIA]
+  );
+  return result.insertId; 
+        } catch (error) {
+            console.error('Erro ao criar publicação:', error);
+            return null;
+        }
+    },
+
+
+    retirarPublicacaoDoPortfolio: async (dados) => {
+        try {
+            const [result] = await pool.query(
+                'DELETE FROM PUBLICACAO_PORTFOLIO WHERE ID_PUBLICACAO = ? AND ID_PORTFOLIO = ?',
+                [dados.ID_PUBLICACAO, dados.ID_PORTFOLIO]
+            );
+            return result.affectedRows; 
+        } catch (error) {
+            console.error('Erro ao retirar publicação do portfolio:', error);
+            return null;
+        }
     }
+    
+
+
 };
 
 
