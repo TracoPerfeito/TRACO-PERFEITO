@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfólio <%= portfolio.NOME_PORTFOLIO %></title>
+    <title>Portfólio af</title>
 
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -13,6 +13,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js">
+
+    
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="js/simple-notify.js"></script>
 
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
@@ -26,6 +31,15 @@
 
     </head>
     <body>
+
+
+
+       <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
 
     
 <% if (status_usuario === 'pendente') { %>
@@ -44,7 +58,7 @@
 
 
 
-
+  <%- include('../partials/adicionar-publis-portfolio') %>
     
     <section class="botao-de-voltar">   
         <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
@@ -82,28 +96,32 @@
               </section>
             </section>
 
+            <% if (autenticado && id_usuario === portfolioDono.ID_USUARIO) { %>
+              <section class="acoes-portfolio">
 
-            <section class="botoes-edit-add">
 
-              <section class="botao-edit-add">
-                <button>
-                 
-                  <ion-icon name="add-outline"></ion-icon>
-                  <span class="escondido"> Adicionar Publicações</span>
-                </button>
-              </section>
+  <section class="botao-e-texto">
+      <button class="acao-btn">
+        <i class="fa-solid fa-pen-to-square"></i>
+        
+      </button>
+       <p>Editar Portfólio</p>
+  </section>
 
-              <section class="botao-edit-add">
-                <button>
-                 
-                  <ion-icon name="create-outline"></ion-icon>
-                  <span class="escondido"> Editar este Portfólio</span>
-                </button>
-              </section>
-              
-            </section>
+  <section class="botao-e-texto">
+    <button id="btn-abrir-modal-add-publis" class="acao-btn" >
+      <i class="fa-solid fa-plus"></i>
+        </button>
+      <p>Adicionar Publicações</p>
+  </section>
+
+
+</section>
+
+<% } %>
+
           
-          
+</section>
 
     </section>
 
@@ -269,6 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
     <script src="https://kit.fontawesome.com/2fcd7931ea.js" crossorigin="anonymous"></script>
     <script src="/js/mobile-navbar.js"></script>
     <script src="/js/voltar.js"></script>
+    <script src="/js/modal-add-publis.js"></script>
+
+
     
     
     <script src="/js/publicacoesindex.js"></script>

@@ -213,6 +213,15 @@ inserirPublisPortfolio: async (idPublicacao, idPortfolio) => {
     }
 },
 
+
+verificarPublisNoPortfolio: async (idPublicacao, portfolioId) => {
+  const [rows] = await pool.query(
+    `SELECT 1 FROM  PUBLICACAO_PORTFOLIO  WHERE ID_PUBLICACAO = ? AND ID_PORTFOLIO = ?`,
+    [idPublicacao, portfolioId]
+  );
+  return rows.length > 0; // true se já existe
+},
+
   
   criarPortfolio: async (dados) => {
         try {

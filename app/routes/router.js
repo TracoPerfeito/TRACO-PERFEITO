@@ -1,12 +1,7 @@
 var express = require("express");
 var router = express.Router();
 // Editar publicação
-router.post(
-  "/editar-publicacao",
-  async function (req, res) {
-    publicacoesController.editarPublicacao(req, res);
-  }
-);
+
 const { body, validationResult } = require("express-validator");
 const usuariosController = require("../controllers/usuariosController");
 const listagensController = require("../controllers/listagensController");
@@ -418,11 +413,23 @@ router.get("/portfolios/:id", function (req, res) { //portfolios
 
 
 router.get("/portfolio/:id", function (req, res) { //portfolio
- 
-    listagensController.exibirPortfolio(req, res);
-   
- 
+
+  let dadosNotificacao = [];
+  listagensController.exibirPortfolio(req, res, dadosNotificacao);
+
+
 });
+
+
+
+router.get("/api/publicacoes", publicacoesController.getPublicacoesUsuario);
+
+
+
+router.post("/adicionar-publis-portfolio", function (req, res) {
+    publicacoesController.adicionarPublicacoesAoPortfolio(req, res);
+});
+
 
 
 router.get("/planos-assinaturas", function (req, res) { //planos
