@@ -608,26 +608,35 @@ for (const idPub of idsPublis) {
       let resultado = await publicacoesModel.excluirPublicacao(idPublicacao);
       console.log(resultado);
 
-      
-req.session.dadosNotificacao = {
-  titulo: " Publicação Excluída!",
-  mensagem: "Sua publicação foi excluída com sucesso.",
-  tipo: "success"
-};
+            
+      req.session.dadosNotificacao = {
+        titulo: " Publicação Excluída!",
+        mensagem: "Sua publicação foi excluída com sucesso.",
+        tipo: "success"
+      };
 
 
 
 
-      return res.redirect("/"); // Redireciona para a página inicial (index)
+      return res.redirect("/"); 
     } catch (erro) {
       console.error("Erro ao excluir publicação:", erro);
-      return res.status(500).send("Erro ao excluir publicação.");
+      
+      
+            
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível excluir sua publicação.",
+        tipo: "error"
+      };
+
+
+
+
+      return res.redirect("/"); 
     }
   },
 
-
-
-<<<<<<< HEAD
 
 
 
@@ -704,66 +713,10 @@ await listagensController.exibirPortfolio(req, res);
   } 
 
 
-}
+},
 
 
 
-
-=======
-  // retirarPublisdoPortfolio: async (req, res) => {
-  //   console.log("Chegou no retirarPublisdoPortfolio");
-
-    
-
-  //   try{
-
-    
-  //     const idPortfolio = req.body.id_portfolio; 
-  //     console.log("Id do portfolio:", idPortfolio); 
- 
-
-  
-        
-  //     const idPublicacao = 
-
-  //     for (const idPub of idsPublis) {
-  //       await publicacoesModel.retirarPublicacaoDoPortfolio(idPub, idPortfolio);
-  //     }
-
-  //       return res.render('pages/portfolio', {
-  //           listaErros: null,
-  //           dadosNotificacao: {
-  //             titulo: 'Portfólio atualizado!',
-  //             mensagem: "Seu portfólio foi atualizado com sucesso.",
-  //             tipo: "success"
-  //           },
-  //           publicacoes: [],
-
-  //           usuario: req.session.autenticado || null,
-  //           autenticado: !!req.session.autenticado,
-  //         });
-
-
-  //         } catch {
-
-  //           console.error("Erro ao retirar publicações do portfolio:", erro);
-     
-  //     return res.render('pages/portfolio', {
-  //       listaErros: null,
-  //       dadosNotificacao: {
-  //         titulo: 'Ocorreu um erro.',
-  //         mensagem: "Não foi possível retirar a publicação.",
-  //         tipo: "error"
-  //       },
-  //       publicacoes: [],
-
-  //       usuario: req.session.autenticado || null,
-  //       autenticado: !!req.session.autenticado,
-  //   });
-
-  //         }
-  // }
->>>>>>> 7ffa2b67133d7f50a7981dab35f9644bc7681f2f
 };
 
 module.exports = publicacoesController;
