@@ -18,7 +18,6 @@
    
 </head>
 <body>
-    
     <!--INICIO DO MENU TOP ADM -->
 
     <%- include('../partials/menu_top_adm.ejs'); %>
@@ -32,20 +31,8 @@
 
     <!-- MENU LATERAL DO ADM -->
 
-
-
-
-  <!-- LISTAGEM DOS USUÁRIOS -->
-
-  <section class="usuarios-section">
-  <header>
-    <h2 class="tittle-usuarios-geral">Usuários</h2>
-  </header>
-
-  <section class="usuarios-list">
-
+ <section class="usuarios-list">
     <% var usuarios = typeof usuarios !== 'undefined' ? usuarios : []; %>
-
 
     <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse;">
       <thead>
@@ -54,7 +41,6 @@
           <th>Nome</th>
           <th>E-mail</th>
           <th>User</th>
-          <th>Tipo</th>
           <th>Status</th>
           <th>Ações</th>
         </tr>
@@ -70,7 +56,7 @@
                      style="border-radius:50%;"
                      onerror="this.onerror=null; this.src='/imagens/img.png'">
               <% } else { %>
-                <img src="/images/foto-perfil.png" 
+                <img src="/imagens/foto-perfil.png" 
                      alt="Sem foto" 
                      width="50" height="50" 
                      style="border-radius:50%;">
@@ -79,7 +65,6 @@
             <td><%= usuario.NOME_USUARIO %></td>
             <td><%= usuario.EMAIL_USUARIO %></td>
             <td><%= usuario.USER_USUARIO %></td>
-            <td><%= usuario.TIPO_USUARIO.charAt(0).toUpperCase() + usuario.TIPO_USUARIO.slice(1) %></td>
             <td>
               <% if (usuario.STATUS_USUARIO === 'ativo') { %>
                 <span class="status ativo" style="color: green; font-weight: bold;">Ativo</span>
@@ -100,36 +85,13 @@
         <% }) %>
       </tbody>
     </table>
-    
-
-
-
-    
   </section>
-</section>
-    <!-- FIM DA LISTAGEM DOS USUÁRIOS -->
 
+  <!-- LISTAGEM DOS USUÁRIOS -->
 
+  <!-- FIM DA LISTAGEM DOS USUÁRIOS -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-    <!-- LINK DO MENU LATERAL -->
+        <!-- LINK DO MENU LATERAL -->
       <script src="/js/menu-lateral-adm.js"></script>
 
 </body>
-</html>

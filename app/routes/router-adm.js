@@ -105,11 +105,9 @@ router.get(
   }
 );
 
-
-//Listagem para apenas profissionais (To fazendo ainda)
-
+//Listagem para apenas profissionais
 router.get(
-  "/adm-lista-usuarios/profissionais",
+  "/adm-listagem-profissional",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
 
@@ -118,10 +116,10 @@ router.get(
       const usuariosProfissionais = await admModel.listarUsuariosPorTipo('profissional');
       console.log({usuariosProfissionais});
 
-      res.render("pages/adm-lista-usuarios-profissionais", {
+      res.render("pages/adm-listagem-profissional", {
         autenticado: req.session.autenticado,
         logado: req.session.logado,
-        usuariosProfissionais
+        usuarios: usuariosProfissionais
       });
     } catch (error) {
       console.error("Erro ao listar usuários profissionais:", error);
@@ -130,10 +128,10 @@ router.get(
   }
 )
 
-//Listagem para apenas comuns (To fazendo ainda)
+//Listagem para apenas comuns
 
 router.get(
-  "/adm-lista-usuarios/comuns",
+  "/adm-listagem-comum",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
 
@@ -142,10 +140,10 @@ router.get(
       const usuariosComuns = await admModel.listarUsuariosPorTipo('comum');
       console.log({usuariosComuns});
 
-      res.render("pages/adm-lista-usuarios-comuns", {
+      res.render("pages/adm-listagem-comum", {
         autenticado: req.session.autenticado,
         logado: req.session.logado,
-        usuariosComuns
+        usuarios: usuariosComuns
       });
     } catch (error) {
       console.error("Erro ao listar usuários comuns:", error);
