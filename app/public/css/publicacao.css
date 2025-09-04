@@ -1188,4 +1188,25 @@ body{
   }
 
   
+.btn-excluir-publicacao {
+  all: unset; /* Remove resets anteriores */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #333; /* mesma cor dos outros itens */
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
 
+.btn-excluir-publicacao ion-icon {
+  font-size: 18px;
+  color: inherit; /* Herda a cor do texto */
+}
+
+.btn-excluir-publicacao:hover {
+  background-color: #f8f8f8; /* igual aos outros itens no hover */
+  color: #e74c3c; /* fica vermelho no hover */
+}
