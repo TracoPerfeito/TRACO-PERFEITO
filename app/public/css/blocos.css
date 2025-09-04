@@ -1,3 +1,85 @@
+/* Modal de confirmação de exclusão de publicação (reutiliza modal-coment) */
+.modal-coment {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal-coment.hidden {
+  display: none;
+}
+.modal-content-coment {
+  background: #fff;
+  padding: 32px 24px 24px 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+}
+.modal-content-coment h2 {
+  margin-bottom: 16px;
+  font-size: 1.3em;
+  color: #e74c3c;
+}
+.botoes-modal {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+.botoes-modal button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.botoes-modal #btn-cancelar-excluir-publi,
+.botoes-modal .btn-fechar-modal-coment {
+  background: #eee;
+  color: #333;
+}
+.botoes-modal #btn-cancelar-excluir-publi:hover,
+.botoes-modal .btn-fechar-modal-coment:hover {
+  background: #ccc;
+}
+.botoes-modal #btn-confirmar-excluir-publi {
+  background: #e74c3c;
+  color: #fff;
+
+}
+.botoes-modal #btn-confirmar-excluir-publi:hover {
+  background: #c0392b;
+}
+/* Botão de excluir publicação */
+.btn-excluir-publicacao {
+  color: #e74c3c;
+  background: none;
+  border: none;
+  font-size: 1em;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.btn-excluir-publicacao ion-icon {
+  color: #e74c3c;
+  font-size: 1.2em;
+
+}
+.btn-excluir-publicacao:hover {
+  color: #c0392b;
+}
 @import url(cores.css);
 
 *{

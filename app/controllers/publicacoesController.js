@@ -1,4 +1,5 @@
 const publicacoesModel = require("../models/publicacoesModel");
+const listagensModel = require("../models/listagensModel");
 const listagensController = require("../controllers/listagensController");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
@@ -601,13 +602,121 @@ for (const idPub of idsPublis) {
       if (publicacao.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
         return res.status(403).send("Você não tem permissão para excluir esta publicação.");
       }
-      await publicacoesModel.excluirPublicacao(idPublicacao);
-      return res.redirect("/explorar-logado");
+
+
+
+      let resultado = await publicacoesModel.excluirPublicacao(idPublicacao);
+      console.log(resultado);
+
+            
+      req.session.dadosNotificacao = {
+        titulo: " Publicação Excluída!",
+        mensagem: "Sua publicação foi excluída com sucesso.",
+        tipo: "success"
+      };
+
+
+
+
+      return res.redirect("/"); 
     } catch (erro) {
       console.error("Erro ao excluir publicação:", erro);
-      return res.status(500).send("Erro ao excluir publicação.");
+      
+      
+            
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível excluir sua publicação.",
+        tipo: "error"
+      };
+
+
+
+
+      return res.redirect("/"); 
     }
   },
+
+
+
+
+  getPublicacoesUsuario: async (req, res) => {
+  const userId = req.session.autenticado.id; 
+  const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(userId); // consulta no banco
+  publicacoes.forEach(pub => {
+  pub.imagens = pub.imagens.map(imgBuffer => {
+    return `data:image/jpeg;base64,${imgBuffer.toString('base64')}`; 
+  });
+});
+
+
+  res.json(publicacoes); // retorna JSON
+},
+
+
+
+
+adicionarPublicacoesAoPortfolio: async (req, res) => {
+
+  const { publicacoesSelecionadas, portfolioId } = req.body;
+  console.log(req.body);
+
+  try {
+    
+    if (!portfolioId) {
+      return res.status(400).json({ error: "ID do portfólio não fornecido." });
+    }
+
+    if (!publicacoesSelecionadas || publicacoesSelecionadas.length === 0) {
+      return res.status(400).json({ error: "Nenhuma publicação selecionada." });
+    }
+
+    // Se veio como string separada por vírgula, transforma em array de números
+    const idsArray = typeof publicacoesSelecionadas === "string"
+      ? publicacoesSelecionadas.split(",").map(id => parseInt(id))
+      : publicacoesSelecionadas;
+
+  for (const idPublicacao of idsArray) {
+  const existe = await publicacoesModel.verificarPublisNoPortfolio(idPublicacao, portfolioId);
+  if (!existe) {
+    await publicacoesModel.inserirPublisPortfolio(idPublicacao, portfolioId);
+  }
+}
+
+
+console.log("Deu tudo certo. Publicações adicionadas ao portfólio.")
+
+  req.params.id = portfolioId;
+
+  
+req.session.dadosNotificacao = {
+  titulo: "Publicações inseridas com sucesso!",
+  mensagem: "As publicações foram adicionadas ao portfólio com sucesso.",
+  tipo: "success"
+};
+
+await listagensController.exibirPortfolio(req, res);
+
+  } catch (error) {
+    console.log("Não foi possível adicionar as publicações ao portfolio.");
+    console.log(error);
+
+    req.params.id = portfolioId;
+
+   req.session.dadosNotificacao = {
+      titulo: 'Ocorreu um erro.',
+      mensagem: "Não foi possível adicionar as publicações ao portfólio.",
+      tipo: "error"
+    };
+    
+await listagensController.exibirPortfolio(req, res);
+  } 
+
+
+},
+
+
+
 };
 
 module.exports = publicacoesController;
