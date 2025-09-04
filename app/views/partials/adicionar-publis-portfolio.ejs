@@ -1,0 +1,146 @@
+<style>
+
+    @import url(cores.css);
+
+
+  /* Estilo do Modal */
+ 
+  .fechar-add-publis {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .titulo-modal-add-publis {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-color);
+  }
+
+  
+  
+.modal-add-publis {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal-content-add-publis {
+  background: var(--cor-fundo);
+  color: var(--text-color);
+  width: 70%;
+  min-width: 70vw;
+  min-height: 80vh;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* scroll apenas dentro do modal */
+}
+
+.listagem-publi {
+  display: grid;
+  gap: 16px; 
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  max-height: 70vh;
+  overflow-y: auto; /* scroll apenas dentro da listagem */
+}
+
+.item-publi{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+.item-publi.selecionado {
+  border: 3px solid var(--cor-botao); /* ou outra cor de destaque */
+}
+
+
+.img-publi-modal{
+    aspect-ratio: 1;
+    width: 95%;
+    height: 95%;
+    border-radius: 6px;
+    object-fit: cover; 
+}
+
+
+
+  @media (max-width: 700px){
+
+.modal-content-add-publis > * {
+  flex-shrink: 0; 
+}
+
+    .conteudo-add_publis-publicacao {
+     
+        flex-direction: column-reverse;
+
+      }
+
+
+      
+.modal-content-add-publis {
+  background: var(--cor-fundo);
+  color: var(--text-color);
+  width: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
+ 
+}
+
+
+
+
+    }
+
+
+
+
+
+</style>
+
+
+<!-- Modal -->
+<section id="modal-add-publis" class="modal-add-publis">
+  <section class="modal-content-add-publis">
+    <span class="fechar-add-publis" id="fechar-modal-add-publis">&times;</span>
+    <h2 class="titulo-modal-add-publis">Adicionar Publicações</h2>
+   
+
+
+
+<form action="/adicionar-publis-portfolio" method="POST">
+    
+      <input type="hidden" name="portfolioId" value="<%= portfolio.ID_PORTFOLIO %>">
+  <input type="hidden" name="publicacoesSelecionadas" id="publicacoesSelecionadas" value="">
+  
+       
+ <section class="listagem-publi" id="listagem-publi">
+        <!-- Loader inicial -->
+        <p id="loader-publicacoes">Carregando publicações...</p>
+      </section>
+
+
+        <button type="submit">Adicionar</button>
+</form>
+
+
+  
+
+
+
+
+
+
+  </section>
+</section>

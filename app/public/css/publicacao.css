@@ -1187,26 +1187,41 @@ body{
     margin-left: 30px;
   }
 
-  
-.btn-excluir-publicacao {
-  all: unset; /* Remove resets anteriores */
+/* Estilo padrão para todos os botões do menu */
+/* Estilo padrão para todos os botões (inclusive dentro do form) */
+
+.opcoes-menu .form-excluir{
+  display: block;           /* ocupa a linha toda, como os botões */
+  margin: 0;
+  padding: 0;
+}
+
+/* garante que o botão Excluir não tenha empurrão lateral */
+.btn-excluir-publicacao{
+  margin: 0 !important;     /* zera qualquer margin-left antigo */
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 10px 16px;
+  padding: 10px 15px;
   font-size: 14px;
-  color: #333; /* mesma cor dos outros itens */
+  color: #e74c3c !important;
+  background: #fff;
+  border: none;
+  text-align: left;
   cursor: pointer;
-  transition: color 0.2s, background 0.2s;
+  transition: background .2s, color .2s;
+  box-sizing: border-box;
 }
 
-.btn-excluir-publicacao ion-icon {
+/* ícone e alinhamento iguais aos outros */
+.opcoes-menu button ion-icon,
+.btn-excluir-publicacao ion-icon{
   font-size: 18px;
-  color: inherit; /* Herda a cor do texto */
+  vertical-align: middle;
+  min-width: 18px;          /* reserva o mesmo espaço para o ícone */
 }
 
-.btn-excluir-publicacao:hover {
-  background-color: #f8f8f8; /* igual aos outros itens no hover */
-  color: #e74c3c; /* fica vermelho no hover */
-}
+.btn-excluir-publicacao ion-icon{ color:#e74c3c !important; }
+.btn-excluir-publicacao:hover{ background:#fceaea; color:#c0392b; }
+.btn-excluir-publicacao:hover ion-icon{ color:#c0392b !important; }

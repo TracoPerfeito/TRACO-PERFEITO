@@ -332,7 +332,7 @@ console.log(publicacoesPortfolio[0].tagsPortfolio);
       portfolio,
       portfolioDono,
      
-      dadosNotificacao: null
+        dadosNotificacao: req.session.dadosNotificacao || null,
     });
 
   } catch (erro) {
