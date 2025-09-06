@@ -275,13 +275,23 @@
   </a>
 </p>
 
-      </section>
+  </section>
 
-      <button class="like-button">
+
+   
+      <!-- <button class="like-button">
         <i class="far fa-heart"></i>
-      </button>
+      </button> -->
 
+       <button class="like-button">
+  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>"  
+     onclick="localStorage.setItem('scrollPos', window.scrollY)">
+    <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
+
+  </a>
+</button> 
     </section>
+
 
     <!-- Description -->
     <p class="descricao-item-explorar"><%= pub.DESCRICAO_PUBLICACAO %></p>
@@ -400,10 +410,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script src="/js/publicacoesindex.js"></script>
 
-
-<script src="js/like.js"></script>
+<!-- 
+<script src="js/like.js"></script> -->
 <script src="js/mobile-navbar.js"></script>
 <script src="js/denuncia-compartilhamento.js"></script>
+<script src="js/rolagem-atualizar-pag.js"></script>
 
 <%- include('../partials/editar-publicacao') %>
 

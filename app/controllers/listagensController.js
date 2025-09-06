@@ -1,6 +1,7 @@
 const listagensModel = require("../models/listagensModel");
 const comentariosModel = require("../models/comentariosModel");
 const { body, validationResult } = require("express-validator");
+const favoritoModel = require("../models/favoritoModel");
 const moment = require("moment");
  
  
@@ -55,13 +56,14 @@ const listagensController = {
  
     listarPublicacoes: async (req, res,  dadosNotificacao) => {
   try {
-    const publicacoes = await listagensModel.listarPublicacoes();
+    const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id);
  
     console.log("Publicações encontradas:", publicacoes.map(pub => ({
   ID_PUBLICACAO: pub.ID_PUBLICACAO,
   NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
   NOME_USUARIO: pub.NOME_USUARIO,
   TAGS: pub.TAGS,
+  FAVORITO: pub.FAVORITO,    
   qtdImagens: (pub.imagens || []).length,
   qtdImagensUrls: (pub.imagensUrls || []).length,
 })));

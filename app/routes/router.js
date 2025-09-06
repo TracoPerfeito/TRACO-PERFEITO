@@ -60,7 +60,9 @@ router.get("/publicacoes-perfil", function (req, res) { //publicações de um pe
 });
 
 
-
+router.get("/favoritar", verificarUsuAutenticado, function (req, res) {
+  publicacoesController.favoritar(req, res);
+});
 
 
 router.get("/publicacao/:id", function (req, res) { //publicacao

@@ -1,5 +1,6 @@
 const publicacoesModel = require("../models/publicacoesModel");
 const listagensModel = require("../models/listagensModel");
+const {favoritoModel} = require("../models/favoritoModel");
 const listagensController = require("../controllers/listagensController");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
@@ -715,6 +716,50 @@ await listagensController.exibirPortfolio(req, res);
 
 },
 
+
+
+
+
+
+
+
+
+
+
+
+
+favoritar: async (req, res) => {
+    console.log("Chegou no favoritar");
+
+    if (req.session.autenticado.autenticado == null) {
+        res.render("pages/login", { 
+            listaErros: null,
+            dadosNotificacao: {
+                titulo: "Faça seu Login!", 
+                mensagem: "Para favoritar é necessário estar logado!", 
+                tipo: "warning" 
+            },
+            valores: [],
+            retorno: [],
+            errosLogin: null
+        });
+    } else {
+        console.log("id da publicação:", req.query.id);
+        console.log("situação:", req.query.sit);
+        console.log("id do usuário:", req.session.autenticado.id);
+        console.log("Era pra favoritar aqui");
+
+         await favoritoModel.favoritar({
+            idPublicacao: req.query.id,
+            situacao: req.query.sit,
+            idUsuario: req.session.autenticado.id
+        });
+
+        console.log("Passou pelo await (eu acho)");
+
+        res.redirect("/");
+    }
+}
 
 
 };
