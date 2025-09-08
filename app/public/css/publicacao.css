@@ -341,9 +341,14 @@ body{
         content: 'Curtir';
     }
 
-    .like-button.liked{
-        color: #7490C9;
-    }
+      .principal-pag-publi .favorito{
+    color: #508BBF;
+    fill: #508BBF;
+  }
+  .principal-pag-publi .favoritar{
+    color: rgb(211, 205, 205);
+  }
+    
      
 
 

@@ -174,8 +174,12 @@
         <section class="nome-btn-like">
           <span><%= pub.NOME_PUBLICACAO %></span>
           <button class="like-button">
-            <i class="far fa-heart"></i>
-          </button>
+  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>"  
+     onclick="localStorage.setItem('scrollPos', window.scrollY)">
+    <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
+
+  </a>
+</button> 
         </section>
 
       </section>
@@ -410,9 +414,10 @@
     
 
     <script src="/js/voltar.js"></script>
-    <script src="/js/like.js"></script>
+    <!-- <script src="/js/like.js"></script> -->
     <script src="/js/carrossel-avaliacoes.js"></script>
      <script src="/js/publicacoesindex.js"></script>
+     <script src="js/rolagem-atualizar-pag.js"></script>
     <script>
 
   

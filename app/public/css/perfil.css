@@ -301,12 +301,13 @@ input[type='file'] {
   transform: translateY(-3px);
   cursor: pointer;
 }
-
-
-
-.like-button.liked{
+  .nome-btn-like .favorito{
     color: #508BBF;
-}
+    fill: #508BBF;
+  }
+  .nome-btn-like .favoritar{
+    color: rgb(211, 205, 205);
+  }
  
 .carrossel-imagens-explorar {
   position: relative;

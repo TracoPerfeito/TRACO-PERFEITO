@@ -28,7 +28,7 @@ const listagensController = {
   const id = req.params.id;
   try {
     const usuario = await listagensModel.findIdusuario(id);
-    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id);
+    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
  
    
  
@@ -103,7 +103,7 @@ const listagensController = {
   exibirPublicacao: async (req, res) => {
   const id = req.params.id;
   try {
-    const publicacao = await listagensModel.findIdPublicacao(id);
+    const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
  
     if (!publicacao) {
       return res.status(404).send('Publicação não encontrada');
@@ -136,6 +136,7 @@ const sessao = req.session.autenticado;
   NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
   NOME_USUARIO: publicacao.NOME_USUARIO,
   TAGS: publicacao.TAGS,
+  FAVORITO: publicacao.FAVORITO,
   qtdImagens: publicacao.imagens.length,
   qtdImagensUrls: publicacao.imagensUrls.length,
 });

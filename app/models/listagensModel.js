@@ -102,11 +102,56 @@ listarPublicacoes: async (idUsuario = null) => {
   }
 },
 
+findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
+  try {
+    const [pubRows] = await pool.query(`
+      SELECT 
+        p.ID_PUBLICACAO,
+        p.ID_USUARIO,
+        p.NOME_PUBLICACAO,
+        p.DESCRICAO_PUBLICACAO,
+        p.CATEGORIA,
+        u.NOME_USUARIO,
+        u.FOTO_PERFIL_PASTA_USUARIO,
+        GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
+        IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
+      FROM PUBLICACOES_PROFISSIONAL p
+      LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
+      LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
+      LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN FAVORITOS f 
+        ON f.ID_PUBLICACAO = p.ID_PUBLICACAO
+        AND f.ID_USUARIO = ?
+        AND f.STATUS_FAVORITO = 1
+      WHERE p.ID_PUBLICACAO = ?
+      GROUP BY p.ID_PUBLICACAO
+    `, [idUsuario, idPublicacao]);
+
+    if (pubRows.length === 0) return null;
+
+    const [imgsRows] = await pool.query(`
+      SELECT IMG_PUBLICACAO 
+      FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL 
+      WHERE ID_PUBLICACAO = ?
+    `, [idPublicacao]);
+
+    const publicacao = pubRows[0];
+    publicacao.imagens = imgsRows.map(row => row.IMG_PUBLICACAO);
+    publicacao.imagensUrls = publicacao.imagens.map(buffer => "data:image/jpeg;base64," + buffer.toString('base64'));
+
+    return publicacao;
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+},
 
 
-  // listarPublicacoes: async () => {
+
+  // findIdPublicacao: async (id) => {
   //   try {
-  //     const [publicacoes] = await pool.query(`
+  //     const [pubRows] = await pool.query(`
   //       SELECT 
   //         p.ID_PUBLICACAO,
   //         p.ID_USUARIO,
@@ -120,78 +165,29 @@ listarPublicacoes: async (idUsuario = null) => {
   //       LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
   //       LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
   //       LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+  //       WHERE p.ID_PUBLICACAO = ?
   //       GROUP BY p.ID_PUBLICACAO
-  //       ORDER BY p.ID_PUBLICACAO DESC
-  //       LIMIT 50
-  //     `);
+  //     `, [id]);
 
-  //     const ids = publicacoes.map(pub => pub.ID_PUBLICACAO);
-  //     if(ids.length === 0) return [];
+  //     if(pubRows.length === 0) return null;
 
-  //     const [imgs] = await pool.query(`
-  //       SELECT ID_PUBLICACAO, IMG_PUBLICACAO
-  //       FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL
-  //       WHERE ID_PUBLICACAO IN (?)
-  //     `, [ids]);
+  //     const [imgsRows] = await pool.query(`
+  //       SELECT IMG_PUBLICACAO 
+  //       FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL 
+  //       WHERE ID_PUBLICACAO = ?
+  //     `, [id]);
 
-  //     const imagensPorPublicacao = {};
-  //     imgs.forEach(img => {
-  //       if(!imagensPorPublicacao[img.ID_PUBLICACAO]) imagensPorPublicacao[img.ID_PUBLICACAO] = [];
-  //       imagensPorPublicacao[img.ID_PUBLICACAO].push(img.IMG_PUBLICACAO);
-  //     });
+  //     const publicacao = pubRows[0];
+  //     publicacao.imagens = imgsRows.map(row => row.IMG_PUBLICACAO);
+  //     publicacao.imagensUrls = publicacao.imagens.map(buffer => "data:image/jpeg;base64," + buffer.toString('base64'));
 
-  //     publicacoes.forEach(pub => {
-  //       pub.imagens = imagensPorPublicacao[pub.ID_PUBLICACAO] || [];
-  //       pub.imagensUrls = pub.imagens.map(imgBuffer => "data:image/jpeg;base64," + imgBuffer.toString('base64'));
-  //     });
-
-  //     return publicacoes;
+  //     return publicacao;
 
   //   } catch (error) {
-  //     console.error("Erro ao tentar listar publicações:", error);
-  //     return [];
+  //     console.log(error);
+  //     throw error;
   //   }
   // },
-
-  findIdPublicacao: async (id) => {
-    try {
-      const [pubRows] = await pool.query(`
-        SELECT 
-          p.ID_PUBLICACAO,
-          p.ID_USUARIO,
-          p.NOME_PUBLICACAO,
-          p.DESCRICAO_PUBLICACAO,
-          p.CATEGORIA,
-          u.NOME_USUARIO,
-          u.FOTO_PERFIL_PASTA_USUARIO,
-          GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS
-        FROM PUBLICACOES_PROFISSIONAL p
-        LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
-        LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
-        LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
-        WHERE p.ID_PUBLICACAO = ?
-        GROUP BY p.ID_PUBLICACAO
-      `, [id]);
-
-      if(pubRows.length === 0) return null;
-
-      const [imgsRows] = await pool.query(`
-        SELECT IMG_PUBLICACAO 
-        FROM CONTEUDOS_PUBLICACAO_PROFISSIONAL 
-        WHERE ID_PUBLICACAO = ?
-      `, [id]);
-
-      const publicacao = pubRows[0];
-      publicacao.imagens = imgsRows.map(row => row.IMG_PUBLICACAO);
-      publicacao.imagensUrls = publicacao.imagens.map(buffer => "data:image/jpeg;base64," + buffer.toString('base64'));
-
-      return publicacao;
-
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  },
 
   // NOVA FUNÇÃO PARA O CONTROLLER DE COMENTÁRIOS
   findIdPublicacaoComImagensBase64: async (id) => {
@@ -203,26 +199,31 @@ listarPublicacoes: async (idUsuario = null) => {
     }
   },
 
-  listarPublicacoesPorUsuario: async (idUsuario) => {
+  listarPublicacoesPorUsuario: async (idDonoPublicacoes, idUsuarioLogado = null) => {
     try {
       const [publicacoes] = await pool.query(`
         SELECT 
-          p.ID_PUBLICACAO,
-          p.ID_USUARIO,
-          p.NOME_PUBLICACAO,
-          p.DESCRICAO_PUBLICACAO,
-          p.CATEGORIA,
-          u.NOME_USUARIO,
-          u.FOTO_PERFIL_PASTA_USUARIO,
-          GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS
-        FROM PUBLICACOES_PROFISSIONAL p
-        LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
-        LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
-        LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
-        WHERE p.ID_USUARIO = ?
-        GROUP BY p.ID_PUBLICACAO
-        ORDER BY p.ID_PUBLICACAO DESC
-      `, [idUsuario]);
+        p.ID_PUBLICACAO,
+        p.ID_USUARIO,
+        p.NOME_PUBLICACAO,
+        p.DESCRICAO_PUBLICACAO,
+        p.CATEGORIA,
+        u.NOME_USUARIO,
+        u.FOTO_PERFIL_PASTA_USUARIO,
+        GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
+        IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
+      FROM PUBLICACOES_PROFISSIONAL p
+      LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
+      LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
+      LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN FAVORITOS f 
+        ON f.ID_PUBLICACAO = p.ID_PUBLICACAO 
+        AND f.ID_USUARIO = ?
+        AND f.STATUS_FAVORITO = 1
+      WHERE p.ID_USUARIO = ?
+      GROUP BY p.ID_PUBLICACAO
+      ORDER BY p.ID_PUBLICACAO DESC
+    `, [idUsuarioLogado, idDonoPublicacoes]);
 
       const ids = publicacoes.map(pub => pub.ID_PUBLICACAO);
       if (ids.length === 0) return [];
@@ -254,23 +255,28 @@ listarPublicacoes: async (idUsuario = null) => {
   listarPublicacoesUsuarioLogado: async (idUsuario) => {
     try {
       const [publicacoes] = await pool.query(`
-        SELECT 
-          p.ID_PUBLICACAO,
-          p.ID_USUARIO,
-          p.NOME_PUBLICACAO,
-          p.DESCRICAO_PUBLICACAO,
-          p.CATEGORIA,
-          u.NOME_USUARIO,
-          u.FOTO_PERFIL_PASTA_USUARIO,
-          GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS
-        FROM PUBLICACOES_PROFISSIONAL p
-        LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
-        LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
-        LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
-        WHERE p.ID_USUARIO = ?
-        GROUP BY p.ID_PUBLICACAO
-        ORDER BY p.ID_PUBLICACAO DESC
-      `, [idUsuario]);
+       SELECT 
+        p.ID_PUBLICACAO,
+        p.ID_USUARIO,
+        p.NOME_PUBLICACAO,
+        p.DESCRICAO_PUBLICACAO,
+        p.CATEGORIA,
+        u.NOME_USUARIO,
+        u.FOTO_PERFIL_PASTA_USUARIO,
+        GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
+        IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
+      FROM PUBLICACOES_PROFISSIONAL p
+      LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
+      LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
+      LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN FAVORITOS f 
+        ON f.ID_PUBLICACAO = p.ID_PUBLICACAO 
+        AND f.ID_USUARIO = ?
+        AND f.STATUS_FAVORITO = 1
+      WHERE p.ID_USUARIO = ?
+      GROUP BY p.ID_PUBLICACAO
+      ORDER BY p.ID_PUBLICACAO DESC
+    `, [idUsuario, idUsuario]); 
 
       const ids = publicacoes.map(pub => pub.ID_PUBLICACAO);
       if (ids.length === 0) return [];

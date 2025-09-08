@@ -10,15 +10,15 @@ const publicacoesModel = {
             return null;
         }
     },
-    findIdPublicacao: async (idPublicacao) => {
-        try {
-            const [rows] = await pool.query('SELECT * FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?', [idPublicacao]);
-            return rows[0] || null;
-        } catch (error) {
-            console.error('Erro ao buscar publicação por ID:', error);
-            return null;
-        }
-    },
+    // findIdPublicacao: async (idPublicacao) => {
+    //     try {
+    //         const [rows] = await pool.query('SELECT * FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?', [idPublicacao]);
+    //         return rows[0] || null;
+    //     } catch (error) {
+    //         console.error('Erro ao buscar publicação por ID:', error);
+    //         return null;
+    //     }
+    // },
     // Editar publicação
     editarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
         const sql = `UPDATE PUBLICACOES_PROFISSIONAL SET NOME_PUBLICACAO=?, DESCRICAO_PUBLICACAO=?, CATEGORIA=? WHERE ID_PUBLICACAO=?`;

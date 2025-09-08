@@ -168,9 +168,14 @@ body {
 
  
 }
-.like-button.liked{
+  .nome-btn-like .favorito{
     color: #508BBF;
-}
+    fill: #508BBF;
+  }
+  .nome-btn-like .favoritar{
+    color: rgb(211, 205, 205);
+  }
+ 
 .redes-sociais-icons li:hover {
 
   transform: translateY(-3px);

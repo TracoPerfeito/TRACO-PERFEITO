@@ -727,12 +727,12 @@ await listagensController.exibirPortfolio(req, res);
 
 
 
-
 favoritar: async (req, res) => {
     console.log("Chegou no favoritar");
 
-    if (req.session.autenticado.autenticado == null) {
-        res.render("pages/login", { 
+    if (!req.session.autenticado?.autenticado) {
+      console.log("O usuário precisa logar. Mandando ele pra página de login.")
+        return res.render("pages/login", { 
             listaErros: null,
             dadosNotificacao: {
                 titulo: "Faça seu Login!", 
@@ -740,26 +740,34 @@ favoritar: async (req, res) => {
                 tipo: "warning" 
             },
             valores: [],
-            retorno: [],
+            retorno: null,
             errosLogin: null
         });
-    } else {
+    }
+
+    try {
         console.log("id da publicação:", req.query.id);
         console.log("situação:", req.query.sit);
         console.log("id do usuário:", req.session.autenticado.id);
-        console.log("Era pra favoritar aqui");
 
-         await favoritoModel.favoritar({
+        await favoritoModel.favoritar({
             idPublicacao: req.query.id,
             situacao: req.query.sit,
             idUsuario: req.session.autenticado.id
         });
 
-        console.log("Passou pelo await (eu acho)");
+        console.log("Favorito atualizado!");
 
+      
+        const previousUrl = req.get("Referer") || "/";
+        res.redirect(previousUrl);
+
+    } catch (err) {
+        console.error(err);
         res.redirect("/");
     }
 }
+
 
 
 };
