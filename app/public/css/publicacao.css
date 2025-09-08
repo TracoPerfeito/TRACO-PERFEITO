@@ -333,10 +333,12 @@ body{
     font-size: 20px;
     border: none;
     color: var(--text-color);
+    /* display: flex; */
+    font-family: "Josefin Sans";
     
 
     }
-    
+
     .like-button:hover{
         content: 'Curtir';
     }

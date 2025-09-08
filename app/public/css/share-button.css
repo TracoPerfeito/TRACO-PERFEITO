@@ -18,6 +18,11 @@
     transition: all 0.2s;
 }
 
+
+:is(.publi-perfil:hover, .menu-opcoes:hover) .publicacao-img {
+    filter: brightness(50%);
+    transition: all 0.2s;
+}
 .icone-menu {
     cursor: pointer;
     color: rgb(255, 255, 255);
@@ -58,9 +63,19 @@
     position: relative;
 }
 
+.publi-perfil {
+    position: relative;
+}
+
+
 .item-explorar:hover .menu-opcoes {
     display: flex;
 }
+
+.publi-perfil:hover .menu-opcoes {
+    display: flex;
+}
+
 
 /* mostrar opções ao clicar (script) */
 .menu-opcoes.ativo .opcoes-menu {

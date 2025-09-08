@@ -201,6 +201,7 @@ if (Array.isArray(listaErros)) {
     <p class="nome-da-publicacao"><%= publicacao.NOME_PUBLICACAO %></p>
  
   <button class="like-button">
+ 
   <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>"  
      onclick="localStorage.setItem('scrollPos', window.scrollY)">
     <i class="<%= publicacao.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= publicacao.FAVORITO %>"></i>
