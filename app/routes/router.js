@@ -8,6 +8,10 @@ const listagensController = require("../controllers/listagensController");
 const publicacoesController = require("../controllers/publicacoesController");
 const comentariosController = require("../controllers/comentariosController");
 
+ const db = require('../../config/pool_conexoes');
+
+
+
 
 const {
   verificarUsuAutenticado,
@@ -304,6 +308,18 @@ router.post(
   }
 );
 
+router.get("/portfolio/:id/editar-portfolio", verificarDonoPortfolio, function (req, res) {
+  res.render("editar-portfolio", { usuario: req.session.autenticado });
+});
+
+router.post(
+  "/editar-portfolio",
+ publicacoesController.regrasValidacaoEditarPortfolio,
+  async function (req, res) {
+    publicacoesController.editarPortfolio(req, res);
+  }
+);
+
 
 
 
@@ -433,6 +449,11 @@ router.post("/adicionar-publis-portfolio", function (req, res) {
 });
 
 
+router.post("/remover-publis-portfolio", function (req, res) {
+    publicacoesController.removerPublicacoesDoPortfolio(req, res);
+});
+
+
 
 router.get("/planos-assinaturas", function (req, res) { //planos
     res.render('pages/planos-assinaturas');
@@ -524,8 +545,6 @@ router.post("/reset-senha",
   function(req, res){
     usuariosController.resetarSenha(req, res);
 });
-
- const db = require('../../config/pool_conexoes');
 
 
 

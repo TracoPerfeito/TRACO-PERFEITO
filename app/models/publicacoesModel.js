@@ -97,10 +97,18 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
                 'INSERT INTO TAGS_PORTFOLIOS (ID_TAG, ID_PORTFOLIO) VALUES (?, ?)',
                 [idTag, idPortfolio]
             );
+            return true
         } catch (error) {
             console.error('Erro ao associar tag com portfólio:', error);
         }
     },
+
+
+        removerTagsDoPortfolio: async (idPortfolio) => {
+            await pool.query('DELETE FROM TAGS_PORTFOLIOS WHERE ID_PORTFOLIO=?', [idPortfolio]);
+            return true;
+        },
+
 
       deletarPublicacao: async (idPublicacao) => {
         try {
@@ -236,6 +244,20 @@ verificarPublisNoPortfolio: async (idPublicacao, portfolioId) => {
         }
     },
 
+
+      editarPortfolio: async (dados) => {
+        try {
+            const [result] = await pool.query(
+    'UPDATE PORTFOLIOS SET NOME_PORTFOLIO = ?, DESCRICAO_PORTFOLIO = ? WHERE ID_PORTFOLIO = ?',
+    [dados.NOME_PORTFOLIO, dados.DESCRICAO_PORTFOLIO, dados.ID_PORTFOLIO]
+  );
+  return result.affectedRows; 
+        } catch (error) {
+            console.error('Erro ao editar portfólio:', error);
+            return null;
+        }
+    },
+
     excluirPublicacao: async (idPublicacao) => {
         try {
             const sql = 'DELETE FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?';
@@ -262,13 +284,13 @@ verificarPublisNoPortfolio: async (idPublicacao, portfolioId) => {
     },
 
 
-    retirarPublicacaoDoPortfolio: async (dados) => {
+    removerPublisDoPortfolio: async (idPublicacao, id_portfolio) => {
         try {
             const [result] = await pool.query(
                 'DELETE FROM PUBLICACAO_PORTFOLIO WHERE ID_PUBLICACAO = ? AND ID_PORTFOLIO = ?',
-                [dados.ID_PUBLICACAO, dados.ID_PORTFOLIO]
+                [idPublicacao, id_portfolio]
             );
-            return result.affectedRows; 
+            return true;
         } catch (error) {
             console.error('Erro ao retirar publicação do portfolio:', error);
             return null;

@@ -101,6 +101,32 @@ const publicacoesController = {
   ],
 
 
+  
+
+    regrasValidacaoEditarPortfolio: [
+    body("titulo")
+      .trim()
+      .isLength({ min: 2, max: 70 })
+      .withMessage("O título deve ter entre 2 e 70 caracteres."),
+    body("descricao")
+      .trim()
+      .isLength({ min: 2, max: 2000 })
+      .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+    body("tags")
+      .custom((value) => {
+        try {
+          const tags = JSON.parse(value);
+          if (!Array.isArray(tags)) throw new Error();
+          if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+          return true;
+        } catch {
+          throw new Error("Tags inválidas, envie um array JSON.");
+        }
+      }),
+
+  ],
+
+
     regrasValidacaoEditarPublicacao: [
   body("titulo_publicacao")
     .trim()
@@ -717,7 +743,150 @@ await listagensController.exibirPortfolio(req, res);
 },
 
 
+removerPublicacoesDoPortfolio: async (req, res) => {
+  console.log("Chegou no removerPublicacoesDoPortfolio")
+  const { id_portfolio, publisParaRemocao } = req.body;
+  console.log(req.body);
 
+  try {
+    if (!id_portfolio) {
+      return res.status(400).json({ error: "ID do portfólio não fornecido." });
+    }
+
+    if (!publisParaRemocao || publisParaRemocao.length === 0) {
+      return res.status(400).json({ error: "Nenhuma publicação selecionada." });
+    }
+
+    // Converte string separada por vírgula em array de números
+    const idsArray = typeof publisParaRemocao === "string"
+      ? publisParaRemocao.split(",").map(id => parseInt(id))
+      : publisParaRemocao;
+
+    for (const idPublicacao of idsArray) {
+      await publicacoesModel.removerPublisDoPortfolio(idPublicacao, id_portfolio);
+    }
+
+    console.log("Deu tudo certo. Publicações removidas do portfólio.");
+
+    req.params.id = id_portfolio;
+
+    req.session.dadosNotificacao = {
+      titulo: "Publicações removidas com sucesso!",
+      mensagem: "As publicações foram removidas do portfólio com sucesso.",
+      tipo: "success"
+    };
+
+    await listagensController.exibirPortfolio(req, res);
+
+  } catch (error) {
+    console.error("Não foi possível remover as publicações do portfólio.", error);
+
+    req.params.id = id_portfolio;
+
+    req.session.dadosNotificacao = {
+      titulo: 'Ocorreu um erro.',
+      mensagem: "Não foi possível remover as publicações do portfólio.",
+      tipo: "error"
+    };
+    
+    await listagensController.exibirPortfolio(req, res);
+  }
+},
+
+
+
+
+
+
+editarPortfolio: async (req, res) => {
+  try {
+    console.log("Chegou no editarPortfolio.");
+    console.log("Body:", req.body);
+
+    const idPortfolio = req.body.id_portfolio;
+
+    // Verifica se a validação retornou algum erro
+    const erros = validationResult(req);
+    if (!erros.isEmpty()) {
+      console.log("Deu erro na validação do editar portfolio af");
+      return res.status(400).json({ erros: erros.array() });
+    }
+
+    const { titulo, descricao } = req.body;
+
+    // Pega o ID do usuário logado
+    const idUsuario = req.session.autenticado.id;
+
+    // Atualiza os dados básicos do portfólio
+    const resultado = await publicacoesModel.editarPortfolio({
+      NOME_PORTFOLIO: titulo,
+      DESCRICAO_PORTFOLIO: descricao,
+      ID_PORTFOLIO: idPortfolio
+    });
+
+    console.log("Portfólio atualizado:", resultado);
+
+    if (!resultado) {
+      return res.status(500).json({ erro: "Erro ao editar o portfolio." });
+    }
+
+    // ===== Atualiza tags =====
+
+    // 1) Remove todas as tags antigas do portfólio
+    await publicacoesModel.removerTagsDoPortfolio(idPortfolio);
+    console.log("Tags antigas removidas");
+
+    // 2) Pega as tags recebidas do front
+    const tagsRecebidas = req.body.tags ? JSON.parse(req.body.tags) : [];
+    console.log("Tags recebidas:", tagsRecebidas);
+
+    // 3) Associa cada tag ao portfólio
+    for (const tag of tagsRecebidas) {
+      console.log("Tag:", tag);
+
+      // Confere se a tag já existe no banco
+      let tagExistente = await publicacoesModel.buscarTagPorNome(tag);
+      let tagId;
+
+      if (!tagExistente) {
+        // Se não existe, cria
+        tagId = await publicacoesModel.criarTag(tag);
+        console.log("Tag criada:", tagId);
+      } else {
+        tagId = tagExistente.ID_TAG;
+        console.log("Tag já existe:", tagId);
+      }
+
+      // Associa a tag ao portfólio
+      const associacao = await publicacoesModel.associarTagPortfolio(tagId, idPortfolio);
+      console.log("Associação realizada:", associacao);
+    }
+
+    // ===== Sucesso =====
+    console.log("Portfólio e tags atualizados com sucesso!");
+
+    req.params.id = idPortfolio;
+    req.session.dadosNotificacao = {
+      titulo: "Atualização feita!",
+      mensagem: "Os dados do portfólio foram atualizados com sucesso.",
+      tipo: "success"
+    };
+
+    await listagensController.exibirPortfolio(req, res);
+
+  } catch (erro) {
+    console.error("Erro ao editar portfolio:", erro);
+
+    req.params.id = req.body.id_portfolio;
+    req.session.dadosNotificacao = {
+      titulo: "Ocorreu um erro.",
+      mensagem: "Não foi possível atualizar seu portfólio.",
+      tipo: "error"
+    };
+
+    await listagensController.exibirPortfolio(req, res);
+  }
+},
 
 
 

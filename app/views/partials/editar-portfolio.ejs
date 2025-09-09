@@ -1,0 +1,245 @@
+<style>
+  @import url(cores.css);
+
+  /* Estilo do Modal */
+  .fechar-edit-port {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .titulo-modal-edit-port {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-color);
+  }
+
+  .modal-edit-port {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+
+  .modal-content-edit-port {
+    background: var(--cor-fundo);
+    color: var(--text-color);
+    width: 70%;
+    min-width: 70vw;
+    min-height: 80vh;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .listagem-publi {
+    display: grid;
+    gap: 16px; 
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .item-publi{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      overflow: hidden;
+  }
+
+  .item-publi.selecionado {
+    border: 3px solid var(--cor-botao);
+  }
+
+  .img-publi-modal{
+      aspect-ratio: 1;
+      width: 95%;
+      height: 95%;
+      border-radius: 6px;
+      object-fit: cover; 
+  }
+
+
+  /* Abas */
+.abas-modal {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.aba-btn {
+  flex: 1;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  background: #ddd;
+  border-radius: 6px;
+}
+.aba-btn.ativa {
+  background: var(--cor-botao);
+  color: white;
+}
+.conteudo-aba {
+  display: none;
+}
+.conteudo-aba.ativa {
+  display: block;
+}
+
+  
+
+  @media (max-width: 700px){
+    .modal-content-edit-port > * {
+      flex-shrink: 0; 
+    }
+
+    .conteudo-add_publis-publicacao {
+      flex-direction: column-reverse;
+    }
+
+    .modal-content-edit-port {
+      width: 100%;
+      min-width: 100vw;
+      min-height: 100vh;
+    }
+  }
+
+
+
+
+  .item-deletar.selecionado-remover {
+    border: 3px solid var(--cor-botao);
+    border-radius: 10px;
+  }
+
+  .item-deletar{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+  }
+
+
+</style>
+
+<section id="modal-editar-portfolio" class="modal-edit-port">
+  <section class="modal-content-edit-port">
+    <span class="fechar-edit-port" id="fechar-modal-editar-portfolio">&times;</span>
+
+    <h2 class="titulo-modal-edit-port">Editar Portfólio</h2>
+
+    <!-- Abas -->
+    <section class="abas-modal">
+      <button type="button" class="aba-btn ativa" data-aba="editar-info">Editar Informações</button>
+      <button type="button" class="aba-btn" data-aba="remover-pubs">Remover Publicações</button>
+    </section>
+
+    <!-- Conteúdo das abas -->
+    <section class="conteudo-aba ativa" id="editar-info">
+      <form action="/editar-portfolio" method="post">
+        <input type="hidden" name="id_portfolio" id="id-editar-portfolio" value="">
+
+        <label for="titulo-editar-portfolio">Título:</label>
+        <input type="text" id="titulo-editar-portfolio" name="titulo" value="" required>
+
+        <label for="descricao-editar-portfolio">Descrição:</label>
+        <textarea id="descricao-editar-portfolio" name="descricao" required></textarea>
+
+        <label for="tags-editar-portfolio">Tags:</label> <br>
+        <input id="tags-editar-portfolio" name="input-custom-dropdown" class="tags-look tagify--custom-dropdown" placeholder="Adicione tags..." value="">
+        <input type="hidden" name="tags" id="tags-hidden">
+
+        <button type="submit">Salvar Alterações</button>
+      </form>
+    </section>
+
+    <section class="conteudo-aba" id="remover-pubs">
+      <p>Selecione as publicações que deseja remover:</p>
+     <form action="/remover-publis-portfolio" method="post">
+       <section class="listagem-publi" id="listagemDeletar">
+       
+         <% if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) { %>
+           <section class="sem-publicacoes">
+        <p>Não há publicações neste portfólio.</p>
+           </section>
+         <% } else { %>
+           <% publicacoesPortfolio.forEach(function(pub) { %>
+        <section class="item-deletar" data-id="<%= pub.ID_PUBLICACAO %>">
+          <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
+            <div class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
+              <% pub.imagens.forEach(function(img, idx) { %>
+                <img
+                  src="data:image/jpeg;base64,<%= img.toString('base64') %>"
+                  class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>"
+                  alt="Imagem da publicação"/>
+              <% }); %>
+            </div>
+          
+          </section>
+        </section>
+           <% }); %>
+         <% } %>
+       
+       </section>
+
+        <input type="hidden" name="id_portfolio" id="id-portfolio-remocao" value="">
+
+        <input type="hidden" id="publisParaRemocao" name="publisParaRemocao" value="">
+
+        <button id="btn-remover-publicacoes" type="submit">Remover Selecionadas</button>
+     </form>
+    </section>
+
+  </section>
+</section>
+
+
+<script>
+// Troca de abas
+const abasBtns = document.querySelectorAll(".aba-btn");
+const conteudosAbas = document.querySelectorAll(".conteudo-aba");
+
+abasBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const alvo = btn.dataset.aba;
+
+    // Alterna classes
+    abasBtns.forEach(b => b.classList.remove("ativa"));
+    btn.classList.add("ativa");
+
+    conteudosAbas.forEach(c => c.classList.remove("ativa"));
+    document.getElementById(alvo).classList.add("ativa");
+  });
+});
+
+
+ const itensDeletar = document.querySelectorAll('.item-deletar');
+  const inputRemover = document.getElementById('publisParaRemocao');
+
+  let publicacoesParaRemover = new Set();
+
+  function toggleSelecaoRemover(item, pubId) {
+    if (publicacoesParaRemover.has(pubId)) {
+      publicacoesParaRemover.delete(pubId);
+      item.classList.remove('selecionado-remover');
+    } else {
+      publicacoesParaRemover.add(pubId);
+      item.classList.add('selecionado-remover');
+    }
+    inputRemover.value = Array.from(publicacoesParaRemover).join(',');
+  }
+
+  itensDeletar.forEach(item => {
+    const pubId = item.dataset.id;
+    item.addEventListener('click', () => toggleSelecaoRemover(item, pubId));
+  });
+</script>
+

@@ -59,6 +59,7 @@
 
 
   <%- include('../partials/adicionar-publis-portfolio') %>
+  <%- include('../partials/editar-portfolio') %>
     
     <section class="botao-de-voltar">   
         <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
@@ -101,7 +102,11 @@
 
 
   <section class="botao-e-texto">
-      <button class="acao-btn">
+      <button id="btn-abrir-modal-edit-port" class="btn-editar-portfolio acao-btn"
+       data-id="<%= portfolio.ID_PORTFOLIO %>"
+        data-titulo="<%= portfolio.NOME_PORTFOLIO %>"
+        data-descricao="<%= portfolio.DESCRICAO_PORTFOLIO %>"
+        data-tags="<%= tagsArray.join(', ') %>">
         <i class="fa-solid fa-pen-to-square"></i>
         
       </button>
@@ -114,6 +119,9 @@
         </button>
       <p>Adicionar Publicações</p>
   </section>
+
+
+
 
 
 </section>
@@ -289,9 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
     <script src="/js/voltar.js"></script>
     <script src="/js/modal-add-publis.js"></script>
 
+    <script src="/js/abrirmodaleditarport.js"></script>
 
-    
-    
     <script src="/js/publicacoesindex.js"></script>
 
 
