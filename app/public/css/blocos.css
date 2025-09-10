@@ -54,6 +54,7 @@
 .botoes-modal #btn-confirmar-excluir-publi {
   background: #e74c3c;
   color: #fff;
+
 }
 .botoes-modal #btn-confirmar-excluir-publi:hover {
   background: #c0392b;
@@ -64,7 +65,7 @@
   background: none;
   border: none;
   font-size: 1em;
-  margin-left: 6px;
+  margin: 0;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -74,6 +75,7 @@
 .btn-excluir-publicacao ion-icon {
   color: #e74c3c;
   font-size: 1.2em;
+
 }
 .btn-excluir-publicacao:hover {
   color: #c0392b;
@@ -183,9 +185,18 @@
    
 }
 
-.like-button.liked{
+
+  .item-explorar .favorito{
     color: #508BBF;
-}
+    fill: #508BBF;
+  }
+  .item-explorar .favoritar{
+    color: rgb(211, 205, 205);
+  }
+
+/* .like-button.liked{
+    color: #508BBF;
+} */
  
 .carrossel-imagens-explorar {
   position: relative;

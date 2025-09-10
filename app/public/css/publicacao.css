@@ -333,17 +333,24 @@ body{
     font-size: 20px;
     border: none;
     color: var(--text-color);
+    /* display: flex; */
+    font-family: "Josefin Sans";
     
 
     }
-    
+
     .like-button:hover{
         content: 'Curtir';
     }
 
-    .like-button.liked{
-        color: #7490C9;
-    }
+      .principal-pag-publi .favorito{
+    color: #508BBF;
+    fill: #508BBF;
+  }
+  .principal-pag-publi .favoritar{
+    color: rgb(211, 205, 205);
+  }
+    
      
 
 
@@ -1187,5 +1194,41 @@ body{
     margin-left: 30px;
   }
 
-  
+/* Estilo padrão para todos os botões do menu */
+/* Estilo padrão para todos os botões (inclusive dentro do form) */
 
+.opcoes-menu .form-excluir{
+  display: block;           /* ocupa a linha toda, como os botões */
+  margin: 0;
+  padding: 0;
+}
+
+/* garante que o botão Excluir não tenha empurrão lateral */
+.btn-excluir-publicacao{
+  margin: 0 !important;     /* zera qualquer margin-left antigo */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #e74c3c !important;
+  background: #fff;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  box-sizing: border-box;
+}
+
+/* ícone e alinhamento iguais aos outros */
+.opcoes-menu button ion-icon,
+.btn-excluir-publicacao ion-icon{
+  font-size: 18px;
+  vertical-align: middle;
+  min-width: 18px;          /* reserva o mesmo espaço para o ícone */
+}
+
+.btn-excluir-publicacao ion-icon{ color:#e74c3c !important; }
+.btn-excluir-publicacao:hover{ background:#fceaea; color:#c0392b; }
+.btn-excluir-publicacao:hover ion-icon{ color:#c0392b !important; }

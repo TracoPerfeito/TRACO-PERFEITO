@@ -21,7 +21,7 @@ const comentariosController = {
       const { conteudo, idPublicacao } = req.body;
 
       if (!erros.isEmpty()) {
-        const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
+        const publicacao = await listagensModel.findIdPublicacao(idPublicacao, req.session.autenticado.id);
         const comentarios = await comentariosModel.listarComentarios(idPublicacao);
         return res.render('pages/publicacao', {
           listaErros: erros.array(),

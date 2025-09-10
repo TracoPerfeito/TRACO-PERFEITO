@@ -418,58 +418,54 @@ responsividade */
   white-space: nowrap;
 }
 
-.botao-edit-add {
-  width: 100%;
+
+
+
+.acoes-portfolio {
   display: flex;
-  justify-content: flex-end;
+  gap: 1rem;
+  justify-content: flex-start; /* alinha à esquerda */
+  margin: 1rem 0px 1rem 30px;
 }
 
-.botao-edit-add button {
-  border-radius: 10px;
-  border: none;
-  font-family: "Montserrat", sans-serif;
-  padding: 10px 15px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  overflow: hidden;
-}
-
-/* Texto escondido começa invisível e sem largura */
-.botao-edit-add .escondido {
-  opacity: 0;
-  width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  margin-left: 0;
-  transition: all 0.4s ease;
-}
-
-/* No hover, o texto aparece e o botão cresce suavemente */
-.botao-edit-add button:hover .escondido {
-  opacity: 1;
-  width: auto;
-  margin-left: 8px;
-}
-
-.botoes-edit-add{
+.acao-btn {
   display: flex;
   flex-direction: column;
-  width: 40%;
-  gap:10px;
+  align-items: center;
+  justify-content: center;
+  background-color: #eaeae5; /* parecido com o fundo do print */
+  border: none;
+  border-radius: 16px;
+  padding: 1rem;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
+.acao-btn i {
+  font-size: 1.5rem;
 
-
-.dados-portfolio{
-  max-width: 80%;
+ 
 }
 
+.acao-btn span {
+  font-size: 0.85rem;
+  font-weight: bold;
+}
 
+.acao-btn:hover {
+  background-color: #d6d6cf;
+}
+
+.botao-e-texto{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.7rem;
+   font-weight: bold;
+  text-align: center;
+}
 
 
 
@@ -487,57 +483,17 @@ max-width: 100%;
 }
 
 
-.botao-edit-add {
-  width: 100%;
-  display: block;
-  
-}
-
-.botao-edit-add button {
-  border-radius: 10px;
-  border: none;
-  font-family: "Montserrat", sans-serif;
-  font-size: larger;
-  padding: 10px 15px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  background-color: #0f253d;
-  color: white;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  overflow: hidden;
-  max-width: 40px;
-}
 
 
+.acoes-portfolio {
 
 
-.botao-edit-add .escondido {
-  opacity: 0;
-  width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  margin-left: 0;
-  transition: all 0.4s ease;
-}
-
-/* No hover, o texto aparece e o botão cresce suavemente */
-.botao-edit-add button:hover .escondido {
-  opacity: 0;
-  width: auto;
-  margin-left: 0px;
-  display: none;
-}
-
-.botoes-edit-add{
-  display: flex;
-  justify-content: start;
-  flex-direction: row;
-  gap: 10px;
-  
+  margin: 1rem 0px 1rem 0px;
 }
 
 
 
 }
+
+
+

@@ -106,11 +106,45 @@ verificarUsuAutorizado = (tipoPermitido, destinoFalha) => {
             res.render(destinoFalha, req.session.autenticado);
         }
     };
-}
+};
+
+verificarDonoPortfolio = (db, destinoFalha) => {
+    return async (req, res, next) => {
+        try {
+            // se não tiver sessão -> manda pro destinoFalha
+            if (!req.session.autenticado || !req.session.autenticado.id) {
+                return res.render(destinoFalha, { msg: "Você precisa estar logado." });
+            }
+
+            const portfolioId = req.params.id; 
+            const usuarioId = req.session.autenticado.id; 
+
+            const [rows] = await db.query("SELECT ID_USUARIO FROM PORTFOLIOS WHERE ID_PORTFOLIO = ?", [portfolioId]);
+
+            if (rows.length === 0) {
+                return res.render(destinoFalha, { msg: "Portfólio não encontrado." });
+            }
+
+            const donoId = rows[0].id_usuario;
+
+            if (donoId !== usuarioId) {
+                return res.render(destinoFalha, { msg: "Você não tem permissão para editar este portfólio." });
+            }
+
+            // se passar em tudo -> segue
+            next();
+        } catch (err) {
+            console.error(err);
+            res.render(destinoFalha, { msg: "Erro no servidor." });
+        }
+    };
+};
+
 
 module.exports = {
   verificarUsuAutenticado,
   limparSessao,
   gravarUsuAutenticado,
   verificarUsuAutorizado,
+  verificarDonoPortfolio
 };

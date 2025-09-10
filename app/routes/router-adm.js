@@ -80,6 +80,7 @@ router.get(
 );
 
 
+
 router.get(
   "/adm-lista-usuarios",
   verificarUsuAutenticado,
@@ -104,7 +105,54 @@ router.get(
   }
 );
 
+//Listagem para apenas profissionais
+router.get(
+  "/adm-listagem-profissional",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
 
+  async (req, res) => {
+    try {
+      const usuariosProfissionais = await admModel.listarUsuariosPorTipo('profissional');
+      console.log({usuariosProfissionais});
+
+      res.render("pages/adm-listagem-profissional", {
+        autenticado: req.session.autenticado,
+        logado: req.session.logado,
+        usuarios: usuariosProfissionais
+      });
+    } catch (error) {
+      console.error("Erro ao listar usuários profissionais:", error);
+      res.status(500).send("Erro ao listar usuários profissionais");
+    }
+  }
+)
+
+//Listagem para apenas comuns
+
+router.get(
+  "/adm-listagem-comum",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+
+  async (req, res) => {
+    try {
+      const usuariosComuns = await admModel.listarUsuariosPorTipo('comum');
+      console.log({usuariosComuns});
+
+      res.render("pages/adm-listagem-comum", {
+        autenticado: req.session.autenticado,
+        logado: req.session.logado,
+        usuarios: usuariosComuns
+      });
+    } catch (error) {
+      console.error("Erro ao listar usuários comuns:", error);
+      res.status(500).send("Erro ao listar usuários comuns");
+    }
+  }
+);
+
+// Falta fazer o EJS do listagem de profissionais e comuns ein
 
 
 

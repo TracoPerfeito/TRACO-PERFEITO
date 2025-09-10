@@ -1,6 +1,7 @@
 const listagensModel = require("../models/listagensModel");
 const comentariosModel = require("../models/comentariosModel");
 const { body, validationResult } = require("express-validator");
+const favoritoModel = require("../models/favoritoModel");
 const moment = require("moment");
  
  
@@ -27,7 +28,7 @@ const listagensController = {
   const id = req.params.id;
   try {
     const usuario = await listagensModel.findIdusuario(id);
-    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id);
+    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
  
    
  
@@ -55,13 +56,14 @@ const listagensController = {
  
     listarPublicacoes: async (req, res,  dadosNotificacao) => {
   try {
-    const publicacoes = await listagensModel.listarPublicacoes();
+    const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id);
  
     console.log("Publicações encontradas:", publicacoes.map(pub => ({
   ID_PUBLICACAO: pub.ID_PUBLICACAO,
   NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
   NOME_USUARIO: pub.NOME_USUARIO,
   TAGS: pub.TAGS,
+  FAVORITO: pub.FAVORITO,    
   qtdImagens: (pub.imagens || []).length,
   qtdImagensUrls: (pub.imagensUrls || []).length,
 })));
@@ -101,7 +103,7 @@ const listagensController = {
   exibirPublicacao: async (req, res) => {
   const id = req.params.id;
   try {
-    const publicacao = await listagensModel.findIdPublicacao(id);
+    const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
  
     if (!publicacao) {
       return res.status(404).send('Publicação não encontrada');
@@ -134,6 +136,7 @@ const sessao = req.session.autenticado;
   NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
   NOME_USUARIO: publicacao.NOME_USUARIO,
   TAGS: publicacao.TAGS,
+  FAVORITO: publicacao.FAVORITO,
   qtdImagens: publicacao.imagens.length,
   qtdImagensUrls: publicacao.imagensUrls.length,
 });
@@ -332,7 +335,7 @@ console.log(publicacoesPortfolio[0].tagsPortfolio);
       portfolio,
       portfolioDono,
      
-      dadosNotificacao: null
+        dadosNotificacao: req.session.dadosNotificacao || null,
     });
 
   } catch (erro) {

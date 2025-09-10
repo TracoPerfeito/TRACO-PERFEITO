@@ -10,15 +10,15 @@ const publicacoesModel = {
             return null;
         }
     },
-    findIdPublicacao: async (idPublicacao) => {
-        try {
-            const [rows] = await pool.query('SELECT * FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?', [idPublicacao]);
-            return rows[0] || null;
-        } catch (error) {
-            console.error('Erro ao buscar publicação por ID:', error);
-            return null;
-        }
-    },
+    // findIdPublicacao: async (idPublicacao) => {
+    //     try {
+    //         const [rows] = await pool.query('SELECT * FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?', [idPublicacao]);
+    //         return rows[0] || null;
+    //     } catch (error) {
+    //         console.error('Erro ao buscar publicação por ID:', error);
+    //         return null;
+    //     }
+    // },
     // Editar publicação
     editarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
         const sql = `UPDATE PUBLICACOES_PROFISSIONAL SET NOME_PUBLICACAO=?, DESCRICAO_PUBLICACAO=?, CATEGORIA=? WHERE ID_PUBLICACAO=?`;
@@ -97,10 +97,18 @@ inserirConteudo: async (idPublicacao, imgBuffer) => {
                 'INSERT INTO TAGS_PORTFOLIOS (ID_TAG, ID_PORTFOLIO) VALUES (?, ?)',
                 [idTag, idPortfolio]
             );
+            return true
         } catch (error) {
             console.error('Erro ao associar tag com portfólio:', error);
         }
     },
+
+
+        removerTagsDoPortfolio: async (idPortfolio) => {
+            await pool.query('DELETE FROM TAGS_PORTFOLIOS WHERE ID_PORTFOLIO=?', [idPortfolio]);
+            return true;
+        },
+
 
       deletarPublicacao: async (idPublicacao) => {
         try {
@@ -213,6 +221,15 @@ inserirPublisPortfolio: async (idPublicacao, idPortfolio) => {
     }
 },
 
+
+verificarPublisNoPortfolio: async (idPublicacao, portfolioId) => {
+  const [rows] = await pool.query(
+    `SELECT 1 FROM  PUBLICACAO_PORTFOLIO  WHERE ID_PUBLICACAO = ? AND ID_PORTFOLIO = ?`,
+    [idPublicacao, portfolioId]
+  );
+  return rows.length > 0; // true se já existe
+},
+
   
   criarPortfolio: async (dados) => {
         try {
@@ -227,6 +244,20 @@ inserirPublisPortfolio: async (idPublicacao, idPortfolio) => {
         }
     },
 
+
+      editarPortfolio: async (dados) => {
+        try {
+            const [result] = await pool.query(
+    'UPDATE PORTFOLIOS SET NOME_PORTFOLIO = ?, DESCRICAO_PORTFOLIO = ? WHERE ID_PORTFOLIO = ?',
+    [dados.NOME_PORTFOLIO, dados.DESCRICAO_PORTFOLIO, dados.ID_PORTFOLIO]
+  );
+  return result.affectedRows; 
+        } catch (error) {
+            console.error('Erro ao editar portfólio:', error);
+            return null;
+        }
+    },
+
     excluirPublicacao: async (idPublicacao) => {
         try {
             const sql = 'DELETE FROM PUBLICACOES_PROFISSIONAL WHERE ID_PUBLICACAO = ?';
@@ -236,7 +267,38 @@ inserirPublisPortfolio: async (idPublicacao, idPortfolio) => {
             console.error('Erro ao excluir publicação:', error);
             return false;
         }
+    },
+
+
+    criarPublicacao: async (dados) => {
+        try {
+            const [result] = await pool.query(
+    'INSERT INTO PUBLICACOES_PROFISSIONAL (ID_USUARIO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA) VALUES (?, ?, ?, ?)',
+    [dados.ID_USUARIO, dados.NOME_PUBLICACAO, dados.DESCRICAO_PUBLICACAO, dados.CATEGORIA]
+  );
+  return result.insertId; 
+        } catch (error) {
+            console.error('Erro ao criar publicação:', error);
+            return null;
+        }
+    },
+
+
+    removerPublisDoPortfolio: async (idPublicacao, id_portfolio) => {
+        try {
+            const [result] = await pool.query(
+                'DELETE FROM PUBLICACAO_PORTFOLIO WHERE ID_PUBLICACAO = ? AND ID_PORTFOLIO = ?',
+                [idPublicacao, id_portfolio]
+            );
+            return true;
+        } catch (error) {
+            console.error('Erro ao retirar publicação do portfolio:', error);
+            return null;
+        }
     }
+    
+
+
 };
 
 

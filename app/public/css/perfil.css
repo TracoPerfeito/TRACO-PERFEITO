@@ -1,6 +1,7 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 @import url(cores.css);
+@import url(share-button.css);
 
 .botao-de-voltar{
   width: 100%;
@@ -65,6 +66,14 @@ body {
   border-radius: 5px;
   box-shadow: 1px 3px 12px rgba(0, 0, 0, 0.18);
 }
+
+
+
+.publicacao-img:hover {
+    filter: brightness(50%);
+    transition: all 0.2s;
+}
+
 
 a {
   text-decoration: none;
@@ -301,12 +310,13 @@ input[type='file'] {
   transform: translateY(-3px);
   cursor: pointer;
 }
-
-
-
-.like-button.liked{
+  .nome-btn-like .favorito{
     color: #508BBF;
-}
+    fill: #508BBF;
+  }
+  .nome-btn-like .favoritar{
+    color: rgb(211, 205, 205);
+  }
  
 .carrossel-imagens-explorar {
   position: relative;

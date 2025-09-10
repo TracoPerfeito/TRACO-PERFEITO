@@ -1,17 +1,16 @@
 var express = require("express");
 var router = express.Router();
 // Editar publicação
-router.post(
-  "/editar-publicacao",
-  async function (req, res) {
-    publicacoesController.editarPublicacao(req, res);
-  }
-);
+
 const { body, validationResult } = require("express-validator");
 const usuariosController = require("../controllers/usuariosController");
 const listagensController = require("../controllers/listagensController");
 const publicacoesController = require("../controllers/publicacoesController");
 const comentariosController = require("../controllers/comentariosController");
+
+ const db = require('../../config/pool_conexoes');
+
+
 
 
 const {
@@ -65,7 +64,9 @@ router.get("/publicacoes-perfil", function (req, res) { //publicações de um pe
 });
 
 
-
+router.get("/favoritar", verificarUsuAutenticado, function (req, res) {
+  publicacoesController.favoritar(req, res);
+});
 
 
 router.get("/publicacao/:id", function (req, res) { //publicacao
@@ -307,6 +308,18 @@ router.post(
   }
 );
 
+router.get("/portfolio/:id/editar-portfolio", verificarDonoPortfolio, function (req, res) {
+  res.render("editar-portfolio", { usuario: req.session.autenticado });
+});
+
+router.post(
+  "/editar-portfolio",
+ publicacoesController.regrasValidacaoEditarPortfolio,
+  async function (req, res) {
+    publicacoesController.editarPortfolio(req, res);
+  }
+);
+
 
 
 
@@ -418,11 +431,28 @@ router.get("/portfolios/:id", function (req, res) { //portfolios
 
 
 router.get("/portfolio/:id", function (req, res) { //portfolio
- 
-    listagensController.exibirPortfolio(req, res);
-   
- 
+
+  let dadosNotificacao = [];
+  listagensController.exibirPortfolio(req, res, dadosNotificacao);
+
+
 });
+
+
+
+router.get("/api/publicacoes", publicacoesController.getPublicacoesUsuario);
+
+
+
+router.post("/adicionar-publis-portfolio", function (req, res) {
+    publicacoesController.adicionarPublicacoesAoPortfolio(req, res);
+});
+
+
+router.post("/remover-publis-portfolio", function (req, res) {
+    publicacoesController.removerPublicacoesDoPortfolio(req, res);
+});
+
 
 
 router.get("/planos-assinaturas", function (req, res) { //planos
@@ -515,8 +545,6 @@ router.post("/reset-senha",
   function(req, res){
     usuariosController.resetarSenha(req, res);
 });
-
- const db = require('../../config/pool_conexoes');
 
 
 
