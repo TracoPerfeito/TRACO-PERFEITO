@@ -1,6 +1,7 @@
 .usuarios-section {
   width: 100%;
   margin-top: 15px;
+  margin-left: -10px;
 }
 
 .tittle-usuarios-geral {
@@ -157,4 +158,77 @@ td a {
 
 td a:hover {
   color: #007bff;
+}
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////// */
+
+/* PAGINAÇÃO ESTILO */
+
+/* Estilo para o botão "Novo" */
+input[type="button"] {
+  background-color: #2d3748;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+}
+
+input[type="button"]:hover {
+  background-color: #4a5568;
+}
+
+/* Container da paginação */
+.notificador {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  padding: 10px 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  user-select: none;
+  width: 1500px;
+  margin-left: 220px;
+}
+
+/* Lista de páginas */
+.notificador ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 8px;
+}
+
+/* Links das páginas */
+.notificador ul li a {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hover nos links */
+.notificador ul li a:hover {
+  background-color: #2d3748;
+  color: white;
+  border-color: #2d3748;
+}
+
+/* Página atual */
+.notificador ul li a.atual {
+  background-color: #2d3748;
+  color: white;
+  border-color: #2d3748;
+  cursor: default;
+  pointer-events: none;
 }

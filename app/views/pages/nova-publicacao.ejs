@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova Publicação</title>
-    <link rel="stylesheet" href="css/nova-publicacao.css">
+    <link rel="stylesheet" href="/css/nova-publicacao.css">
     
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -789,17 +789,17 @@ function validarImagens() {
         return response.json();
       })
       .then(data => {
-        // alert('Publicação enviada com sucesso!');
-        // modalConfirm.style.display = 'none';
-        // formModal.reset();
+         alert('Publicação enviada com sucesso!');
+         modalConfirm.style.display = 'none';
+         formModal.reset();
 
-        // modalImageFiles = [];
-        // imageFiles = [];
-        // previewSection.style.display = 'none';
-        // mainImage.src = '';
-        // thumbnailRow.innerHTML = '';
-        // imageCount.textContent = 'Nenhuma imagem selecionada';
-        // tagify.removeAllTags();
+         modalImageFiles = [];
+         imageFiles = [];
+         previewSection.style.display = 'none';
+         mainImage.src = '';
+         thumbnailRow.innerHTML = '';
+         imageCount.textContent = 'Nenhuma imagem selecionada';
+         tagify.removeAllTags();
       })
       .catch(error => {
         alert('Erro ao enviar publicação: ' + error.message);
