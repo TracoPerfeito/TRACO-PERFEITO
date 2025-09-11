@@ -59,10 +59,11 @@
 
 
   <%- include('../partials/adicionar-publis-portfolio') %>
+  <%- include('../partials/editar-portfolio') %>
     
     <section class="botao-de-voltar">   
         <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
-        <p class="lado-botao"> Portfólio de <%= portfolioDono.NOME_USUARIO %> - <%= portfolio.NOME_PORTFOLIO %></p>
+        <p class="lado-botao"> Portfólio de <%= portfolio.NOME_USUARIO %> - <%= portfolio.NOME_PORTFOLIO %></p>
     </section>
 
     <section class="nome-desc">
@@ -72,19 +73,18 @@
               <p><%= portfolio.DESCRICAO_PORTFOLIO %></p>
               
                      
-              <%
-                const cores = [
-                  '#7490C9', '#969ED0', '#92C4E2', '#B8D9BD',
-                  '#9BB7CF', '#C3E3DF', '#C2E5F0', '#ADBCE2'
-                ];
-              
-                let tagsArray = [];
-                if (publicacoesPortfolio && publicacoesPortfolio.length > 0) {
-                  tagsArray = publicacoesPortfolio[0].tagsPortfolio || [];
-                  // Limpar colchetes e aspas de cada tag
-                  tagsArray = tagsArray.map(tag => tag.replace(/[\[\]"]+/g,'').trim());
-                }
-              %>
+            <%
+  const cores = [
+    '#7490C9', '#969ED0', '#92C4E2', '#B8D9BD',
+    '#9BB7CF', '#C3E3DF', '#C2E5F0', '#ADBCE2'
+  ];
+
+  let tagsArray = [];
+  if (portfolio && portfolio.tagsPortfolio) {
+    tagsArray = portfolio.tagsPortfolio.map(tag => tag.replace(/[\[\]"]+/g,'').trim());
+  }
+%>
+
               
               <section class="tags">
                 <% tagsArray.forEach(tag => { 
@@ -96,12 +96,16 @@
               </section>
             </section>
 
-            <% if (autenticado && id_usuario === portfolioDono.ID_USUARIO) { %>
+            <% if (autenticado && id_usuario === portfolio.ID_USUARIO) { %>
               <section class="acoes-portfolio">
 
 
   <section class="botao-e-texto">
-      <button class="acao-btn">
+      <button id="btn-abrir-modal-edit-port" class="btn-editar-portfolio acao-btn"
+       data-id="<%= portfolio.ID_PORTFOLIO %>"
+        data-titulo="<%= portfolio.NOME_PORTFOLIO %>"
+        data-descricao="<%= portfolio.DESCRICAO_PORTFOLIO %>"
+        data-tags="<%= tagsArray.join(', ') %>">
         <i class="fa-solid fa-pen-to-square"></i>
         
       </button>
@@ -114,6 +118,9 @@
         </button>
       <p>Adicionar Publicações</p>
   </section>
+
+
+
 
 
 </section>
@@ -289,9 +296,8 @@ document.addEventListener('DOMContentLoaded', () => {
     <script src="/js/voltar.js"></script>
     <script src="/js/modal-add-publis.js"></script>
 
+    <script src="/js/abrirmodaleditarport.js"></script>
 
-    
-    
     <script src="/js/publicacoesindex.js"></script>
 
 

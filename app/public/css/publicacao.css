@@ -333,17 +333,24 @@ body{
     font-size: 20px;
     border: none;
     color: var(--text-color);
+    /* display: flex; */
+    font-family: "Josefin Sans";
     
 
     }
-    
+
     .like-button:hover{
         content: 'Curtir';
     }
 
-    .like-button.liked{
-        color: #7490C9;
-    }
+      .principal-pag-publi .favorito{
+    color: #508BBF;
+    fill: #508BBF;
+  }
+  .principal-pag-publi .favoritar{
+    color: rgb(211, 205, 205);
+  }
+    
      
 
 

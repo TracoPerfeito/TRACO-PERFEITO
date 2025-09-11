@@ -1,5 +1,6 @@
 const comentariosModel = require("../models/comentariosModel");
 const listagensModel = require("../models/listagensModel");
+const listagensController = require("../controllers/listagensController");
 const denunciasModel = require("../models/denunciasModel");
 const notificacoesModel = require("../models/notificacoesModel");
 const { body, validationResult } = require("express-validator");
@@ -21,7 +22,7 @@ const comentariosController = {
       const { conteudo, idPublicacao } = req.body;
 
       if (!erros.isEmpty()) {
-        const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
+        const publicacao = await listagensModel.findIdPublicacao(idPublicacao, req.session.autenticado.id);
         const comentarios = await comentariosModel.listarComentarios(idPublicacao);
         return res.render('pages/publicacao', {
           listaErros: erros.array(),
@@ -42,18 +43,28 @@ const comentariosController = {
         DATA_COMENTARIO: new Date()
       });
 
-      const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-      const comentarios = await comentariosModel.listarComentarios(idPublicacao);
+      // const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
+      // const comentarios = await comentariosModel.listarComentarios(idPublicacao);
 
-      return res.render('pages/publicacao', {
-        listaErros: null,
-        dadosNotificacao: { titulo: 'Comentário enviado!', mensagem: 'Seu comentário foi salvo.', tipo: 'success' },
-        publicacao: publicacao || {},
-        comentarios,
-        usuario: req.session.autenticado || null,
-        autenticado: !!req.session.autenticado
-      });
+      // return res.render('pages/publicacao', {
+      //   listaErros: null,
+      //   dadosNotificacao: { titulo: 'Comentário enviado!', mensagem: 'Seu comentário foi salvo.', tipo: 'success' },
+      //   publicacao: publicacao || {},
+      //   comentarios,
+      //   usuario: req.session.autenticado || null,
+      //   autenticado: !!req.session.autenticado
+      // });
 
+
+      console.log("Comentario salvo iupiii!");
+
+      req.params.id = idPublicacao;
+      req.session.dadosNotificacao = {
+         titulo: 'Comentário enviado!', 
+         mensagem: 'Seu comentário foi salvo.', 
+         tipo: 'success' };
+  
+         return res.redirect("/publicacao/" + req.params.id); 
     } catch (erro) {
       console.error("Erro ao criar comentário:", erro);
       return res.render('pages/publicacao', {
@@ -68,7 +79,7 @@ const comentariosController = {
   },
 
   // Excluir comentário
-  // Excluir comentário
+ 
 excluirComentario: async (req, res) => {
   try {
     const {  idComentario, idPublicacao } = req.body; // nomes do form
@@ -101,19 +112,41 @@ excluirComentario: async (req, res) => {
 
     const resultado = await comentariosModel.excluirComentario(idComentario);
 
-    const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-    const comentarios = await comentariosModel.listarComentarios(idPublicacao);
+    // const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
+    // const comentarios = await comentariosModel.listarComentarios(idPublicacao);
 
-    return res.render('pages/publicacao', {
-      listaErros: null,
-      dadosNotificacao: resultado.error
-        ? { titulo: 'Erro', mensagem: resultado.error, tipo: 'error' }
-        : { titulo: 'Comentário excluído.', mensagem: 'Seu comentário foi excluído com sucesso.', tipo: 'success' },
-      publicacao,
-      comentarios,
-      usuario: req.session.autenticado || null,
-      autenticado: !!req.session.autenticado
-    });
+    // return res.render('pages/publicacao', {
+    //   listaErros: null,
+    //   dadosNotificacao: resultado.error
+    //     ? { titulo: 'Erro', mensagem: resultado.error, tipo: 'error' }
+    //     : { titulo: 'Comentário excluído.', mensagem: 'Seu comentário foi excluído com sucesso.', tipo: 'success' },
+    //   publicacao,
+    //   comentarios,
+    //   usuario: req.session.autenticado || null,
+    //   autenticado: !!req.session.autenticado
+    // });
+
+
+    if(resultado.error){
+
+      console.log("Deu ruim !");
+
+    req.params.id = idPublicacao;
+    req.session.dadosNotificacao ={ titulo: 'Erro', mensagem: resultado.error, tipo: 'error' };
+    
+       return res.redirect("/publicacao/" + req.params.id); 
+
+    }
+
+    console.log("Comentario excluido!");
+
+    req.params.id = idPublicacao;
+    req.session.dadosNotificacao = { 
+      titulo: 'Comentário excluído.',
+       mensagem: 'Seu comentário foi excluído com sucesso.',
+       tipo: 'success' };
+
+       return res.redirect("/publicacao/" + req.params.id); 
 
   } catch (erro) {
     console.error("Erro ao excluir comentário:", erro);

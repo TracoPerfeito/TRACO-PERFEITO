@@ -185,9 +185,18 @@
    
 }
 
-.like-button.liked{
+
+  .item-explorar .favorito{
     color: #508BBF;
-}
+    fill: #508BBF;
+  }
+  .item-explorar .favoritar{
+    color: rgb(211, 205, 205);
+  }
+
+/* .like-button.liked{
+    color: #508BBF;
+} */
  
 .carrossel-imagens-explorar {
   position: relative;

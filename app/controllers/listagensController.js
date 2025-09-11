@@ -1,6 +1,7 @@
 const listagensModel = require("../models/listagensModel");
 const comentariosModel = require("../models/comentariosModel");
 const { body, validationResult } = require("express-validator");
+const favoritoModel = require("../models/favoritoModel");
 const moment = require("moment");
  
  
@@ -27,7 +28,7 @@ const listagensController = {
   const id = req.params.id;
   try {
     const usuario = await listagensModel.findIdusuario(id);
-    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id);
+    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
  
    
  
@@ -55,13 +56,14 @@ const listagensController = {
  
     listarPublicacoes: async (req, res,  dadosNotificacao) => {
   try {
-    const publicacoes = await listagensModel.listarPublicacoes();
+    const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id);
  
     console.log("Publicações encontradas:", publicacoes.map(pub => ({
   ID_PUBLICACAO: pub.ID_PUBLICACAO,
   NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
   NOME_USUARIO: pub.NOME_USUARIO,
   TAGS: pub.TAGS,
+  FAVORITO: pub.FAVORITO,    
   qtdImagens: (pub.imagens || []).length,
   qtdImagensUrls: (pub.imagensUrls || []).length,
 })));
@@ -101,7 +103,7 @@ const listagensController = {
   exibirPublicacao: async (req, res) => {
   const id = req.params.id;
   try {
-    const publicacao = await listagensModel.findIdPublicacao(id);
+    const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
  
     if (!publicacao) {
       return res.status(404).send('Publicação não encontrada');
@@ -134,6 +136,7 @@ const sessao = req.session.autenticado;
   NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
   NOME_USUARIO: publicacao.NOME_USUARIO,
   TAGS: publicacao.TAGS,
+  FAVORITO: publicacao.FAVORITO,
   qtdImagens: publicacao.imagens.length,
   qtdImagensUrls: publicacao.imagensUrls.length,
 });
@@ -294,62 +297,121 @@ listarPropostas: async (req, res) => {
 
 
 
-
-
-
-
 exibirPortfolio: async (req, res) => {
   const id = req.params.id;
+
+console.log("ID do portfólio:", id);
+
   try {
-    // 1) Buscar publicações do portfolio
+    // 1) Buscar dados do portfolio (nome, descrição, tags, etc.)
+    const portfolio = await listagensModel.buscarPortfolioPorId(id);
+    console.log("Dados do portfólio buscado:", portfolio);
+
+    // 2) Buscar publicações do portfolio
     const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id);
 
-    // 2) Buscar dados do portfolio (nome, descrição, tags, etc.)
-    const portfolio = await listagensModel.buscarPortfolioPorId(id);
+    console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
 
+    // 3) Pega o dono do portfolio a partir do portfolio
+    const portfolioDono = portfolio
+      ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO }
+      : null;
+
+    // 4) Se não tem publicações, ainda renderiza as tags do portfólio
     if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) {
-      return res.render('pages/portfolio', {
+      return res.render("pages/portfolio", {
         publicacoesPortfolio: [],
         portfolio,
-        
-        portfolioDono: portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null,
+        portfolioDono,
         dadosNotificacao: {
-          titulo: 'Portfólio vazio',
-          mensagem: 'Nenhuma publicação encontrada neste portfólio.',
-          tipo: 'info'
-        }
+          titulo: "Portfólio vazio",
+          mensagem: "Nenhuma publicação encontrada neste portfólio.",
+          tipo: "info",
+        },
       });
     }
 
-    // 3) Pega o dono do portfolio a partir do portfolio
-    const portfolioDono = portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null;
-
+    // 5) Caso tenha publicações
     console.log("Dados do portfólio sendo exibido:", portfolio);
-    
-console.log(publicacoesPortfolio[0].tagsPortfolio);
-    res.render('pages/portfolio', {
+    res.render("pages/portfolio", {
       publicacoesPortfolio,
       portfolio,
       portfolioDono,
-     
-        dadosNotificacao: req.session.dadosNotificacao || null,
+      dadosNotificacao: req.session.dadosNotificacao || null,
     });
 
   } catch (erro) {
     console.log(erro);
-    res.render('pages/portfolio', {
+    res.render("pages/portfolio", {
       publicacoesPortfolio: [],
-      portfolio: null,
-      portfolioDono: null,
-     
+      portfolio,
+      portfolioDono,
       dadosNotificacao: {
-        titulo: 'Erro ao carregar o portfólio',
-        mensagem: 'Tente novamente mais tarde.',
-        tipo: 'error'
-      }
+        titulo: "Erro ao carregar o portfólio",
+        mensagem: "Tente novamente mais tarde.",
+        tipo: "error",
+      },
     });
   }
 },
+
+
+
+
+
+
+// exibirPortfolio: async (req, res) => {
+//   const id = req.params.id;
+//   try {
+//     // 1) Buscar publicações do portfolio
+//     const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id);
+
+//     // 2) Buscar dados do portfolio (nome, descrição, tags, etc.)
+//     const portfolio = await listagensModel.buscarPortfolioPorId(id);
+
+//     if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) {
+//       return res.render('pages/portfolio', {
+//         publicacoesPortfolio: [],
+//         portfolio,
+        
+//         portfolioDono: portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null,
+//         dadosNotificacao: {
+//           titulo: 'Portfólio vazio',
+//           mensagem: 'Nenhuma publicação encontrada neste portfólio.',
+//           tipo: 'info'
+//         }
+//       });
+//     }
+
+//     // 3) Pega o dono do portfolio a partir do portfolio
+//     const portfolioDono = portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null;
+
+//     console.log("Dados do portfólio sendo exibido:", portfolio);
+    
+// console.log(publicacoesPortfolio[0].tagsPortfolio);
+//     res.render('pages/portfolio', {
+//       publicacoesPortfolio,
+//       portfolio,
+//       portfolioDono,
+     
+//         dadosNotificacao: req.session.dadosNotificacao || null,
+//     });
+
+//   } catch (erro) {
+//     console.log(erro);
+//     res.render('pages/portfolio', {
+//       publicacoesPortfolio: [],
+//       portfolio: null,
+//       portfolioDono: null,
+     
+//       dadosNotificacao: {
+//         titulo: 'Erro ao carregar o portfólio',
+//         mensagem: 'Tente novamente mais tarde.',
+//         tipo: 'error'
+//       }
+//     });
+//   }
+// },
 
  
 

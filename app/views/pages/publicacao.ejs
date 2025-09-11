@@ -200,9 +200,14 @@ if (Array.isArray(listaErros)) {
     <!-- Nome da publicação -->
     <p class="nome-da-publicacao"><%= publicacao.NOME_PUBLICACAO %></p>
  
-    <button class="like-button" title="Curtir">
-      <i class="far fa-heart"></i>
-    </button>
+  <button class="like-button">
+ 
+  <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>"  
+     onclick="localStorage.setItem('scrollPos', window.scrollY)">
+    <i class="<%= publicacao.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= publicacao.FAVORITO %>"></i>
+
+  </a>
+</button> 
   </section>
  
   <!-- Descrição da publicação -->
@@ -539,8 +544,8 @@ if (Array.isArray(listaErros)) {
  
  
     <%- include('../partials/rodape'); %>
-    <script src="/js/like.js"></script>
-    
+    <!-- <script src="/js/like.js"></script>
+     -->
     <script src="/js/expan-img.js"></script>
     <script src="/js/mobile-navbar.js"></script>
     <script src="/js/denuncia-compartilhamento.js"></script>
@@ -567,6 +572,8 @@ if (Array.isArray(listaErros)) {
       }
 
     </script>
+
+    <script src="js/rolagem-atualizar-pag.js"></script>
 
 
 

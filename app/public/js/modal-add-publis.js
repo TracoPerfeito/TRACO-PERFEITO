@@ -3,7 +3,7 @@
 // --- Funções do modal ---
 // --- Variáveis globais ---
 const btnAbrir = document.getElementById("btn-abrir-modal-add-publis");
-const modal = document.getElementById("modal-add-publis");
+const modaladdpub = document.getElementById("modal-add-publis");
 const listagem = document.getElementById("listagem-publi");
 const loader = document.getElementById("loader-publicacoes");
 const inputPublicacoes = document.getElementById("publicacoesSelecionadas");
@@ -12,7 +12,7 @@ let publicacoesSelecionadas = new Set();
 
 // --- Funções de modal ---
 function ajustarModalMobile() {
-  const content = modal.querySelector(".modal-content-add-publis");
+  const content = modaladdpub.querySelector(".modal-content-add-publis");
   const alturaVisivel = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
   if (window.innerWidth <= 768) {
@@ -26,10 +26,10 @@ function ajustarModalMobile() {
   document.body.style.overflow = "hidden";
 }
 
-function fecharModal() {
-  modal.style.display = "none";
+function fecharModaladd() {
+  modaladdpub.style.display = "none";
   document.body.style.overflow = "";
-  const content = modal.querySelector(".modal-content-add-publis");
+  const content = modaladdpub.querySelector(".modal-content-add-publis");
   content.style.maxHeight = "";
   content.style.overflowY = "";
 }
@@ -91,19 +91,19 @@ async function carregarPublicacoes() {
 
 // --- Event listeners ---
 btnAbrir.addEventListener("click", () => {
-  modal.style.display = "flex";
+  modaladdpub.style.display = "flex";
   ajustarModalMobile();
   carregarPublicacoes();
 });
 
 document.getElementById("fechar-modal-add-publis").addEventListener("click", fecharModal);
 
-modal.addEventListener("click", (event) => {
+modaladdpub.addEventListener("click", (event) => {
   if (event.target.id === "modal-add-publis") fecharModal();
 });
 
 window.addEventListener("resize", () => {
-  if (modal.style.display === "flex") ajustarModalMobile();
+  if (modaladdpub.style.display === "flex") ajustarModalMobile();
 });
 
 

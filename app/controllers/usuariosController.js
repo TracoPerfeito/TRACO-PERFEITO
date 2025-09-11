@@ -333,8 +333,8 @@ cadastrarUsuario: async (req, res) => {
     try {
         let results = await usuariosModel.findId(req.session.autenticado.id);
         const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
-        const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id);
-      
+        const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id, req.session.autenticado.id);
+
 
 
         let campos = {
