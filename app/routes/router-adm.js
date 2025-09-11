@@ -3,6 +3,7 @@ const router = express.Router();
 
 const admController = require("../controllers/admController");
 const admModel = require("../models/admModel");
+const admListagemController = require("../controllers/admListagemController");
 
 const {
   verificarUsuAutenticado,
@@ -85,9 +86,11 @@ router.get(
   "/adm-lista-usuarios",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  admListagemController.listarUsuariosPaginados,
 
   async (req, res) => {
     try {
+    
 
       const listarUsuarios = await admModel.listarUsuarios();
       console.log({listarUsuarios});
@@ -151,8 +154,6 @@ router.get(
     }
   }
 );
-
-// Falta fazer o EJS do listagem de profissionais e comuns ein
 
 
 

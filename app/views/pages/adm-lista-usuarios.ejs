@@ -86,7 +86,7 @@
               <% } else if (usuario.STATUS_USUARIO === 'inativo') { %>
                 <span class="status inativo" style="color: red; font-weight: bold;">Inativo</span>
               <% } else { %>
-                <span class="status pendente" style="color: orange; font-weight: bold;"><%= usuario.STATUS_USUARIO %></span>
+                <span class="status pendente" style="color: #a96807; font-weight: bold;"><%= usuario.STATUS_USUARIO %></span>
               <% } %>
             </td>
             <td style="text-align:center;">
@@ -111,7 +111,23 @@
 
 
 
+    <!-- PAGINAÇÃO DO NEGOCIO -->
 
+    <input onclick="window.location='/adicionar'" type="button" value="Novo">
+
+    <% if (paginador) { %>
+        <section class="notificador">
+            <ul>
+                <% for (var i = 1; i <= paginador.total_paginas; i++) { %>
+                    <% if (paginador.pagina_atual == i) { %>
+                        <li><a class="atual" href="?pagina=<%= i %>"><%= i %></a></li>
+                    <% } else { %>
+                        <li><a href="?pagina=<%= i %>"><%= i %></a></li>
+                    <% } %>
+                <% } %>
+            </ul>
+        </section>
+    <% } %>
 
 
 

@@ -79,9 +79,39 @@ const admModel = {
             return linhas;
         } catch (error) {
             console.log(error);
-            return []; //ou []
+            return []; //ou error
         }
     },
+
+
+
+    //TENTATIVA DE PAGINAÇÃO
+
+    findPageListagem: async (inicio, total) => {
+        try {
+            const [linhas] = await pool.query(
+                "SELECT * FROM USUARIOS LIMIT ?, ?",
+                [inicio, total]
+            );
+            return linhas;
+        } catch (error) {
+            console.log(error);
+            return []; // Retorna um array vazio em caso de erro
+        }
+    },
+
+    totalRegListagem: async () => {
+        try {
+            const [linhas] = await pool.query(
+                "SELECT COUNT(*) AS TOTAL FROM USUARIOS"
+            );
+            return linhas[0].TOTAL; // Retorna o valor total diretamente
+        } catch (error) {
+            console.log(error);
+            return 0; // Retorna 0 em caso de erro
+        }
+    },
+
 
 
 
