@@ -143,6 +143,11 @@ const sessao = req.session.autenticado;
 
     console.log("Comentarios da publicação sendo exibida: ", comentarios)
     console.log("Usuário autenticado passado para a view:", usuario);
+    
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+req.session.dadosNotificacao = null;
+
+    console.log("Dados de notificação:", dadosNotificacao);
     res.render('pages/publicacao', {
       publicacao,
       comentarios,
@@ -155,7 +160,7 @@ const sessao = req.session.autenticado;
       autenticado: !!usuario,
       id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
       tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
-      dadosNotificacao: req.session.dadosNotificacao || null,
+      dadosNotificacao
     });
   } catch (erro) {
     console.log(erro);
@@ -308,7 +313,7 @@ console.log("ID do portfólio:", id);
     console.log("Dados do portfólio buscado:", portfolio);
 
     // 2) Buscar publicações do portfolio
-    const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id);
+    const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id, req.session.autenticado.id);
 
     console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
 
@@ -316,6 +321,9 @@ console.log("ID do portfólio:", id);
     const portfolioDono = portfolio
       ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO }
       : null;
+
+      // Quando carregar a página do portfolio
+req.session.currentPortfolioId = id;
 
     // 4) Se não tem publicações, ainda renderiza as tags do portfólio
     if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) {

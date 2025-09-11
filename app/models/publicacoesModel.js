@@ -43,7 +43,7 @@ const publicacoesModel = {
   },
 
   // ✏️ Editar/atualizar publicação
-  editarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
+  atualizarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
     try {
       await pool.query(
         `UPDATE PUBLICACOES_PROFISSIONAL 

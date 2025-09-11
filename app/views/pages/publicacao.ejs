@@ -63,17 +63,13 @@
 let cssErros = {conteudo: ""};
 let msgErros = {conteudo: ""};
  
-if (Array.isArray(listaErros)) {
-    listaErros.errors.forEach(function (elemento){
-        if(elemento.path == "conteudo"){
-            cssErros.conteudo = "erro-form";
-            msgErros.conteudo = elemento.msg;
-        }
- 
-    });
-}
+(listaErros || []).forEach(function(elemento) {
+    if(elemento.path === "conteudo") {
+        cssErros.conteudo = "erro-form";
+        msgErros.conteudo = elemento.msg;
+    }
+});
 %>
- 
  
  
  

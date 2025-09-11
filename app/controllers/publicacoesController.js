@@ -15,16 +15,16 @@ const publicacoesController = {
   regrasValidacaoCriarPublicacao: [
     body("titulo")
       .trim()
-      .isLength({ min: 2, max: 70 })
-      .withMessage("O título deve ter entre 2 e 70 caracteres."),
+      .isLength({ min: 1, max: 70 })
+      .withMessage("O título deve ter entre 1 e 70 caracteres."),
     body("categoria")
       .trim()
       .notEmpty()
       .withMessage("A categoria é obrigatória."),
     body("descricao")
       .trim()
-      .isLength({ min: 2, max: 2000 })
-      .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+      .isLength({ min: 1, max: 2000 })
+      .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
     body("tags")
       .custom((value) => {
         try {
@@ -130,15 +130,15 @@ const publicacoesController = {
     regrasValidacaoEditarPublicacao: [
   body("titulo_publicacao")
     .trim()
-    .isLength({ min: 2, max: 70 })
-    .withMessage("O título deve ter entre 2 e 70 caracteres."),
+    .isLength({ min: 1, max: 70 })
+    .withMessage("O título deve ter entre 1 e 70 caracteres."),
   
   
 
   body("descricao_publicacao")
     .trim()
-    .isLength({ min: 2, max: 2000 })
-    .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+    .isLength({ min: 1, max: 2000 })
+    .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
 
   body("tags")
     .custom((value) => {
@@ -291,15 +291,28 @@ editarPublicacao: async (req, res) => {
     if (!erros.isEmpty()) {
       console.log("Deu erro na validação !!");
       console.log("Erros de validação:", erros.array());
-      return res.render('pages/publicacao', {
-        idPublicacao,
-        listaErros: erros.array(),
-        dadosNotificacao: {
-          titulo: "Erro na validação",
-          mensagem: "Alguns campos estão inválidos.",
-          tipo: "error"
-        }
-      });
+
+          
+      req.params.id = idPublicacao; 
+
+      req.session.dadosNotificacao = {
+        titulo: "Não foi possível salvar as alterações.",
+        mensagem: "Preencha os campos corretamente.",
+        tipo: "error"
+      };
+
+      return listagensController.exibirPublicacao(req, res);
+
+      // return res.render('pages/publicacao', {
+      //   idPublicacao,
+      //   listaErros: erros.array(),
+      //   dadosNotificacao: {
+      //     titulo: "Erro na validação",
+      //     mensagem: "Alguns campos estão inválidos.",
+      //     tipo: "error"
+      //   }, 
+      //     erros: erros.array(),
+      // });
     }
 
     // 1) Atualiza os dados básicos da publicação
@@ -360,8 +373,7 @@ req.session.dadosNotificacao = {
   tipo: "success"
 };
 
-await listagensController.exibirPublicacao(req, res);
-
+ return listagensController.exibirPublicacao(req, res);
   } catch (erro) {
     console.error("Erro ao editar publicação:", erro);
   
@@ -375,8 +387,7 @@ await listagensController.exibirPublicacao(req, res);
         tipo: "error"
       };
 
-      await listagensController.exibirPublicacao(req, res);
-
+     return listagensController.exibirPublicacao(req, res);
   }
 },
 
@@ -896,11 +907,55 @@ editarPortfolio: async (req, res) => {
 
 
 
+// favoritar: async (req, res) => {
+//     console.log("Chegou no favoritar");
+
+//     if (!req.session.autenticado?.autenticado) {
+//       console.log("O usuário precisa logar. Mandando ele pra página de login.")
+//         return res.render("pages/login", { 
+//             listaErros: null,
+//             dadosNotificacao: {
+//                 titulo: "Faça seu Login!", 
+//                 mensagem: "Para favoritar é necessário estar logado!", 
+//                 tipo: "warning" 
+//             },
+//             valores: [],
+//             retorno: null,
+//             errosLogin: null
+//         });
+//     }
+
+//     try {
+//         console.log("id da publicação:", req.query.id);
+//         console.log("situação:", req.query.sit);
+//         console.log("id do usuário:", req.session.autenticado.id);
+
+//         await favoritoModel.favoritar({
+//             idPublicacao: req.query.id,
+//             situacao: req.query.sit,
+//             idUsuario: req.session.autenticado.id
+//         });
+
+//         console.log("Favorito atualizado!");
+
+      
+//         const previousUrl = req.get("Referer") || "/";
+//         res.redirect(previousUrl);
+
+//     } catch (err) {
+//         console.error(err);
+//         res.redirect("/");
+//     }
+// }
+
+
+
+
 favoritar: async (req, res) => {
     console.log("Chegou no favoritar");
 
     if (!req.session.autenticado?.autenticado) {
-      console.log("O usuário precisa logar. Mandando ele pra página de login.")
+        console.log("O usuário precisa logar. Mandando ele pra página de login.");
         return res.render("pages/login", { 
             listaErros: null,
             dadosNotificacao: {
@@ -915,27 +970,40 @@ favoritar: async (req, res) => {
     }
 
     try {
-        console.log("id da publicação:", req.query.id);
-        console.log("situação:", req.query.sit);
-        console.log("id do usuário:", req.session.autenticado.id);
+        const idPublicacao = req.query.id;
+        const situacao = req.query.sit;
+        const idUsuario = req.session.autenticado.id;
+
+        console.log("id da publicação:", idPublicacao);
+        console.log("situação:", situacao);
+        console.log("id do usuário:", idUsuario);
 
         await favoritoModel.favoritar({
-            idPublicacao: req.query.id,
-            situacao: req.query.sit,
-            idUsuario: req.session.autenticado.id
+            idPublicacao,
+            situacao,
+            idUsuario
         });
 
         console.log("Favorito atualizado!");
 
-      
         const previousUrl = req.get("Referer") || "/";
-        res.redirect(previousUrl);
+
+        
+        if (previousUrl.includes("/salvarcomentario") || previousUrl.includes("/excluir-comentario") || previousUrl.includes("/editar-publicacao")) {
+    return res.redirect(`/publicacao/${idPublicacao}`);
+} else if (previousUrl.includes("/editar-portfolio") || previousUrl.includes("/remover-publis-portfolio") || previousUrl.includes("/adicionar-publis-portfolio")) {
+    return res.redirect(`/portfolio/${req.session.currentPortfolioId}`);
+}
+
+return res.redirect(previousUrl || "/");
+
 
     } catch (err) {
         console.error(err);
         res.redirect("/");
     }
 }
+
 
 
 

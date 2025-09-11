@@ -70,8 +70,9 @@ router.get("/favoritar", verificarUsuAutenticado, function (req, res) {
 
 
 router.get("/publicacao/:id", function (req, res) { //publicacao
- 
-    listagensController.exibirPublicacao(req, res);
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+    listagensController.exibirPublicacao(req, res, dadosNotificacao);
 
 });
 
@@ -80,11 +81,11 @@ router.get("/publicacao/:id", function (req, res) { //publicacao
 
 
 router.post(
-  "/editar-publicacao",
-  publicacoesController.regrasValidacaoEditarPublicacao, // validações
-  publicacoesController.editarPublicacao                 // controller
-);
+  "/editar-publicacao", 
 
+  publicacoesController.regrasValidacaoEditarPublicacao, // validações
+  publicacoesController.editarPublicacao              // controller)};
+);
  
 router.post(
   "/salvarcomentario",

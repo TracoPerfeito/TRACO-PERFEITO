@@ -467,25 +467,33 @@ buscarPortfolioPorId: async (idPortfolio) => {
 
 
 
-listarPublicacoesdoPortfolio: async (idPortfolio) => {
+listarPublicacoesdoPortfolio: async (idPortfolio, idUsuario = null) => {
   try {
     // 1) Buscar publicações que estão nesse portfolio
     const [publicacoes] = await pool.query(`
-      SELECT 
+     SELECT 
         p.ID_PUBLICACAO,
         p.ID_USUARIO,
         p.NOME_PUBLICACAO,
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
         u.NOME_USUARIO,
-        u.FOTO_PERFIL_PASTA_USUARIO
+        u.FOTO_PERFIL_PASTA_USUARIO,
+        GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
+        IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
       FROM PUBLICACOES_PROFISSIONAL p
       INNER JOIN PUBLICACAO_PORTFOLIO pp ON p.ID_PUBLICACAO = pp.ID_PUBLICACAO
       LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
+      LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
+      LEFT JOIN FAVORITOS f 
+        ON f.ID_PUBLICACAO = p.ID_PUBLICACAO 
+        AND f.ID_USUARIO = ? 
+        AND f.STATUS_FAVORITO = 1
       WHERE pp.ID_PORTFOLIO = ?
       GROUP BY p.ID_PUBLICACAO
       ORDER BY p.ID_PUBLICACAO DESC
-    `, [idPortfolio]);
+    `, [idUsuario, idPortfolio]);
 
     // 2) Buscar todas as imagens das publicações listadas
     const ids = publicacoes.map(pub => pub.ID_PUBLICACAO);

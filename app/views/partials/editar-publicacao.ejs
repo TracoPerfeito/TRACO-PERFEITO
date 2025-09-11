@@ -108,13 +108,25 @@ form.addEventListener('submit', () => {
   
             <section class="secao-btns-modal">
 
+<!-- 
                 <button type="submit" class="btn-excluir-editar-publicacao"><ion-icon name="trash-outline" id="ion-trash"></ion-icon> Excluir</button>
-              
+               -->
               <button type="submit" class="btn-salvar-editar-publicacao">Salvar Alterações</button>
             </section>
+
+            
+              
            
      
         </form>
+
+          <form action="/excluir-publicacao" method="POST" style="display:inline;" class="btn-excluir-editar-publicacao">
+            <input type="hidden" name="idPublicacao" id="id-editar-publicacao-excluir" value="">
+            <button type="submit" class="btn-excluir-publicacao" title="Excluir publicação" onclick="return confirm('Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.');">
+              <ion-icon name="trash-outline"></ion-icon>
+              Excluir
+            </button>
+          </form>
       </section>
     </section>
   </section>
@@ -171,6 +183,7 @@ document.addEventListener("click", function (e) {
 
   // Preenche os campos do formulário
   document.getElementById("id-editar-publicacao").value = idPublicacao;
+  document.getElementById("id-editar-publicacao-excluir").value = idPublicacao;
   document.getElementById("titulo-editar-publicacao").value = titulo;
   document.getElementById("categoria-editar-publicacao").value = categoria;
   document.getElementById("descricao-editar-publicacao").value = descricao;
