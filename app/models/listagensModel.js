@@ -444,13 +444,26 @@ buscarPortfolioPorId: async (idPortfolio) => {
       WHERE pf.ID_PORTFOLIO = ?
     `, [idPortfolio]);
 
-    return rows[0] || null;
+    const portfolio = rows[0] || null;
+
+    if (portfolio) {
+      // Buscar tags do portfólio
+      const [tagsPortfolio] = await pool.query(`
+        SELECT t.NOME_TAG 
+        FROM TAGS_PORTFOLIOS tp
+        INNER JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
+        WHERE tp.ID_PORTFOLIO = ?
+      `, [idPortfolio]);
+
+      portfolio.tagsPortfolio = tagsPortfolio.map(t => t.NOME_TAG);
+    }
+
+    return portfolio;
   } catch (error) {
     console.error("Erro ao buscar portfolio:", error);
     return null;
   }
 },
-
 
 
 
@@ -465,12 +478,9 @@ listarPublicacoesdoPortfolio: async (idPortfolio) => {
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
         u.NOME_USUARIO,
-        u.FOTO_PERFIL_PASTA_USUARIO,
-        GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS
+        u.FOTO_PERFIL_PASTA_USUARIO
       FROM PUBLICACOES_PROFISSIONAL p
       INNER JOIN PUBLICACAO_PORTFOLIO pp ON p.ID_PUBLICACAO = pp.ID_PUBLICACAO
-      LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
-      LEFT JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
       LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
       WHERE pp.ID_PORTFOLIO = ?
       GROUP BY p.ID_PUBLICACAO
@@ -496,20 +506,9 @@ listarPublicacoesdoPortfolio: async (idPortfolio) => {
       imagensPorPublicacao[img.ID_PUBLICACAO].push(img.IMG_PUBLICACAO);
     });
 
-    // 4) Buscar tags do portfólio
-    const [tagsPortfolio] = await pool.query(`
-      SELECT t.NOME_TAG 
-      FROM TAGS_PORTFOLIOS tp
-      INNER JOIN TAGS t ON tp.ID_TAG = t.ID_TAG
-      WHERE tp.ID_PORTFOLIO = ?
-    `, [idPortfolio]);
-
-    const tagsDoPortfolio = tagsPortfolio.map(t => t.NOME_TAG);
-
-    // 5) Montar resultado final adicionando imagens e tags do portfólio
+    // 4) Montar resultado final adicionando apenas imagens
     publicacoes.forEach(pub => {
       pub.imagens = imagensPorPublicacao[pub.ID_PUBLICACAO] || [];
-      pub.tagsPortfolio = tagsDoPortfolio; // mesmo conjunto em todas publicações
     });
 
     return publicacoes;

@@ -60,12 +60,13 @@ body {
 }
 
 
-.nome-desc{
-    margin: 30px 50px;
-    color: var(--text-color);
-    display: flex;
+.nome-desc {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 30px 40px;
+  color: var(--text-color);
 }
-
 h1 {
      text-overflow: ellipsis;
       overflow-wrap: break-word; 
@@ -194,6 +195,11 @@ responsividade */
 
     }
 
+    .nome-desc {
+  
+  margin: 30px 25px;
+  
+}
 }
 
 
@@ -469,31 +475,34 @@ responsividade */
 
 
 
-@media (max-width: 900px){
-  .nome-desc{
-    margin: 30px 25px;
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
+
+
+
+.dados-portfolio {
+  flex: 1; /* ocupa o espaço restante */
+  max-width: 70%; /* limita largura no desktop */
 }
-
-
-.dados-portfolio{
-max-width: 100%;
-}
-
-
-
 
 .acoes-portfolio {
-
-
-  margin: 1rem 0px 1rem 0px;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin: 1rem 0;
 }
 
 
+/* --- Responsivo --- */
+@media (max-width: 900px) {
+  .nome-desc {
+    flex-direction: column; 
+  }
 
+  .dados-portfolio {
+    max-width: 100%;
+  }
+
+  .acoes-portfolio {
+    justify-content: flex-start; 
+    margin: 1rem 0 0 0;
+  }
 }
-
-
-

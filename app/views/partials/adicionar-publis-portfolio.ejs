@@ -121,7 +121,7 @@
 
 <form action="/adicionar-publis-portfolio" method="POST">
     
-      <input type="hidden" name="portfolioId" value="<%= portfolio.ID_PORTFOLIO %>">
+      <input type="hidden" name="portfolioId" value="<%= portfolio ? portfolio.ID_PORTFOLIO : '' %>">
   <input type="hidden" name="publicacoesSelecionadas" id="publicacoesSelecionadas" value="">
   
        

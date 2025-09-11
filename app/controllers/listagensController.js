@@ -297,62 +297,121 @@ listarPropostas: async (req, res) => {
 
 
 
-
-
-
-
 exibirPortfolio: async (req, res) => {
   const id = req.params.id;
+
+console.log("ID do portfólio:", id);
+
   try {
-    // 1) Buscar publicações do portfolio
+    // 1) Buscar dados do portfolio (nome, descrição, tags, etc.)
+    const portfolio = await listagensModel.buscarPortfolioPorId(id);
+    console.log("Dados do portfólio buscado:", portfolio);
+
+    // 2) Buscar publicações do portfolio
     const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id);
 
-    // 2) Buscar dados do portfolio (nome, descrição, tags, etc.)
-    const portfolio = await listagensModel.buscarPortfolioPorId(id);
+    console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
 
+    // 3) Pega o dono do portfolio a partir do portfolio
+    const portfolioDono = portfolio
+      ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO }
+      : null;
+
+    // 4) Se não tem publicações, ainda renderiza as tags do portfólio
     if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) {
-      return res.render('pages/portfolio', {
+      return res.render("pages/portfolio", {
         publicacoesPortfolio: [],
         portfolio,
-        
-        portfolioDono: portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null,
+        portfolioDono,
         dadosNotificacao: {
-          titulo: 'Portfólio vazio',
-          mensagem: 'Nenhuma publicação encontrada neste portfólio.',
-          tipo: 'info'
-        }
+          titulo: "Portfólio vazio",
+          mensagem: "Nenhuma publicação encontrada neste portfólio.",
+          tipo: "info",
+        },
       });
     }
 
-    // 3) Pega o dono do portfolio a partir do portfolio
-    const portfolioDono = portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null;
-
+    // 5) Caso tenha publicações
     console.log("Dados do portfólio sendo exibido:", portfolio);
-    
-console.log(publicacoesPortfolio[0].tagsPortfolio);
-    res.render('pages/portfolio', {
+    res.render("pages/portfolio", {
       publicacoesPortfolio,
       portfolio,
       portfolioDono,
-     
-        dadosNotificacao: req.session.dadosNotificacao || null,
+      dadosNotificacao: req.session.dadosNotificacao || null,
     });
 
   } catch (erro) {
     console.log(erro);
-    res.render('pages/portfolio', {
+    res.render("pages/portfolio", {
       publicacoesPortfolio: [],
-      portfolio: null,
-      portfolioDono: null,
-     
+      portfolio,
+      portfolioDono,
       dadosNotificacao: {
-        titulo: 'Erro ao carregar o portfólio',
-        mensagem: 'Tente novamente mais tarde.',
-        tipo: 'error'
-      }
+        titulo: "Erro ao carregar o portfólio",
+        mensagem: "Tente novamente mais tarde.",
+        tipo: "error",
+      },
     });
   }
 },
+
+
+
+
+
+
+// exibirPortfolio: async (req, res) => {
+//   const id = req.params.id;
+//   try {
+//     // 1) Buscar publicações do portfolio
+//     const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id);
+
+//     // 2) Buscar dados do portfolio (nome, descrição, tags, etc.)
+//     const portfolio = await listagensModel.buscarPortfolioPorId(id);
+
+//     if (!publicacoesPortfolio || publicacoesPortfolio.length === 0) {
+//       return res.render('pages/portfolio', {
+//         publicacoesPortfolio: [],
+//         portfolio,
+        
+//         portfolioDono: portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null,
+//         dadosNotificacao: {
+//           titulo: 'Portfólio vazio',
+//           mensagem: 'Nenhuma publicação encontrada neste portfólio.',
+//           tipo: 'info'
+//         }
+//       });
+//     }
+
+//     // 3) Pega o dono do portfolio a partir do portfolio
+//     const portfolioDono = portfolio ? { ID_USUARIO: portfolio.ID_USUARIO, NOME_USUARIO: portfolio.NOME_USUARIO } : null;
+
+//     console.log("Dados do portfólio sendo exibido:", portfolio);
+    
+// console.log(publicacoesPortfolio[0].tagsPortfolio);
+//     res.render('pages/portfolio', {
+//       publicacoesPortfolio,
+//       portfolio,
+//       portfolioDono,
+     
+//         dadosNotificacao: req.session.dadosNotificacao || null,
+//     });
+
+//   } catch (erro) {
+//     console.log(erro);
+//     res.render('pages/portfolio', {
+//       publicacoesPortfolio: [],
+//       portfolio: null,
+//       portfolioDono: null,
+     
+//       dadosNotificacao: {
+//         titulo: 'Erro ao carregar o portfólio',
+//         mensagem: 'Tente novamente mais tarde.',
+//         tipo: 'error'
+//       }
+//     });
+//   }
+// },
 
  
 
