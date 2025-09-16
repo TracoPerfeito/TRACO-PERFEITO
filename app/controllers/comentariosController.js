@@ -175,7 +175,42 @@ excluirComentario: async (req, res) => {
       await denunciasModel.criarDenuncia({ idComentario, idUsuario, motivo });
       // Notifica os administradores
       await notificacoesModel.notificarAdmins(`Novo comentário denunciado! Motivo: ${motivo}`);
-      return res.status(200).json({ sucesso: true, mensagem: "Denúncia registrada com sucesso!" });
+      
+
+
+
+
+
+      
+    if(resultado.error){
+
+      console.log("Deu ruim !");
+
+    req.params.id = idPublicacao;
+    req.session.dadosNotificacao ={ titulo: 'Erro', mensagem: resultado.error, tipo: 'error' };
+    
+       return res.redirect("/publicacao/" + req.params.id); 
+
+    }
+
+    console.log("Comentario excluido!");
+
+    req.params.id = idPublicacao;
+    req.session.dadosNotificacao = { 
+      titulo: 'Denúncia do Comentário feita com Sucesso.',
+       mensagem: 'Seu comentário foi denunciado com sucesso.',
+       tipo: 'success' };
+
+       return res.redirect("/publicacao/" + req.params.id); 
+
+
+
+
+
+
+
+
+
     } catch (erro) {
       console.error("Erro ao denunciar comentário:", erro);
       return res.status(500).json({ erro: "Erro ao registrar denúncia." });
