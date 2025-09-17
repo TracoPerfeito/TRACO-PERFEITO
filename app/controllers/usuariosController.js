@@ -334,6 +334,8 @@ cadastrarUsuario: async (req, res) => {
         let results = await usuariosModel.findId(req.session.autenticado.id);
         const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
         const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id, req.session.autenticado.id);
+        const qntPortfolios = await listagensModel.contarPortfoliosUsuario(req.session.autenticado.id);
+ 
 const usuario = results[0];
 
 let imgPerfil = usuario.FOTO_PERFIL_BANCO_USUARIO
@@ -385,7 +387,7 @@ console.log("Resultado da consulta:", {
   USER_USUARIO: results[0].USER_USUARIO,
 });
 
-        res.render("pages/meu-perfil-artista", { listaErros: null, dadosNotificacao: notificacao,  valores: campos, msgErro: null, publicacoes });
+        res.render("pages/meu-perfil-artista", { listaErros: null, dadosNotificacao: notificacao,  valores: campos, msgErro: null, publicacoes, qntPortfolios });
     } catch (e) {
         console.log(e);
         res.render("pages/meu-perfil-artista", {
@@ -399,7 +401,8 @@ console.log("Resultado da consulta:", {
             },
             dadosNotificacao: null,
             msgErro: "Erro ao carregar perfil",
-            publicacoes: [] 
+            publicacoes: [] ,
+            qntPortfolios: 0
         });
     }
 },

@@ -36,6 +36,7 @@ const listagensController = {
   try {
     const usuario = await listagensModel.findIdusuario(id);
     const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
+    const qntPortfolios = await listagensModel.contarPortfoliosUsuario(id);
  
    
  
@@ -67,12 +68,13 @@ const listagensController = {
   INSTAGRAM_USUARIO: usuario.INSTAGRAM_USUARIO,
   WHATSAPP_USUARIO: usuario.WHATSAPP_USUARIO,
   Publicacoes: publicacoes
-}, "Especialização:", especializacao);
+}, "Especialização:", especializacao, "Quantidade de portfólios:", qntPortfolios);
 
     res.render('pages/perfil', {
       usuario,
       especializacao,
-      publicacoes
+      publicacoes,
+      qntPortfolios
     });
   } catch (erro) {
     console.log(erro);

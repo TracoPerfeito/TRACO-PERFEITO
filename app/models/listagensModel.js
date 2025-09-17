@@ -115,6 +115,22 @@ const listagensModel = {
   },
 
 
+
+
+  contarPortfoliosUsuario: async(id) => {
+    try {
+      const [resultado] = await pool.query(
+        'SELECT COUNT(*) AS total FROM PORTFOLIOS WHERE ID_USUARIO = ?',
+        [id]
+      );
+      return resultado[0].total;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+
+
 listarPublicacoes: async (idUsuario = null) => {
   try {
     const [publicacoes] = await pool.query(`
