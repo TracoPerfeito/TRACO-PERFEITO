@@ -137,10 +137,11 @@
     <h2 class="titulo-modal-edit-port">Editar Portfólio</h2>
 
     <!-- Abas -->
-    <section class="abas-modal">
-      <button type="button" class="aba-btn ativa" data-aba="editar-info">Editar Informações</button>
-      <button type="button" class="aba-btn" data-aba="remover-pubs">Remover Publicações</button>
-    </section>
+   <section class="abas-modal">
+  <button type="button" class="aba-btn ativa" data-aba="editar-info">Editar Informações</button>
+  <button type="button" class="aba-btn" data-aba="remover-pubs">Remover Publicações</button>
+  <button type="button" class="aba-btn" data-aba="excluir-port">Excluir Portfólio</button>
+</section>
 
     <!-- Conteúdo das abas -->
     <section class="conteudo-aba ativa" id="editar-info">
@@ -198,6 +199,33 @@
      </form>
     </section>
 
+
+
+    <section class="conteudo-aba" id="excluir-port">
+  <h3>Atenção!</h3>
+  <p>Esta ação é <strong>irreversível</strong>. Se você excluir o portfólio, todos os dados relacionados serão perdidos.</p>
+
+
+  <form action="/excluir-portfolio" method="post">
+    <input type="hidden" name="idPortfolio" id="id-portfolio-excluir" value="">
+
+
+
+    <label for="confirmar-exclusao">
+      Digite <strong>QueroExcluirEstePortfolio</strong> para confirmar:
+    </label>
+    <input 
+      type="text" 
+      id="confirmar-exclusao" 
+      name="confirmacao" 
+      placeholder="Digite exatamente aqui..."
+      required
+    >
+
+    <button id="btn-excluir-portfolio" type="submit" disabled>Excluir Portfólio</button>
+  </form>
+</section>
+
   </section>
 </section>
 
@@ -241,5 +269,25 @@ abasBtns.forEach(btn => {
     const pubId = item.dataset.id;
     item.addEventListener('click', () => toggleSelecaoRemover(item, pubId));
   });
+
+
+
+
+
+
+
+
+  const inputConfirmacao = document.getElementById("confirmar-exclusao");
+const btnExcluir = document.getElementById("btn-excluir-portfolio");
+
+if (inputConfirmacao) {
+  inputConfirmacao.addEventListener("input", () => {
+    if (inputConfirmacao.value === "QueroExcluirEstePortfolio") {
+      btnExcluir.disabled = false;
+    } else {
+      btnExcluir.disabled = true;
+    }
+  });
+}
 </script>
 

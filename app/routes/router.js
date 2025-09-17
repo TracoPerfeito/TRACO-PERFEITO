@@ -314,6 +314,12 @@ router.get("/portfolio/:id/editar-portfolio", verificarDonoPortfolio, function (
   res.render("editar-portfolio", { usuario: req.session.autenticado });
 });
 
+
+router.post(
+  "/excluir-portfolio",
+  publicacoesController.excluirPortfolio
+);
+
 router.post(
   "/editar-portfolio",
  publicacoesController.regrasValidacaoEditarPortfolio,

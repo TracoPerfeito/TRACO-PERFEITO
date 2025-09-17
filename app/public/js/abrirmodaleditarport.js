@@ -50,9 +50,11 @@ document.addEventListener("click", (e) => {
   const btn = e.target.closest(".btn-editar-portfolio");
   if (!btn) return;
 
+   console.log("ID capturado no botão:", btn.dataset.id);
   // Preenche os campos do modal
   document.getElementById("id-editar-portfolio").value = btn.dataset.id || "";
   document.getElementById("id-portfolio-remocao").value = btn.dataset.id || "";
+    document.getElementById("id-portfolio-excluir").value = btn.dataset.id || "";
   document.getElementById("titulo-editar-portfolio").value = btn.dataset.titulo || "";
   document.getElementById("descricao-editar-portfolio").value = btn.dataset.descricao || "";
 

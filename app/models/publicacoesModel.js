@@ -217,6 +217,26 @@ const publicacoesModel = {
     }
   },
 
+
+   excluirPortfolio: async (idPortfolio) => {
+    try {
+      
+      
+      await pool.query('DELETE FROM TAGS_PORTFOLIOS WHERE ID_PORTFOLIO = ?', [idPortfolio]);
+   
+      await pool.query('DELETE FROM PUBLICACAO_PORTFOLIO WHERE ID_PORTFOLIO = ?', [idPortfolio]);
+     
+      await pool.query('DELETE FROM PORTFOLIOS WHERE ID_PORTFOLIO = ?', [idPortfolio]);
+
+      console.log("Portfólio excluído com sucesso.");
+      return true;
+    } catch (error) {
+      console.error('Erro ao excluir portfólio e dados relacionados:', error);
+      return false;
+    }
+  },
+
+
   // 📝 Propostas de projeto
   criarPropostadeProjeto: async (dados) => {
     try {

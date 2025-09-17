@@ -351,12 +351,28 @@ console.log("ID do portfólio:", id);
   try {
     // 1) Buscar dados do portfolio (nome, descrição, tags, etc.)
     const portfolio = await listagensModel.buscarPortfolioPorId(id);
-    console.log("Dados do portfólio buscado:", portfolio);
+    console.log("Dados do portfólio buscado:", portfolio); //ok
+
+
+    if (!portfolio) {
+      // Se não existir o port
+     console.log("Portfólio não encontrado para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Portfólio não encontrado",
+          mensagem: "O portfólio que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/"); 
+    }
+
 
     // 2) Buscar publicações do portfolio
     const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id, req.session.autenticado.id);
 
-    console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
+    // console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
 
     // 3) Pega o dono do portfolio a partir do portfolio
     const portfolioDono = portfolio
@@ -393,8 +409,8 @@ req.session.currentPortfolioId = id;
     console.log(erro);
     res.render("pages/portfolio", {
       publicacoesPortfolio: [],
-      portfolio,
-      portfolioDono,
+      portfolio: null,
+      portfolioDono: null,
       dadosNotificacao: {
         titulo: "Erro ao carregar o portfólio",
         mensagem: "Tente novamente mais tarde.",
