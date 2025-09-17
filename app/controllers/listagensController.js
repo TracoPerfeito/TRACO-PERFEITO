@@ -11,8 +11,15 @@ const listagensController = {
     listarProfissionais: async (req, res) => {
   try {
     const profissionais = await listagensModel.buscarProfissionaisComEspecializacao();
- 
-    console.log("Profissionais encontrados:", profissionais);
+ console.log("Profissionais encontrados:", profissionais.map(p => ({
+  ID_USUARIO: p.ID_USUARIO,
+  NOME_USUARIO: p.NOME_USUARIO,
+  FOTO_PERFIL: p.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  IMG_BANNER: p.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
+  DESCRICAO_PERFIL_USUARIO: p.DESCRICAO_PERFIL_USUARIO,
+  ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER
+})));
+
     res.render('pages/contratar', {
       profissionais
     });
@@ -40,8 +47,28 @@ const listagensController = {
     
  
     const especializacao = await listagensModel.findEspecializacaoByUserId(id);
- 
-    console.log("Dados do perfil sendo exibido:", usuario, especializacao, "Publicações: ", publicacoes);
+ console.log("Dados do perfil sendo exibido:", {
+  ID_USUARIO: usuario.ID_USUARIO,
+  NOME_USUARIO: usuario.NOME_USUARIO,
+  EMAIL_USUARIO: usuario.EMAIL_USUARIO,
+  CELULAR_USUARIO: usuario.CELULAR_USUARIO,
+  SENHA_USUARIO: usuario.SENHA_USUARIO,
+  CPF_USUARIO: usuario.CPF_USUARIO,
+  DATA_NASC_USUARIO: usuario.DATA_NASC_USUARIO,
+  GENERO_USUARIO: usuario.GENERO_USUARIO,
+  FOTO_PERFIL_BANCO_USUARIO: usuario.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  IMG_BANNER_BANCO_USUARIO: usuario.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
+  TIPO_USUARIO: usuario.TIPO_USUARIO,
+  STATUS_USUARIO: usuario.STATUS_USUARIO,
+  USER_USUARIO: usuario.USER_USUARIO,
+  DESCRICAO_PERFIL_USUARIO: usuario.DESCRICAO_PERFIL_USUARIO,
+  LINKEDIN_USUARIO: usuario.LINKEDIN_USUARIO,
+  PINTEREST_USUARIO: usuario.PINTEREST_USUARIO,
+  INSTAGRAM_USUARIO: usuario.INSTAGRAM_USUARIO,
+  WHATSAPP_USUARIO: usuario.WHATSAPP_USUARIO,
+  Publicacoes: publicacoes
+}, "Especialização:", especializacao);
+
     res.render('pages/perfil', {
       usuario,
       especializacao,
@@ -141,7 +168,19 @@ const sessao = req.session.autenticado;
   qtdImagensUrls: publicacao.imagensUrls.length,
 });
 
-    console.log("Comentarios da publicação sendo exibida: ", comentarios)
+console.log(
+  "Comentários da publicação sendo exibida:", 
+  comentarios.map(c => ({
+    ID_COMENTARIO: c.ID_COMENTARIO,
+    ID_USUARIO: c.ID_USUARIO,
+    ID_PUBLICACAO: c.ID_PUBLICACAO,
+    CONTEUDO_COMENTARIO: c.CONTEUDO_COMENTARIO,
+    DATA_COMENTARIO: c.DATA_COMENTARIO,
+    NOME_USUARIO: c.NOME_USUARIO,
+    FOTO_PERFIL_BANCO_USUARIO: c.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não'
+  }))
+);
+
     console.log("Usuário autenticado passado para a view:", usuario);
     
     const dadosNotificacao = req.session.dadosNotificacao || null;

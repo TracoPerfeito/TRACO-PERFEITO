@@ -146,9 +146,10 @@ router.get(
 
 
 
+
 router.post(
   "/meu-perfil-artista",
- uploadFile("./app/public/imagens/perfil/").multi([
+ uploadFile().multi([
   { name: "img_perfil", maxCount: 1 },
   { name: "img_capa", maxCount: 1 }
 ]),

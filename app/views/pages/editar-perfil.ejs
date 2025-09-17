@@ -115,17 +115,12 @@ errosArray.forEach((itemErro) => {
    
           let arquivo = { imagem: "imagens/foto-perfil.png" };
    
-         if (autenticado.img_perfil_pasta) {
-          arquivo.imagem = autenticado.img_perfil_pasta;
-        } else if (autenticado.img_perfil_banco) {
+         if (autenticado.img_perfil_banco) {
           arquivo.imagem = autenticado.img_perfil_banco;
         }
  
         let arquivobanner = {imagem_banner: "imagens/bg.png" };
- 
-        if (autenticado.img_banner_pasta) {
-          arquivobanner.imagem_banner = autenticado.img_banner_pasta;
-        }
+
         if (autenticado.img_banner_banco) {
           arquivobanner.imagem_banner = autenticado.img_banner_banco;
         }
@@ -277,23 +272,24 @@ errosArray.forEach((itemErro) => {
             <form id="form-perfil" class="form-container" enctype="multipart/form-data" method="POST" action=/meu-perfil-artista>
                   <section class="banner-container">
                       <figure class="banner-overlay">
-  
-  
-                         <img src="<%= valores.img_capa_pasta ? '/' + valores.img_capa_pasta : '/imagens/bg.png' %>" alt="Banner" id="bannerImage">
-                          <figcaption class="icon-overlay" id="editBanner">
+
+                         <img src="<%= valores.img_capa_banco ? valores.img_capa_banco : '/imagens/bg.png' %>" alt="Banner" id="bannerImage">
+
+
+                        <figcaption class="icon-overlay" id="editBanner">
                               <img src="#" alt="Editar Banner">
                               <svg xmlns="http://www.w3.org/2000/svg" class="pencil" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
                           </figcaption>
                       </figure>
                       <section class="profile-info">
                           <figure class="profile-pic-overlay">
-  
-  
-                             <img src="<%= valores.img_perfil_pasta ? '/' + valores.img_perfil_pasta : '/imagens/img.png' %>" alt="Perfil" id="profileImage">
-                              <figcaption class="icon-overlay small" id="editProfile">
-  
-                                  <img src="#" alt="Editar Perfil">
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="pencil" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+
+
+                     <img src="<%= valores.img_perfil_banco ? valores.img_perfil_banco : '/imagens/img.png' %>" alt="Perfil" id="profileImage">
+
+                            <figcaption class="icon-overlay small" id="editProfile">
+                                <img src="#" alt="Editar Perfil">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="pencil" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
                               </figcaption>
                           </figure>
   

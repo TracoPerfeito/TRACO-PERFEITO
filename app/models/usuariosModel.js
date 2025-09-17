@@ -99,21 +99,32 @@ const usuariosModel = {
             }
         },
 
+findId: async (id) => {
+    try {
+        const [linhas] = await pool.query(
+            'SELECT * FROM USUARIOS WHERE ID_USUARIO = ?',
+            [id]
+        );
 
-        findId: async (id) => {
-        try {
-            const [linhas,campos] = await pool.query('SELECT * FROM USUARIOS WHERE ID_USUARIO = ?',[id] )
-            const usuario = linhas[0];
-            if (!usuario) {
-                throw new Error("Usuário não encontrado");
-            }
-                    
-            return linhas;
-        } catch (error) {
-            console.log(error);
-            return error;
+        if (!linhas || linhas.length === 0) {
+            throw new Error("Usuário não encontrado");
         }
-    },
+
+        linhas[0].img_perfil_banco = linhas[0].FOTO_PERFIL_BANCO_USUARIO
+            ? `data:image/jpeg;base64,${linhas[0].FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+            : null;
+
+        linhas[0].img_capa_banco = linhas[0].IMG_BANNER_BANCO_USUARIO
+            ? `data:image/jpeg;base64,${linhas[0].IMG_BANNER_BANCO_USUARIO.toString('base64')}`
+            : null;
+
+        return linhas; // mantém array
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+},
+
 
 
     findProfissional: async (id) => {

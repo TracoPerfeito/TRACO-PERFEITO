@@ -46,18 +46,17 @@
     <p class="lado-botao"> Perfil de <%= usuario.NOME_USUARIO %></p>
 </section>
 
-
-    <section class="base_cabecalho">
-      <section id="banner-perfil">
-        <img src="/<%= usuario.IMG_BANNER_PASTA_USUARIO %>" id="banner-perfil">
+<section class="base_cabecalho">
+  <section id="banner-perfil">
+    <img src="<%= usuario.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>" id="banner-perfil">
+  </section>
+  <section class="coluna_contaneir">
+    <section class="coluna-esquerda">
+      <section class="img__container"> 
+        <img src="<%= usuario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/foto-perfil.png' %>" alt="Perfil" id="imgFoto">
+        
       </section>
-      <section class="coluna_contaneir">
-        <section class="coluna-esquerda">
 
-          <section class="img__container"> 
-            <img src="/<%= usuario.FOTO_PERFIL_PASTA_USUARIO %>" alt="Perfil" id="imgFoto">
-            <span></span>
-          </section>
 
         <section class="embaixo">
           <h2 id="dados-principais-perfil"> <%= usuario.NOME_USUARIO %> </h2>

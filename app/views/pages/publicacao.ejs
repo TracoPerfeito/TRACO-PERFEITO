@@ -93,7 +93,7 @@ let msgErros = {conteudo: ""};
                <section class="publi-person-button">
   <section class="publi-info">
     <!-- Foto do perfil do usuário -->
-    <img src="/<%= publicacao.FOTO_PERFIL_PASTA_USUARIO || '/imagens/default-profile.png' %>" class="foto-de-perfil" alt="Foto do perfil">
+    <img src="<%= publicacao.FOTO_PERFIL_BANCO_USUARIO || '/imagens/default-profile.png' %>" class="foto-de-perfil" alt="Foto do perfil">
  
     <!-- Link para o perfil do usuário, usando o ID do usuário -->
     <a href="<%= (autenticado && id_usuario === publicacao.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + publicacao.ID_USUARIO %>">
@@ -273,7 +273,7 @@ let msgErros = {conteudo: ""};
         <section class="comentario" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
           <section class="comentario-info-total">
             <section class="comentario-info">
-              <img src="/<%= comentario.FOTO_PERFIL_PASTA_USUARIO || 'imagens/img.png' %>" class="foto-de-perfil">
+              <img src="<%= comentario.FOTO_PERFIL_BANCO_USUARIO || 'imagens/img.png' %>" class="foto-de-perfil">
               <a href="<%= (autenticado && id_usuario === comentario.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + comentario.ID_USUARIO %>">
                 <p class="nome-comentario"><%= comentario.NOME_USUARIO %></p>
               </a>

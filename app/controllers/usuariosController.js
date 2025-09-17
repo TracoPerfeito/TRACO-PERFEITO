@@ -334,39 +334,57 @@ cadastrarUsuario: async (req, res) => {
         let results = await usuariosModel.findId(req.session.autenticado.id);
         const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
         const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id, req.session.autenticado.id);
+const usuario = results[0];
+
+let imgPerfil = usuario.FOTO_PERFIL_BANCO_USUARIO
+  ? "data:image/jpeg;base64," + usuario.FOTO_PERFIL_BANCO_USUARIO.toString("base64")
+  : usuario.FOTO_PERFIL_PASTA_USUARIO || "imagens/foto-perfil.png";
+
+let imgCapa = usuario.IMG_BANNER_BANCO_USUARIO
+  ? "data:image/jpeg;base64," + usuario.IMG_BANNER_BANCO_USUARIO.toString("base64")
+  : usuario.IMG_BANNER_PASTA_USUARIO || "imagens/bg.png";
 
 
-
-        let campos = {
-
-
-          
-
-           id_usu: results[0].ID_USUARIO,
-            nome_usu: results[0].NOME_USUARIO,
-            email_usu: results[0].EMAIL_USUARIO,
-            celular_usu: results[0].CELULAR_USUARIO, 
-            img_perfil_pasta: results[0].FOTO_PERFIL_PASTA_USUARIO,
-            img_perfil_banco: results[0].FOTO_PERFIL_BANCO_USUARIO != null
-                ? `data:image/jpeg;base64,${results[0].FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
-                : null,
-             img_capa_pasta: results[0].IMG_BANNER_PASTA_USUARIO, 
-             img_capa_banco: results[0].IMG_BANNER_BANCO_USUARIO != null
-                ? `data:image/jpeg;base64,${results[0].IMG_BANNER_BANCO_USUARIO.toString('base64')}`
-                : null,
-                nomeusu_usu: results[0].USER_USUARIO,
-            especializacao: dadosProfissional?.[0]?.ESPECIALIZACAO_DESIGNER || "",
-            linkedin: results[0].LINKEDIN_USUARIO || "",
-            pinterest: results[0].PINTEREST_USUARIO || "",
-            instagram: results[0].INSTAGRAM_USUARIO || "",
-            whatsapp: results[0].WHATSAPP_USUARIO || "", 
-            senha_usu: ""
-        };
+  const campos = {
+      id_usu: usuario.ID_USUARIO,
+      nome_usu: usuario.NOME_USUARIO,
+      email_usu: usuario.EMAIL_USUARIO,
+      celular_usu: usuario.CELULAR_USUARIO, 
+      // img_perfil_pasta: usuario.FOTO_PERFIL_PASTA_USUARIO,
+        img_perfil_banco: imgPerfil,
+  img_capa_banco: imgCapa,
+      nomeusu_usu: usuario.USER_USUARIO,
+      especializacao: dadosProfissional?.[0]?.ESPECIALIZACAO_DESIGNER || "",
+      linkedin: usuario.LINKEDIN_USUARIO || "",
+      pinterest: usuario.PINTEREST_USUARIO || "",
+      instagram: usuario.INSTAGRAM_USUARIO || "",
+      whatsapp: usuario.WHATSAPP_USUARIO || "",
+      senha_usu: ""
+    };
 
          const notificacao = req.session.notificacao || null;
          delete req.session.notificacao; 
+console.log("Resultado da consulta:", {
+  ID_USUARIO: results[0].ID_USUARIO,
+  NOME_USUARIO: results[0].NOME_USUARIO,
+  EMAIL_USUARIO: results[0].EMAIL_USUARIO,
+  CELULAR_USUARIO: results[0].CELULAR_USUARIO,
+  SENHA_USUARIO: results[0].SENHA_USUARIO,
+  CPF_USUARIO: results[0].CPF_USUARIO,
+  DATA_NASC_USUARIO: results[0].DATA_NASC_USUARIO,
+  GENERO_USUARIO: results[0].GENERO_USUARIO,
+  FOTO_PERFIL_BANCO_USUARIO: results[0].FOTO_PERFIL_BANCO_USUARIO ? "sim" : "não",
+  IMG_BANNER_BANCO_USUARIO: results[0].IMG_BANNER_BANCO_USUARIO ? "sim" : "não",
+  DESCRICAO_PERFIL_USUARIO: results[0].DESCRICAO_PERFIL_USUARIO,
+  LINKEDIN_USUARIO: results[0].LINKEDIN_USUARIO,
+  PINTEREST_USUARIO: results[0].PINTEREST_USUARIO,
+  INSTAGRAM_USUARIO: results[0].INSTAGRAM_USUARIO,
+  WHATSAPP_USUARIO: results[0].WHATSAPP_USUARIO,
+  TIPO_USUARIO: results[0].TIPO_USUARIO,
+  STATUS_USUARIO: results[0].STATUS_USUARIO,
+  USER_USUARIO: results[0].USER_USUARIO,
+});
 
-        console.log("Resultado da consulta:", results);
         res.render("pages/meu-perfil-artista", { listaErros: null, dadosNotificacao: notificacao,  valores: campos, msgErro: null, publicacoes });
     } catch (e) {
         console.log(e);
@@ -374,7 +392,8 @@ cadastrarUsuario: async (req, res) => {
            listaErros:  [],
             valores: {
                 nome_usu: "", email_usu: "", celular_usu: "",
-                img_perfil_pasta: "", img_perfil_banco: "",
+                // img_perfil_pasta: "",
+                 img_perfil_banco: "",
                 nomeusu_usu: "", senha_usu: "", especializacao: "", linkedin: "",
                 pinterest: "", instagram: "", whatsapp: ""
             },
@@ -455,8 +474,8 @@ gravarPerfil: async (req, res) => {
         if (req.body.nome_usu) dadosForm.NOME_USUARIO = req.body.nome_usu;
         if (req.body.email_usu) dadosForm.EMAIL_USUARIO = req.body.email_usu;
         if (req.body.celular_usu) dadosForm.CELULAR_USUARIO = req.body.celular_usu;
-        if (req.body.img_perfil_pasta) dadosForm.FOTO_PERFIL_PASTA_USUARIO = req.body.img_perfil_pasta;
-        if (req.body.img_capa_pasta) dadosForm.IMG_BANNER_PASTA_USUARIO = req.body.img_capa_pasta;
+        if (req.body.img_perfil_banco) dadosForm.FOTO_PERFIL_BANCO_USUARIO = req.body.img_perfil_banco;
+        if (req.body.img_capa_banco) dadosForm.IMG_BANNER_BANCO_USUARIO = req.body.img_capa_banco;
         if (typeof req.body.descricao_perfil !== "undefined") {
   dadosForm.DESCRICAO_PERFIL_USUARIO = req.body.descricao_perfil;
 }
@@ -493,38 +512,18 @@ if (especializacaoFinal) {
   console.log("Profissional atualizado:", resultUpdateProfissional);
 }
 
-
-
-
-// Imagem de perfil
 if (req.files && req.files['img_perfil']) {
-    const novaImgPerfil = "imagens/perfil/" + req.files['img_perfil'][0].filename;
-
-    // Remove imagem anterior se não for a padrão
-    const antigaImgPerfil = req.session.autenticado.img_perfil_pasta;
-    if (antigaImgPerfil && antigaImgPerfil !== "imagens/perfil/default_user.jpg") {
-        removeImg(antigaImgPerfil.replace(/^\//, "")); 
-    }
-
-    dadosForm.FOTO_PERFIL_PASTA_USUARIO = novaImgPerfil;
-    dadosForm.FOTO_PERFIL_BANCO_USUARIO = null;
-    req.session.autenticado.img_perfil_pasta = novaImgPerfil;
-    req.session.autenticado.img_perfil_banco = null;
+    const bufferPerfil = req.files['img_perfil'][0].buffer;
+    dadosForm.FOTO_PERFIL_BANCO_USUARIO = bufferPerfil;
+    dadosForm.FOTO_PERFIL_PASTA_USUARIO = null;
 }
 
-// Imagem de capa/banner
 if (req.files && req.files['img_capa']) {
-    const novaImgCapa = "imagens/perfil/" + req.files['img_capa'][0].filename;
-
-    // Remove imagem anterior se não for a padrão
-    const antigaImgCapa = req.session.autenticado.img_capa_pasta;
-    if (antigaImgCapa && antigaImgCapa !== "imagens/perfil/default_background.jpg") {
-        removeImg(antigaImgCapa.replace(/^\//, ""));
-    }
-
-    dadosForm.IMG_BANNER_PASTA_USUARIO = novaImgCapa;
-    req.session.autenticado.img_capa_pasta = novaImgCapa;
+    const bufferCapa = req.files['img_capa'][0].buffer;
+    dadosForm.IMG_BANNER_BANCO_USUARIO = bufferCapa;
+    dadosForm.IMG_BANNER_PASTA_USUARIO = null;
 }
+
 
 const { nome_usu, email_usu, celular_usu, nomeusu_usu } = req.body;
 const idAtual = req.session.autenticado.id;
@@ -600,7 +599,6 @@ console.log("Usuário atualizado:", resultUpdateUsuario);
         req.session.autenticado.instagram = req.body.instagram;
         req.session.autenticado.whatsapp = req.body.whatsapp;
 
-
 const usuarioSucesso = resultUpdateUsuario.affectedRows > 0;
 const profissionalSucesso = resultUpdateProfissional ? resultUpdateProfissional.affectedRows > 0 : false;
 
@@ -620,6 +618,15 @@ if (usuarioSucesso || profissionalSucesso) {
   if (dadosForm.pinterest) req.session.autenticado.pinterest = dadosForm.pinterest;
   if (dadosForm.instagram) req.session.autenticado.instagram = dadosForm.instagram;
   if (dadosForm.whatsapp) req.session.autenticado.whatsapp = dadosForm.whatsapp;
+
+
+   if (dadosForm.FOTO_PERFIL_BANCO_USUARIO) {
+    req.session.autenticado.img_perfil_banco = `data:image/png;base64,${dadosForm.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`;
+  }
+
+  if (dadosForm.IMG_BANNER_BANCO_USUARIO) {
+    req.session.autenticado.img_capa_banco = `data:image/png;base64,${dadosForm.IMG_BANNER_BANCO_USUARIO.toString('base64')}`;
+  }
 
   req.session.notificacao = {
     titulo: "Perfil atualizado!",
@@ -968,30 +975,35 @@ mostrarPerfilEditar: async (req, res) => {
         let results = await usuariosModel.findId(req.session.autenticado.id);
          const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
 
+         const usuario = results[0];
+
+let imgPerfil = usuario.FOTO_PERFIL_BANCO_USUARIO
+  ? "data:image/jpeg;base64," + usuario.FOTO_PERFIL_BANCO_USUARIO.toString("base64")
+  : usuario.FOTO_PERFIL_PASTA_USUARIO || "imagens/foto-perfil.png";
+
+let imgCapa = usuario.IMG_BANNER_BANCO_USUARIO
+  ? "data:image/jpeg;base64," + usuario.IMG_BANNER_BANCO_USUARIO.toString("base64")
+  : usuario.IMG_BANNER_PASTA_USUARIO || "imagens/bg.png";
+
+
+  const campos = {
+      id_usu: usuario.ID_USUARIO,
+      nome_usu: usuario.NOME_USUARIO,
+      email_usu: usuario.EMAIL_USUARIO,
+      celular_usu: usuario.CELULAR_USUARIO, 
+      // img_perfil_pasta: usuario.FOTO_PERFIL_PASTA_USUARIO,
+        img_perfil_banco: imgPerfil,
+  img_capa_banco: imgCapa,
+      nomeusu_usu: usuario.USER_USUARIO,
+      especializacao: dadosProfissional?.[0]?.ESPECIALIZACAO_DESIGNER || "",
+      linkedin: usuario.LINKEDIN_USUARIO || "",
+      pinterest: usuario.PINTEREST_USUARIO || "",
+      instagram: usuario.INSTAGRAM_USUARIO || "",
+      whatsapp: usuario.WHATSAPP_USUARIO || "",
+      senha_usu: ""
+    };
+
  
-        let campos = {
-            nome_usu: results[0].NOME_USUARIO,
-            email_usu: results[0].EMAIL_USUARIO,
-            celular_usu: results[0].CELULAR_USUARIO,
-            data_nasc_usu: results[0].DATA_NASC_USUARIO,
-            genero_usu: results[0].GENERO_USUARIO,
-            img_perfil_pasta: results[0].FOTO_PERFIL_PASTA_USUARIO,
-            img_perfil_banco: results[0].FOTO_PERFIL_BANCO_USUARIO != null
-                ? `data:image/jpeg;base64,${results[0].FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
-                : null,
-            img_capa_pasta: results[0].IMG_BANNER_PASTA_USUARIO, 
-            img_capa_banco: results[0].IMG_BANNER_BANCO_USUARIO != null
-                ? `data:image/jpeg;base64,${results[0].IMG_BANNER_BANCO_USUARIO.toString('base64')}`
-                : null,
-            nomeusu_usu: results[0].USER_USUARIO,
-            especializacao: dadosProfissional?.[0]?.ESPECIALIZACAO_DESIGNER || "",
-            descricao_perfil: results[0].DESCRICAO_PERFIL_USUARIO || "",
-            linkedin: results[0].LINKEDIN_USUARIO || "",
-            pinterest: results[0].PINTEREST_USUARIO || "",
-            instagram: results[0].INSTAGRAM_USUARIO || "",
-            whatsapp: results[0].WHATSAPP_USUARIO || "",
-            senha_usu: ""
-        };
  
         res.render("pages/editar-perfil", { listaErros: null, dadosNotificacao: null,  valores: campos });
     } catch (e) {
@@ -1001,7 +1013,8 @@ mostrarPerfilEditar: async (req, res) => {
         dadosNotificacao: null, 
         valores: {
             nome_usu: "", email_usu: "", celular_usu: "",
-            img_perfil_pasta: "", img_perfil_banco: "",
+            // img_perfil_pasta: "", 
+            img_perfil_banco: "",
             nomeusu_usu: "", senha_usu: "", linkedin: "", pinterest: "", 
             instagram: "", whatsapp: ""
         }
