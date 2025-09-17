@@ -133,9 +133,20 @@ const listagensController = {
   const id = req.params.id;
   try {
     const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
- 
-    if (!publicacao) {
-      return res.status(404).send('Publicação não encontrada');
+
+
+     if (!publicacao) {
+      // Se não existir a publicação
+     console.log("Publicação não encontrada para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Publicação não encontrada",
+          mensagem: "A publicação que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/"); 
     }
  
     let usuario = null;
@@ -252,6 +263,104 @@ listarPropostas: async (req, res) => {
     });
   }
 },
+
+
+
+
+ 
+ 
+  exibirProposta: async (req, res) => {
+  const id = req.params.id;
+  try {
+    const proposta = await listagensModel.findIdProposta(id, req.session.autenticado.id);
+
+
+     if (!proposta) {
+      // Se não existir a proposta
+     console.log("Proposta não encontrada para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Proposta não encontrada",
+          mensagem: "A proposta que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/oportunidades"); 
+    }
+ 
+    let usuario = null;
+const sessao = req.session.autenticado;
+
+    // Se houver sessão ativa e for um objeto
+    if (sessao && typeof sessao === 'object') {
+      const idUsuario = sessao.ID_USUARIO || sessao.id || sessao.ID;
+
+      if (idUsuario) {
+        usuario = await listagensModel.findIdusuario(idUsuario);
+      }
+    } else if (typeof sessao === 'number' || typeof sessao === 'string') {
+      // Se a sessão for diretamente um ID (número ou string)
+      usuario = await listagensModel.findIdusuario(sessao);
+    }
+
+    
+    // Só bloqueia se o usuário estiver autenticado mas não for encontrado no banco
+    // Se não encontrar o usuário autenticado, apenas trata como visitante
+    // Se não estiver autenticado, apenas mostra a publicação normalmente
+  console.log("Dados da proposta sendo exibida:", {
+    ID_PROPOSTA: proposta.ID_PROPOSTA,
+    NOME_PROPOSTA: proposta.TITULO_PROPOSTA,
+    NOME_USUARIO: proposta.NOME_USUARIO,
+    PROFISSIONAL_REQUERIDO: proposta.profissionalRequerido,
+    PRAZO_ENTREGA: proposta.PRAZO_ENTREGA,
+    ORCAMENTO: proposta.ORCAMENTO,
+    DATA_PROPOSTA: proposta.DATA_PROPOSTA,
+    DESCRICAO_PROPOSTA: proposta.DESCRICAO_PROPOSTA,
+    CATEGORIA_PROPOSTA: proposta.CATEGORIA_PROPOSTA,
+    PREFERENCIA_PROPOSTA: proposta.PREFERENCIA_PROPOSTA,
+    STATUS_PROPOSTA: proposta.STATUS_PROPOSTA
+  });
+
+ 
+
+  
+    
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+
+    console.log("Dados de notificação:", dadosNotificacao);
+    res.render('pages/propostadeprojeto', {
+      proposta,
+      usuario: usuario ? {
+        id: usuario.ID_USUARIO || usuario.id,
+        nome: usuario.NOME_USUARIO || usuario.nome,
+        tipo: usuario.TIPO_USUARIO || usuario.tipo
+      } : null,
+      autenticado: !!usuario,
+      id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
+      tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
+      dadosNotificacao
+    });
+  } catch (erro) {
+    console.log(erro);
+   
+
+     req.session.dadosNotificacao = {
+         titulo: "Ocorreu um erro",
+          mensagem: "Não foi possível acessar a proposta de projeto. Tente novamente mais tarde.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/oportunidades"); 
+  }
+},
+
+
+
+
+
 
  
 

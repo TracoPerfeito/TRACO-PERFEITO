@@ -295,3 +295,158 @@ main {
   
 
 }
+
+
+
+
+
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* ----------------------------- CARD ----------------------------- */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  cursor: pointer;
+}
+
+/* ----------------------------- BADGES ----------------------------- */
+.badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.open { background: #dcfce7; color: #166534; }
+.badge.urgent { background: #fee2e2; color: #991b1b; }
+.badge.in-progress { background: #dbeafe; color: #1e40af; }
+.badge.design { background: #ede9fe; color: #6d28d9; }
+.badge.dev { background: #e0f2fe; color: #0369a1; }
+
+/* ----------------------------- TEXTO ----------------------------- */
+h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+p.desc {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 12px;
+}
+
+/* ----------------------------- ORÇAMENTO E PROFISSIONAL ----------------------------- */
+.budget-prof {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.budget {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #2563eb;
+}
+
+/* ----------------------------- PRAZO ----------------------------- */
+.deadline {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+  color: #6b7280;
+}
+
+.deadline .urgent { color: #dc2626; font-weight: bold; }
+.deadline .soon { color: #d97706; font-weight: bold; }
+.deadline .ok { color: #16a34a; font-weight: bold; }
+
+/* ----------------------------- BOTÕES ----------------------------- */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #1d4ed8;
+}
+
+.btn.outline {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+
+.btn.outline:hover {
+  background: #f3f4f6;
+}
+
+.btn.disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ----------------------------- RESPONSIVIDADE ----------------------------- */
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 500px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 15px;
+  }
+}

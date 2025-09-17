@@ -459,6 +459,60 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
 
 
 
+  findIdProposta: async (idProposta) => {
+  try {
+    
+    const [proRows] = await pool.query(`
+      SELECT 
+        p.*, 
+        u.NOME_USUARIO, 
+        u.FOTO_PERFIL_BANCO_USUARIO
+      FROM PROPOSTA_PROJETO p
+      INNER JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      WHERE p.ID_PROPOSTA = ?
+    `, [idProposta]);
+
+    if (proRows.length === 0) return null; // não encontrou
+
+    const proposta = proRows[0];
+
+    // Se existir foto, converter BLOB para Base64
+    if (proposta.FOTO_PERFIL_BANCO_USUARIO) {
+      proposta.FOTO_PERFIL_BANCO_USUARIO = Buffer.from(proposta.FOTO_PERFIL_BANCO_USUARIO).toString('base64');
+    }
+
+
+
+    const mapaProfissional = {
+        design_grafico: "Designer Gráfico",
+        ilustracao: "Ilustrador(a)",
+        uiux: "Designer UI/UX",
+        arte_digital: "Artista Digital",
+        arte_3d: "Artista 3D",
+        animacao: "Animador(a)",
+        branding: "Especialista em Branding",
+        tipografia: "Tipógrafo(a)",
+        modelagem_3d: "Modelador(a) 3D",
+        design_de_produto: "Designer de Produto",
+        design_editorial: "Designer Editorial",
+        design_de_jogos: "Designer de Jogos",
+        fotografia: "Fotógrafo(a)",
+        outro: "Profissional Diverso"
+      };
+
+
+        proposta.profissionalRequerido = mapaProfissional[proposta.CATEGORIA_PROPOSTA] || "Profissional Diverso";
+
+
+    return proposta;
+
+  } catch (error) {
+    console.error("Erro ao buscar proposta:", error);
+    throw error;
+  }
+},
+
+
 
 
 

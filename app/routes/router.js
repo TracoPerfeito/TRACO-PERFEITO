@@ -337,10 +337,16 @@ router.get("/chat-logado", function (req, res) { //chat
  
 });
 
-router.get("/propostadeprojeto", function (req, res) { //pagina de proposta de projeto
-    res.render('pages/propostadeprojeto')
- 
+
+
+
+router.get("/propostadeprojeto/:id", function (req, res){ //pagina de proposta de projeto
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+    listagensController.exibirProposta(req, res, dadosNotificacao);
+
 });
+
 
 router.get("/avaliacoes", function (req, res) { //pagina das avaliações
     res.render('pages/avaliacoes')

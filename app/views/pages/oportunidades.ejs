@@ -157,37 +157,59 @@
   });
 </script>
 
+<section class="grid">
+  <% propostas.forEach(proposta => { %>
+    <div class="card" onclick="location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'">
+      
+      <!-- Badges: status e categoria -->
+      <div class="badges">
+        <span class="badge open">Open</span>
+        <span class="badge <%= proposta.CATEGORIA_PROPOSTA.toLowerCase().replace('_','') %>">
+          <%= proposta.CATEGORIA_PROPOSTA.replace('_',' ') %>
+        </span>
+      </div>
 
-            <section class="container-oportunidades">
-    <% propostas.forEach(proposta => { %>
-        <section class="proposta-oportunidades" onclick="location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'">
-            
-            <section class="info-oportunidade">
-                <img src="imagens/fotoperfil1.jpeg">
-                <h2> <%= proposta.NOME_PROPOSTA || 'Anônimo' %> </h2>
-            </section>
+      <!-- Nome da proposta -->
+      <h3><%= proposta.NOME_PROPOSTA || 'Anônimo' %></h3>
 
-            <span class="especificacao">Profissional requerido:</span>
-            <span class="resposta-especificacao" data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>"> </span> <br>
+      <!-- Descrição -->
+      <p class="desc"><%- proposta.DESCRICAO_PROPOSTA %></p>
 
-            <span class="especificacao">Tipo de trabalho:</span>
-            <span class="resposta-especificacao"><%= proposta.CATEGORIA_PROPOSTA.replace('_',' ') %></span> <br>
+      <!-- Orçamento e Profissional requerido -->
+      <div class="budget-prof">
+        <span class="budget">
+          <%= proposta.ORCAMENTO ? `R$ ${Number(proposta.ORCAMENTO).toFixed(2)}` : 'Não definido' %>
+        </span>
+        <span><%= proposta.PROFISSIONAL_REQUERIDO || 'Não definido' %></span>
+      </div>
 
-            <span class="especificacao">Data de envio:</span>
-            <span class="resposta-especificacao"><%= proposta.DATA_PROPOSTA.toLocaleDateString() %></span> <br>
+      <!-- Prazo de entrega -->
+      <div class="deadline">
+        <% 
+          if (proposta.PRAZO_ENTREGA) {
+            const hoje = new Date();
+            const prazo = new Date(proposta.PRAZO_ENTREGA);
+            const diffDays = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
 
-            <span class="especificacao">Prazo de entrega:</span>
-            <span class="resposta-especificacao"><%= proposta.PRAZO_ENTREGA ? proposta.PRAZO_ENTREGA.toLocaleDateString() : 'Não definido' %></span> <br>
+            let classe = 'ok';
+            let texto = `Entrega: ${prazo.toLocaleDateString()}`;
 
-            <span class="especificacao">Orçamento:</span>
-           <span class="resposta-especificacao">
-  <%= proposta.ORCAMENTO ? `R$ ${Number(proposta.ORCAMENTO).toFixed(2)}` : 'Não definido' %>
-</span>
-            <p><%- proposta.DESCRICAO_PROPOSTA %></p>
+            if (diffDays <= 2) { classe = 'urgent'; texto = `${diffDays} dias restantes`; }
+            else if (diffDays <= 5) { classe = 'soon'; texto = `${diffDays} dias restantes`; }
+        %>
+          <span class="<%= classe %>"><%= texto %></span>
+        <% } else { %>
+          <span class="ok">Prazo não definido</span>
+        <% } %>
+      </div>
 
-
-        </section>
-    <% }) %>
+      <!-- Ações -->
+      <div class="actions">
+        <button class="btn primary">Conversar</button>
+        <button class="btn outline">Ver Detalhes</button>
+      </div>
+    </div>
+  <% }) %>
 </section>
 
      
