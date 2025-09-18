@@ -426,36 +426,72 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
         ORDER BY p.DATA_PROPOSTA DESC
         LIMIT 50
       `);
-
+  
       const mapaProfissional = {
-        design_grafico: "Designer Gráfico",
-        ilustracao: "Ilustrador(a)",
-        uiux: "Designer UI/UX",
-        arte_digital: "Artista Digital",
-        arte_3d: "Artista 3D",
-        animacao: "Animador(a)",
-        branding: "Especialista em Branding",
-        tipografia: "Tipógrafo(a)",
-        modelagem_3d: "Modelador(a) 3D",
-        design_de_produto: "Designer de Produto",
-        design_editorial: "Designer Editorial",
-        design_de_jogos: "Designer de Jogos",
-        fotografia: "Fotógrafo(a)",
-        outro: "Profissional Diverso"
+        "Design Gráfico": "Designer Gráfico",
+        "Ilustração": "Ilustrador(a)",
+        "UI/UX": "Designer UI/UX",
+        "Arte Digital": "Artista Digital",
+        "Arte 3D": "Artista 3D",
+        "Animação": "Animador(a)",
+        "Branding": "Especialista em Branding",
+        "Tipografia": "Tipógrafo(a)",
+        "Modelagem 3D": "Modelador(a) 3D",
+        "Design de Produto": "Designer de Produto",
+        "Design Editorial": "Designer Editorial",
+        "Design de Jogos": "Designer de Jogos",
+        "Fotografia": "Fotógrafo(a)",
+        "Outros": "Profissional Diverso"
       };
+  
 
-      propostas.forEach(p => {
-        p.profissionalRequerido = mapaProfissional[p.CATEGORIA_PROPOSTA] || "Profissional Diverso";
+      function formatarTempoRestante(diffDias) {
+        if (diffDias < 1) return "Expirado";
+        if (diffDias < 7) return `${diffDias} ${diffDias === 1 ? "dia" : "dias"} restante(s)`;
+        if (diffDias < 30) {
+          const semanas = Math.ceil(diffDias / 7);
+          return `${semanas} ${semanas === 1 ? "semana" : "semanas"} restante(s)`;
+        } else {
+          const meses = Math.ceil(diffDias / 30);
+          return `${meses} ${meses === 1 ? "mês" : "meses"} restante(s)`;
+        }
+      }
+      
+      const propostasComProfissional = propostas.map(p => {
+        let prazoRestante = null;
+        let dataEntregaFormatada = null;
+      
+        if (p.PRAZO_ENTREGA) {
+          const hoje = new Date();
+          const prazo = new Date(p.PRAZO_ENTREGA);
+          const diffMs = prazo - hoje;
+          const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      
+          prazoRestante = formatarTempoRestante(diffDias);
+          dataEntregaFormatada = prazo.toLocaleDateString('pt-BR');
+        }
+      
+        return {
+          ...p,
+          profissionalRequerido: mapaProfissional[p.CATEGORIA_PROPOSTA] || "Profissional Diverso",
+          prazoRestante,
+          dataEntregaFormatada
+        };
       });
+      
 
-      return propostas;
+      console.log("CONSOLE DO MODEL: " + propostasComProfissional)
 
+  
+      return propostasComProfissional;
+  
     } catch (error) {
       console.error("Erro ao listar propostas de projeto:", error);
       return [];
     }
   },
-
+  
+  
 
 
 

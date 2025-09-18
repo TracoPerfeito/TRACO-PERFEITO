@@ -450,3 +450,82 @@ p.desc {
     padding: 15px;
   }
 }
+
+
+/* Fonte para todas as badges */
+.badge {
+  
+  font-family: 'Josefin Sans', sans-serif;
+ 
+}
+
+/* Cores pastel de fundo + texto mais escuro */
+.categoria-design-grafico {
+  background: #f9dcc1; /* laranja pastel */
+  color: #e67e22;       /* laranja mais escuro */
+}
+
+.categoria-ilustracao {
+  background: #e8d0f1; /* roxo pastel */
+  color: #9b59b6;       /* roxo médio */
+}
+
+.categoria-uiux {
+  background: #cbe6f9; /* azul pastel */
+  color: #3498db;       /* azul */
+}
+
+.categoria-arte-digital {
+  background: #c1f0e9; /* verde água pastel */
+  color: #1abc9c;       /* verde água */
+}
+
+.categoria-arte-3d {
+  background: #d7c1eb; /* roxo suave */
+  color: #8e44ad;       /* roxo médio */
+}
+
+.categoria-animacao {
+  background: #fce6c1; /* amarelo pastel */
+  color: #f39c12;       /* amarelo mais forte */
+}
+
+.categoria-branding {
+  background: #f2d1b0; /* laranja suave */
+  color: #d35400;       /* laranja escuro */
+}
+
+.categoria-tipografia {
+  background: #c1e8e1; /* verde pastel */
+  color: #16a085;       /* verde médio */
+}
+
+.categoria-modelagem-3d {
+  background: #c1ebd5; /* verde suave */
+  color: #27ae60;       /* verde escuro */
+}
+
+.categoria-design-de-produto {
+  background: #c1d9f2; /* azul pastel */
+  color: #2980b9;       /* azul escuro */
+}
+
+.categoria-design-editorial {
+  background: #f2c7c0; /* vermelho pastel */
+  color: #c0392b;       /* vermelho escuro */
+}
+
+.categoria-design-de-jogos {
+  background: #fcf0c1; /* amarelo pastel */
+  color: #f1c40f;       /* amarelo */
+}
+
+.categoria-fotografia {
+  background: #c1f2d4; /* verde pastel */
+  color: #2ecc71;       /* verde médio */
+}
+
+.categoria-outro {
+  background: #e0e0e0; /* cinza claro */
+  color: #7f8c8d;       /* cinza escuro */
+}

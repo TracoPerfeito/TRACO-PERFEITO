@@ -231,6 +231,8 @@ listarPropostas: async (req, res) => {
   try {
     const propostas = await listagensModel.listarPropostas();
 
+    console.log(propostas)
+
     console.log("Propostas encontradas:", propostas.map(p => ({
       ID_PROPOSTA: p.ID_PROPOSTA,
       TITULO_PROPOSTA: p.TITULO_PROPOSTA,
@@ -307,20 +309,21 @@ const sessao = req.session.autenticado;
     
     // Só bloqueia se o usuário estiver autenticado mas não for encontrado no banco
     // Se não encontrar o usuário autenticado, apenas trata como visitante
-    // Se não estiver autenticado, apenas mostra a publicação normalmente
-  console.log("Dados da proposta sendo exibida:", {
-    ID_PROPOSTA: proposta.ID_PROPOSTA,
-    NOME_PROPOSTA: proposta.TITULO_PROPOSTA,
-    NOME_USUARIO: proposta.NOME_USUARIO,
-    PROFISSIONAL_REQUERIDO: proposta.profissionalRequerido,
-    PRAZO_ENTREGA: proposta.PRAZO_ENTREGA,
-    ORCAMENTO: proposta.ORCAMENTO,
-    DATA_PROPOSTA: proposta.DATA_PROPOSTA,
-    DESCRICAO_PROPOSTA: proposta.DESCRICAO_PROPOSTA,
-    CATEGORIA_PROPOSTA: proposta.CATEGORIA_PROPOSTA,
-    PREFERENCIA_PROPOSTA: proposta.PREFERENCIA_PROPOSTA,
-    STATUS_PROPOSTA: proposta.STATUS_PROPOSTA
-  });
+    console.log("Dados da proposta sendo exibida:", {
+      ID_PROPOSTA: proposta.ID_PROPOSTA,
+      NOME_PROPOSTA: proposta.TITULO_PROPOSTA,
+      NOME_USUARIO: proposta.NOME_USUARIO,
+      PROFISSIONAL_REQUERIDO: proposta.profissionalRequerido,
+      PRAZO_ENTREGA: proposta.PRAZO_ENTREGA,
+      PRAZO_RESTANTE: proposta.prazoRestante, 
+      ORCAMENTO: proposta.ORCAMENTO,
+      DATA_PROPOSTA: proposta.DATA_PROPOSTA,
+      DESCRICAO_PROPOSTA: proposta.DESCRICAO_PROPOSTA,
+      CATEGORIA_PROPOSTA: proposta.CATEGORIA_PROPOSTA,
+      PREFERENCIA_PROPOSTA: proposta.PREFERENCIA_PROPOSTA,
+      STATUS_PROPOSTA: proposta.STATUS_PROPOSTA
+    });
+    
 
  
 

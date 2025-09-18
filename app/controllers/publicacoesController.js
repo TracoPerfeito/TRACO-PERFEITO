@@ -432,7 +432,7 @@ req.session.dadosNotificacao = {
       });
     }
      
-      const { titulo, categoria, preferencia, data_entrega, orcamento, descricao} = req.body;
+      const { titulo, categoria, preferencia, prazoEntrega, orcamento, descricao} = req.body;
       // Pega o ID do usuário logado.
       const idUsuario = req.session.autenticado.id;
 
@@ -443,7 +443,7 @@ req.session.dadosNotificacao = {
         DESCRICAO_PUBLICACAO: descricao,
         CATEGORIA_PROPOSTA: categoria,
         PREFERENCIA_PROPOSTA: preferencia,
-        PRAZO_ENTREGA: data_entrega,
+        PRAZO_ENTREGA: prazoEntrega,
         ORCAMENTO: orcamento,
         DESCRICAO_PROPOSTA: descricao
              

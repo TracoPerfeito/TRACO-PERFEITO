@@ -133,29 +133,6 @@
         <!----------------------------------- FIM DA SEÇÃO DE FILTRO QUANO ABERTO ----------------------------------------------->
 
 
-        <script>
-  const mapaProfissional = {
-    design_grafico: "Designer Gráfico",
-    ilustracao: "Ilustrador(a)",
-    uiux: "Designer UI/UX",
-    arte_digital: "Artista Digital",
-    arte_3d: "Artista 3D",
-    animacao: "Animador(a)",
-    branding: "Especialista em Branding",
-    tipografia: "Tipógrafo(a)",
-    modelagem_3d: "Modelador(a) 3D",
-    design_de_produto: "Designer de Produto",
-    design_editorial: "Designer Editorial",
-    design_de_jogos: "Designer de Jogos",
-    fotografia: "Fotógrafo(a)",
-    outro: "Profissional Diverso"
-  };
-
-  document.querySelectorAll('.resposta-especificacao[data-categoria]').forEach(span => {
-      const categoria = span.dataset.categoria;
-      span.textContent = mapaProfissional[categoria] || "Profissional Diverso";
-  });
-</script>
 
 <section class="grid">
   <% propostas.forEach(proposta => { %>
@@ -164,13 +141,14 @@
       <!-- Badges: status e categoria -->
       <div class="badges">
         <span class="badge open">Open</span>
-        <span class="badge <%= proposta.CATEGORIA_PROPOSTA.toLowerCase().replace('_','') %>">
-          <%= proposta.CATEGORIA_PROPOSTA.replace('_',' ') %>
+        <span class="badge categoria-<%= proposta.CATEGORIA_PROPOSTA.toLowerCase().replace('_','-') %>">
+          <%= proposta.CATEGORIA_PROPOSTA %>
         </span>
+        
       </div>
 
       <!-- Nome da proposta -->
-      <h3><%= proposta.NOME_PROPOSTA || 'Anônimo' %></h3>
+      <h3><%= proposta.TITULO_PROPOSTA %></h3>
 
       <!-- Descrição -->
       <p class="desc"><%- proposta.DESCRICAO_PROPOSTA %></p>
