@@ -82,29 +82,25 @@ const comentariosController = {
  
 excluirComentario: async (req, res) => {
   try {
-    const {  idComentario, idPublicacao } = req.body; // nomes do form
+    const { idComentario, idPublicacao } = req.body;
 
     if (!idComentario || !idPublicacao) {
       return res.status(400).send("ID do comentário ou da publicação não enviado.");
     }
 
-
     const idUsuario = req.session.autenticado.id;
     const isAdmin = req.session.autenticado.tipo === 'administrador';
 
-    // Buscar o comentário para pegar o ID do autor e o ID da publicação
     const comentario = await comentariosModel.pegarComentarioPorId(idComentario);
     if (!comentario) {
       return res.status(404).send("Comentário não encontrado.");
     }
 
-    // Buscar o dono da publicação
     const publicacaoDono = await listagensModel.findIdPublicacao(idPublicacao);
     if (!publicacaoDono) {
       return res.status(404).send("Publicação não encontrada.");
     }
 
-    // Permitir exclusão se for: autor do comentário, admin, ou dono da publicação
     const podeExcluir = (comentario.ID_USUARIO === idUsuario) || isAdmin || (publicacaoDono.ID_USUARIO === idUsuario);
     if (!podeExcluir) {
       return res.status(403).send("Você não tem permissão para excluir este comentário.");
@@ -112,41 +108,29 @@ excluirComentario: async (req, res) => {
 
     const resultado = await comentariosModel.excluirComentario(idComentario);
 
-    // const publicacao = await listagensModel.findIdPublicacao(idPublicacao);
-    // const comentarios = await comentariosModel.listarComentarios(idPublicacao);
-
-    // return res.render('pages/publicacao', {
-    //   listaErros: null,
-    //   dadosNotificacao: resultado.error
-    //     ? { titulo: 'Erro', mensagem: resultado.error, tipo: 'error' }
-    //     : { titulo: 'Comentário excluído.', mensagem: 'Seu comentário foi excluído com sucesso.', tipo: 'success' },
-    //   publicacao,
-    //   comentarios,
-    //   usuario: req.session.autenticado || null,
-    //   autenticado: !!req.session.autenticado
-    // });
-
-
-    if(resultado.error){
-
-      console.log("Deu ruim !");
-
     req.params.id = idPublicacao;
-    req.session.dadosNotificacao ={ titulo: 'Erro', mensagem: resultado.error, tipo: 'error' };
-    
-       return res.redirect("/publicacao/" + req.params.id); 
 
+    if (resultado.error) {
+      req.session.dadosNotificacao = {
+        titulo: 'Erro',
+        mensagem: resultado.error,
+        tipo: 'error'
+      };
+
+      return req.session.save(() => {
+        return res.redirect("/publicacao/" + req.params.id);
+      });
     }
 
-    console.log("Comentario excluido!");
-
-    req.params.id = idPublicacao;
-    req.session.dadosNotificacao = { 
+    req.session.dadosNotificacao = {
       titulo: 'Comentário excluído.',
-       mensagem: 'Seu comentário foi excluído com sucesso.',
-       tipo: 'success' };
+      mensagem: 'Seu comentário foi excluído com sucesso.',
+      tipo: 'success'
+    };
 
-       return res.redirect("/publicacao/" + req.params.id); 
+    return req.session.save(() => {
+      return res.redirect("/publicacao/" + req.params.id);
+    });
 
   } catch (erro) {
     console.error("Erro ao excluir comentário:", erro);
@@ -156,66 +140,42 @@ excluirComentario: async (req, res) => {
 
     return res.render('pages/publicacao', {
       listaErros: [{ msg: 'Erro ao excluir comentário' }],
-      dadosNotificacao: { titulo: 'Ocorreu um erro.', mensagem: 'Não foi possível excluir o comentário.', tipo: 'error' },
+      dadosNotificacao: {
+        titulo: 'Ocorreu um erro.',
+        mensagem: 'Não foi possível excluir o comentário.',
+        tipo: 'error'
+      },
       publicacao,
       comentarios,
       usuario: req.session.autenticado || null,
       autenticado: !!req.session.autenticado
     });
   }
-
-  },
+},
 
   // Denunciar comentário
-  denunciarComentario: async (req, res) => {
-    try {
-      const { idComentario, idPublicacao, motivo } = req.body;
-      const idUsuario = req.session.autenticado.id;
-      // Salva a denúncia no banco
-      await denunciasModel.criarDenuncia({ idComentario, idUsuario, motivo });
-      // Notifica os administradores
-      await notificacoesModel.notificarAdmins(`Novo comentário denunciado! Motivo: ${motivo}`);
-      
+denunciarComentario: async (req, res) => {
+  try {
+    const { idComentario, idPublicacao, motivo } = req.body;
+    const idUsuario = req.session.autenticado.id;
 
-
-
-
-
-      
-    if(resultado.error){
-
-      console.log("Deu ruim !");
+    await denunciasModel.criarDenunciaComentario({ idComentario, idUsuario, motivo });
+    await notificacoesModel.notificarAdmins(`Novo comentário denunciado! Motivo: ${motivo}`);
 
     req.params.id = idPublicacao;
-    req.session.dadosNotificacao ={ titulo: 'Erro', mensagem: resultado.error, tipo: 'error' };
-    
-       return res.redirect("/publicacao/" + req.params.id); 
-
-    }
-
-    console.log("Comentario excluido!");
-
-    req.params.id = idPublicacao;
-    req.session.dadosNotificacao = { 
+    req.session.dadosNotificacao = {
       titulo: 'Denúncia do Comentário feita com Sucesso.',
-       mensagem: 'Seu comentário foi denunciado com sucesso.',
-       tipo: 'success' };
+      mensagem: 'Seu comentário foi denunciado com sucesso.',
+      tipo: 'success'
+    };
 
-       return res.redirect("/publicacao/" + req.params.id); 
+    return res.redirect("/publicacao/" + req.params.id);
 
-
-
-
-
-
-
-
-
-    } catch (erro) {
-      console.error("Erro ao denunciar comentário:", erro);
-      return res.status(500).json({ erro: "Erro ao registrar denúncia." });
-    }
+  } catch (erro) {
+    console.error("Erro ao denunciar comentário:", erro);
+    return res.status(500).json({ erro: "Erro ao registrar denúncia." });
   }
+}
 };
 
 

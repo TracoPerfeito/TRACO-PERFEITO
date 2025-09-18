@@ -1,13 +1,10 @@
-
-
-const pool = require('../../config/pool_conexoes'); // já deve exportar pool.promise()
+const pool = require('../../config/pool_conexoes');
 
 const comentariosModel = {
 
   criarComentario: async (dadosForm) => {
     try {
       const [result] = await pool.query('INSERT INTO COMENTARIOS SET ?', [dadosForm]);
-      console.log('Comentário criado:', result);
       return result.insertId;
     } catch (error) {
       console.log('Erro ao salvar comentário:', error);
@@ -18,11 +15,15 @@ const comentariosModel = {
   excluirComentario: async (idComentario) => {
     try {
       const [result] = await pool.query('DELETE FROM COMENTARIOS WHERE ID_COMENTARIO = ?', [idComentario]);
-      console.log('Comentário excluído:', result);
-      return result;
+
+      if (result.affectedRows === 0) {
+        return { error: 'Comentário não encontrado ou já excluído.' };
+      }
+
+      return { success: true };
     } catch (error) {
       console.log('Erro ao excluir comentário:', error);
-      return null;
+      return { error: 'Erro ao excluir comentário.' };
     }
   },
 
@@ -44,7 +45,6 @@ const comentariosModel = {
         ORDER BY c.DATA_COMENTARIO DESC
       `, [idPublicacao]);
 
-      console.log('Comentários listados:', resultado);
       return resultado;
 
     } catch (error) {

@@ -7,6 +7,8 @@ const usuariosController = require("../controllers/usuariosController");
 const listagensController = require("../controllers/listagensController");
 const publicacoesController = require("../controllers/publicacoesController");
 const comentariosController = require("../controllers/comentariosController");
+const denunciasController = require('../controllers/denunciasController');
+
 
  const db = require('../../config/pool_conexoes');
 
@@ -104,6 +106,9 @@ router.post(
   "/denunciar-comentario",
   comentariosController.denunciarComentario
 );
+
+router.post("/denunciar-publicacao", denunciasController.criarDenunciaPublicacao);
+
 
 
 
