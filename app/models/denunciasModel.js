@@ -88,6 +88,36 @@ const denunciasModel = {
       throw error;
     }
   },
+
+  criarDenunciaUsuario: async ({ idUsuarioDenunciante, idUsuarioDenunciado, motivo }) => {
+    const [result] = await pool.query(
+      `INSERT INTO DENUNCIAS_USUARIOS
+       (ID_USUARIO_DENUNCIANTE, ID_USUARIO_DENUNCIADO, MOTIVO, STATUS, DATA_DENUNCIA)
+       VALUES (?, ?, ?, 'pendente', NOW())`,
+      [idUsuarioDenunciante, idUsuarioDenunciado, motivo]
+    );
+    return result.insertId;
+  },
+
+  listarDenunciasUsuarios: async (status) => {
+    let query = 'SELECT * FROM DENUNCIAS_USUARIOS';
+    const params = [];
+    if (status) {
+      query += ' WHERE STATUS = ?';
+      params.push(status);
+    }
+    const [rows] = await pool.query(query, params);
+    return rows;
+  },
+
+  atualizarStatusDenunciaUsuario: async (idDenuncia, novoStatus) => {
+    const [result] = await pool.query(
+      'UPDATE DENUNCIAS_USUARIOS SET STATUS = ? WHERE ID_DENUNCIA = ?',
+      [novoStatus, idDenuncia]
+    );
+    return result;
+  }
+
 };
 
 

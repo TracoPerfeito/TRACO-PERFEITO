@@ -118,6 +118,9 @@ router.post(
 
 router.post("/denunciar-publicacao", denunciasController.criarDenunciaPublicacao);
 
+router.post('/denunciar-usuario', denunciasController.criarDenunciaUsuario);
+
+
 
 
 
