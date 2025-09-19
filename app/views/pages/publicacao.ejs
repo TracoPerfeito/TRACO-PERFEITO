@@ -134,10 +134,10 @@ let msgErros = {conteudo: ""};
         <ion-icon name="share-social-outline"></ion-icon>
         Compartilhar
       </button>
-      <button class="btn-denunciar" title="Denunciar" data-id-publicacao="<%= publicacao.ID_PUBLICACAO %>">
-        <ion-icon name="flag-outline"></ion-icon>
-        Denunciar
-      </button>
+     <button class="btn-denunciar" data-id="<%= publicacao.ID_PUBLICACAO %>">
+  <ion-icon name="flag-outline"></ion-icon> Denunciar
+</button>
+
     </section>
   </section>
 </section>
@@ -416,8 +416,8 @@ let msgErros = {conteudo: ""};
        
  
                                                 <!-- Modal de denúncia -->
-                       <!-- Modal de denúncia -->
-<section id="modalDenuncia" class="modal" style="display: none;">
+ <!-- Modal de denúncia -->
+<section id="modalDenuncia" class="modal">
   <section class="modal-content">
     <h3>Qual o motivo da denúncia?</h3>
     <form id="formDenuncia">
@@ -436,6 +436,7 @@ let msgErros = {conteudo: ""};
     </form>
   </section>
 </section>
+
 
  
  

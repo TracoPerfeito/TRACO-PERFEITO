@@ -1,65 +1,50 @@
 const modal = document.getElementById('modalDenuncia');
 const fecharModal = document.getElementById('fecharModal');
 const formDenuncia = document.getElementById('formDenuncia');
-const idPublicacaoInput = document.getElementById('idPublicacaoInput');
-
-// Abre modal e seta ID da publicação
-document.querySelectorAll('.btn-denunciar').forEach(botao => {
-    botao.addEventListener('click', function() {
-        const idPub = this.dataset.idPublicacao; // botão deve ter data-id-publicacao
-        idPublicacaoInput.value = idPub;
+ 
+        document.querySelectorAll('.btn-denunciar').forEach(botao => {
+        botao.addEventListener('click', function() {
         modal.style.display = 'block';
-    });
-});
-
-// Fecha modal ao clicar no "Cancelar"
-fecharModal.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
-
-// Fecha modal ao clicar fora do conteúdo
-window.addEventListener('click', (event) => {
-    if (event.target === modal) modal.style.display = 'none';
-});
-
-// Envia denúncia
-formDenuncia.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const motivoSelecionado = formDenuncia.querySelector('input[name="motivo"]:checked');
-    if (!motivoSelecionado) {
-        alert('Selecione um motivo para a denúncia.');
-        return;
-    }
-
-    const motivo = motivoSelecionado.value;
-    const idPublicacao = idPublicacaoInput.value;
-
-    try {
-        const formData = new FormData();
-        formData.append('idPublicacao', idPublicacao);
-        formData.append('motivo', motivo);
-
-        const response = await fetch('/denunciar-publicacao', {
-            method: 'POST',
-            body: formData
         });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            alert('Denúncia enviada com sucesso!');
-            modal.style.display = 'none';
-            formDenuncia.reset();
+     });
+ 
+         fecharModal.addEventListener('click', function() {
+         modal.style.display = 'none';
+         });
+ 
+         formDenuncia.addEventListener('submit', function(event) {
+        event.preventDefault();
+         const motivo = formDenuncia.motivo.value;
+         if (motivo) {
+         alert('Publicação denunciado com o motivo: ' + motivo);
+         modal.style.display = 'none';
         } else {
-            alert(`Erro ao enviar denúncia: ${data.error}`);
+              alert('Selecione um motivo para a denúncia.');
         }
-    } catch (error) {
-        console.error('Erro ao enviar denúncia:', error);
-        alert('Erro ao enviar denúncia. Veja o console.');
-    }
-});
-✅ O que você precisa garantir n
+         });
+
+
+
+         
+document.querySelectorAll('.icone-menu').forEach(icone => {
+        icone.addEventListener('click', function (e) {
+            e.stopPropagation(); 
+            const menu = this.parentElement;
+            menu.classList.toggle('ativo');
+        });
+    });
+
+    // fechar ao clicar fora
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.menu-opcoes').forEach(menu => {
+            menu.classList.remove('ativo');
+        });
+    });
+
+
+
+
+
 
 
     // Script do compartilhar
