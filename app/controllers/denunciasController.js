@@ -2,7 +2,6 @@ const comentariosModel = require("../models/comentariosModel");
 const listagensModel = require("../models/listagensModel");
 const listagensController = require("../controllers/listagensController");
 const denunciasModel = require("../models/denunciasModel");
-const notificacoesModel = require("../models/notificacoesModel");
 const { body, validationResult } = require("express-validator");
 
 
@@ -87,26 +86,23 @@ const denunciasController = {
   },
 
   // Criar denúncia de publicação
- async criarDenunciaPublicacao(req, res) {
-  try {
-    const { idPublicacao, motivo } = req.body;
-    const idUsuario = req.session.autenticado.id;
+  async criarDenunciaPublicacao(req, res) {
+    try {
+      const { idPublicacao, motivo } = req.body;
+      const idUsuario = req.session.autenticado.id;
 
-    if (!idUsuario || !idPublicacao || !motivo) {
-      return res.status(400).json({ error: 'Parâmetros inválidos' });
+      if (!idUsuario || !idPublicacao || !motivo) {
+        return res.status(400).json({ error: 'Parâmetros inválidos' });
+      }
+
+      const insertId = await denunciasModel.criarDenunciaPublicacao({ idUsuario, idPublicacao, motivo });
+
+      res.status(201).json({ message: 'Denúncia criada com sucesso', id: insertId });
+    } catch (error) {
+      console.error('Erro ao criar denúncia publicação:', error);
+      res.status(500).json({ error: 'Erro interno' });
     }
-
-    const insertId = await denunciasModel.criarDenunciaPublicacao({ idUsuario, idPublicacao, motivo });
-
-    // Notificação para admin
-    await enviarNotificacaoAdmin('tracoperfeito2024@outlook.com', `Nova publicação denunciada! Motivo: ${motivo}`);
-
-    res.status(201).json({ message: 'Denúncia criada com sucesso', id: insertId });
-  } catch (error) {
-    console.error('Erro ao criar denúncia publicação:', error);
-    res.status(500).json({ error: 'Erro interno' });
-  }
-},
+  },
 
   // Listar denúncias de publicações (API JSON)
   async listarDenunciasPublicacoes(req, res) {

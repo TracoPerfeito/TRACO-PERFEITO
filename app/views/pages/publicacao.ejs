@@ -134,10 +134,10 @@ let msgErros = {conteudo: ""};
         <ion-icon name="share-social-outline"></ion-icon>
         Compartilhar
       </button>
-      <button class="btn-denunciar" title="Denunciar">
-        <ion-icon name="flag-outline"></ion-icon>
-        Denunciar
-      </button>
+     <button class="btn-denunciar" data-id="<%= publicacao.ID_PUBLICACAO %>">
+  <ion-icon name="flag-outline"></ion-icon> Denunciar
+</button>
+
     </section>
   </section>
 </section>
@@ -416,21 +416,28 @@ let msgErros = {conteudo: ""};
        
  
                                                 <!-- Modal de denúncia -->
-                        <section id="modalDenuncia" class="modal">
-                            <section class="modal-content">
-                            <h3>Qual o motivo da denúncia?</h3>
-                            <form id="formDenuncia" action="/denunciar-publicacao" method="POST">
-                                <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
-                                <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
-                                <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
-                                <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
-                                <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
-                                <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
-                                <button type="submit">Enviar denúncia</button>
-                                <button type="button" id="fecharModal">Cancelar</button>
-                            </form>
-                            </section>
-                        </section>
+ <!-- Modal de denúncia -->
+<section id="modalDenuncia" class="modal">
+  <section class="modal-content">
+    <h3>Qual o motivo da denúncia?</h3>
+    <form id="formDenuncia">
+      <!-- Input hidden para passar o ID da publicação -->
+      <input type="hidden" name="idPublicacao" id="idPublicacaoInput">
+
+      <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
+      <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+      <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+      <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+      <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+      <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+
+      <button type="submit">Enviar denúncia</button>
+      <button type="button" id="fecharModal">Cancelar</button>
+    </form>
+  </section>
+</section>
+
+
  
  
  
