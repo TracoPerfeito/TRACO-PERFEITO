@@ -27,12 +27,14 @@ const denunciasModel = {
     const sql = `
       UPDATE DENUNCIAS_COMENTARIOS
       SET STATUS = ?
-      WHERE ID_DENUNCIA_COMENTARIO = ?
+      WHERE ID_DENUNCIA = ?
     `;
     await pool.query(sql, [novoStatus, idDenuncia]);
   },
 
+  // -----------------------------
   // Denúncias de publicações
+  // -----------------------------
   async criarDenunciaPublicacao({ idUsuario, idPublicacao, motivo }) {
     try {
       const sql = `
@@ -48,7 +50,6 @@ const denunciasModel = {
     }
   },
 
-  // Listar denúncias de publicações
   async listarDenunciasPublicacoes(status = null) {
     try {
       let sql = `
@@ -74,7 +75,6 @@ const denunciasModel = {
     }
   },
 
-  // Atualizar status de denúncia de publicação
   async atualizarStatusDenunciaPublicacao(idDenuncia, novoStatus) {
     try {
       const sql = `
@@ -89,5 +89,7 @@ const denunciasModel = {
     }
   },
 };
+
+
   
 module.exports = denunciasModel;
