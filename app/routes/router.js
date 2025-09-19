@@ -8,7 +8,7 @@ const listagensController = require("../controllers/listagensController");
 const publicacoesController = require("../controllers/publicacoesController");
 const comentariosController = require("../controllers/comentariosController");
 const denunciasController = require('../controllers/denunciasController');
-
+const pesquisasController = require('../controllers/pesquisasController');
 
  const db = require('../../config/pool_conexoes');
 
@@ -32,6 +32,11 @@ router.get("/", verificarUsuAutenticado, function (req, res) {
   listagensController.listarPublicacoes(req, res, dadosNotificacao);
 });
 
+
+// rota GET
+router.get("/pesquisar", function(req, res) {
+  pesquisasController.pesquisar(req, res);
+});
 
 
 

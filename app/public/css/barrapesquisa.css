@@ -192,3 +192,11 @@
 
 }
 
+
+#btn-pesquisa button{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--texto-barra-pesquisa);
+    font-size: large;
+}

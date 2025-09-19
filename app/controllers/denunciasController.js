@@ -5,28 +5,58 @@ const denunciasModel = require("../models/denunciasModel");
 const notificacoesModel = require("../models/notificacoesModel");
 const { body, validationResult } = require("express-validator");
 
+
 const denunciasController = {
   // Criar denúncia de comentário
-  async criarDenunciaComentario(req, res) {
-    try {
-      const { idUsuario, idComentario, motivo } = req.body;
-      if (!idUsuario || !idComentario || !motivo) {
-        return res.status(400).json({ error: 'Parâmetros inválidos' });
-      }
+ async criarDenunciaComentario(req, res) {
+  try {
+    const { idComentario, motivo, idPublicacao } = req.body;
+    const idUsuario = req.session.autenticado?.ID_USUARIO || null;
 
-      // Inserir denúncia no banco
-      const insertId = await denunciasModel.criarDenunciaComentario({ idUsuario, idComentario, motivo });
-
-      // Enviar notificação para o admin
-      const emailAdmin = 'tracoperfeito2024@outlook.com'; // ajuste conforme necessário
-      await enviarNotificacaoAdmin(emailAdmin, `Novo comentário denunciado! Motivo: ${motivo}`);
-
-      res.status(201).json({ message: 'Denúncia criada com sucesso', id: insertId });
-    } catch (error) {
-      console.error('Erro ao criar denúncia comentário:', error);
-      res.status(500).json({ error: 'Erro interno' });
+    if (!idComentario || !motivo) {
+      // Redireciona para a mesma página com mensagem de erro
+      return res.render("pages/publicacao", { 
+        dadosNotificacao: {
+          titulo: "Erro",
+          mensagem: "Parâmetros inválidos",
+          tipo: "error"
+        },
+        // outros dados necessários da página, se precisar
+      });
     }
-  },
+
+    // Inserir denúncia no banco
+    const insertId = await denunciasModel.criarDenunciaComentario({ idUsuario, idComentario, motivo });
+
+    // Enviar notificação para o admin
+    const emailAdmin = 'tracoperfeito2024@outlook.com';
+    await enviarNotificacaoAdmin(emailAdmin, `Novo comentário denunciado! Motivo: ${motivo}`);
+
+    // Sucesso: redireciona/renderiza mesma página com notificação
+    return res.render("pages/publicacao", { 
+      dadosNotificacao: {
+        titulo: "Sucesso",
+        mensagem: "Denúncia criada com sucesso!",
+        tipo: "success"
+      },
+      // outros dados da página (ex: lista de comentários, etc)
+      idPublicacao
+    });
+
+  } catch (error) {
+    console.error('Erro ao criar denúncia comentário:', error);
+
+    // Em caso de erro, renderiza mesma página com aviso
+    return res.render("pages/publicacao", { 
+      dadosNotificacao: {
+        titulo: "Erro",
+        mensagem: "Ocorreu um problema ao tentar denunciar o comentário",
+        tipo: "error"
+      },
+      idPublicacao
+    });
+  }
+},
 
   // Listar denúncias de comentários (API JSON)
   async listarDenunciasComentarios(req, res) {

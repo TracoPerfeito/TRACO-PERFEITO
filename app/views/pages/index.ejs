@@ -135,11 +135,65 @@
                     <!---------------------BARRA DE PESQUISA---------------->
                      
                      <section class="pesquisas">
-                        <section class="search">
-                            <section class="icon"> <ion-icon name="search-outline"></ion-icon></section>
-                            <input class="search-input" type="search" placeholder="O que você está procurando hoje?">
-                        
-                        </section> 
+                       <form action="/pesquisar" method="get">
+                         <section class="search">
+                             <section class="icon" id="btn-pesquisa">
+                             <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
+                             </section>
+                             <input 
+                             name="q"
+                               class="search-input" 
+                               type="search"  
+                               id="input-pesquisa"
+                               placeholder="O que você está procurando hoje?"
+                             >
+                           </section>
+                       </form>
+
+
+
+   
+
+
+  
+<script>
+  const btn = document.getElementById('btn-pesquisa');
+  const input = document.getElementById('input-pesquisa');
+
+  async function pesquisar() {
+    const termo = input.value.trim();
+    if (!termo) return; // ignora se vazio
+
+    try {
+      const res = await fetch('/pesquisar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ q: termo })
+      });
+
+      const dados = await res.json();
+      console.log('Resultados da pesquisa:', dados);
+
+      // Aqui você pode atualizar a página dinamicamente,
+      // ex: mostrar resultados em um div ou section
+    } catch (err) {
+      console.error('Erro na pesquisa:', err);
+    }
+  }
+
+  // disparar pesquisa ao clicar no ícone
+  btn.addEventListener('click', pesquisar);
+
+  // ou ao apertar Enter no input
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      pesquisar();
+    }
+  });
+</script>
  
                     
 <!--                         
@@ -388,7 +442,7 @@
 
   
 
-// autoplay
+// autoplay aautomático do carrossel
 document.addEventListener('DOMContentLoaded', () => {
   const carrosseis = document.querySelectorAll('.carrossel-imagens-explorar');
 
