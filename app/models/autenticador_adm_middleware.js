@@ -125,8 +125,8 @@ const gravarUsuAutenticado = async (req, res, next) => {
             id: usuarioEncontrado.ID_USUARIO,
             email: usuarioEncontrado.EMAIL_USUARIO,
             tipo: usuarioEncontrado.TIPO_USUARIO,
-            img_perfil_pasta: usuarioEncontrado.FOTO_PERFIL_PASTA_USUARIO,
-            img_capa_pasta: usuarioEncontrado.IMG_BANNER_PASTA_USUARIO,
+            img_perfil_banco: usuarioEncontrado.FOTO_PERFIL_BANCO_USUARIO,
+            img_capa_banco: usuarioEncontrado.IMG_BANNER_BANCO_USUARIO,
         };
       
 

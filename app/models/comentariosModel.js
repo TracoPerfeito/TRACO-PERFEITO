@@ -27,31 +27,73 @@ const comentariosModel = {
     }
   },
 
-  listarComentarios: async (idPublicacao) => {
-    try {
-      const [resultado] = await pool.query(`
-        SELECT
-          c.ID_COMENTARIO,
-          c.ID_USUARIO,
-          c.ID_PUBLICACAO,
-          c.CONTEUDO_COMENTARIO,
-          c.DATA_COMENTARIO,
-          u.NOME_USUARIO,
-          u.FOTO_PERFIL_PASTA_USUARIO
-        FROM COMENTARIOS c
-        LEFT JOIN USUARIOS u ON c.ID_USUARIO = u.ID_USUARIO
-        WHERE u.STATUS_USUARIO = 'ativo'
-          AND c.ID_PUBLICACAO = ?
-        ORDER BY c.DATA_COMENTARIO DESC
-      `, [idPublicacao]);
+  // listarComentarios: async (idPublicacao) => {
+  //   try {
+  //     const [resultado] = await pool.query(`
+  //       SELECT
+  //         c.ID_COMENTARIO,
+  //         c.ID_USUARIO,
+  //         c.ID_PUBLICACAO,
+  //         c.CONTEUDO_COMENTARIO,
+  //         c.DATA_COMENTARIO,
+  //         u.NOME_USUARIO,
+  //         u.FOTO_PERFIL_BANCO_USUARIO
+  //       FROM COMENTARIOS c
+  //       LEFT JOIN USUARIOS u ON c.ID_USUARIO = u.ID_USUARIO
+  //       WHERE u.STATUS_USUARIO = 'ativo'
+  //         AND c.ID_PUBLICACAO = ?
+  //       ORDER BY c.DATA_COMENTARIO DESC
+  //     `, [idPublicacao]);
 
+  //     console.log('Comentários listados:', resultado);
+  //     return resultado;
+
+  //   } catch (error) {
+  //     console.error('Erro ao listar comentários:', error);
+  //     return null;
+  //   }
+  // },
+
+  listarComentarios: async (idPublicacao) => {
+  try {
+    const [resultado] = await pool.query(`
+      SELECT
+        c.ID_COMENTARIO,
+        c.ID_USUARIO,
+        c.ID_PUBLICACAO,
+        c.CONTEUDO_COMENTARIO,
+        c.DATA_COMENTARIO,
+        u.NOME_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO
+      FROM COMENTARIOS c
+      LEFT JOIN USUARIOS u ON c.ID_USUARIO = u.ID_USUARIO
+      WHERE u.STATUS_USUARIO = 'ativo'
+        AND c.ID_PUBLICACAO = ?
+      ORDER BY c.DATA_COMENTARIO DESC
+    `, [idPublicacao]);
+
+    // Converter imagens de perfil
+    resultado.forEach(comentario => {
+      if (comentario.FOTO_PERFIL_BANCO_USUARIO) {
+        const buffer = Buffer.isBuffer(comentario.FOTO_PERFIL_BANCO_USUARIO)
+          ? comentario.FOTO_PERFIL_BANCO_USUARIO
+          : Buffer.from(comentario.FOTO_PERFIL_BANCO_USUARIO);
+        comentario.FOTO_PERFIL_BANCO_USUARIO = "data:image/png;base64," + buffer.toString('base64');
+      } else {
+        comentario.FOTO_PERFIL_BANCO_USUARIO = null; // ou usar imagem padrão
+      }
+    });
+
+      console.log('Comentários listados:', resultado);
       return resultado;
 
-    } catch (error) {
-      console.error('Erro ao listar comentários:', error);
-      return null;
-    }
-  },
+  } catch (error) {
+    console.error('Erro ao listar comentários:', error);
+    return null;
+  }
+},
+
+
 
   pegarComentarioPorId: async (idComentario) => {
     try {

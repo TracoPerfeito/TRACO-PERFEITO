@@ -59,7 +59,7 @@ const admModel = {
     listarUsuarios: async () => {
         try {
             const [linhas] = await pool.query(
-                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_PASTA_USUARIO FROM USUARIOS "
+                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_BANCO_USUARIO FROM USUARIOS "
             );
             return linhas;
         } catch (error) {
@@ -73,7 +73,7 @@ const admModel = {
     listarUsuariosPorTipo: async (tipo) => {
         try {
             const [linhas] = await pool.query(
-                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_PASTA_USUARIO FROM USUARIOS WHERE TIPO_USUARIO = ?",
+                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_BANCO_USUARIO FROM USUARIOS WHERE TIPO_USUARIO = ?",
                 [tipo]
             );
             return linhas;

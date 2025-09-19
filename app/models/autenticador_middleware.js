@@ -87,11 +87,17 @@ gravarUsuAutenticado = async (req, res, next) => {
         id: usuarioEncontrado.ID_USUARIO,
         tipo: usuarioEncontrado.TIPO_USUARIO,
         status: usuarioEncontrado.STATUS_USUARIO,
-        img_perfil_pasta: usuarioEncontrado.FOTO_PERFIL_PASTA_USUARIO,
-        img_capa_pasta: usuarioEncontrado.IMG_BANNER_PASTA_USUARIO,
+       img_perfil_banco: usuarioEncontrado.FOTO_PERFIL_BANCO_USUARIO
+        ? `data:image/png;base64,${usuarioEncontrado.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+        : null,
+    img_capa_banco: usuarioEncontrado.IMG_BANNER_BANCO_USUARIO
+        ? `data:image/png;base64,${usuarioEncontrado.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
+        : null,
         descricao_perfil: usuarioEncontrado.DESCRICAO_PERFIL_USUARIO
     };
     console.log("✅ Login realizado com sucesso:", req.session.autenticado);
+   
+
     req.session.logado = 0;
     next();
 };

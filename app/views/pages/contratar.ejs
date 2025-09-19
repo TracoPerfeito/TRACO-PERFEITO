@@ -144,12 +144,12 @@
     <section class="card" 
     onclick="location.href='<%= (autenticado && id_usuario === profissional.ID_USUARIO) ? '/meu-perfil-artista' : ('/perfil/' + profissional.ID_USUARIO) %>'">
         <section class="card-header">
-           <img src="<%= profissional.IMG_BANNER_PASTA_USUARIO || '/imagens/bg.jpg' %>"  alt="Background Image"  class="background-image" onerror="this.onerror=null; this.src='/imagens/bg.png'">
+           <img src="<%= profissional.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>"  alt="Background Image"  class="background-image" onerror="this.onerror=null; this.src='/imagens/bg.png'">
 
         </section>
         <section class="card-content">
             <section class="profile">
-                <img src="<%= profissional.FOTO_PERFIL_PASTA_USUARIO || '/imagens/img.png' %>" alt="Profile Picture" class="profile-image" onerror="this.onerror=null; this.src='/imagens/img.png'">
+                <img src="<%= profissional.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" alt="Profile Picture" class="profile-image" onerror="this.onerror=null; this.src='/imagens/img.png'">
 
                 <section class="info-prof">
   <section class="info-header">

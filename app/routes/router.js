@@ -151,9 +151,10 @@ router.get(
 
 
 
+
 router.post(
   "/meu-perfil-artista",
- uploadFile("./app/public/imagens/perfil/").multi([
+ uploadFile().multi([
   { name: "img_perfil", maxCount: 1 },
   { name: "img_capa", maxCount: 1 }
 ]),
@@ -318,6 +319,12 @@ router.get("/portfolio/:id/editar-portfolio", verificarDonoPortfolio, function (
   res.render("editar-portfolio", { usuario: req.session.autenticado });
 });
 
+
+router.post(
+  "/excluir-portfolio",
+  publicacoesController.excluirPortfolio
+);
+
 router.post(
   "/editar-portfolio",
  publicacoesController.regrasValidacaoEditarPortfolio,
@@ -335,10 +342,16 @@ router.get("/chat-logado", function (req, res) { //chat
  
 });
 
-router.get("/propostadeprojeto", function (req, res) { //pagina de proposta de projeto
-    res.render('pages/propostadeprojeto')
- 
+
+
+
+router.get("/propostadeprojeto/:id", function (req, res){ //pagina de proposta de projeto
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+    listagensController.exibirProposta(req, res, dadosNotificacao);
+
 });
+
 
 router.get("/avaliacoes", function (req, res) { //pagina das avaliações
     res.render('pages/avaliacoes')

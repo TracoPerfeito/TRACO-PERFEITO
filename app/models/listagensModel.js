@@ -2,37 +2,104 @@ var pool = require("../../config/pool_conexoes");
 
 const listagensModel = {
 
+  // buscarProfissionaisComEspecializacao: async () => {
+  //   try {
+  //     const [linhas] = await pool.query(`
+  //       SELECT 
+  //         u.ID_USUARIO, 
+  //         u.NOME_USUARIO, 
+  //         u.FOTO_PERFIL_BANCO_USUARIO,
+  //         u.IMG_BANNER_BANCO_USUARIO,
+  //         u.DESCRICAO_PERFIL_USUARIO,
+  //         up.ESPECIALIZACAO_DESIGNER
+  //       FROM USUARIOS u
+  //       LEFT JOIN USUARIO_PROFISSIONAL up ON u.ID_USUARIO = up.ID_USUARIO
+  //       WHERE u.TIPO_USUARIO = 'profissional' 
+  //         AND u.STATUS_USUARIO = 'ativo'
+  //     `);
+  //     return linhas;
+  //   } catch (error) {
+  //     console.error("Erro ao buscar profissionais:", error);
+  //     return [];
+  //   }
+  // },
+
+
   buscarProfissionaisComEspecializacao: async () => {
-    try {
-      const [linhas] = await pool.query(`
-        SELECT 
-          u.ID_USUARIO, 
-          u.NOME_USUARIO, 
-          u.FOTO_PERFIL_PASTA_USUARIO,
-          u.IMG_BANNER_PASTA_USUARIO,
-          u.DESCRICAO_PERFIL_USUARIO,
-          up.ESPECIALIZACAO_DESIGNER
-        FROM USUARIOS u
-        LEFT JOIN USUARIO_PROFISSIONAL up ON u.ID_USUARIO = up.ID_USUARIO
-        WHERE u.TIPO_USUARIO = 'profissional' 
-          AND u.STATUS_USUARIO = 'ativo'
-      `);
-      return linhas;
-    } catch (error) {
-      console.error("Erro ao buscar profissionais:", error);
-      return [];
-    }
-  },
+  try {
+    const [linhas] = await pool.query(`
+      SELECT 
+        u.ID_USUARIO, 
+        u.NOME_USUARIO, 
+        u.FOTO_PERFIL_BANCO_USUARIO,
+        u.IMG_BANNER_BANCO_USUARIO,
+        u.DESCRICAO_PERFIL_USUARIO,
+        up.ESPECIALIZACAO_DESIGNER
+      FROM USUARIOS u
+      LEFT JOIN USUARIO_PROFISSIONAL up ON u.ID_USUARIO = up.ID_USUARIO
+      WHERE u.TIPO_USUARIO = 'profissional' 
+        AND u.STATUS_USUARIO = 'ativo'
+    `);
+
+    
+    const profissionais = linhas.map(p => {
+      return {
+        ...p,
+        FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+          ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+          : null,
+        IMG_BANNER_BANCO_USUARIO: p.IMG_BANNER_BANCO_USUARIO
+          ? `data:image/png;base64,${p.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
+          : null
+      };
+    });
+
+    return profissionais;
+
+  } catch (error) {
+    console.error("Erro ao buscar profissionais:", error);
+    return [];
+  }
+},
+
+
+  // findIdusuario: async (id) => {
+  //   try {
+  //     const [rows] = await pool.query('SELECT * FROM USUARIOS WHERE ID_USUARIO = ?', [id]);
+  //     return rows.length > 0 ? rows[0] : null;
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw error;
+  //   }
+  // },
+
 
   findIdusuario: async (id) => {
-    try {
-      const [rows] = await pool.query('SELECT * FROM USUARIOS WHERE ID_USUARIO = ?', [id]);
-      return rows.length > 0 ? rows[0] : null;
-    } catch (error) {
-      console.log(error);
-      throw error;
+  try {
+    const [rows] = await pool.query('SELECT * FROM USUARIOS WHERE ID_USUARIO = ?', [id]);
+    if (rows.length === 0) return null;
+
+    const usuario = rows[0];
+
+    if (usuario.FOTO_PERFIL_BANCO_USUARIO) {
+      usuario.FOTO_PERFIL_BANCO_USUARIO = `data:image/png;base64,${usuario.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`;
+    } else {
+      usuario.FOTO_PERFIL_BANCO_USUARIO = null; 
     }
-  },
+
+    if (usuario.IMG_BANNER_BANCO_USUARIO) {
+      usuario.IMG_BANNER_BANCO_USUARIO = `data:image/png;base64,${usuario.IMG_BANNER_BANCO_USUARIO.toString('base64')}`;
+    } else {
+      usuario.IMG_BANNER_BANCO_USUARIO = null; 
+    }
+
+    return usuario;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+},
+
 
   findEspecializacaoByUserId: async (id) => {
     try {
@@ -41,6 +108,22 @@ const listagensModel = {
         [id]
       );
       return linhas.length > 0 ? linhas[0].ESPECIALIZACAO_DESIGNER : null;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+
+
+
+
+  contarPortfoliosUsuario: async(id) => {
+    try {
+      const [resultado] = await pool.query(
+        'SELECT COUNT(*) AS total FROM PORTFOLIOS WHERE ID_USUARIO = ?',
+        [id]
+      );
+      return resultado[0].total;
     } catch (error) {
       console.log(error);
       throw error;
@@ -58,7 +141,7 @@ listarPublicacoes: async (idUsuario = null) => {
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
         u.NOME_USUARIO,
-        u.FOTO_PERFIL_PASTA_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO,
         GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
         IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
       FROM PUBLICACOES_PROFISSIONAL p
@@ -90,6 +173,18 @@ listarPublicacoes: async (idUsuario = null) => {
     });
 
     publicacoes.forEach(pub => {
+
+
+      if (pub.FOTO_PERFIL_BANCO_USUARIO) {
+    const buffer = Buffer.isBuffer(pub.FOTO_PERFIL_BANCO_USUARIO)
+      ? pub.FOTO_PERFIL_BANCO_USUARIO
+      : Buffer.from(pub.FOTO_PERFIL_BANCO_USUARIO);
+    pub.FOTO_PERFIL_BANCO_USUARIO = "data:image/png;base64," + buffer.toString('base64');
+  } else {
+    pub.FOTO_PERFIL_BANCO_USUARIO = null; 
+  }
+
+
       pub.imagens = imagensPorPublicacao[pub.ID_PUBLICACAO] || [];
       pub.imagensUrls = pub.imagens.map(imgBuffer => "data:image/jpeg;base64," + imgBuffer.toString('base64'));
     });
@@ -112,7 +207,7 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
         u.NOME_USUARIO,
-        u.FOTO_PERFIL_PASTA_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO,
         GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
         IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
       FROM PUBLICACOES_PROFISSIONAL p
@@ -136,6 +231,12 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
     `, [idPublicacao]);
 
     const publicacao = pubRows[0];
+
+    if (publicacao.FOTO_PERFIL_BANCO_USUARIO) {
+  publicacao.FOTO_PERFIL_BANCO_USUARIO = "data:image/png;base64," + publicacao.FOTO_PERFIL_BANCO_USUARIO.toString('base64');
+} else {
+  publicacao.FOTO_PERFIL_BANCO_USUARIO = null; 
+}
     publicacao.imagens = imgsRows.map(row => row.IMG_PUBLICACAO);
     publicacao.imagensUrls = publicacao.imagens.map(buffer => "data:image/jpeg;base64," + buffer.toString('base64'));
 
@@ -209,7 +310,7 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
         u.NOME_USUARIO,
-        u.FOTO_PERFIL_PASTA_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO,
         GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
         IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
       FROM PUBLICACOES_PROFISSIONAL p
@@ -262,7 +363,7 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
         u.NOME_USUARIO,
-        u.FOTO_PERFIL_PASTA_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO,
         GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
         IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
       FROM PUBLICACOES_PROFISSIONAL p
@@ -319,14 +420,106 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
           p.ORCAMENTO,
           p.DATA_PROPOSTA,
           u.NOME_USUARIO,
-          u.FOTO_PERFIL_PASTA_USUARIO
+          u.FOTO_PERFIL_BANCO_USUARIO
         FROM PROPOSTA_PROJETO p
         LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
         ORDER BY p.DATA_PROPOSTA DESC
         LIMIT 50
       `);
-
+  
       const mapaProfissional = {
+        "Design Gráfico": "Designer Gráfico",
+        "Ilustração": "Ilustrador(a)",
+        "UI/UX": "Designer UI/UX",
+        "Arte Digital": "Artista Digital",
+        "Arte 3D": "Artista 3D",
+        "Animação": "Animador(a)",
+        "Branding": "Especialista em Branding",
+        "Tipografia": "Tipógrafo(a)",
+        "Modelagem 3D": "Modelador(a) 3D",
+        "Design de Produto": "Designer de Produto",
+        "Design Editorial": "Designer Editorial",
+        "Design de Jogos": "Designer de Jogos",
+        "Fotografia": "Fotógrafo(a)",
+        "Outros": "Profissional Diverso"
+      };
+  
+
+      function formatarTempoRestante(diffDias) {
+        if (diffDias < 1) return "Expirado";
+        if (diffDias < 7) return `${diffDias} ${diffDias === 1 ? "dia" : "dias"} restante(s)`;
+        if (diffDias < 30) {
+          const semanas = Math.ceil(diffDias / 7);
+          return `${semanas} ${semanas === 1 ? "semana" : "semanas"} restante(s)`;
+        } else {
+          const meses = Math.ceil(diffDias / 30);
+          return `${meses} ${meses === 1 ? "mês" : "meses"} restante(s)`;
+        }
+      }
+      
+      const propostasComProfissional = propostas.map(p => {
+        let prazoRestante = null;
+        let dataEntregaFormatada = null;
+      
+        if (p.PRAZO_ENTREGA) {
+          const hoje = new Date();
+          const prazo = new Date(p.PRAZO_ENTREGA);
+          const diffMs = prazo - hoje;
+          const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      
+          prazoRestante = formatarTempoRestante(diffDias);
+          dataEntregaFormatada = prazo.toLocaleDateString('pt-BR');
+        }
+      
+        return {
+          ...p,
+          profissionalRequerido: mapaProfissional[p.CATEGORIA_PROPOSTA] || "Profissional Diverso",
+          prazoRestante,
+          dataEntregaFormatada
+        };
+      });
+      
+
+      console.log("CONSOLE DO MODEL: " + propostasComProfissional)
+
+  
+      return propostasComProfissional;
+  
+    } catch (error) {
+      console.error("Erro ao listar propostas de projeto:", error);
+      return [];
+    }
+  },
+  
+  
+
+
+
+  findIdProposta: async (idProposta) => {
+  try {
+    
+    const [proRows] = await pool.query(`
+      SELECT 
+        p.*, 
+        u.NOME_USUARIO, 
+        u.FOTO_PERFIL_BANCO_USUARIO
+      FROM PROPOSTA_PROJETO p
+      INNER JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      WHERE p.ID_PROPOSTA = ?
+    `, [idProposta]);
+
+    if (proRows.length === 0) return null; // não encontrou
+
+    const proposta = proRows[0];
+
+    // Se existir foto, converter BLOB para Base64
+    if (proposta.FOTO_PERFIL_BANCO_USUARIO) {
+      proposta.FOTO_PERFIL_BANCO_USUARIO = Buffer.from(proposta.FOTO_PERFIL_BANCO_USUARIO).toString('base64');
+    }
+
+
+
+    const mapaProfissional = {
         design_grafico: "Designer Gráfico",
         ilustracao: "Ilustrador(a)",
         uiux: "Designer UI/UX",
@@ -343,19 +536,17 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
         outro: "Profissional Diverso"
       };
 
-      propostas.forEach(p => {
-        p.profissionalRequerido = mapaProfissional[p.CATEGORIA_PROPOSTA] || "Profissional Diverso";
-      });
 
-      return propostas;
-
-    } catch (error) {
-      console.error("Erro ao listar propostas de projeto:", error);
-      return [];
-    }
-  },
+        proposta.profissionalRequerido = mapaProfissional[proposta.CATEGORIA_PROPOSTA] || "Profissional Diverso";
 
 
+    return proposta;
+
+  } catch (error) {
+    console.error("Erro ao buscar proposta:", error);
+    throw error;
+  }
+},
 
 
 
@@ -478,7 +669,7 @@ listarPublicacoesdoPortfolio: async (idPortfolio, idUsuario = null) => {
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
         u.NOME_USUARIO,
-        u.FOTO_PERFIL_PASTA_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO,
         GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
         IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO
       FROM PUBLICACOES_PROFISSIONAL p

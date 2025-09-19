@@ -11,8 +11,15 @@ const listagensController = {
     listarProfissionais: async (req, res) => {
   try {
     const profissionais = await listagensModel.buscarProfissionaisComEspecializacao();
- 
-    console.log("Profissionais encontrados:", profissionais);
+ console.log("Profissionais encontrados:", profissionais.map(p => ({
+  ID_USUARIO: p.ID_USUARIO,
+  NOME_USUARIO: p.NOME_USUARIO,
+  FOTO_PERFIL: p.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  IMG_BANNER: p.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
+  DESCRICAO_PERFIL_USUARIO: p.DESCRICAO_PERFIL_USUARIO,
+  ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER
+})));
+
     res.render('pages/contratar', {
       profissionais
     });
@@ -29,6 +36,7 @@ const listagensController = {
   try {
     const usuario = await listagensModel.findIdusuario(id);
     const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
+    const qntPortfolios = await listagensModel.contarPortfoliosUsuario(id);
  
    
  
@@ -40,12 +48,33 @@ const listagensController = {
     
  
     const especializacao = await listagensModel.findEspecializacaoByUserId(id);
- 
-    console.log("Dados do perfil sendo exibido:", usuario, especializacao, "Publicações: ", publicacoes);
+ console.log("Dados do perfil sendo exibido:", {
+  ID_USUARIO: usuario.ID_USUARIO,
+  NOME_USUARIO: usuario.NOME_USUARIO,
+  EMAIL_USUARIO: usuario.EMAIL_USUARIO,
+  CELULAR_USUARIO: usuario.CELULAR_USUARIO,
+  SENHA_USUARIO: usuario.SENHA_USUARIO,
+  CPF_USUARIO: usuario.CPF_USUARIO,
+  DATA_NASC_USUARIO: usuario.DATA_NASC_USUARIO,
+  GENERO_USUARIO: usuario.GENERO_USUARIO,
+  FOTO_PERFIL_BANCO_USUARIO: usuario.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  IMG_BANNER_BANCO_USUARIO: usuario.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
+  TIPO_USUARIO: usuario.TIPO_USUARIO,
+  STATUS_USUARIO: usuario.STATUS_USUARIO,
+  USER_USUARIO: usuario.USER_USUARIO,
+  DESCRICAO_PERFIL_USUARIO: usuario.DESCRICAO_PERFIL_USUARIO,
+  LINKEDIN_USUARIO: usuario.LINKEDIN_USUARIO,
+  PINTEREST_USUARIO: usuario.PINTEREST_USUARIO,
+  INSTAGRAM_USUARIO: usuario.INSTAGRAM_USUARIO,
+  WHATSAPP_USUARIO: usuario.WHATSAPP_USUARIO,
+  Publicacoes: publicacoes
+}, "Especialização:", especializacao, "Quantidade de portfólios:", qntPortfolios);
+
     res.render('pages/perfil', {
       usuario,
       especializacao,
-      publicacoes
+      publicacoes,
+      qntPortfolios
     });
   } catch (erro) {
     console.log(erro);
@@ -104,9 +133,20 @@ const listagensController = {
   const id = req.params.id;
   try {
     const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
- 
-    if (!publicacao) {
-      return res.status(404).send('Publicação não encontrada');
+
+
+     if (!publicacao) {
+      // Se não existir a publicação
+     console.log("Publicação não encontrada para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Publicação não encontrada",
+          mensagem: "A publicação que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/"); 
     }
  
     let usuario = null;
@@ -141,7 +181,19 @@ const sessao = req.session.autenticado;
   qtdImagensUrls: publicacao.imagensUrls.length,
 });
 
-    console.log("Comentarios da publicação sendo exibida: ", comentarios)
+console.log(
+  "Comentários da publicação sendo exibida:", 
+  comentarios.map(c => ({
+    ID_COMENTARIO: c.ID_COMENTARIO,
+    ID_USUARIO: c.ID_USUARIO,
+    ID_PUBLICACAO: c.ID_PUBLICACAO,
+    CONTEUDO_COMENTARIO: c.CONTEUDO_COMENTARIO,
+    DATA_COMENTARIO: c.DATA_COMENTARIO,
+    NOME_USUARIO: c.NOME_USUARIO,
+    FOTO_PERFIL_BANCO_USUARIO: c.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não'
+  }))
+);
+
     console.log("Usuário autenticado passado para a view:", usuario);
     
     const dadosNotificacao = req.session.dadosNotificacao || null;
@@ -179,6 +231,8 @@ listarPropostas: async (req, res) => {
   try {
     const propostas = await listagensModel.listarPropostas();
 
+    console.log(propostas)
+
     console.log("Propostas encontradas:", propostas.map(p => ({
       ID_PROPOSTA: p.ID_PROPOSTA,
       TITULO_PROPOSTA: p.TITULO_PROPOSTA,
@@ -211,6 +265,105 @@ listarPropostas: async (req, res) => {
     });
   }
 },
+
+
+
+
+ 
+ 
+  exibirProposta: async (req, res) => {
+  const id = req.params.id;
+  try {
+    const proposta = await listagensModel.findIdProposta(id, req.session.autenticado.id);
+
+
+     if (!proposta) {
+      // Se não existir a proposta
+     console.log("Proposta não encontrada para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Proposta não encontrada",
+          mensagem: "A proposta que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/oportunidades"); 
+    }
+ 
+    let usuario = null;
+const sessao = req.session.autenticado;
+
+    // Se houver sessão ativa e for um objeto
+    if (sessao && typeof sessao === 'object') {
+      const idUsuario = sessao.ID_USUARIO || sessao.id || sessao.ID;
+
+      if (idUsuario) {
+        usuario = await listagensModel.findIdusuario(idUsuario);
+      }
+    } else if (typeof sessao === 'number' || typeof sessao === 'string') {
+      // Se a sessão for diretamente um ID (número ou string)
+      usuario = await listagensModel.findIdusuario(sessao);
+    }
+
+    
+    // Só bloqueia se o usuário estiver autenticado mas não for encontrado no banco
+    // Se não encontrar o usuário autenticado, apenas trata como visitante
+    console.log("Dados da proposta sendo exibida:", {
+      ID_PROPOSTA: proposta.ID_PROPOSTA,
+      NOME_PROPOSTA: proposta.TITULO_PROPOSTA,
+      NOME_USUARIO: proposta.NOME_USUARIO,
+      PROFISSIONAL_REQUERIDO: proposta.profissionalRequerido,
+      PRAZO_ENTREGA: proposta.PRAZO_ENTREGA,
+      PRAZO_RESTANTE: proposta.prazoRestante, 
+      ORCAMENTO: proposta.ORCAMENTO,
+      DATA_PROPOSTA: proposta.DATA_PROPOSTA,
+      DESCRICAO_PROPOSTA: proposta.DESCRICAO_PROPOSTA,
+      CATEGORIA_PROPOSTA: proposta.CATEGORIA_PROPOSTA,
+      PREFERENCIA_PROPOSTA: proposta.PREFERENCIA_PROPOSTA,
+      STATUS_PROPOSTA: proposta.STATUS_PROPOSTA
+    });
+    
+
+ 
+
+  
+    
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+
+    console.log("Dados de notificação:", dadosNotificacao);
+    res.render('pages/propostadeprojeto', {
+      proposta,
+      usuario: usuario ? {
+        id: usuario.ID_USUARIO || usuario.id,
+        nome: usuario.NOME_USUARIO || usuario.nome,
+        tipo: usuario.TIPO_USUARIO || usuario.tipo
+      } : null,
+      autenticado: !!usuario,
+      id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
+      tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
+      dadosNotificacao
+    });
+  } catch (erro) {
+    console.log(erro);
+   
+
+     req.session.dadosNotificacao = {
+         titulo: "Ocorreu um erro",
+          mensagem: "Não foi possível acessar a proposta de projeto. Tente novamente mais tarde.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/oportunidades"); 
+  }
+},
+
+
+
+
+
 
  
 
@@ -310,12 +463,28 @@ console.log("ID do portfólio:", id);
   try {
     // 1) Buscar dados do portfolio (nome, descrição, tags, etc.)
     const portfolio = await listagensModel.buscarPortfolioPorId(id);
-    console.log("Dados do portfólio buscado:", portfolio);
+    console.log("Dados do portfólio buscado:", portfolio); //ok
+
+
+    if (!portfolio) {
+      // Se não existir o port
+     console.log("Portfólio não encontrado para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Portfólio não encontrado",
+          mensagem: "O portfólio que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/"); 
+    }
+
 
     // 2) Buscar publicações do portfolio
     const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id, req.session.autenticado.id);
 
-    console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
+    // console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
 
     // 3) Pega o dono do portfolio a partir do portfolio
     const portfolioDono = portfolio
@@ -352,8 +521,8 @@ req.session.currentPortfolioId = id;
     console.log(erro);
     res.render("pages/portfolio", {
       publicacoesPortfolio: [],
-      portfolio,
-      portfolioDono,
+      portfolio: null,
+      portfolioDono: null,
       dadosNotificacao: {
         titulo: "Erro ao carregar o portfólio",
         mensagem: "Tente novamente mais tarde.",

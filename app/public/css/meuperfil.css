@@ -316,6 +316,7 @@ a {
 .base_cabecalho .coluna_contaneir .coluna-esquerda .img__container img {
  
   height: 120px;
+  width: 120px;
   object-fit: cover;
   border-radius: 50%;
   display: block;
