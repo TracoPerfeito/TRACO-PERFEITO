@@ -60,6 +60,7 @@ const pesquisasController = {
 
       res.render('pages/index', {
         publicacoes: resultados,
+        termoPesquisa: termoPesquisa,
         autenticado: !!req.session?.autenticado,
         logado: null,
         id_usuario,
@@ -82,8 +83,11 @@ const pesquisasController = {
         tipo_usuario = req.session.autenticado.TIPO_USUARIO || req.session.autenticado.tipo;
       }
 
+      const termoPesquisa = req.query.q || '';
+
       res.render('pages/index', {
         publicacoes: [],
+        termoPesquisa: termoPesquisa,
         autenticado: !!req.session?.autenticado,
         logado: null,
         id_usuario,

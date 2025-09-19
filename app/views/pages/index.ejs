@@ -146,6 +146,7 @@
                                type="search"  
                                id="input-pesquisa"
                                placeholder="O que você está procurando hoje?"
+                               value="<%= termoPesquisa %>"
                              >
                            </section>
                        </form>
@@ -197,6 +198,27 @@
  
                     <!--------------------------------------CAIXAS--------------------------------------------------------->
                     
+
+
+                    <section class="resultado-pesquisa">
+  <% if (publicacoes.length > 0) { %>
+    <h1 class="titulo-termo"><%= termoPesquisa %></h1>
+    <p class="descricao-termo">
+      <% if (publicacoes.length > 5) { %>
+        Veja os melhores resultados para "<%= termoPesquisa %>".
+      <% } else { %>
+        Encontramos algumas publicações relacionadas a "<%= termoPesquisa %>".
+      <% } %>
+    </p>
+  <% } else { %>
+    <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+    <p class="descricao-termo">
+      Não encontramos publicações relacionadas a "<%= termoPesquisa %>". Tente outro termo ou verifique a ortografia.
+    </p>
+  <% } %>
+</section>
+
+
                     <section class="container-pag-explorar">
 
                       <% if (publicacoes.length === 0) { %>

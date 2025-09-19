@@ -107,6 +107,7 @@ const listagensController = {
     }
     res.render('pages/index', {
       publicacoes,
+       termoPesquisa: null,
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       id_usuario,
@@ -120,6 +121,7 @@ const listagensController = {
     res.status(500).send("Erro interno ao buscar publicações");
      res.render('pages/index', {
       autenticado: !!req.session.autenticado,
+       termoPesquisa: null,
       logado: req.session.logado,
       listaErros: ['Erro ao carregar publicações'],
       dadosNotificacao,
