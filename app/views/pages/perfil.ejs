@@ -123,10 +123,20 @@
                   Conversar
                   <span class="tooltip">Crie uma conta para entrar em contato com outros usuários</span>
                 </button>
+
+                <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
+               <ion-icon name="flag-outline"></ion-icon> Denunciar usuário
+                </button>
+
               <% } else { %>
                 <button id="irparachat" onclick="location.href='/chat-logado'">
                   Conversar
                 </button>
+
+                <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
+                <ion-icon name="flag-outline"></ion-icon> Denunciar usuário
+                </button>
+
               <% } %>
             </section>
 
@@ -535,7 +545,24 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
     
- 
-    
+
+<section id="modalDenunciaUsuario" class="modal">
+  <section class="modal-content">
+    <h3>Qual o motivo da denúncia?</h3>
+    <form id="formDenunciaUsuario">
+      <input type="hidden" name="idUsuarioDenunciado" id="idUsuarioDenunciadoInput">
+
+      <label><input type="radio" name="motivo" value="Assédio"> Assédio</label><br>
+      <label><input type="radio" name="motivo" value="Conteúdo inapropriado"> Conteúdo inapropriado</label><br>
+      <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+
+      <button type="submit">Enviar denúncia</button>
+      <button type="button" id="fecharModalUsuario">Cancelar</button>
+    </form>
+  </section>
+</section>
+
+<script src="/js/denuncia-usuario.js"></script>
+
 </body>
 </html>
