@@ -35,6 +35,10 @@ router.get("/", verificarUsuAutenticado, function (req, res) {
 
 // rota GET
 router.get("/pesquisar", function(req, res) {
+
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
   pesquisasController.pesquisar(req, res);
 });
 

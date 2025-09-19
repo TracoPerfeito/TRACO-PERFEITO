@@ -155,45 +155,6 @@
    
 
 
-  
-<script>
-  const btn = document.getElementById('btn-pesquisa');
-  const input = document.getElementById('input-pesquisa');
-
-  async function pesquisar() {
-    const termo = input.value.trim();
-    if (!termo) return; // ignora se vazio
-
-    try {
-      const res = await fetch('/pesquisar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ q: termo })
-      });
-
-      const dados = await res.json();
-      console.log('Resultados da pesquisa:', dados);
-
-      // Aqui você pode atualizar a página dinamicamente,
-      // ex: mostrar resultados em um div ou section
-    } catch (err) {
-      console.error('Erro na pesquisa:', err);
-    }
-  }
-
-  // disparar pesquisa ao clicar no ícone
-  btn.addEventListener('click', pesquisar);
-
-  // ou ao apertar Enter no input
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      pesquisar();
-    }
-  });
-</script>
  
                     
 <!--                         

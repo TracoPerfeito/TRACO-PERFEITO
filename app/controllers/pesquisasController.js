@@ -61,13 +61,13 @@ const pesquisasController = {
       res.render('pages/index', {
         publicacoes: resultados,
         autenticado: !!req.session?.autenticado,
-        logado: req.session?.logado,
+        logado: null,
         id_usuario,
         tipo_usuario,
         listaErros: null,
         dadosNotificacao: resultados.length === 0 ? {
-          titulo: "Busca",
-          mensagem: "Nenhuma publicação encontrada",
+          titulo: "Busca sem resultados!",
+          mensagem: `Nenhum resultado encontrado para "${termoPesquisa}". Tente outro termo.`,
           tipo: "info"
         } : null
       });
@@ -85,7 +85,7 @@ const pesquisasController = {
       res.render('pages/index', {
         publicacoes: [],
         autenticado: !!req.session?.autenticado,
-        logado: req.session?.logado,
+        logado: null,
         id_usuario,
         tipo_usuario,
         listaErros: null,
