@@ -179,7 +179,7 @@
 
     .search, .search1{
 
-        max-width: 80%;
+        max-width: 90%;
         min-width: 100px;
     
     }
@@ -190,6 +190,11 @@
     
     }
 
+    #form-pesquisa {
+    
+        max-width: 80%;
+        min-width: 100px;
+}
 }
 
 
@@ -200,3 +205,29 @@
     color: var(--texto-barra-pesquisa);
     font-size: large;
 }
+
+
+.resultado-pesquisa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 60px;
+}
+
+.titulo-termo {
+    font-family: "Montserrat", sans-serif;
+    font-size: 40px;
+    color: var(--text-color);
+    margin-bottom: 5px;
+    text-align: center;
+      text-transform: capitalize;
+}
+
+.descricao-termo {
+text-align: center;
+    font-family: "Josefin Sans" , sans-serif;
+    font-size: 20px;
+    color: var(--text-color-mais-claro);
+}
+

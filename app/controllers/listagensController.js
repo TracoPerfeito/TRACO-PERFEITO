@@ -108,6 +108,8 @@ const listagensController = {
     res.render('pages/index', {
       publicacoes,
        termoPesquisa: null,
+        mostrarTextoBusca: "false",
+        descricaoFamosa: null,
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       id_usuario,
@@ -122,6 +124,8 @@ const listagensController = {
      res.render('pages/index', {
       autenticado: !!req.session.autenticado,
        termoPesquisa: null,
+        mostrarTextoBusca: "false",
+        descricaoFamosa: null,
       logado: req.session.logado,
       listaErros: ['Erro ao carregar publicações'],
       dadosNotificacao,

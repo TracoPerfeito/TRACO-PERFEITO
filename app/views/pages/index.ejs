@@ -135,7 +135,7 @@
                     <!---------------------BARRA DE PESQUISA---------------->
                      
                      <section class="pesquisas">
-                       <form action="/pesquisar" method="get">
+                       <form action="/pesquisar" id="form-pesquisa" method="get">
                          <section class="search">
                              <section class="icon" id="btn-pesquisa">
                              <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
@@ -148,6 +148,8 @@
                                placeholder="O que você está procurando hoje?"
                                value="<%= termoPesquisa %>"
                              >
+
+
                            </section>
                        </form>
 
@@ -200,23 +202,32 @@
                     
 
 
-                    <section class="resultado-pesquisa">
-  <% if (publicacoes.length > 0) { %>
-    <h1 class="titulo-termo"><%= termoPesquisa %></h1>
+              <section class="resultado-pesquisa">
+  <% if (mostrarTextoBusca && termoPesquisa) { %>
+    <% if (publicacoes.length > 0) { %>
+      <h1 class="titulo-termo"><%= termoPesquisa %></h1>
     <p class="descricao-termo">
-      <% if (publicacoes.length > 5) { %>
-        Veja os melhores resultados para "<%= termoPesquisa %>".
-      <% } else { %>
-        Encontramos algumas publicações relacionadas a "<%= termoPesquisa %>".
-      <% } %>
-    </p>
+  <% if (descricaoFamosa) { %>
+    <%= descricaoFamosa %>
   <% } else { %>
-    <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
-    <p class="descricao-termo">
-      Não encontramos publicações relacionadas a "<%= termoPesquisa %>". Tente outro termo ou verifique a ortografia.
-    </p>
+    <% if (publicacoes.length > 5) { %>
+      Encontre as melhores publicações de "<%= termoPesquisa %>" no Traço Perfeito.
+    <% } else { %>
+      Encontramos alguns resultados para sua pesquisa por "<%= termoPesquisa %>".
+    <% } %>
+  <% } %>
+</p>
+
+    <% } else { %>
+      <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+      <p class="descricao-termo">
+        Não encontramos publicações relacionadas a "<%= termoPesquisa %>". 
+        Tente outro termo ou verifique a ortografia.
+      </p>
+    <% } %>
   <% } %>
 </section>
+
 
 
                     <section class="container-pag-explorar">

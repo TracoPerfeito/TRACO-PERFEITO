@@ -6,6 +6,7 @@
     --azul-menu: #132d46;
     --azul-mais-escuro: #122b42;
     --text-color: #5f5c5d;
+    --text-color-mais-claro: #a3a3a4;
     --primary-color: #3a435d;
     --verdinho-transparente-barra: #acdabf7a;
     --texto-barra-pesquisa:  #165040;  /* Usado no texto da barra de pesquisa e da caixa de adicionar comentario */
@@ -56,6 +57,7 @@
      --cor-fundo: rgb(37, 39, 47);  /*#131f24 cor do duolingo (bem dahorinha, testar pra ver) */
     --azul-menu: rgb(30, 36, 48);
     --text-color: rgb(224, 224, 224);
+    --text-color-mais-claro:  #b7b7b7;
     --primary-color: #3a435d;
     --verdinho-transparente-barra: transparent;
     --texto-barra-pesquisa:  #fff;
