@@ -74,9 +74,45 @@ const listagensModel = {
   // },
 
 
-  findIdusuario: async (id) => {
+//   findIdusuario: async (id) => {
+//   try {
+//     const [rows] = await pool.query('SELECT * FROM USUARIOS WHERE ID_USUARIO = ?', [id]);
+//     if (rows.length === 0) return null;
+
+//     const usuario = rows[0];
+
+//     if (usuario.FOTO_PERFIL_BANCO_USUARIO) {
+//       usuario.FOTO_PERFIL_BANCO_USUARIO = `data:image/png;base64,${usuario.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`;
+//     } else {
+//       usuario.FOTO_PERFIL_BANCO_USUARIO = null; 
+//     }
+
+//     if (usuario.IMG_BANNER_BANCO_USUARIO) {
+//       usuario.IMG_BANNER_BANCO_USUARIO = `data:image/png;base64,${usuario.IMG_BANNER_BANCO_USUARIO.toString('base64')}`;
+//     } else {
+//       usuario.IMG_BANNER_BANCO_USUARIO = null; 
+//     }
+
+//     return usuario;
+//   } catch (error) {
+//     console.log(error);
+//     throw error;
+//   }
+// },
+
+
+findIdusuario: async (idUsuarioPerfil, idUsuarioLogado = null) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM USUARIOS WHERE ID_USUARIO = ?', [id]);
+    const [rows] = await pool.query(`
+      SELECT u.*,
+             IF(s.ID_SEGUIDO IS NOT NULL AND s.STATUS_SEGUINDO = 1, 1, 0) AS SEGUIDO
+      FROM USUARIOS u
+      LEFT JOIN SEGUINDO s
+        ON s.ID_SEGUIDO = u.ID_USUARIO
+        AND s.ID_USUARIO = ?
+      WHERE u.ID_USUARIO = ?
+    `, [idUsuarioLogado, idUsuarioPerfil]);
+
     if (rows.length === 0) return null;
 
     const usuario = rows[0];
@@ -100,6 +136,36 @@ const listagensModel = {
   }
 },
 
+
+contarSeguidores: async (id) => {
+  try {
+      const [quantseguidores] = await pool.query(
+        'SELECT COUNT(*) AS total FROM SEGUINDO WHERE ID_SEGUIDO = ?',
+        [id]
+      );
+      return quantseguidores[0].total;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+
+},
+
+
+
+contarPublicacoes: async (id) => {
+  try {
+      const [quantPublicacoes] = await pool.query(
+        'SELECT COUNT(*) AS total FROM PUBLICACOES_PROFISSIONAL WHERE ID_USUARIO = ?',
+        [id]
+      );
+      return quantPublicacoes[0].total;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+
+},
 
   findEspecializacaoByUserId: async (id) => {
     try {
@@ -140,6 +206,7 @@ listarPublicacoes: async (idUsuario = null) => {
         p.NOME_PUBLICACAO,
         p.DESCRICAO_PUBLICACAO,
         p.CATEGORIA,
+        p.DATA_PUBLICACAO,
         u.NOME_USUARIO,
         u.FOTO_PERFIL_BANCO_USUARIO,
         GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS,
@@ -716,7 +783,20 @@ listarPublicacoesdoPortfolio: async (idPortfolio, idUsuario = null) => {
     console.error("Erro ao listar publicações do portfolio:", error);
     return [];
   }
-}
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

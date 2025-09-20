@@ -1,5 +1,8 @@
 const pesquisasModel = require("../models/pesquisasModel");
+const publicacoesModel = require("../models/publicacoesModel");
 const {favoritoModel} = require("../models/favoritoModel");
+const {seguidoresModel} = require("../models/seguidoresModel");
+const listagensModel = require("../models/listagensModel");
 
 const pesquisasController = {
 
@@ -7,7 +10,7 @@ const pesquisasController = {
   console.log("Chegou no pesquisar.");
 
   try {
-    const stopWords = ['de', 'do', 'da', 'dos', 'das', 'e', 'no', 'na', 'nos', 'nas', 'o', 'a', 'os', 'um', 'uma', 'uns', 'umas'];
+    const stopWords = ['de', '@',  'do', 'da', 'dos', 'das', 'e', 'no', 'na', 'nos', 'nas', 'o', 'a', 'os', 'um', 'uma', 'uns', 'umas'];
     const termoPesquisa = req.query.q || '';
 
     console.log('Termo de pesquisa recebido:', termoPesquisa);
@@ -38,11 +41,18 @@ const pesquisasController = {
 
     if (!resultados) resultados = [];
 
-    // Adiciona a contagem de curtidas a cada publicação
-    const resultadosComCurtidas = await Promise.all(
+  const resultadosComContagem = await Promise.all(
       resultados.map(async (pub) => {
-        const totalCurtidas = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
-        return { ...pub, totalCurtidas };
+        const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
+        const N_COMENTARIOS = await publicacoesModel.contarNumComentarios(pub.ID_PUBLICACAO);
+        const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(pub.ID_PUBLICACAO);
+
+        return { 
+          ...pub, 
+          N_CURTIDAS, 
+          N_COMENTARIOS, 
+          N_VISUALIZACOES 
+        };
       })
     );
 
@@ -57,19 +67,22 @@ const pesquisasController = {
 
     const descricaoFamosa = descricoesFamosas[termoPesquisa?.toLowerCase()] || null;
 
-    console.log("Resultados da pesquisa com curtidas:", resultadosComCurtidas.map(pub => ({
+    console.log("Resultados da pesquisa com curtidas:", resultadosComContagem.map(pub => ({
   ID_PUBLICACAO: pub.ID_PUBLICACAO,
   NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
   NOME_USUARIO: pub.NOME_USUARIO,
   CATEGORIA: pub.CATEGORIA,
-  TAGS: pub.TAGS,
-  N_CURTIDAS: pub.N_CURTIDAS,
-  FAVORITO: pub.FAVORITO,
+ N_CURTIDAS: pub.N_CURTIDAS,
+      N_COMENTARIOS: pub.N_COMENTARIOS,
+      N_VISUALIZACOES: pub.N_VISUALIZACOES,
+      FAVORITO: pub.FAVORITO,    
+      DATA_PUBLICACAO: pub.DATA_PUBLICACAO,
+      DESCRICAO_PUBLICACAO: pub.DESCRICAO_PUBLICACAO,
   qtdImagens: (pub.imagens || []).length,
   qtdImagensUrls: (pub.imagensUrls || []).length,
 })));
 
-    // info do usuário logado
+
     let id_usuario = null;
     let tipo_usuario = null;
     if (req.session?.autenticado) {
@@ -78,7 +91,7 @@ const pesquisasController = {
     }
 
     res.render('pages/index', {
-      publicacoes: resultadosComCurtidas,
+      publicacoes: resultadosComContagem,
       termoPesquisa: termoPesquisa,
       mostrarTextoBusca: "true",
       descricaoFamosa, 
@@ -126,21 +139,96 @@ const pesquisasController = {
   }
 },
 
+pesquisarProfissionais: async (req, res) => {
+  console.log("Chegou no pesquisarProfissionais.");
 
-  filtrarRapido: async (req, res) => {
+  try {
+    const stopWords = ['de', '@', 'do', 'da', 'dos', 'das', 'e', 'no', 'na', 'nos', 'nas', 'o', 'a', 'os', 'um', 'uma', 'uns', 'umas'];
+    const termoPesquisa = req.query.q || '';
 
-    console.log("Chegou nos filtros rápidos");
+    console.log('Termo de pesquisa recebido:', termoPesquisa);
 
-    try{
+    // separar palavras e filtrar stop words
+    let palavras = termoPesquisa
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(p => !stopWords.includes(p));
 
-
-
-    } catch (error) {
-
-
+    function removerAcentos(texto) {
+      return texto.normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+                  .replace(/ç/g, 'c');
     }
 
+    // normalizar palavras
+    const palavrasNormalizadas = palavras.map(p => removerAcentos(p));
+    palavrasNormalizadas.push(removerAcentos(termoPesquisa));
+
+    console.log('Palavras para pesquisa:', palavrasNormalizadas);
+
+    // pegar idUsuario do session
+    const idUsuarioLogado = req.session?.autenticado?.id || null;
+
+    // chamar método do model
+    let resultados = await pesquisasModel.pesquisarPorProfissionais(palavrasNormalizadas, idUsuarioLogado);
+
+    if (!resultados) resultados = [];
+
+    // adicionar contagem de seguidores e publicações
+    const resultadosComContagem = await Promise.all(
+      resultados.map(async (prof) => {
+        const QUANT_SEGUIDORES = await listagensModel.contarSeguidores(prof.ID_USUARIO);
+        const QUANT_PUBLICACOES = await listagensModel.contarPublicacoes(prof.ID_USUARIO);
+
+        // marcar se usuário logado segue esse profissional
+        const SEGUIDO = idUsuarioLogado
+          ? await seguidoresModel.findID(idUsuarioLogado, prof.ID_USUARIO)
+          : [];
+
+        return { 
+          ...prof, 
+          QUANT_SEGUIDORES,
+          QUANT_PUBLICACOES,
+          SEGUIDO: SEGUIDO.length > 0 && SEGUIDO[0].STATUS_SEGUINDO === 1 ? 1 : 0
+        };
+      })
+    );
+
+    console.log("Profissionais encontrados com contagem:", resultadosComContagem.map(p => ({
+      ID_USUARIO: p.ID_USUARIO,
+      NOME_USUARIO: p.NOME_USUARIO,
+      ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER,
+      QUANT_SEGUIDORES: p.QUANT_SEGUIDORES,
+      QUANT_PUBLICACOES: p.QUANT_PUBLICACOES,
+      SEGUIDO: p.SEGUIDO
+    })));
+
+    res.render('pages/contratar', {
+      profissionais: resultadosComContagem,
+      termoPesquisa: termoPesquisa,
+      mostrarTextoBusca: "true",
+      descricaoFamosa: null,
+      autenticado: !!req.session?.autenticado
+    });
+
+  } catch (error) {
+    console.error("Ocorreu um erro na pesquisa de profissionais:", error);
+
+    res.render('pages/contratar', {
+      profissionais: [],
+      termoPesquisa: req.query.q || '',
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
+      autenticado: !!req.session?.autenticado,
+      dadosNotificacao: {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível realizar sua pesquisa. Tente novamente mais tarde.",
+        tipo: "error"
+      }
+    });
   }
+}
+
 
 };
 

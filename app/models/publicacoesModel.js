@@ -29,18 +29,21 @@ const publicacoesModel = {
   },
 
   // 📤 Criar publicação
-  criarPublicacao: async (dados) => {
-    try {
-      const [result] = await pool.query(
-        'INSERT INTO PUBLICACOES_PROFISSIONAL (ID_USUARIO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA) VALUES (?, ?, ?, ?)',
-        [dados.ID_USUARIO, dados.NOME_PUBLICACAO, dados.DESCRICAO_PUBLICACAO, dados.CATEGORIA]
-      );
-      return result.insertId;
-    } catch (error) {
-      console.error('Erro ao criar publicação:', error);
-      return null;
-    }
-  },
+criarPublicacao: async (dados) => {
+  try {
+    const [result] = await pool.query(
+      `INSERT INTO PUBLICACOES_PROFISSIONAL 
+       (ID_USUARIO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA, DATA_PUBLICACAO) 
+       VALUES (?, ?, ?, ?, NOW())`,
+      [dados.ID_USUARIO, dados.NOME_PUBLICACAO, dados.DESCRICAO_PUBLICACAO, dados.CATEGORIA]
+    );
+    return result.insertId;
+  } catch (error) {
+    console.error('Erro ao criar publicação:', error);
+    return null;
+  }
+},
+
 
   // ✏️ Editar/atualizar publicação
   atualizarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
@@ -259,7 +262,85 @@ const publicacoesModel = {
       console.error('Erro ao criar proposta de projeto:', error);
       return null;
     }
+  },
+
+
+
+
+
+
+
+
+
+registrarVisualizacao: async (idPublicacao, idUsuario = null, tokenSessao = null) => {
+  try {
+    // Usuário logado: 1 visualização a cada 30 min
+    if (idUsuario) {
+      const [rows] = await pool.query(
+        `SELECT 1 FROM VISUALIZACOES_PUBLICACAO
+         WHERE ID_PUBLICACAO = ? AND ID_USUARIO = ? AND DATA_VISUALIZACAO >= NOW() - INTERVAL 30 MINUTE
+         LIMIT 1`,
+        [idPublicacao, idUsuario]
+      );
+      if (rows.length) return { inserted: false, reason: 'recent_user' };
+    }
+
+    // Visitante: 1 visualização a cada 30 min pelo token
+    if (!idUsuario && tokenSessao) {
+      const [rows] = await pool.query(
+        `SELECT 1 FROM VISUALIZACOES_PUBLICACAO
+         WHERE ID_PUBLICACAO = ? AND TOKEN_SESSAO = ? AND DATA_VISUALIZACAO >= NOW() - INTERVAL 30 MINUTE
+         LIMIT 1`,
+        [idPublicacao, tokenSessao]
+      );
+      if (rows.length) return { inserted: false, reason: 'recent_token' };
+    }
+
+    // Inserir visualização
+    const [result] = await pool.query(
+      `INSERT INTO VISUALIZACOES_PUBLICACAO (ID_PUBLICACAO, ID_USUARIO, TOKEN_SESSAO)
+       VALUES (?, ?, ?)`,
+      [idPublicacao, idUsuario, tokenSessao]
+    );
+
+    return { inserted: true, insertId: result.insertId };
+  } catch (err) {
+    console.error('Erro registrarVisualizacao ->', err);
+    return { inserted: false, error: err.message || err };
   }
+},
+
+
+contarNumComentarios: async (idPublicacao) => {
+  try {
+    const [quantComentarios] = await pool.query(
+      `SELECT COUNT(*) as total FROM COMENTARIOS WHERE ID_PUBLICACAO = ?`,
+      [idPublicacao]
+    );
+    return quantComentarios[0].total;
+  } catch (error) {
+    console.error('Erro ao contar comentários:', error);
+    return 0;
+  }
+},
+
+
+
+contarNumVisualizacoes: async (idPublicacao) => {
+  try {
+    const [quantVisualizacoes] = await pool.query(
+      `SELECT COUNT(*) as total FROM VISUALIZACOES_PUBLICACAO WHERE ID_PUBLICACAO = ?`,
+      [idPublicacao]
+    );
+    return quantVisualizacoes[0].total;
+  } catch (error) {
+    console.error('Erro ao contar visualizações:', error);
+    return 0;
+  }
+},
+
+
+
 };
 
 module.exports = publicacoesModel;

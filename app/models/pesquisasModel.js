@@ -21,18 +21,25 @@ const pesquisasModel = {
   });
 
  const sql = `
-  SELECT 
+ SELECT 
   p.ID_PUBLICACAO,
   p.ID_USUARIO,
   p.NOME_PUBLICACAO,
   p.DESCRICAO_PUBLICACAO,
   p.CATEGORIA,
+  p.DATA_PUBLICACAO,
   u.NOME_USUARIO,
   u.FOTO_PERFIL_BANCO_USUARIO,
   IF(f.ID_PUBLICACAO IS NOT NULL, 'favorito', 'favoritar') AS FAVORITO,
   GROUP_CONCAT(DISTINCT t.NOME_TAG) AS TAGS
 FROM (
-  SELECT DISTINCT p.ID_PUBLICACAO, p.ID_USUARIO, p.NOME_PUBLICACAO, p.DESCRICAO_PUBLICACAO, p.CATEGORIA
+  SELECT DISTINCT 
+    p.ID_PUBLICACAO, 
+    p.ID_USUARIO, 
+    p.NOME_PUBLICACAO, 
+    p.DESCRICAO_PUBLICACAO, 
+    p.CATEGORIA,
+    p.DATA_PUBLICACAO 
   FROM PUBLICACOES_PROFISSIONAL p
   LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
   LEFT JOIN TAGS_PUBLICACOES tp ON p.ID_PUBLICACAO = tp.ID_PUBLICACAO
@@ -48,6 +55,7 @@ LEFT JOIN FAVORITOS f
   AND f.STATUS_FAVORITO = 1
 GROUP BY p.ID_PUBLICACAO
 ORDER BY p.ID_PUBLICACAO DESC
+
 
 `;
 
@@ -91,8 +99,98 @@ ORDER BY p.ID_PUBLICACAO DESC
   });
 
   return publicacoes;
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  pesquisarPorProfissionais: async (palavras, idUsuario = null) => {
+    if (!palavras || palavras.length === 0) return [];
+
+    const whereClauses = [];
+    const valores = [];
+
+    
+    palavras.forEach(p => {
+      const likeTerm = `%${p}%`;
+      whereClauses.push(
+        "REPLACE(LOWER(u.NOME_USUARIO), 'ç', 'c') LIKE ?",
+        "REPLACE(LOWER(u.USER_USUARIO), 'ç', 'c') LIKE ?",
+        "REPLACE(LOWER(u.EMAIL_USUARIO), 'ç', 'c') LIKE ?",
+        "REPLACE(LOWER(u.DESCRICAO_PERFIL_USUARIO), 'ç', 'c') LIKE ?",
+        "REPLACE(LOWER(up.ESPECIALIZACAO_DESIGNER), 'ç', 'c') LIKE ?"
+      );
+      valores.push(likeTerm, likeTerm, likeTerm, likeTerm, likeTerm);
+    });
+
+    const sql = `
+      SELECT 
+        u.ID_USUARIO,
+        u.NOME_USUARIO,
+        u.USER_USUARIO,
+        u.EMAIL_USUARIO,
+        u.DESCRICAO_PERFIL_USUARIO,
+        up.ESPECIALIZACAO_DESIGNER,
+        u.FOTO_PERFIL_BANCO_USUARIO,
+        IF(s.ID_SEGUIDO IS NOT NULL AND s.STATUS_SEGUINDO = 1, 1, 0) AS SEGUIDO
+      FROM USUARIOS u
+      LEFT JOIN USUARIO_PROFISSIONAL up ON u.ID_USUARIO = up.ID_USUARIO
+      LEFT JOIN SEGUINDO s 
+        ON s.ID_USUARIO = ? 
+        AND s.ID_SEGUIDO = u.ID_USUARIO
+        AND s.STATUS_SEGUINDO = 1
+      WHERE u.TIPO_USUARIO = 'profissional'
+        AND (${whereClauses.join(' OR ')})
+      GROUP BY u.ID_USUARIO
+      ORDER BY u.NOME_USUARIO ASC
+    `;
+
+    valores.unshift(idUsuario || 0); 
+
+    try {
+      const [usuarios] = await pool.query(sql, valores);
+
+
+  if (usuarios.length === 0) return [];
+
+      // Converter foto de perfil para Base64
+      usuarios.forEach(u => {
+        if (u.FOTO_PERFIL_BANCO_USUARIO) {
+          const buffer = Buffer.isBuffer(u.FOTO_PERFIL_BANCO_USUARIO)
+            ? u.FOTO_PERFIL_BANCO_USUARIO
+            : Buffer.from(u.FOTO_PERFIL_BANCO_USUARIO);
+          u.FOTO_PERFIL_BANCO_USUARIO = "data:image/png;base64," + buffer.toString('base64');
+        } else {
+          u.FOTO_PERFIL_BANCO_USUARIO = null;
+        }
+      });
+
+      return usuarios;
+
+    } catch (error) {
+      console.error("Erro na pesquisa de profissionais:", error);
+      return [];
+    }
+  }
 }
-}
+
 
 
 module.exports = pesquisasModel;

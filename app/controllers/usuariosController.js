@@ -1,5 +1,6 @@
 const usuariosModel = require("../models/usuariosModel");
 const listagensModel = require("../models/listagensModel");
+const seguidoresModel = require("../models/seguidoresModel");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
 const bcrypt = require("bcryptjs");
@@ -1396,7 +1397,108 @@ recuperarSenha: async (req, res) => {
   } catch (e) {
     console.log(e);
   }
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//segui usuario
+seguir: async (req, res) => {
+    console.log("Chegou no seguir/desseguir");
+
+    // Verifica se o usuário está logado
+    if (!req.session.autenticado?.autenticado) {
+        console.log("O usuário precisa logar. Mandando ele pra página de login.");
+        return res.render("pages/login", { 
+            listaErros: null,
+            dadosNotificacao: {
+                titulo: "Faça seu Login!", 
+                mensagem: "Para seguir um usuário é necessário estar logado!", 
+                tipo: "warning" 
+            },
+            valores: [],
+            retorno: null,
+            errosLogin: null
+        });
+    }
+
+    try {
+        const idSeguido = req.query.id;  // ID do usuário que será seguido/desseguido
+        const situacao = req.query.sit;  // "seguindo" ou "seguir"
+        const idUsuario = req.session.autenticado.id; // Usuário logado
+
+        console.log("id do usuário a seguir:", idSeguido);
+        console.log("situação:", situacao);
+        console.log("id do usuário logado:", idUsuario);
+
+        const resultado = await seguidoresModel.seguirUsuario({
+            idUsuario,
+            idSeguido,
+            situacao
+        });
+
+        console.log(resultado);
+
+        console.log("Status de seguir atualizado!");
+
+        // Redireciona para a página anterior
+        const previousUrl = req.get("Referer") || "/";
+        return res.redirect(previousUrl);
+
+    } catch (err) {
+        console.error(err);
+        res.redirect("/");
+    }
 }
+
 
 
 

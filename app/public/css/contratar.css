@@ -144,6 +144,54 @@
 }
 
 
+
+
+
+
+
+
+
+
+
+.dados-perfil {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+}
+
+.dados-perfil section {
+    flex: 1;
+    position: relative;
+}
+
+.dados-perfil section:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background-color: #ddd;
+}
+
+.dados-perfil p {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.dados-perfil span {
+    font-size: 13px;
+    color: #b0b0b0;
+}
+
+
+
 /* teste acaba aqui */
 
  

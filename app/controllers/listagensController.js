@@ -1,4 +1,5 @@
 const listagensModel = require("../models/listagensModel");
+const publicacoesModel = require("../models/publicacoesModel");
 const comentariosModel = require("../models/comentariosModel");
 const { body, validationResult } = require("express-validator");
 const {favoritoModel} = require("../models/favoritoModel");
@@ -11,17 +12,39 @@ const listagensController = {
     listarProfissionais: async (req, res) => {
   try {
     const profissionais = await listagensModel.buscarProfissionaisComEspecializacao();
- console.log("Profissionais encontrados:", profissionais.map(p => ({
+
+
+     const profissionaisComContagem = await Promise.all(
+      profissionais.map(async (prof) => {
+      
+        const QUANT_SEGUIDORES = await listagensModel.contarSeguidores(prof.ID_USUARIO);
+        const QUANT_PUBLICACOES = await listagensModel.contarPublicacoes(prof.ID_USUARIO);
+
+        return { 
+          ...prof, 
+          QUANT_SEGUIDORES,
+          QUANT_PUBLICACOES
+        };
+      })
+    );
+
+
+ console.log("Profissionais encontrados:", profissionaisComContagem.map(p => ({
   ID_USUARIO: p.ID_USUARIO,
   NOME_USUARIO: p.NOME_USUARIO,
   FOTO_PERFIL: p.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
   IMG_BANNER: p.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
   DESCRICAO_PERFIL_USUARIO: p.DESCRICAO_PERFIL_USUARIO,
-  ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER
+  ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER,
+  QUANT_SEGUIDORES: p.QUANT_SEGUIDORES,
+  QUANT_PUBLICACOES: p.QUANT_PUBLICACOES
 })));
 
     res.render('pages/contratar', {
-      profissionais
+      profissionais: profissionaisComContagem,
+      termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
     });
  
   } catch (error) {
@@ -34,9 +57,11 @@ const listagensController = {
   exibirPerfil: async (req, res) => {
   const id = req.params.id;
   try {
-    const usuario = await listagensModel.findIdusuario(id);
+    const idLogado = req.session.autenticado?.id || null;
+    const usuario = await listagensModel.findIdusuario(id, idLogado);
     const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
     const qntPortfolios = await listagensModel.contarPortfoliosUsuario(id);
+    const qntSeguidores = await listagensModel.contarSeguidores(id);
  
    
  
@@ -67,14 +92,16 @@ const listagensController = {
   PINTEREST_USUARIO: usuario.PINTEREST_USUARIO,
   INSTAGRAM_USUARIO: usuario.INSTAGRAM_USUARIO,
   WHATSAPP_USUARIO: usuario.WHATSAPP_USUARIO,
+   SEGUINDO: Number(usuario.SEGUIDO),
   Publicacoes: publicacoes
-}, "Especialização:", especializacao, "Quantidade de portfólios:", qntPortfolios);
+}, "Especialização:", especializacao, "Quantidade de portfólios:", qntPortfolios, "Quantidade de seguidores:", qntSeguidores);
 
     res.render('pages/perfil', {
       usuario,
       especializacao,
       publicacoes,
-      qntPortfolios
+      qntPortfolios,
+      qntSeguidores
     });
   } catch (erro) {
     console.log(erro);
@@ -86,22 +113,33 @@ listarPublicacoes: async (req, res, dadosNotificacao) => {
   try {
     const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id);
 
-    // Adiciona a contagem de curtidas a cada publicação
-    const publicacoesComCurtidas = await Promise.all(
+    const publicacoesComContagem = await Promise.all(
       publicacoes.map(async (pub) => {
         const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
-        return { ...pub, N_CURTIDAS };
+        const N_COMENTARIOS = await publicacoesModel.contarNumComentarios(pub.ID_PUBLICACAO);
+        const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(pub.ID_PUBLICACAO);
+
+        return { 
+          ...pub, 
+          N_CURTIDAS, 
+          N_COMENTARIOS, 
+          N_VISUALIZACOES 
+        };
       })
     );
 
-    console.log("Publicações encontradas:", publicacoesComCurtidas.map(pub => ({
+    console.log("Publicações encontradas:", publicacoesComContagem.map(pub => ({
       ID_PUBLICACAO: pub.ID_PUBLICACAO,
       NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
       NOME_USUARIO: pub.NOME_USUARIO,
       CATEGORIA: pub.CATEGORIA,
       TAGS: pub.TAGS,
-      N_CURTIDAS: pub.N_CURTIDAS, // agora preenchido corretamente
+     N_CURTIDAS: pub.N_CURTIDAS,
+      N_COMENTARIOS: pub.N_COMENTARIOS,
+      N_VISUALIZACOES: pub.N_VISUALIZACOES,
       FAVORITO: pub.FAVORITO,    
+      DATA_PUBLICACAO: pub.DATA_PUBLICACAO,
+      DESCRICAO_PUBLICACAO: pub.DESCRICAO_PUBLICACAO,
       qtdImagens: (pub.imagens || []).length,
       qtdImagensUrls: (pub.imagensUrls || []).length,
     })));
@@ -114,7 +152,7 @@ listarPublicacoes: async (req, res, dadosNotificacao) => {
     }
 
     res.render('pages/index', {
-      publicacoes: publicacoesComCurtidas, // envia as publicações já com a contagem
+      publicacoes: publicacoesComContagem, // envia as publicações já com a contagem
       termoPesquisa: null,
       mostrarTextoBusca: "false",
       descricaoFamosa: null,
@@ -142,85 +180,87 @@ listarPublicacoes: async (req, res, dadosNotificacao) => {
 },
 
  
-  exibirPublicacao: async (req, res) => {
+ exibirPublicacao: async (req, res) => {
   const id = req.params.id;
+
   try {
     const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
 
-
-     if (!publicacao) {
-      // Se não existir a publicação
-     console.log("Publicação não encontrada para o ID:", id);
+    if (!publicacao) {
+      console.log("Publicação não encontrada para o ID:", id);
 
       req.session.dadosNotificacao = {
-         titulo: "Publicação não encontrada",
-          mensagem: "A publicação que você tentou acessar não existe.",
-          tipo: "error" 
-        
-        };
-  
-         return res.redirect("/"); 
+        titulo: "Publicação não encontrada",
+        mensagem: "A publicação que você tentou acessar não existe.",
+        tipo: "error"
+      };
+
+      return res.redirect("/");
     }
- 
+
     let usuario = null;
-const sessao = req.session.autenticado;
+    const sessao = req.session.autenticado;
 
-    // Se houver sessão ativa e for um objeto
-    if (sessao && typeof sessao === 'object') {
+    if (sessao && typeof sessao === "object") {
       const idUsuario = sessao.ID_USUARIO || sessao.id || sessao.ID;
-
       if (idUsuario) {
         usuario = await listagensModel.findIdusuario(idUsuario);
       }
-    } else if (typeof sessao === 'number' || typeof sessao === 'string') {
-      // Se a sessão for diretamente um ID (número ou string)
+    } else if (typeof sessao === "number" || typeof sessao === "string") {
       usuario = await listagensModel.findIdusuario(sessao);
     }
 
-    
-    // Só bloqueia se o usuário estiver autenticado mas não for encontrado no banco
-    // Se não encontrar o usuário autenticado, apenas trata como visitante
-    // Se não estiver autenticado, apenas mostra a publicação normalmente
- 
-    const comentarios = await comentariosModel.listarComentarios(id);
- 
- console.log("Dados da publicação sendo exibida:", {
-  ID_PUBLICACAO: publicacao.ID_PUBLICACAO,
-  NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
-  NOME_USUARIO: publicacao.NOME_USUARIO,
-  TAGS: publicacao.TAGS,
-  FAVORITO: publicacao.FAVORITO,
-  qtdImagens: publicacao.imagens.length,
-  qtdImagensUrls: publicacao.imagensUrls.length,
-});
+   if (!req.session.visitas) req.session.visitas = {};
 
-console.log(
-  "Comentários da publicação sendo exibida:", 
-  comentarios.map(c => ({
-    ID_COMENTARIO: c.ID_COMENTARIO,
-    ID_USUARIO: c.ID_USUARIO,
-    ID_PUBLICACAO: c.ID_PUBLICACAO,
-    CONTEUDO_COMENTARIO: c.CONTEUDO_COMENTARIO,
-    DATA_COMENTARIO: c.DATA_COMENTARIO,
-    NOME_USUARIO: c.NOME_USUARIO,
-    FOTO_PERFIL_BANCO_USUARIO: c.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não'
-  }))
-);
+// pega o tempo da última visita para essa publicação
+const ultimaVisita = req.session.visitas[publicacao.ID_PUBLICACAO];
+const agora = new Date();
+
+const intervaloMinutos = 30; // tempo limite entre visualizações
+
+if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000) {
+  // registra visualização no banco
+  const idUsuario = usuario ? (usuario.ID_USUARIO || usuario.id) : null;
+  await publicacoesModel.registrarVisualizacao(publicacao.ID_PUBLICACAO, idUsuario, null);
+
+  // atualiza o tempo da última visita na sessão
+  req.session.visitas[publicacao.ID_PUBLICACAO] = agora;
+}
+    const comentarios = await comentariosModel.listarComentarios(id);
+
+    console.log("Dados da publicação sendo exibida:", {
+      ID_PUBLICACAO: publicacao.ID_PUBLICACAO,
+      NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
+      NOME_USUARIO: publicacao.NOME_USUARIO,
+      TAGS: publicacao.TAGS,
+      FAVORITO: publicacao.FAVORITO,
+      qtdImagens: publicacao.imagens.length,
+      qtdImagensUrls: publicacao.imagensUrls.length,
+    });
+
+    console.log("Comentários da publicação sendo exibida:", comentarios.map(c => ({
+      ID_COMENTARIO: c.ID_COMENTARIO,
+      ID_USUARIO: c.ID_USUARIO,
+      ID_PUBLICACAO: c.ID_PUBLICACAO,
+      CONTEUDO_COMENTARIO: c.CONTEUDO_COMENTARIO,
+      DATA_COMENTARIO: c.DATA_COMENTARIO,
+      NOME_USUARIO: c.NOME_USUARIO,
+      FOTO_PERFIL_BANCO_USUARIO: c.FOTO_PERFIL_BANCO_USUARIO ? "sim" : "não"
+    })));
 
     console.log("Usuário autenticado passado para a view:", usuario);
-    
-    const dadosNotificacao = req.session.dadosNotificacao || null;
-req.session.dadosNotificacao = null;
 
-    console.log("Dados de notificação:", dadosNotificacao);
-    res.render('pages/publicacao', {
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+
+    res.render("pages/publicacao", {
       publicacao,
       comentarios,
       listaErros: null,
       usuario: usuario ? {
         id: usuario.ID_USUARIO || usuario.id,
         nome: usuario.NOME_USUARIO || usuario.nome,
-        tipo: usuario.TIPO_USUARIO || usuario.tipo
+        tipo: usuario.TIPO_USUARIO || usuario.tipo,
       } : null,
       autenticado: !!usuario,
       id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
@@ -229,7 +269,7 @@ req.session.dadosNotificacao = null;
     });
   } catch (erro) {
     console.log(erro);
-    res.status(500).send('Erro ao carregar publicação');
+    res.status(500).send("Erro ao carregar publicação");
   }
 },
 

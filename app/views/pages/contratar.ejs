@@ -41,12 +41,24 @@
 
     <section class="pesquisas">
   <section class="barra-filtro-centralizada">
-    <section class="search">
-      <section class="icon">
-        <ion-icon name="search-outline"></ion-icon>
-      </section>
-      <input class="search-input" type="search" placeholder="O que você está procurando hoje?">
-    </section>
+      <form action="/pesquisar-profissionais" id="form-pesquisa" method="get">
+                         <section class="search">
+                             <section class="icon" id="btn-pesquisa">
+                             <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
+                             </section>
+                             <input 
+                             name="q"
+                               class="search-input" 
+                               type="search"  
+                               id="input-pesquisa"
+                               placeholder="Qual talento você procura hoje?"
+                               value="<%= termoPesquisa %>"
+                             >
+
+
+                           </section>
+                       </form>
+
     <button id="botao-filtro">
       <ion-icon name="filter-outline" id="icon-filtro"></ion-icon>
     </button>
@@ -134,6 +146,31 @@
 
    
  
+        <section class="resultado-pesquisa">
+  <% if (termoPesquisa) { %>
+    <% if (profissionais.length > 0) { %>
+      <h1 class="titulo-termo"><%= termoPesquisa %></h1>
+      <p class="descricao-termo">
+        <% if (descricaoFamosa) { %>
+          <%= descricaoFamosa %>
+        <% } else { %>
+          <% if (profissionais.length > 5) { %>
+            Encontre os melhores profissionais de "<%= termoPesquisa %>" no Traço Perfeito.
+          <% } else { %>
+            Encontramos alguns profissionais para sua pesquisa por "<%= termoPesquisa %>".
+          <% } %>
+        <% } %>
+      </p>
+    <% } else { %>
+      <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+      <p class="descricao-termo">
+        Não encontramos profissionais relacionados a "<%= termoPesquisa %>". 
+        Tente outro termo ou verifique a ortografia.
+      </p>
+    <% } %>
+  <% } %>
+</section>
+
  
            
  <section class="container-perfis">
@@ -164,6 +201,26 @@
   </section>
 </section>
             </section>
+
+
+            <section class="dados-perfil">
+  <section>
+    <p><%= profissional.QUANT_SEGUIDORES %></p>
+    <span>Seguidores</span>
+  </section>
+  <section>
+    <p>0</p>
+    <span>Contratações</span>
+  </section>
+  <section>
+    <p><%= profissional.QUANT_PUBLICACOES %></p>
+    <span>Publicações</span>
+  </section>
+</section>
+
+
+
+
             <section class="description">
                 <p><%= profissional.DESCRICAO_PERFIL_USUARIO || 'Profissional criativo e dedicado.' %></p>
             </section>

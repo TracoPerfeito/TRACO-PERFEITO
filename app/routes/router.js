@@ -44,12 +44,28 @@ router.get("/pesquisar", function(req, res) {
 
 
 
+
+
 router.get(
   "/contratar", //contratar 
   async function (req, res) {
     listagensController.listarProfissionais(req, res);
   }
 );
+
+
+
+
+router.get("/pesquisar-profissionais", function(req, res) {
+
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+  pesquisasController.pesquisarProfissionais(req, res);
+});
+
+
+
 
 router.get("/index", function (req, res) { //index
     res.render('pages/index')
@@ -77,6 +93,11 @@ router.get("/publicacoes-perfil", function (req, res) { //publicações de um pe
 
 router.get("/favoritar", verificarUsuAutenticado, function (req, res) {
   publicacoesController.favoritar(req, res);
+});
+
+
+router.get("/seguir-usuario", verificarUsuAutenticado, function (req, res) {
+  usuariosController.seguir(req, res);
 });
 
 

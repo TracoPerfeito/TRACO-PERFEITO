@@ -154,6 +154,9 @@
                        </form>
 
 
+                        <%- include('../partials/ordenar-publis') %>
+
+
 
    
 
@@ -262,9 +265,12 @@
   <section class="item-explorar item-1" 
   data-tags="<%= pub.TAGS %>" 
     data-categoria="<%= pub.CATEGORIA %>"
-    data-curtida ="<%= pub.N_CURTIDAS %>">
+    data-curtida ="<%= pub.N_CURTIDAS %>"
+    data-comentarios ="<%= pub.N_COMENTARIOS %>"
+    data-visualizacoes ="<%= pub.N_VISUALIZACOES %>"
+    data-data_publicacao ="<%= pub.DATA_PUBLICACAO %>"
+    >
 
-   
     <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
    
     <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
