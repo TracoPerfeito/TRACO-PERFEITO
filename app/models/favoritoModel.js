@@ -47,6 +47,24 @@ const favoritoModel = {
 
     },
 
+
+   countCurtidas: async (idPublicacao) => {
+    try {
+      const [rows] = await pool.query(
+        `SELECT COUNT(*) AS totalCurtidas 
+         FROM FAVORITOS 
+         WHERE ID_PUBLICACAO = ? 
+           AND STATUS_FAVORITO = 1`,
+        [idPublicacao]
+      );
+      return rows[0].totalCurtidas;
+    } catch (error) {
+      console.error("Erro ao contar curtidas:", error);
+      return 0;
+    }
+  },
+
+
     delete: async (id) => {
         try {
             const [resultados] = await pool.query(

@@ -1,7 +1,7 @@
 const listagensModel = require("../models/listagensModel");
 const comentariosModel = require("../models/comentariosModel");
 const { body, validationResult } = require("express-validator");
-const favoritoModel = require("../models/favoritoModel");
+const {favoritoModel} = require("../models/favoritoModel");
 const moment = require("moment");
  
  
@@ -82,34 +82,42 @@ const listagensController = {
   }
 },
  
- 
-    listarPublicacoes: async (req, res,  dadosNotificacao) => {
+listarPublicacoes: async (req, res, dadosNotificacao) => {
   try {
     const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id);
- 
-    console.log("Publicações encontradas:", publicacoes.map(pub => ({
-  ID_PUBLICACAO: pub.ID_PUBLICACAO,
-  NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
-  NOME_USUARIO: pub.NOME_USUARIO,
-  TAGS: pub.TAGS,
-  FAVORITO: pub.FAVORITO,    
-  qtdImagens: (pub.imagens || []).length,
-  qtdImagensUrls: (pub.imagensUrls || []).length,
-})));
 
- 
-   
+    // Adiciona a contagem de curtidas a cada publicação
+    const publicacoesComCurtidas = await Promise.all(
+      publicacoes.map(async (pub) => {
+        const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
+        return { ...pub, N_CURTIDAS };
+      })
+    );
+
+    console.log("Publicações encontradas:", publicacoesComCurtidas.map(pub => ({
+      ID_PUBLICACAO: pub.ID_PUBLICACAO,
+      NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
+      NOME_USUARIO: pub.NOME_USUARIO,
+      CATEGORIA: pub.CATEGORIA,
+      TAGS: pub.TAGS,
+      N_CURTIDAS: pub.N_CURTIDAS, // agora preenchido corretamente
+      FAVORITO: pub.FAVORITO,    
+      qtdImagens: (pub.imagens || []).length,
+      qtdImagensUrls: (pub.imagensUrls || []).length,
+    })));
+
     let id_usuario = null;
     let tipo_usuario = null;
     if (req.session && req.session.autenticado) {
       id_usuario = req.session.autenticado.ID_USUARIO || req.session.autenticado.id || req.session.autenticado.ID;
       tipo_usuario = req.session.autenticado.TIPO_USUARIO || req.session.autenticado.tipo;
     }
+
     res.render('pages/index', {
-      publicacoes,
-       termoPesquisa: null,
-        mostrarTextoBusca: "false",
-        descricaoFamosa: null,
+      publicacoes: publicacoesComCurtidas, // envia as publicações já com a contagem
+      termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       id_usuario,
@@ -117,15 +125,14 @@ const listagensController = {
       listaErros: null,
       dadosNotificacao
     });
- 
+
   } catch (error) {
     console.error("Erro no controller ao listar publicações:", error);
-    res.status(500).send("Erro interno ao buscar publicações");
-     res.render('pages/index', {
+    res.status(500).render('pages/index', {
       autenticado: !!req.session.autenticado,
-       termoPesquisa: null,
-        mostrarTextoBusca: "false",
-        descricaoFamosa: null,
+      termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
       logado: req.session.logado,
       listaErros: ['Erro ao carregar publicações'],
       dadosNotificacao,
@@ -133,7 +140,7 @@ const listagensController = {
     });
   }
 },
- 
+
  
   exibirPublicacao: async (req, res) => {
   const id = req.params.id;

@@ -200,24 +200,21 @@
  
                     <!--------------------------------------CAIXAS--------------------------------------------------------->
                     
-
-
-              <section class="resultado-pesquisa">
+<section class="resultado-pesquisa">
   <% if (mostrarTextoBusca && termoPesquisa) { %>
     <% if (publicacoes.length > 0) { %>
       <h1 class="titulo-termo"><%= termoPesquisa %></h1>
-    <p class="descricao-termo">
-  <% if (descricaoFamosa) { %>
-    <%= descricaoFamosa %>
-  <% } else { %>
-    <% if (publicacoes.length > 5) { %>
-      Encontre as melhores publicações de "<%= termoPesquisa %>" no Traço Perfeito.
-    <% } else { %>
-      Encontramos alguns resultados para sua pesquisa por "<%= termoPesquisa %>".
-    <% } %>
-  <% } %>
-</p>
-
+      <p class="descricao-termo">
+        <% if (descricaoFamosa) { %>
+          <%= descricaoFamosa %>
+        <% } else { %>
+          <% if (publicacoes.length > 5) { %>
+            Encontre as melhores publicações de "<%= termoPesquisa %>" no Traço Perfeito.
+          <% } else { %>
+            Encontramos alguns resultados para sua pesquisa por "<%= termoPesquisa %>".
+          <% } %>
+        <% } %>
+      </p>
     <% } else { %>
       <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
       <p class="descricao-termo">
@@ -225,8 +222,32 @@
         Tente outro termo ou verifique a ortografia.
       </p>
     <% } %>
+
+  <% } else if (mostrarTextoBusca && typeof filtroNoExplorar !== "undefined") { %>
+    <% if (publicacoes.length > 0) { %>
+      <h1 class="titulo-termo"><%= filtroNoExplorar %></h1>
+      <p class="descricao-termo">
+        <% if (descricaoFiltro) { %>
+          <%= descricaoFiltro %>
+        <% } else { %>
+          <% if (publicacoes.length > 5) { %>
+            Encontre as melhores publicações de "<%= filtroNoExplorar %>" no Traço Perfeito.
+          <% } else { %>
+            Encontramos alguns resultados para sua pesquisa por "<%= filtroNoExplorar %>".
+          <% } %>
+        <% } %>
+      </p>
+    <% } else { %>
+      <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+      <p class="descricao-termo">
+        Não encontramos publicações relacionadas a "<%= filtroNoExplorar %>". 
+        Tente outro filtro ou verifique a ortografia.
+      </p>
+    <% } %>
   <% } %>
 </section>
+
+
 
 
 
@@ -238,7 +259,10 @@
   </section>
 <% } else { %>
  <% publicacoes.forEach(pub => { %>
-  <section class="item-explorar item-1">
+  <section class="item-explorar item-1" 
+  data-tags="<%= pub.TAGS %>" 
+    data-categoria="<%= pub.CATEGORIA %>"
+    data-curtida ="<%= pub.N_CURTIDAS %>">
 
    
     <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
