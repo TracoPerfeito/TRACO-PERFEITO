@@ -147,6 +147,7 @@ ORDER BY p.ID_PUBLICACAO DESC
         u.USER_USUARIO,
         u.EMAIL_USUARIO,
         u.DESCRICAO_PERFIL_USUARIO,
+        u.DATA_CADASTRO,
         up.ESPECIALIZACAO_DESIGNER,
         u.FOTO_PERFIL_BANCO_USUARIO,
         IF(s.ID_SEGUIDO IS NOT NULL AND s.STATUS_SEGUINDO = 1, 1, 0) AS SEGUIDO
@@ -188,7 +189,126 @@ ORDER BY p.ID_PUBLICACAO DESC
       console.error("Erro na pesquisa de profissionais:", error);
       return [];
     }
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  pesquisarPropostas: async (palavras) => {
+  try {
+    if (!palavras || palavras.length === 0) return [];
+
+    const whereClauses = [];
+    const valores = [];
+
+    palavras.forEach(p => {
+      const likeTerm = `%${p}%`;
+      whereClauses.push(
+        "REPLACE(LOWER(p.TITULO_PROPOSTA), 'ç', 'c') LIKE ?",
+        "REPLACE(LOWER(p.DESCRICAO_PROPOSTA), 'ç', 'c') LIKE ?",
+        "REPLACE(LOWER(p.CATEGORIA_PROPOSTA), 'ç', 'c') LIKE ?",
+        "REPLACE(LOWER(u.NOME_USUARIO), 'ç', 'c') LIKE ?"
+      );
+      valores.push(likeTerm, likeTerm, likeTerm, likeTerm);
+    });
+
+    const sql = `
+      SELECT 
+        p.ID_PROPOSTA,
+        p.ID_USUARIO,
+        p.TITULO_PROPOSTA,
+        p.DESCRICAO_PROPOSTA,
+        p.CATEGORIA_PROPOSTA,
+        p.PREFERENCIA_PROPOSTA,
+        p.PRAZO_ENTREGA,
+        p.ORCAMENTO,
+        p.DATA_PROPOSTA,
+        u.NOME_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO
+      FROM PROPOSTA_PROJETO p
+      LEFT JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
+      WHERE ${whereClauses.join(' OR ')}
+      ORDER BY p.DATA_PROPOSTA DESC
+      LIMIT 50
+    `;
+
+    const [propostas] = await pool.query(sql, valores);
+
+    const mapaProfissional = {
+      "Design Gráfico": "Designer Gráfico",
+      "Ilustração": "Ilustrador(a)",
+      "UI/UX": "Designer UI/UX",
+      "Arte Digital": "Artista Digital",
+      "Arte 3D": "Artista 3D",
+      "Animação": "Animador(a)",
+      "Branding": "Especialista em Branding",
+      "Tipografia": "Tipógrafo(a)",
+      "Modelagem 3D": "Modelador(a) 3D",
+      "Design de Produto": "Designer de Produto",
+      "Design Editorial": "Designer Editorial",
+      "Design de Jogos": "Designer de Jogos",
+      "Fotografia": "Fotógrafo(a)",
+      "Outros": "Profissional Diverso"
+    };
+
+    function formatarTempoRestante(diffDias) {
+      if (diffDias < 1) return "Expirado";
+      if (diffDias < 7) return `${diffDias} ${diffDias === 1 ? "dia" : "dias"} restante(s)`;
+      if (diffDias < 30) {
+        const semanas = Math.ceil(diffDias / 7);
+        return `${semanas} ${semanas === 1 ? "semana" : "semanas"} restante(s)`;
+      } else {
+        const meses = Math.ceil(diffDias / 30);
+        return `${meses} ${meses === 1 ? "mês" : "meses"} restante(s)`;
+      }
+    }
+
+    const propostasComProfissional = propostas.map(p => {
+      let prazoRestante = null;
+      let dataEntregaFormatada = null;
+
+      if (p.PRAZO_ENTREGA) {
+        const hoje = new Date();
+        const prazo = new Date(p.PRAZO_ENTREGA);
+        const diffMs = prazo - hoje;
+        const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        prazoRestante = formatarTempoRestante(diffDias);
+        dataEntregaFormatada = prazo.toLocaleDateString('pt-BR');
+      }
+
+      return {
+        ...p,
+        profissionalRequerido: mapaProfissional[p.CATEGORIA_PROPOSTA] || "Profissional Diverso",
+        prazoRestante,
+        dataEntregaFormatada
+      };
+    });
+
+    return propostasComProfissional;
+
+  } catch (error) {
+    console.error("Erro ao pesquisar propostas:", error);
+    return [];
   }
+},
+
 }
 
 

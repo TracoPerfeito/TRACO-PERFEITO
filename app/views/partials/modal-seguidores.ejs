@@ -1,0 +1,335 @@
+
+<section id="modalPerfilSeguidores" class="modal-perfil-seguidores oculto">
+  <section class="modal-perfil-seguidores-conteudo">
+    <button class="modal-perfil-fechar">&times;</button>
+
+    <section class="modal-perfil-abas">
+      <button id="modal-aba-seguidores" class="ativa">Seguidores</button>
+      <button id="modal-aba-seguindo">Seguindo</button>
+    </section>
+
+    <section id="modal-conteudo-seguidores" class="modal-perfil-lista">
+      <p class="modal-perfil-loader">Carregando...</p>
+    </section>
+
+    <section id="modal-conteudo-seguindo" class="modal-perfil-lista oculto">
+      <p class="modal-perfil-loader">Carregando...</p>
+    </section>
+  </section>
+</section>
+
+<style>
+.modal-perfil-seguidores {
+  position: fixed;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.5);
+  display:flex; justify-content:center; align-items:center;
+  z-index: 1000;
+}
+.modal-perfil-seguidores-conteudo {
+  background: #fff;
+  width: 400px;
+  max-height: 80%;
+  border-radius: 10px;
+  overflow-y: auto;
+  padding: 30px 20px;
+  position: relative;
+}
+.modal-perfil-fechar {
+  position: absolute;
+  top:10px; right:10px;
+  border:none; background:none; font-size:24px; cursor:pointer;
+}
+.modal-perfil-abas {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.modal-perfil-abas button {
+  flex:1;
+  padding: 8px 0;
+  cursor:pointer;
+  background:#eee;
+  border:none;
+  border-radius:5px;
+}
+.modal-perfil-abas button.ativa {
+  background:#333;
+  color:#fff;
+}
+.modal-perfil-lista {
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+.modal-perfil-lista .usuario-perfil {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.modal-perfil-lista .usuario-info-perfil {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.modal-perfil-lista .usuario-info-perfil img {
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.modal-perfil-lista .usuario-info-perfil .nome-username {
+  display:flex;
+  flex-direction:column;
+}
+.modal-perfil-lista .usuario-info-perfil .username {
+  font-size: 0.85em;
+  color: #666;
+}
+.usuario-perfil button {
+  padding:5px 10px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+.usuario-perfil button.seguindo {
+  background:#ccc;
+  color:#333;
+}
+.usuario-perfil button.seguir {
+  background:#333;
+  color:#fff;
+}
+.oculto { display:none; }
+.modal-perfil-loader { text-align:center; color:#666; }
+
+
+.modal-perfil-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-perfil-lista .usuario {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-perfil-lista .usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-perfil-lista .usuario-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.modal-perfil-lista .nome-username {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-perfil-lista .username {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.usuario button {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.usuario button.seguindo {
+  background: #ccc;
+  color: #333;
+}
+
+.usuario button.seguir {
+  background: #333;
+  color: #fff;
+}
+
+.oculto {
+  display: none;
+}
+
+.modal-perfil-loader {
+  text-align: center;
+  color: #666;
+  padding: 20px 0;
+}
+
+
+
+</style>
+
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("📌 DOM carregado");
+
+  const modal = document.getElementById("modalPerfilSeguidores");
+  const btnAbrir = document.getElementById("btnAbrirModalSeguidores");
+
+  if (!modal || !btnAbrir) return console.warn("❌ Modal ou botão abrir não encontrados. Abortando.");
+
+  const btnFechar = modal.querySelector(".modal-perfil-fechar");
+  const abaSeguidores = document.getElementById("modal-aba-seguidores");
+  const abaSeguindo = document.getElementById("modal-aba-seguindo");
+  const conteudoSeguidores = document.getElementById("modal-conteudo-seguidores");
+  const conteudoSeguindo = document.getElementById("modal-conteudo-seguindo");
+
+  let dadosCarregados = { seguidores: false, seguindo: false };
+
+  // Função para abrir modal
+  btnAbrir.addEventListener("click", async () => {
+    modal.classList.remove("oculto");
+    if (!dadosCarregados.seguidores) await carregarSeguidores();
+  });
+
+  // Fechar modal
+  if (btnFechar) btnFechar.addEventListener("click", () => modal.classList.add("oculto"));
+
+  // Alternar abas
+  abaSeguidores.addEventListener("click", async () => {
+    abaSeguidores.classList.add("ativa");
+    abaSeguindo.classList.remove("ativa");
+    conteudoSeguidores.classList.remove("oculto");
+    conteudoSeguindo.classList.add("oculto");
+    if (!dadosCarregados.seguidores) await carregarSeguidores();
+  });
+
+  abaSeguindo.addEventListener("click", async () => {
+    abaSeguindo.classList.add("ativa");
+    abaSeguidores.classList.remove("ativa");
+    conteudoSeguindo.classList.remove("oculto");
+    conteudoSeguidores.classList.add("oculto");
+    if (!dadosCarregados.seguindo) await carregarSeguindo();
+  });
+
+  // Função para seguir/desseguir via fetch
+  async function toggleSeguir(button, userId, estadoAtual) {
+    try {
+      const res = await fetch(`/seguir-usuario?id=${userId}&sit=${estadoAtual}`, { method: "GET" });
+      const data = await res.json();
+      if (data.sucesso) {
+        const novoEstado = estadoAtual === "seguir" ? "seguindo" : "seguir";
+        button.querySelector("span").textContent = novoEstado === "seguindo" ? "Seguindo" : "Seguir";
+        button.querySelector("span").className = novoEstado;
+        button.dataset.estado = novoEstado;
+      } else {
+        alert(data.mensagem || "Erro ao atualizar status");
+      }
+    } catch (err) {
+      console.error("Erro ao seguir/desseguir:", err);
+    }
+  }
+
+  // Carregar seguidores
+  async function carregarSeguidores() {
+    try {
+      const userId = btnAbrir.dataset.userid;
+      conteudoSeguidores.innerHTML = '<p class="loader">Carregando...</p>';
+      const res = await fetch(`/listar-seguidores?id=${userId}`);
+      if (!res.ok) throw new Error("Erro ao carregar seguidores");
+      const data = await res.json();
+      conteudoSeguidores.innerHTML = "";
+
+      if (!data.seguidores || data.seguidores.length === 0) {
+        conteudoSeguidores.innerHTML = "<p>Nenhum seguidor encontrado.</p>";
+        return;
+      }
+
+      data.seguidores.forEach(u => {
+   const btnSeguir = data.usuarioLogado && u.ID_USUARIO !== data.idUsuarioLogado ? `
+  <button class="follow-button" data-estado="${u.SEGUIDO === 1 ? 'seguindo' : 'seguir'}" 
+          onclick="toggleSeguir(this, ${u.ID_USUARIO}, this.dataset.estado)">
+    <span class="${u.SEGUIDO === 1 ? 'seguindo' : 'seguir'}">
+      ${u.SEGUIDO === 1 ? 'Seguindo' : 'Seguir'}
+    </span>
+  </button>` : "";
+
+
+
+        const html = `
+          <section class="usuario">
+            <section class="usuario-info">
+              <img src="${u.FOTO_PERFIL_BANCO_USUARIO || '/imgs/default-avatar.png'}" alt="${u.NOME_USUARIO}">
+              <section class="nome-username">
+                <strong>${u.NOME_USUARIO}</strong>
+                <span class="username">@${u.USER_USUARIO}</span>
+              </section>
+            </section>
+            ${btnSeguir}
+          </section>`;
+        conteudoSeguidores.insertAdjacentHTML('beforeend', html);
+      });
+
+      dadosCarregados.seguidores = true;
+    } catch (err) {
+      console.error("Erro ao carregar seguidores:", err);
+      conteudoSeguidores.innerHTML = "<p>Erro ao carregar seguidores.</p>";
+    }
+  }
+
+  // Carregar seguindo
+  async function carregarSeguindo() {
+    try {
+      const userId = btnAbrir.dataset.userid;
+      conteudoSeguindo.innerHTML = '<p class="loader">Carregando...</p>';
+      const res = await fetch(`/listar-seguidores?id=${userId}`);
+      if (!res.ok) throw new Error("Erro ao carregar seguindo");
+      const data = await res.json();
+      conteudoSeguindo.innerHTML = "";
+
+      if (!data.seguindo || data.seguindo.length === 0) {
+        conteudoSeguindo.innerHTML = "<p>Este usuário não está seguindo ninguém.</p>";
+        return;
+      }
+
+      data.seguindo.forEach(u => {
+        const btnSeguir = data.usuarioLogado ? `
+          <button class="follow-button" data-estado="${u.seguido ? 'seguindo' : 'seguir'}" 
+                  onclick="toggleSeguir(this, ${u.ID_USUARIO}, this.dataset.estado)">
+            <span class="${u.seguido ? 'seguindo' : 'seguir'}">
+              ${u.seguido ? 'Seguindo' : 'Seguir'}
+            </span>
+          </button>` : "";
+
+        const html = `
+          <section class="usuario">
+            <section class="usuario-info">
+              <img src="${u.FOTO_PERFIL_BANCO_USUARIO || '/imgs/default-avatar.png'}" alt="${u.NOME_USUARIO}">
+              <section class="nome-username">
+                <strong>${u.NOME_USUARIO}</strong>
+                <span class="username">@${u.USER_USUARIO}</span>
+              </section>
+            </section>
+            ${btnSeguir}
+          </section>`;
+        conteudoSeguindo.insertAdjacentHTML('beforeend', html);
+      });
+
+      dadosCarregados.seguindo = true;
+    } catch (err) {
+      console.error("Erro ao carregar seguindo:", err);
+      conteudoSeguindo.innerHTML = "<p>Erro ao carregar seguindo.</p>";
+    }
+  }
+
+});
+</script>

@@ -66,7 +66,9 @@ const denunciasController = {
       res.json(denuncias);
     } catch (error) {
       console.error('Erro ao listar denúncias comentários:', error);
-      res.status(500).json({ error: 'Erro interno' });
+       res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -82,7 +84,9 @@ const denunciasController = {
       res.json({ message: 'Status atualizado com sucesso' });
     } catch (error) {
       console.error('Erro ao atualizar status denúncia comentário:', error);
-      res.status(500).json({ error: 'Erro interno' });
+       res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -101,7 +105,9 @@ const denunciasController = {
       res.status(201).json({ message: 'Denúncia criada com sucesso', id: insertId });
     } catch (error) {
       console.error('Erro ao criar denúncia publicação:', error);
-      res.status(500).json({ error: 'Erro interno' });
+       res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -113,7 +119,9 @@ const denunciasController = {
       res.json(denuncias);
     } catch (error) {
       console.error('Erro ao listar denúncias publicações:', error);
-      res.status(500).json({ error: 'Erro interno' });
+       res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -129,7 +137,9 @@ const denunciasController = {
       res.json({ message: 'Status atualizado com sucesso' });
     } catch (error) {
       console.error('Erro ao atualizar status denúncia publicação:', error);
-      res.status(500).json({ error: 'Erro interno' });
+       res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -141,7 +151,9 @@ const denunciasController = {
       res.render('pages/adm-lista-denuncias', { denuncias, tipo: 'comentarios' });
     } catch (error) {
       console.error('Erro ao renderizar denúncias comentários:', error);
-      res.status(500).send('Erro interno');
+      res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -153,7 +165,9 @@ const denunciasController = {
       res.render('pages/adm-lista-denuncias', { denuncias, tipo: 'publicacoes' });
     } catch (error) {
       console.error('Erro ao renderizar denúncias publicações:', error);
-      res.status(500).send('Erro interno');
+      res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -223,7 +237,9 @@ criarDenunciaProjeto: async (req, res) => {
       res.redirect('/projetos'); // ajusta a rota conforme sua tela
     } catch (error) {
       console.error('Erro ao criar denúncia de projeto:', error);
-      res.status(500).send('Erro no servidor');
+       res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -233,7 +249,9 @@ criarDenunciaProjeto: async (req, res) => {
       res.render('denuncias/listaProjetos', { denuncias }); // view EJS
     } catch (error) {
       console.error('Erro ao listar denúncias de projetos:', error);
-      res.status(500).send('Erro no servidor');
+      res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   },
 
@@ -252,7 +270,9 @@ criarDenunciaProjeto: async (req, res) => {
       res.redirect('/denuncias/projetos');
     } catch (error) {
       console.error('Erro ao atualizar status da denúncia de projeto:', error);
-      res.status(500).send('Erro no servidor');
+     res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   }
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Erro de Conexão</title>
+  
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+        font-family: "Montserrat", sans-serif;
+      background-color: #f2f2f2;
+    }
+    .container {
+      text-align: center;
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        font-family: "Montserrat", sans-serif;
+    }
+    ion-icon {
+      font-size: 60px;
+      color: #7193C7;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin: 10px 0 20px;
+      font-size: 28px;
+      color: #333;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background-color: #122b42;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: "Montserrat", sans-serif;
+    }
+    button:hover {
+      background-color: transparent;
+      color: #122b42;
+      border: 1px solid #122b42;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <ion-icon name="warning"></ion-icon>
+    <h1>Ocorreu um erro!</h1>
+    <p><%= mensagem %></p>
+    <button onclick="window.location.href='/'">Voltar à página inicial</button>
+  </div>
+</body>
+</html>

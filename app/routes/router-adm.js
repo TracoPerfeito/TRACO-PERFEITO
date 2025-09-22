@@ -75,7 +75,9 @@ router.get(
 
     } catch (error) {
       console.error("Erro ao carregar dashboard:", error);
-      res.status(500).send("Erro ao carregar Dashboard");
+      res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   }
 );
@@ -103,7 +105,9 @@ router.get(
 
     } catch (error) {
       console.error("Erro ao listar usuários:", error);
-      res.status(500).send("Erro ao listar usuários");
+      res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   }
 );
@@ -126,7 +130,9 @@ router.get(
       });
     } catch (error) {
       console.error("Erro ao listar usuários profissionais:", error);
-      res.status(500).send("Erro ao listar usuários profissionais");
+      res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   }
 )
@@ -150,7 +156,9 @@ router.get(
       });
     } catch (error) {
       console.error("Erro ao listar usuários comuns:", error);
-      res.status(500).send("Erro ao listar usuários comuns");
+      res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
     }
   }
 );

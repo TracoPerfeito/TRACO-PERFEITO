@@ -57,7 +57,13 @@
 
 
                            </section>
+
+                    
+
                        </form>
+
+                              
+                        <%- include('../partials/ordenar-profissionais') %>
 
     <button id="botao-filtro">
       <ion-icon name="filter-outline" id="icon-filtro"></ion-icon>
@@ -178,8 +184,14 @@
 
     <% if (profissionais.length > 0) { %>
   <% profissionais.forEach(profissional => { %>
-    <section class="card" 
-    onclick="location.href='<%= (autenticado && id_usuario === profissional.ID_USUARIO) ? '/meu-perfil-artista' : ('/perfil/' + profissional.ID_USUARIO) %>'">
+    <section class="card item-profissional"
+    onclick="location.href='<%= (autenticado && id_usuario === profissional.ID_USUARIO) ? '/meu-perfil-artista' : ('/perfil/' + profissional.ID_USUARIO) %>'"
+    data-seguidores="<%= profissional.QUANT_SEGUIDORES || 0 %>"
+    data-contratacoes="0"
+    data-avaliacao="0"
+     data-cadastro="<%= profissional.DATA_CADASTRO ? (new Date(profissional.DATA_CADASTRO)).toISOString().split('T')[0] : '' %>">
+
+    
         <section class="card-header">
            <img src="<%= profissional.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>"  alt="Background Image"  class="background-image" onerror="this.onerror=null; this.src='/imagens/bg.png'">
 

@@ -1,0 +1,101 @@
+<section class="filtro-ordenacao">
+  <button id="btnOrdenar" class="btn-ordenar">Ordenar</button>
+  <section id="opcoesOrdenacao" class="opcoes-ordenacao oculto">
+    <section data-ordem="mais-recentes">Mais Recentes</section>
+    <section data-ordem="mais-antigos">Mais Antigos</section>
+    <section data-ordem="prazo-curto">Prazo mais curto</section>
+    <section data-ordem="prazo-longo">Prazo mais longo</section>
+    <section data-ordem="orcamento-maior">Orçamento maior</section>
+    <section data-ordem="orcamento-menor">Orçamento menor</section>
+    <section data-ordem="titulo-az">Título A-Z</section>
+    <section data-ordem="titulo-za">Título Z-A</section>
+  </section>
+</section>
+
+<style>
+.filtro-ordenacao { position: relative; display: inline-block; margin-left: 20px; }
+.btn-ordenar { background-color: #333; color: #fff; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+.btn-ordenar:hover { background-color: #555; }
+.opcoes-ordenacao { position: absolute; top: 100%; left: 0; background-color: #fff; border: 1px solid #ccc; border-radius: 4px; width: max-content; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 10; }
+.opcoes-ordenacao section { padding: 8px 12px; cursor: pointer; }
+.opcoes-ordenacao section:hover { background-color: #f0f0f0; }
+.opcoes-ordenacao .selecionada { background-color: #333; color: #fff; font-weight: bold; }
+.oculto { display: none; }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("📌 Script de ordenação de propostas carregado");
+
+  const btnOrdenar = document.getElementById("btnOrdenar");
+  const opcoesOrdenacao = document.getElementById("opcoesOrdenacao");
+
+  btnOrdenar?.addEventListener("click", () => {
+    console.log("🔽 Botão Ordenar clicado - toggle dropdown");
+    opcoesOrdenacao.classList.toggle("oculto");
+    console.log("   Dropdown está agora:", opcoesOrdenacao.classList.contains("oculto") ? "OCULTO" : "VISÍVEL");
+  });
+
+  const ordenarPropostas = (tipo) => {
+    console.log("➡️ ordenarPropostas chamado com tipo:", tipo);
+
+    const container = document.querySelector(".grid");
+    if (!container) { console.error("❌ container-propostas NÃO encontrado"); return; }
+
+    const propostas = Array.from(container.querySelectorAll(".card"));
+    console.log(`🔎 Encontradas ${propostas.length} propostas`);
+
+    propostas.forEach((p, i) => {
+      console.log(`  [${i}] id=${p.dataset.id} título="${p.dataset.titulo}" orçamento=${p.dataset.orcamento} prazo=${p.dataset.prazoentrega} data=${p.dataset.dataproposta}`);
+    });
+
+    try {
+      propostas.sort((a, b) => {
+        const parseDateSafe = (d) => d ? new Date(d) : new Date(0);
+        const datapA = parseDateSafe(a.dataset.dataproposta);
+        const datapB = parseDateSafe(b.dataset.dataproposta);
+        const prazoA = parseDateSafe(a.dataset.prazoentrega);
+        const prazoB = parseDateSafe(b.dataset.prazoentrega);
+        const orcA = parseFloat(a.dataset.orcamento) || 0;
+        const orcB = parseFloat(b.dataset.orcamento) || 0;
+        const tituloA = a.dataset.titulo || "";
+        const tituloB = b.dataset.titulo || "";
+
+        switch(tipo) {
+          case "mais-recentes": return datapB - datapA;
+          case "mais-antigos": return datapA - datapB;
+          case "prazo-curto": return prazoA - prazoB;
+          case "prazo-longo": return prazoB - prazoA;
+          case "orcamento-maior": return orcB - orcA;
+          case "orcamento-menor": return orcA - orcB;
+          case "titulo-az": return tituloA.localeCompare(tituloB);
+          case "titulo-za": return tituloB.localeCompare(tituloA);
+          default: return 0;
+        }
+      });
+
+      console.log("🔁 Ordenação concluída — nova ordem:");
+      propostas.forEach((p, i) => console.log(`  [${i}] id=${p.dataset.id} título="${p.dataset.titulo}"`));
+
+      propostas.forEach(p => container.appendChild(p));
+      console.log("✅ Reinsersão das propostas no DOM concluída");
+
+    } catch(err) {
+      console.error("💥 Erro durante a ordenação:", err);
+    }
+  };
+
+  const opcoes = opcoesOrdenacao.querySelectorAll("section");
+  opcoes.forEach(opcao => {
+    opcao.addEventListener("click", () => {
+      console.log("🟢 Opção clicada:", opcao.dataset.ordem);
+      opcoes.forEach(o => o.classList.remove("selecionada"));
+      opcao.classList.add("selecionada");
+      ordenarPropostas(opcao.dataset.ordem);
+      opcoesOrdenacao.classList.add("oculto");
+    });
+  });
+
+  console.log("✅ Script de ordenação de propostas inicializado");
+});
+</script>
