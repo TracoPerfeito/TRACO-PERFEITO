@@ -651,7 +651,9 @@ if (usuarioSucesso || profissionalSucesso) {
       tipo: "error"
     },
     valores: req.body,
-    abaAtiva: "dados-pessoais"
+    abaAtiva: "dados-pessoais",
+    publicacoes: [],
+     qntPortfolios: 0
   });
 }
 
@@ -665,7 +667,8 @@ if (usuarioSucesso || profissionalSucesso) {
               tipo: "error"
             },
             valores: req.body,
-            abaAtiva: "dados-pessoais"
+            abaAtiva: "dados-pessoais",
+             qntPortfolios: 0
           });
     }
 },
