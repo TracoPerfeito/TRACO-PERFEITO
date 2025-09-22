@@ -205,7 +205,56 @@ async atualizarStatusDenunciaUsuario(req, res) {
     console.error('Erro ao atualizar status denúncia de usuário:', error);
     res.status(500).json({ erro: 'Erro interno' });
   }
-}
+},
+
+criarDenunciaProjeto: async (req, res) => {
+    try {
+      const { idProjeto, motivo } = req.body;
+      const idUsuario = req.session.autenticado.id; // pega usuário logado
+
+      const resultado = await denunciasModel.criarDenunciaProjeto({ idProjeto, idUsuario, motivo });
+
+      if (resultado.error) {
+        req.session.dadosNotificacao = { titulo: 'Erro', mensagem: resultado.error, tipo: 'erro' };
+      } else {
+        req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Denúncia enviada com sucesso!', tipo: 'sucesso' };
+      }
+
+      res.redirect('/projetos'); // ajusta a rota conforme sua tela
+    } catch (error) {
+      console.error('Erro ao criar denúncia de projeto:', error);
+      res.status(500).send('Erro no servidor');
+    }
+  },
+
+   listarDenunciasProjetos: async (req, res) => {
+    try {
+      const denuncias = await denunciasModel.listarDenunciasProjetos();
+      res.render('denuncias/listaProjetos', { denuncias }); // view EJS
+    } catch (error) {
+      console.error('Erro ao listar denúncias de projetos:', error);
+      res.status(500).send('Erro no servidor');
+    }
+  },
+
+   atualizarStatusProjeto: async (req, res) => {
+    try {
+      const { idDenuncia, novoStatus } = req.body;
+
+      const resultado = await denunciasModel.atualizarStatusDenunciaProjeto(idDenuncia, novoStatus);
+
+      if (resultado && resultado.affectedRows > 0) {
+        req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Status atualizado!', tipo: 'sucesso' };
+      } else {
+        req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Não foi possível atualizar o status.', tipo: 'erro' };
+      }
+
+      res.redirect('/denuncias/projetos');
+    } catch (error) {
+      console.error('Erro ao atualizar status da denúncia de projeto:', error);
+      res.status(500).send('Erro no servidor');
+    }
+  }
 
 };
 

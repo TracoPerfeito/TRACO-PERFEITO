@@ -116,7 +116,58 @@ const denunciasModel = {
       [novoStatus, idDenuncia]
     );
     return result;
+  },
+
+   criarDenunciaProjeto: async ({ idProjeto, idUsuario, motivo }) => {
+    const sql = `
+      INSERT INTO DENUNCIAS_PROJETOS
+      (ID_USUARIO_DENUNCIANTE, ID_PROJETO, MOTIVO, STATUS, DATA_DENUNCIA)
+      VALUES (?, ?, ?, 'pendente', NOW())
+    `;
+    try {
+      const [result] = await pool.query(sql, [idUsuario, idProjeto, motivo]);
+      return { success: true, id: result.insertId };
+    } catch (error) {
+      console.error('Erro ao criar denúncia de projeto:', error);
+      return { error: 'Erro ao criar denúncia.' };
+    }
+  },
+
+  listarDenunciasProjetos: async (status = null) => {
+   const sql = `
+      SELECT 
+        d.ID_DENUNCIA,
+        d.MOTIVO,
+        d.STATUS,
+        d.DATA_DENUNCIA,
+        u.NOME AS NOME_USUARIO,
+        p.TITULO AS PROJETO
+      FROM DENUNCIAS_PROJETOS d
+      JOIN USUARIOS u ON d.ID_USUARIO_DENUNCIANTE = u.ID_USUARIO
+      JOIN PROPOSTA_PROJETO p ON d.ID_PROJETO = p.ID_PROPOSTA
+      ORDER BY d.DATA_DENUNCIA DESC
+    `;
+    try {
+      const [rows] = await pool.query(sql);
+      return rows;
+    } catch (error) {
+      console.error('Erro ao listar denúncias de projetos:', error);
+      return [];
+    }
+  },
+
+  atualizarStatusDenunciaProjeto: async (idDenuncia, novoStatus) => {
+  try {
+    const [result] = await pool.query(
+      'UPDATE DENUNCIAS_PROJETOS SET STATUS = ? WHERE ID_DENUNCIA = ?',
+      [novoStatus, idDenuncia]
+    );
+    return result;
+  } catch (error) {
+    console.error('Erro ao atualizar status da denúncia de projeto:', error);
+    return null;
   }
+},
 
 };
 

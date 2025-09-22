@@ -141,6 +141,17 @@ router.post("/denunciar-publicacao", denunciasController.criarDenunciaPublicacao
 
 router.post('/denunciar-usuario', denunciasController.criarDenunciaUsuario);
 
+// Criar denúncia (usuário denuncia um projeto)
+router.post('/projetos/criar', denunciasController.criarDenunciaProjeto);
+
+// Listar denúncias (acesso do admin)
+router.get('/projetos', denunciasController.listarDenunciasProjetos);
+
+// Atualizar status da denúncia (admin muda status)
+router.post('/projetos/atualizar-status', denunciasController.atualizarStatusProjeto);
+
+
+
 
 
 
