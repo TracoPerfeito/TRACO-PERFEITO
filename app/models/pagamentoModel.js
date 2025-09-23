@@ -38,17 +38,19 @@ const pagamentoModel = {
     },
 
     // Criar nova assinatura
-    createAssinatura: async (camposJson) => {
-        try {
-            const [resultados] = await pool.query(
-                "INSERT INTO ASSINATURAS SET ?",
-                [camposJson]
-            );
-            return resultados;
-        } catch (error) {
-            return error;
-        }
-    },
+   createAssinatura: async (camposJson) => {
+    try {
+        const resultados = await pool.query(
+            "INSERT INTO ASSINATURAS SET ?",
+            [camposJson]
+        );
+        // resultados[0] é o resultado correto
+        return resultados[0]; 
+    } catch (error) {
+        return error;
+    }
+},
+
 
     // Atualizar assinatura existente (por usuário)
     updateAssinatura: async (camposJson, usuarioId) => {
