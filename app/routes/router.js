@@ -9,10 +9,15 @@ const publicacoesController = require("../controllers/publicacoesController");
 const comentariosController = require("../controllers/comentariosController");
 const denunciasController = require('../controllers/denunciasController');
 const pesquisasController = require('../controllers/pesquisasController');
+const pagamentoController = require("../controllers/pagamentoController");
+
 
  const db = require('../../config/pool_conexoes');
 
-
+// SDK do Mercado Pago
+const { MercadoPagoConfig, Preference } = require('mercadopago');
+// Adicione credenciais
+const client = new MercadoPagoConfig({ accessToken: process.env.accessToken });
 
 
 const {
@@ -164,6 +169,76 @@ router.post('/projetos/atualizar-status', denunciasController.atualizarStatusPro
 
 
 
+
+
+
+
+router.get("/pagamentos",
+  
+   verificarUsuAutorizado(["profissional"], "pages/acesso-negado"),
+  async function (req, res){ 
+    res.render('pages/pagamentos')
+  }
+);
+
+
+router.post("/create-preference", function (req, res) {
+const preference = new Preference(client);
+console.log("Criando preferência de pagamento com dados:", req.body);
+
+  // o plano vem do front (ex: "semanal", "mensal", "anual")
+    const { plano } = req.body;
+    console.log(plano);
+
+    // tabela dos planos
+    const planos = {
+      semanal: { title: "Plano Semanal Traço Perfeito", preco: 10 },
+      mensal: { title: "Plano Mensal Traço Perfeito", preco: 30 },
+      anual: { title: "Plano Anual Traço Perfeito", preco: 300 }
+    };
+
+    if (!planos[plano]) {
+      return res.status(400).json({ error: "Plano inválido" });
+    }
+
+
+preference.create({
+  body: {
+    items: [
+       {
+            title: planos[plano].title,
+            quantity: 1,
+            unit_price: planos[plano].preco
+          }
+    ],
+      back_urls: {
+        "success": process.env.URL_BASE + "/feedback",
+        "failure": process.env.URL_BASE + "/feedback",
+        "pending": process.env.URL_BASE + "/feedback"
+      },
+      auto_return: "approved",
+  }
+})
+.then((value) => {
+  res.json(value);
+})
+.catch(console.log);
+});
+
+
+
+router.get("/feedback", function (req, res) {
+  pagamentoController.gravarPagamento(req, res);
+});
+
+ 
+router.get(
+  "/meu-perfil-artista",
+  verificarUsuAutorizado(["profissional", "comum"], "pages/acesso-negado"),
+  async function (req, res) {
+    usuariosController.mostrarPerfil(req, res);
+  }
+);
 
 
 

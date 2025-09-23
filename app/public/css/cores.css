@@ -47,6 +47,7 @@
     --linha-pesquisa: rgba(0, 0, 0, 0.1); 
     --cor-text-np:  #165040;
     --cor-borda-btn-1: transparent;
+     --borda-barra-pag: #d3d3d3;
 
 }
 
@@ -98,5 +99,6 @@
     --linha-pesquisa: rgba(255, 255, 255, 0.1); 
     --cor-text-np:  #fafafa;
     --cor-borda-btn-1: white;
+     --borda-barra-pag:rgb(224, 224, 224);
 }
 
