@@ -1053,7 +1053,73 @@ return res.redirect(previousUrl || "/");
         console.error(err);
         res.redirect("/");
     }
-}
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Excluir Proposta
+  excluirProposta: async (req, res) => {
+    try {
+      const { idProposta } = req.body;
+      if (!idProposta) {
+        return res.status(400).send("ID da proposta não enviado.");
+      }
+      const proposta = await publicacoesModel.findIdProposta(idProposta);
+      if (!proposta) {
+        return res.status(404).send("Proposta não encontrada.");
+      }
+      const idUsuario = req.session.autenticado.id;
+      const tipoUsuario = req.session.autenticado.tipo;
+      // Permitir exclusão se for dono OU administrador
+      if (proposta.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
+        return res.status(403).send("Você não tem permissão para excluir esta proposta de projeto.");
+      }
+
+
+
+      let resultado = await publicacoesModel.excluirProposta(idProposta);
+      console.log(resultado);
+
+            
+      req.session.dadosNotificacao = {
+        titulo: "Proposta de projeto excluída!",
+        mensagem: "Sua proposta de projeto foi excluída com sucesso.",
+        tipo: "success"
+      };
+
+
+
+
+      return res.redirect("/"); 
+    } catch (erro) {
+      console.error("Erro ao excluir proposta:", erro);
+      
+      
+            
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível excluir sua proposta de projeto.",
+        tipo: "error"
+      };
+
+
+
+
+      return res.redirect("/"); 
+    }
+  },
+
+
 
 
 

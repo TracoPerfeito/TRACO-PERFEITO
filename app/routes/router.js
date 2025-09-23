@@ -85,6 +85,18 @@ router.get("/perfil/:id", function (req, res) { //perfil-alheio
  
 });
 
+
+
+
+router.get(
+  "/listar-seguidores", //listar seguidores
+  async function (req, res) {
+    listagensController.listarSeguidoresESeguindo(req, res);
+  }
+);
+
+
+
 router.get("/publicacoes-perfil", function (req, res) { //publicações de um perfil
     res.render('pages/publicacoes-perfil')
  
@@ -463,6 +475,17 @@ router.get("/oportunidades", function (req, res) { //oportunidades logado
 });
 
 
+router.get("/pesquisar-propostas", function(req, res) {
+
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+  pesquisasController.pesquisarPropostas(req, res);
+});
+
+
+
+
 
 
 router.get("/adm-inicial", function (req, res) { //index adm teste
@@ -637,7 +660,9 @@ router.get('/verificar', async (req, res) => { //jogar essa validação para o u
     res.json({ existe: resultado.length > 0 });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ erro: 'Erro ao verificar dados' });
+     res.status(500).render('erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
   }
 });
 

@@ -15,6 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
     <link rel="stylesheet" href="css/oportunidades.css">
+    <link rel="stylesheet" href="css/barrapesquisa.css">
 
        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
@@ -53,9 +54,38 @@
             <h1 id="nome-pag-oportunidades"> Oportunidades</h1> <br>
             <p class="msg-oportunidades"> Confira as oportunidades recentes que podem te interessar!</p>
 
-        <button id="botao-filtro"> Filtros <ion-icon name="filter-outline" id="icon-filtro"></ion-icon></button>
+   
+             <section class="pesquisas">
+  <section class="barra-filtro-centralizada">
+      <form action="/pesquisar-propostas" id="form-pesquisa" method="get">
+                         <section class="search">
+                             <section class="icon" id="btn-pesquisa">
+                             <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
+                             </section>
+                             <input 
+                             name="q"
+                               class="search-input" 
+                               type="search"  
+                               id="input-pesquisa"
+                               placeholder="Qual seu próximo projeto?"
+                               value="<%= termoPesquisa %>"
+                             >
 
-    </section>
+
+                           </section>
+
+                    
+
+                       </form>
+
+                              
+                        <%- include('../partials/ordenar-propostas') %>
+
+    <button id="botao-filtro">
+      <ion-icon name="filter-outline" id="icon-filtro"></ion-icon>
+    </button>
+  </section>
+</section>
 
 
     <!------------------------------------ SEÇÃO DO FILTRO QUANDO ELE É ABERTO --------------------------------------------->
@@ -133,19 +163,50 @@
         <!----------------------------------- FIM DA SEÇÃO DE FILTRO QUANO ABERTO ----------------------------------------------->
 
 
+        
+  
+<section class="resultado-pesquisa">
+  <% if (termoPesquisa) { %>
+    <% if (propostas.length > 0) { %>
+      <h1 class="titulo-termo"><%= termoPesquisa %></h1>
+      <p class="descricao-termo">
+        <% if (propostas.length > 5) { %>
+          Confira várias oportunidades de "<%= termoPesquisa %>" disponíveis no Traço Perfeito.
+        <% } else { %>
+          Encontramos algumas propostas relacionadas a "<%= termoPesquisa %>".
+        <% } %>
+      </p>
+    <% } else { %>
+      <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+      <p class="descricao-termo">
+        Não encontramos propostas relacionadas a "<%= termoPesquisa %>". 
+        Tente outro termo ou verifique a ortografia.
+      </p>
+    <% } %>
+  <% } %>
+</section>
+
+
 
 <section class="grid">
   <% propostas.forEach(proposta => { %>
-    <div class="card" onclick="location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'">
+    <section class="card" onclick="location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'" 
+     
+             data-dataproposta="<%= proposta.DATA_PROPOSTA %>"
+             data-prazoentrega="<%= proposta.PRAZO_ENTREGA %>"
+             data-orcamento="<%= proposta.ORCAMENTO %>"
+             data-titulo="<%= proposta.TITULO_PROPOSTA %>">
       
       <!-- Badges: status e categoria -->
-      <div class="badges">
-        <span class="badge open">Open</span>
-        <span class="badge categoria-<%= proposta.CATEGORIA_PROPOSTA.toLowerCase().replace('_','-') %>">
-          <%= proposta.CATEGORIA_PROPOSTA %>
-        </span>
+      <section class="info-top">
+        <section class="badges">
+          <span class="badge open">Open</span>
+          <span class="badge categoria-<%= proposta.CATEGORIA_PROPOSTA.toLowerCase().replace('_','-') %>">
+            <%= proposta.CATEGORIA_PROPOSTA %>
+          </span>
         
-      </div>
+        </section>
+      </section>
 
       <!-- Nome da proposta -->
       <h3><%= proposta.TITULO_PROPOSTA %></h3>
@@ -154,15 +215,15 @@
       <p class="desc"><%- proposta.DESCRICAO_PROPOSTA %></p>
 
       <!-- Orçamento e Profissional requerido -->
-      <div class="budget-prof">
+      <section class="budget-prof">
         <span class="budget">
           <%= proposta.ORCAMENTO ? `R$ ${Number(proposta.ORCAMENTO).toFixed(2)}` : 'Não definido' %>
         </span>
         <span><%= proposta.PROFISSIONAL_REQUERIDO || 'Não definido' %></span>
-      </div>
+      </section>
 
       <!-- Prazo de entrega -->
-      <div class="deadline">
+      <section class="deadline">
         <% 
           if (proposta.PRAZO_ENTREGA) {
             const hoje = new Date();
@@ -179,14 +240,14 @@
         <% } else { %>
           <span class="ok">Prazo não definido</span>
         <% } %>
-      </div>
+      </section>
 
       <!-- Ações -->
-      <div class="actions">
+      <section class="actions">
         <button class="btn primary">Conversar</button>
         <button class="btn outline">Ver Detalhes</button>
-      </div>
-    </div>
+      </section>
+    </section>
   <% }) %>
 </section>
 

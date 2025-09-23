@@ -25,7 +25,7 @@ const listagensModel = {
   // },
 
 
-  buscarProfissionaisComEspecializacao: async () => {
+ buscarProfissionaisComEspecializacao: async (idUsuarioLogado = null) => {
   try {
     const [linhas] = await pool.query(`
       SELECT 
@@ -34,12 +34,17 @@ const listagensModel = {
         u.FOTO_PERFIL_BANCO_USUARIO,
         u.IMG_BANNER_BANCO_USUARIO,
         u.DESCRICAO_PERFIL_USUARIO,
-        up.ESPECIALIZACAO_DESIGNER
+        u.DATA_CADASTRO,
+        up.ESPECIALIZACAO_DESIGNER,
+        IF(s.ID_SEGUIDO IS NOT NULL AND s.STATUS_SEGUINDO = 1, 'seguindo', 'seguir') AS SEGUIDO
       FROM USUARIOS u
       LEFT JOIN USUARIO_PROFISSIONAL up ON u.ID_USUARIO = up.ID_USUARIO
+      LEFT JOIN SEGUINDO s 
+        ON s.ID_SEGUIDO = u.ID_USUARIO 
+        AND s.ID_USUARIO = ?
       WHERE u.TIPO_USUARIO = 'profissional' 
         AND u.STATUS_USUARIO = 'ativo'
-    `);
+    `, [idUsuarioLogado]);
 
     
     const profissionais = linhas.map(p => {
@@ -140,8 +145,8 @@ findIdusuario: async (idUsuarioPerfil, idUsuarioLogado = null) => {
 contarSeguidores: async (id) => {
   try {
       const [quantseguidores] = await pool.query(
-        'SELECT COUNT(*) AS total FROM SEGUINDO WHERE ID_SEGUIDO = ?',
-        [id]
+        'SELECT COUNT(*) AS total FROM SEGUINDO WHERE ID_SEGUIDO = ? AND STATUS_SEGUINDO = 1',
+      [id]
       );
       return quantseguidores[0].total;
     } catch (error) {
@@ -787,6 +792,66 @@ listarPublicacoesdoPortfolio: async (idPortfolio, idUsuario = null) => {
 
 
 
+listarSeguidoresESeguindo: async (idUsuarioPerfil, idUsuarioLogado = null) => {
+  try {
+    // ----------------- SEGUIDORES -----------------
+    const [linhasSeguidores] = await pool.query(`
+      SELECT u.ID_USUARIO,
+             u.NOME_USUARIO,
+             u.USER_USUARIO,
+             u.FOTO_PERFIL_BANCO_USUARIO,
+             IF(sg.ID_SEGUIDO IS NOT NULL AND sg.STATUS_SEGUINDO = 1, 1, 0) AS SEGUIDO
+      FROM SEGUINDO s
+      INNER JOIN USUARIOS u ON s.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN SEGUINDO sg 
+        ON sg.ID_USUARIO = ? 
+        AND sg.ID_SEGUIDO = u.ID_USUARIO
+        AND sg.STATUS_SEGUINDO = 1
+      WHERE s.ID_SEGUIDO = ?
+        AND s.STATUS_SEGUINDO = 1
+      ORDER BY u.NOME_USUARIO ASC
+    `, [idUsuarioLogado, idUsuarioPerfil]);
+
+    // ----------------- SEGUINDO -----------------
+    const [linhasSeguindo] = await pool.query(`
+      SELECT u.ID_USUARIO,
+             u.NOME_USUARIO,
+             u.USER_USUARIO,
+             u.FOTO_PERFIL_BANCO_USUARIO,
+             IF(sg.ID_SEGUIDO IS NOT NULL AND sg.STATUS_SEGUINDO = 1, 1, 0) AS SEGUIDO
+      FROM SEGUINDO s
+      INNER JOIN USUARIOS u ON s.ID_SEGUIDO = u.ID_USUARIO
+      LEFT JOIN SEGUINDO sg 
+        ON sg.ID_USUARIO = ? 
+        AND sg.ID_SEGUIDO = u.ID_USUARIO
+        AND sg.STATUS_SEGUINDO = 1
+      WHERE s.ID_USUARIO = ?
+        AND s.STATUS_SEGUINDO = 1
+      ORDER BY u.NOME_USUARIO ASC
+    `, [idUsuarioLogado, idUsuarioPerfil]);
+
+    // ----------------- TRATAR IMAGENS -----------------
+    const tratarUsuarios = (linhas) => linhas.map(u => ({
+      ...u,
+      FOTO_PERFIL_BANCO_USUARIO: u.FOTO_PERFIL_BANCO_USUARIO
+        ? `data:image/png;base64,${u.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+        : null
+    }));
+
+    return {
+      seguidores: tratarUsuarios(linhasSeguidores),
+      seguindo: tratarUsuarios(linhasSeguindo)
+    };
+
+  } catch (error) {
+    console.error("Erro ao listar seguidores e seguindo:", error);
+    return { seguidores: [], seguindo: [] };
+  }
+},
+
+
+
+}
 
 
 
@@ -798,9 +863,5 @@ listarPublicacoesdoPortfolio: async (idPortfolio, idUsuario = null) => {
 
 
 
-
-
-
-};
 
 module.exports = listagensModel;

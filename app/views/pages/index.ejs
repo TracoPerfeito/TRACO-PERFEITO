@@ -347,27 +347,37 @@
   onerror="this.onerror=null; this.src='/imagens/img.png'">
 
        <p class="nome-dono-post-ex">
-  <a href="<%= (autenticado && id_usuario === pub.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + pub.ID_USUARIO %>">
+  <a href="<%= (autenticado && id_usuario === pub.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + pub.ID_USUARIO %>" class="nome-usuario">
 
     <%= pub.NOME_USUARIO %>
   </a>
 </p>
 
+
+
+
+  </section>
+
+  <section class="contagem">
+
+    <ion-icon name="eye"></ion-icon>
+    <small><%= pub.N_VISUALIZACOES %></small>
   </section>
 
 
    
-      <!-- <button class="like-button">
-        <i class="far fa-heart"></i>
-      </button> -->
+       <section class="contagem">
+         <button class="like-button">
+           <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>"  
+              onclick="localStorage.setItem('scrollPos', window.scrollY)">
+             <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
+         
+           </a>
+         
+         </button>
 
-       <button class="like-button">
-  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>"  
-     onclick="localStorage.setItem('scrollPos', window.scrollY)">
-    <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
-
-  </a>
-</button> 
+           <small><%= pub.N_CURTIDAS %></small>
+       </section>
     </section>
 
 
@@ -493,6 +503,27 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="js/mobile-navbar.js"></script>
 <script src="js/denuncia-compartilhamento.js"></script>
 <script src="js/rolagem-atualizar-pag.js"></script>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+  const nomesdeusuario = document.querySelectorAll('.nome-usuario');
+  const ignorar = ['de', 'da', 'do', 'das', 'dos'];
+
+  nomesdeusuario.forEach(nome => {
+    const partesOriginais = nome.innerText.trim().split(' ');
+    const partesSemLigacao = partesOriginais.filter(p => !ignorar.includes(p.toLowerCase()));
+
+    if (partesSemLigacao.length > 3) {
+      const capitalize = str => str[0].toUpperCase() + str.slice(1).toLowerCase();
+      nome.innerText = `${capitalize(partesSemLigacao[0])} ${capitalize(partesSemLigacao[partesSemLigacao.length - 1])}`;
+    } else {
+      nome.innerText = partesOriginais.join(' ');
+    }
+  });
+});
+
+</script>
 
 <%- include('../partials/editar-publicacao') %>
 

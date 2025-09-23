@@ -35,6 +35,7 @@ const listagensController = {
   FOTO_PERFIL: p.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
   IMG_BANNER: p.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
   DESCRICAO_PERFIL_USUARIO: p.DESCRICAO_PERFIL_USUARIO,
+  DATA_CADASTRO: p.DATA_CADASTRO,
   ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER,
   QUANT_SEGUIDORES: p.QUANT_SEGUIDORES,
   QUANT_PUBLICACOES: p.QUANT_PUBLICACOES
@@ -49,7 +50,9 @@ const listagensController = {
  
   } catch (error) {
     console.error("Erro no controller ao listar profissionais:", error);
-    res.status(500).send("Erro interno ao buscar profissionais");
+    res.status(500).render('pages/erro-conexao', {
+  mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+});
   }
 },
  
@@ -105,7 +108,9 @@ const listagensController = {
     });
   } catch (erro) {
     console.log(erro);
-    res.status(500).send('Erro ao carregar perfil');
+    res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
   }
 },
  
@@ -269,7 +274,9 @@ if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000
     });
   } catch (erro) {
     console.log(erro);
-    res.status(500).send("Erro ao carregar publicação");
+    res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
   }
 },
 
@@ -297,6 +304,9 @@ listarPropostas: async (req, res) => {
 
     res.render('pages/oportunidades', {
       propostas,
+       termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       listaErros: null,
@@ -307,6 +317,9 @@ listarPropostas: async (req, res) => {
     console.error("Erro no controller ao listar propostas:", error);
     res.status(500).render('pages/oportunidades', {
       propostas: [],
+       termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       listaErros: ['Erro ao carregar propostas'],
@@ -445,6 +458,10 @@ const sessao = req.session.autenticado;
     });
   }
 },
+
+
+
+
  
  
 
@@ -658,8 +675,44 @@ listarDenuncias: async (req, res) => {
 
 
 
- 
- 
+ listarSeguidoresESeguindo: async (req, res) => {
+  try {
+    const userId = parseInt(req.query.id);
+    if (!userId) return res.status(400).json({ error: "ID do usuário inválido" });
+
+    const { seguidores, seguindo } = await listagensModel.listarSeguidoresESeguindo(userId, req.session?.autenticado?.id);
+
+     const seguidoresLog = seguidores.map(u => ({
+  ID_USUARIO: u.ID_USUARIO,
+  NOME_USUARIO: u.NOME_USUARIO,
+  FOTO_PERFIL: u.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  USER_USUARIO: u.USER_USUARIO,
+  SEGUIDO: u.SEGUIDO // 1 ou 0
+}));
+
+const seguindoLog = seguindo.map(u => ({
+  ID_USUARIO: u.ID_USUARIO,
+  NOME_USUARIO: u.NOME_USUARIO,
+  FOTO_PERFIL: u.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  USER_USUARIO: u.USER_USUARIO,
+  SEGUIDO: u.SEGUIDO
+}));
+
+console.log("Seguidores encontrados:", seguidoresLog);
+console.log("Seguindo encontrados:", seguindoLog);
+    res.json({
+      seguidores,
+      seguindo,
+     usuarioLogado: req.session?.autenticado?.id ? true : false,
+  idUsuarioLogado: req.session?.autenticado?.id || null
+    });
+  } catch (erro) {
+    console.error("Não foi possível listar seguidores.", erro);
+    res.status(500).json({ error: "Não foi possível carregar os seguidores" });
+  }
+}
+
+
  
 }
  

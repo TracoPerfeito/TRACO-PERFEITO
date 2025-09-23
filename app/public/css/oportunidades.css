@@ -465,7 +465,7 @@ p.desc {
   color: #e67e22;       /* laranja mais escuro */
 }
 
-.categoria-ilustracao {
+.categoria-ilustração {
   background: #e8d0f1; /* roxo pastel */
   color: #9b59b6;       /* roxo médio */
 }
@@ -529,3 +529,376 @@ p.desc {
   background: #e0e0e0; /* cinza claro */
   color: #7f8c8d;       /* cinza escuro */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
+.menu-opcoes {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: none;
+  z-index: 2;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.menu-opcoes:hover{
+  cursor: pointer;
+}
+
+:is(.item-explorar:hover, .menu-opcoes:hover) .publicacao-img {
+  filter: brightness(50%);
+  transition: all 0.2s;
+}
+
+
+:is(.publi-perfil:hover, .menu-opcoes:hover) .publicacao-img {
+  filter: brightness(50%);
+  transition: all 0.2s;
+}
+.icone-menu {
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.opcoes-menu {
+  display: none;
+  flex-direction: column;
+  margin-top: 5px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+}
+
+.opcoes-menu button {
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Josefin Sans";
+  font-size: 14px;
+}
+
+.opcoes-menu button:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* mostra o menu-opcoes ao passar o mouse na imagem 
+.item-explorar {
+  position: relative;
+}
+
+.publi-perfil {
+  position: relative;
+}
+
+
+.item-explorar:hover .menu-opcoes {
+  display: flex;
+}
+
+.publi-perfil:hover .menu-opcoes {
+  display: flex;
+}
+
+
+/* mostrar opções ao clicar (script) 
+.menu-opcoes.ativo .opcoes-menu {
+  display: flex;
+}
+
+
+
+
+
+#modal-share {
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background-color: rgba(0, 0, 0, 0.3);
+align-items: center;
+justify-content: center;
+z-index: 999;
+display: none;
+}
+
+/* Conteúdo do modal 
+#modal-share .modal-content-share {
+background: white;
+padding: 24px;
+border-radius: 10px;
+width: 90%;
+max-width: 400px;
+box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+position: relative;
+}
+
+/* Título 
+#modal-share .modal-content-share h2 {
+font-size: 18px;
+margin-bottom: 16px;
+color: #111827;
+}
+
+/* Área de link 
+#modal-share .link-container {
+display: flex;
+align-items: center;
+background-color: #f9fafb;
+padding: 10px 12px;
+border-radius: 8px;
+border: 1px solid #e5e7eb;
+}
+
+/* Texto do link 
+#shareLink {
+color: #374151;
+font-size: 14px;
+margin-right: 15px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+/* Botão de copiar 
+.copy-button {
+display: flex;
+align-items: center;
+border: none;
+background: none;
+cursor: pointer;
+color: #6366f1;
+font-weight: 500;
+font-size: 14px;
+position: relative;
+}
+
+/* Ícone de copiar 
+.copy-button svg {
+width: 16px;
+height: 16px;
+margin-right: 4px;
+}
+
+/* Tooltip 
+#tooltip {
+display: none;
+position: absolute;
+top: -28px;
+right: 0;
+background-color: #4ade80;
+color: white;
+padding: 4px 8px;
+border-radius: 4px;
+font-size: 12px;
+}
+
+/* Botão de fechar modal 
+.close-modal-btn {
+position: absolute;
+top: 10px;
+right: 12px;
+background: none;
+border: none;
+font-size: 18px;
+cursor: pointer;
+color: #6b7280;
+}
+
+@media (max-width: 500px){
+
+#modal-share .modal-content-share {
+
+width: 90%;
+max-width: 290px;
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+/* Denunciar 
+
+
+
+
+
+.acoes-postagem {
+display: flex;
+align-items: center;
+gap: 6px; 
+margin-top: 5px; 
+}
+
+.acoes-postagem {
+background: none;
+border: none;
+cursor: pointer;
+font-size: 18px;
+padding: 0;
+color: #333;
+}
+
+
+.btn-denunciar {
+background: none;
+border: none;
+cursor: pointer;
+font-size: 16px;
+padding: 0 5px;
+margin-top: 3px;
+}
+
+
+
+
+.modal {
+display: none;
+position: fixed;
+z-index: 1000;
+left: 0; top: 0;
+width: 100%; height: 100%;
+background-color: rgba(80, 18, 18, 0.4);
+}
+
+.modal-content {
+background-color: #fff;
+margin: 15% auto;
+padding: 50px;
+width: 300px;
+border-radius: 8px;
+}
+
+
+
+
+
+
+
+
+
+#modalDenuncia {
+display: none;
+position: fixed;
+z-index: 1000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0,0,0,0.5);
+}
+
+
+.modal-content {
+background-color: #fff;
+margin: 10% auto;
+padding: 20px 30px;
+border-radius: 8px;
+width: 400px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+animation: aparecer 0.3s ease;
+font-family: Arial, sans-serif;
+}
+
+@media (max-width:500px){
+
+
+.modal-content {
+
+width: 90%;
+max-width: 290px;
+}
+
+}
+
+
+.modal-content h3 {
+margin-top: 0;
+margin-bottom: 35px;
+font-size: 20px;
+color: #333;
+}
+
+
+.modal-content label {
+display: flex;
+align-items: center;
+margin-bottom: 8px;
+font-size: 16px;
+color: #444;
+}
+
+.modal-content input[type="radio"] {
+margin-right: 8px;
+}
+
+
+.modal-content button {
+padding: 8px 16px;
+margin-top: 12px;
+margin-right: 10px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-weight: bold;
+}
+
+.modal-content button[type="submit"] {
+background-color: var( --cor-btn-azul);
+color: var(--cor-fundo);
+}
+
+.modal-content button[type="button"] {
+background-color: #6c757d;
+color: white;
+}
+
+.modal-content button:hover {
+opacity: 0.9;
+}
+
+
+@keyframes aparecer {
+from { opacity: 0; transform: translateY(-20px); }
+to { opacity: 1; transform: translateY(0); }
+} */

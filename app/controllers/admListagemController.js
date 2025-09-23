@@ -28,7 +28,19 @@ const listarUsuariosPaginados = async (req, res) => {
             ? null
             : { pagina_atual: pagina, total_reg: totReg, total_paginas: totPaginas };
 
-        // Renderizar a view com os dados
+       
+
+            console.log(usuarios)
+        
+ console.log("Usuários encontrados:", results.map(user => ({
+    ID_USUARIO: user.ID_USUARIO,
+    NOME_USUARIO: user.NOME_USUARIO,
+    FOTO_PERFIL: user.FOTO_PERFIL_BANCO_USUARIO,
+   
+    DATA_CADASTRO: user.DATA_CADASTRO,
+  })));
+   // Renderizar a view com os dados
+
         res.render("pages/adm-lista-usuarios", { usuarios: usuarios, paginador: paginador });
     } catch (error) {
         console.log(error);

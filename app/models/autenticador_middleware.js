@@ -53,6 +53,13 @@ gravarUsuAutenticado = async (req, res, next) => {
     const usuarioEncontrado = results[0];
     console.log("🧾 usuarioEncontrado:", usuarioEncontrado);
 
+    if(!usuarioEncontrado){
+        console.error('Erro no banco de dadios. Conexão interrompida:', error);
+        res.status(500).render('pages/erro-conexao', {
+       mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+     });
+    }
+
     if (usuarioEncontrado.STATUS_USUARIO === 'inativo') {
     console.log("🚫 Usuário inativo tentou fazer login:", usuarioEncontrado.EMAIL_USUARIO);
     return res.render("pages/login", {

@@ -19,6 +19,7 @@ const pesquisasController = {
     let palavras = termoPesquisa
       .toLowerCase()
       .split(/\s+/)
+      .map(p => p.startsWith('@') ? p.slice(1) : p)
       .filter(p => !stopWords.includes(p));
 
     function removerAcentos(texto) {
@@ -72,6 +73,7 @@ const pesquisasController = {
   NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
   NOME_USUARIO: pub.NOME_USUARIO,
   CATEGORIA: pub.CATEGORIA,
+  
  N_CURTIDAS: pub.N_CURTIDAS,
       N_COMENTARIOS: pub.N_COMENTARIOS,
       N_VISUALIZACOES: pub.N_VISUALIZACOES,
@@ -152,6 +154,7 @@ pesquisarProfissionais: async (req, res) => {
     let palavras = termoPesquisa
       .toLowerCase()
       .split(/\s+/)
+      .map(p => p.startsWith('@') ? p.slice(1) : p)
       .filter(p => !stopWords.includes(p));
 
     function removerAcentos(texto) {
@@ -179,17 +182,11 @@ pesquisarProfissionais: async (req, res) => {
       resultados.map(async (prof) => {
         const QUANT_SEGUIDORES = await listagensModel.contarSeguidores(prof.ID_USUARIO);
         const QUANT_PUBLICACOES = await listagensModel.contarPublicacoes(prof.ID_USUARIO);
-
-        // marcar se usuário logado segue esse profissional
-        const SEGUIDO = idUsuarioLogado
-          ? await seguidoresModel.findID(idUsuarioLogado, prof.ID_USUARIO)
-          : [];
-
         return { 
           ...prof, 
           QUANT_SEGUIDORES,
           QUANT_PUBLICACOES,
-          SEGUIDO: SEGUIDO.length > 0 && SEGUIDO[0].STATUS_SEGUINDO === 1 ? 1 : 0
+          SEGUIDO: prof.SEGUIDO
         };
       })
     );
@@ -197,6 +194,7 @@ pesquisarProfissionais: async (req, res) => {
     console.log("Profissionais encontrados com contagem:", resultadosComContagem.map(p => ({
       ID_USUARIO: p.ID_USUARIO,
       NOME_USUARIO: p.NOME_USUARIO,
+      DATA_CADASTRO: p.DATA_CADASTRO,
       ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER,
       QUANT_SEGUIDORES: p.QUANT_SEGUIDORES,
       QUANT_PUBLICACOES: p.QUANT_PUBLICACOES,
@@ -227,7 +225,85 @@ pesquisarProfissionais: async (req, res) => {
       }
     });
   }
-}
+},
+
+
+
+
+
+
+pesquisarPropostas: async (req, res) => {
+  console.log("Chegou no pesquisarPropostas.");
+
+  try {
+    const stopWords = ['de', '@', 'do', 'da', 'dos', 'das', 'e', 'no', 'na', 'nos', 'nas', 'o', 'a', 'os', 'um', 'uma', 'uns', 'umas'];
+    const termoPesquisa = req.query.q || '';
+
+    console.log("Termo de pesquisa recebido:", termoPesquisa);
+
+    // separar palavras e filtrar stop words
+    let palavras = termoPesquisa
+      .toLowerCase()
+      .split(/\s+/)
+      .map(p => p.startsWith('@') ? p.slice(1) : p)
+      .filter(p => !stopWords.includes(p));
+
+    function removerAcentos(texto) {
+      return texto.normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+                  .replace(/ç/g, 'c');
+    }
+
+    const palavrasNormalizadas = palavras.map(p => removerAcentos(p));
+    palavrasNormalizadas.push(removerAcentos(termoPesquisa));
+
+    console.log("Palavras normalizadas para pesquisa:", palavrasNormalizadas);
+
+    // chamar model
+    let resultados = await pesquisasModel.pesquisarPropostas(palavrasNormalizadas);
+
+    if (!resultados) resultados = [];
+
+    console.log("Resultados obtidos:", resultados.map(p => ({
+      ID_PROPOSTA: p.ID_PROPOSTA,
+      TITULO_PROPOSTA: p.TITULO_PROPOSTA,
+      NOME_USUARIO: p.NOME_USUARIO,
+      PROFISSIONAL_REQUERIDO: p.profissionalRequerido,
+      PRAZO_ENTREGA: p.PRAZO_ENTREGA,
+      ORCAMENTO: p.ORCAMENTO
+    })));
+
+    res.render('pages/oportunidades', {
+      propostas: resultados,
+      termoPesquisa,
+      autenticado: !!req.session.autenticado,
+      logado: req.session.logado,
+      listaErros: null,
+      dadosNotificacao: resultados.length === 0 ? {
+        titulo: "Busca sem resultados!",
+        mensagem: `Nenhuma proposta encontrada para "${termoPesquisa}". Tente outro termo.`,
+        tipo: "info"
+      } : null
+    });
+
+  } catch (error) {
+    console.error("Erro ao pesquisar propostas:", error);
+
+    res.status(500).render('pages/oportunidades', {
+      propostas: [],
+      termoPesquisa: req.query.q || '',
+      autenticado: !!req.session.autenticado,
+      logado: req.session.logado,
+      listaErros: ['Erro ao pesquisar propostas'],
+      dadosNotificacao:{
+          titulo: 'Não foi possível realizar a pesquisa.',
+          mensagem: 'Tente novamente mais tarde.',
+          tipo: 'error'
+      }
+    });
+  }
+},
+
 
 
 };
