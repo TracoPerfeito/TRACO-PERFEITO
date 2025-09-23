@@ -1,29 +1,50 @@
-const modal = document.getElementById('modalDenuncia');
-const fecharModal = document.getElementById('fecharModal');
-const formDenuncia = document.getElementById('formDenuncia');
- 
-        document.querySelectorAll('.btn-denunciar').forEach(botao => {
-        botao.addEventListener('click', function() {
-        modal.style.display = 'block';
-        });
-     });
- 
-         fecharModal.addEventListener('click', function() {
-         modal.style.display = 'none';
-         });
- 
-         formDenuncia.addEventListener('submit', function(event) {
-        event.preventDefault();
-         const motivo = formDenuncia.motivo.value;
-         if (motivo) {
-         alert('Publicação denunciado com o motivo: ' + motivo);
-         modal.style.display = 'none';
-        } else {
-              alert('Selecione um motivo para a denúncia.');
-        }
-         });
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('modalDenuncia');
+  const fecharModal = document.getElementById('fecharModal');
+  const formDenuncia = document.getElementById('formDenuncia');
+  const inputIdPublicacao = document.getElementById('idPublicacaoInput');
 
+  document.querySelectorAll('.btn-denunciar').forEach(botao => {
+    botao.addEventListener('click', () => {
+      inputIdPublicacao.value = botao.dataset.id;
+      modal.classList.remove('hidden'); // abre o modal
+    });
+  });
 
+  fecharModal.addEventListener('click', () => modal.classList.add('hidden'));
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.add('hidden');
+  });
+
+  formDenuncia.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const motivo = formDenuncia.motivo.value;
+    const idPublicacao = inputIdPublicacao.value;
+
+    if (!motivo) return alert('Selecione um motivo para a denúncia.');
+
+    try {
+      const resposta = await fetch('/denunciar-publicacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idPublicacao, motivo })
+      });
+
+      const data = await resposta.json();
+      if (data.sucesso) {
+        alert(data.mensagem || 'Denúncia enviada com sucesso!');
+        modal.classList.add('hidden'); // fecha o modal
+        formDenuncia.reset();
+      } else {
+        alert(data.mensagem || 'Erro ao enviar denúncia.');
+      }
+    } catch (err) {
+      alert('Erro ao enviar denúncia.');
+      console.error(err);
+    }
+  });
+});
 
          
 document.querySelectorAll('.icone-menu').forEach(icone => {
