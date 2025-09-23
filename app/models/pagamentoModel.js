@@ -37,21 +37,20 @@ const pagamentoModel = {
         }
     },
 
-    // Criar nova assinatura
    createAssinatura: async (camposJson) => {
     try {
-        const resultados = await pool.query(
+        const [result] = await pool.query(
             "INSERT INTO ASSINATURAS SET ?",
             [camposJson]
         );
-        // resultados[0] é o resultado correto
-        console.log(resultados);
-        console.log("ID da nova assinatura:", resultados[0].insertId);
-        return resultados[0]; 
+        console.log("Resultado do insert:", result); 
+        return result; 
     } catch (error) {
-        return error;
+        console.log("Erro no insert:", error);
+        throw error;
     }
 },
+
 
 
     // Atualizar assinatura existente (por usuário)
