@@ -105,7 +105,21 @@ const admModel = {
                 "SELECT * FROM USUARIOS LIMIT ?, ?",
                 [inicio, total]
             );
-            return linhas;
+            
+            const usuarios = linhas.map(p => {
+                return {
+                  ...p,
+                  FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+                    ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+                    : null
+                 
+                };
+              });
+          
+              return usuarios;
+
+
+
         } catch (error) {
             console.log(error);
             return []; // Retorna um array vazio em caso de erro
