@@ -6,6 +6,8 @@ const pagamentoController = {
 
     gravarPagamento: async (req, res) => {
         console.log("Registrando pagamento...");
+        console.log("Recebido no feedback:", req.body, req.query);
+
         try {
 
 
