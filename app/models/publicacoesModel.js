@@ -341,6 +341,41 @@ contarNumVisualizacoes: async (idPublicacao) => {
 
 
 
+
+
+
+
+
+atualizarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA }) => {
+  try {
+    await pool.query(
+      `UPDATE PUBLICACOES_PROFISSIONAL 
+       SET NOME_PUBLICACAO = ?, DESCRICAO_PUBLICACAO = ?, CATEGORIA = ? 
+       WHERE ID_PUBLICACAO = ?`,
+      [NOME_PUBLICACAO, DESCRICAO_PUBLICACAO, CATEGORIA, ID_PUBLICACAO]
+    );
+    return true;
+  } catch (error) {
+    console.error("Erro ao atualizar publicação:", error);
+    return false;
+  }
+},
+
+// 🗑️ Excluir proposta de projeto
+excluirProposta: async (idProposta) => {
+  try {
+    await pool.query('DELETE FROM PROPOSTAS_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
+
+    console.log("Proposta de projeto esxcluída com sucesso.");
+    return true;
+  } catch (error) {
+    console.error('Erro ao excluir proposta: ', error);
+    return false;
+  }
+},
+
+
+
 };
 
 module.exports = publicacoesModel;
