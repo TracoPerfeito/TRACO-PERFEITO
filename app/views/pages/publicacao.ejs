@@ -420,7 +420,7 @@ let msgErros = {conteudo: ""};
 <section id="modalDenuncia" class="modal">
   <section class="modal-content">
     <h3>Qual o motivo da denúncia?</h3>
-    <form id="formDenuncia">
+    <form id="formDenuncia" action="/denunciar-publicacao" method="POST">
       <!-- Input hidden para passar o ID da publicação -->
       <input type="hidden" name="idPublicacao" id="idPublicacaoInput">
 
