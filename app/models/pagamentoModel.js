@@ -45,6 +45,8 @@ const pagamentoModel = {
             [camposJson]
         );
         // resultados[0] é o resultado correto
+        console.log(resultados);
+        console.log("ID da nova assinatura:", resultados[0].insertId);
         return resultados[0]; 
     } catch (error) {
         return error;
