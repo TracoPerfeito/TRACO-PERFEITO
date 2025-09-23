@@ -1,5 +1,5 @@
-// controllers/pagamentoController.js
-const { PagamentoModel } = require("../models/pagamentoModel");
+const pagamentoModel = require("../models/pagamentoModel");
+
 const moment = require("moment");
 
 const pagamentoController = {
@@ -21,7 +21,7 @@ const pagamentoController = {
 
         console.log("Dados do pagamento a serem registrados:", camposJsonPagamento);
 
-        const create = await PagamentoModel.create(camposJsonPagamento);
+        const create = await pagamentoModel.create(camposJsonPagamento);
 
         console.log("Pagamento registrado com sucesso, ID:", create.insertId);
         res.json({

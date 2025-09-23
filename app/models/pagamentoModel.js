@@ -77,4 +77,4 @@ const pagamentoModel = {
     }
 };
 
-module.exports = { pagamentoModel };
+module.exports = pagamentoModel; 
