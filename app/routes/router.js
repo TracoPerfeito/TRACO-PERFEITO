@@ -182,47 +182,58 @@ router.get("/pagamentos",
 );
 
 
-router.post("/create-preference", function (req, res) {
-const preference = new Preference(client);
-console.log("Criando preferência de pagamento com dados:", req.body);
+router.post("/create-preference", async function (req, res) {
+    const preference = new Preference(client);
+    console.log("Criando preferência de pagamento com dados:", req.body);
 
-  // o plano vem do front (ex: "semanal", "mensal", "anual")
     const { plano } = req.body;
-    console.log(plano);
+    console.log("Plano selecionado:", plano);
 
     // tabela dos planos
     const planos = {
-      semanal: { title: "Plano Semanal Traço Perfeito", preco: 10 },
-      mensal: { title: "Plano Mensal Traço Perfeito", preco: 30 },
-      anual: { title: "Plano Anual Traço Perfeito", preco: 300 }
+        semanal: { title: "Plano Semanal Traço Perfeito", preco: 10 },
+        mensal: { title: "Plano Mensal Traço Perfeito", preco: 30 },
+        anual: { title: "Plano Anual Traço Perfeito", preco: 300 }
     };
 
     if (!planos[plano]) {
-      return res.status(400).json({ error: "Plano inválido" });
+        return res.status(400).json({ error: "Plano inválido" });
     }
 
+    // Aqui você precisa criar ou pegar o ID do pedido
+    // Exemplo simples, se você gerar um pedido no banco:
+    // const pedido = await PedidoModel.create({ id_usuario: req.session.autenticado.id, plano: plano });
+    // const idPedido = pedido.insertId;
 
-preference.create({
-  body: {
-    items: [
-       {
-            title: planos[plano].title,
-            quantity: 1,
-            unit_price: planos[plano].preco
-          }
-    ],
-      back_urls: {
-        "success": process.env.URL_BASE + "/feedback",
-        "failure": process.env.URL_BASE + "/feedback",
-        "pending": process.env.URL_BASE + "/feedback"
-      },
-      auto_return: "approved",
-  }
-})
-.then((value) => {
-  res.json(value);
-})
-.catch(console.log);
+    // Se ainda não tiver pedido no banco, pode usar um ID temporário
+    const idPedido = Date.now().toString(); // só para teste, substitua pelo ID real do pedido
+
+    preference.create({
+        body: {
+            items: [
+                {
+                    title: planos[plano].title,
+                    quantity: 1,
+                    unit_price: planos[plano].preco
+                }
+            ],
+            external_reference: idPedido,
+            back_urls: {
+                success: process.env.URL_BASE + "/feedback",
+                failure: process.env.URL_BASE + "/feedback",
+                pending: process.env.URL_BASE + "/feedback"
+            },
+            auto_return: "approved"
+        }
+    })
+    .then((value) => {
+        console.log("Preferência criada com sucesso:", value);
+        res.json(value);
+    })
+    .catch(err => {
+        console.error("Erro ao criar preferência:", err);
+        res.status(500).json({ erro: "Erro ao criar preferência" });
+    });
 });
 
 
