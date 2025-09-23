@@ -21,7 +21,7 @@ const pagamentoController = {
 
         console.log("Dados do pagamento a serem registrados:", camposJsonPagamento);
 
-        const create = await pagamentoModel.create(camposJsonPagamento);
+        const create = await pagamentoModel.createAssinatura(camposJsonPagamento);
 
         console.log("Pagamento registrado com sucesso, ID:", create.insertId);
         res.json({
