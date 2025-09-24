@@ -1002,11 +1002,24 @@ return res.redirect(previousUrl || "/");
         console.error(err);
         res.redirect("/");
     }
+},
+async denunciarPublicacao(req, res) {
+  console.log('Recebi denúncia:', req.body);
+
+  const { idPublicacao, idUsuario, motivo } = req.body;
+
+  if (!idPublicacao || !idUsuario || !motivo) {
+    return res.status(400).json({ erro: 'idPublicacao, idUsuario e motivo são obrigatórios.' });
+  }
+
+  try {
+    await denunciasModel.criarDenunciaPublicacao({ idPublicacao, idUsuario, motivo });
+    return res.status(201).json({ mensagem: 'Denúncia da publicação registrada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao denunciar publicação:', error);
+    return res.status(500).json({ erro: 'Erro ao processar a denúncia da publicação.' });
+  }
 }
-
-
-
-
 };
 
 module.exports = publicacoesController;

@@ -17,15 +17,20 @@ const comentariosModel = {
 
   excluirComentario: async (idComentario) => {
     try {
-      const [result] = await pool.query('DELETE FROM COMENTARIOS WHERE ID_COMENTARIO = ?', [idComentario]);
+      const [result] = await pool.query(
+        'DELETE FROM COMENTARIOS WHERE ID_COMENTARIO = ?', 
+        [idComentario]
+      );
       console.log('Comentário excluído:', result);
-      return result;
+  
+      return { success: true, affectedRows: result.affectedRows };
     } catch (error) {
       console.log('Erro ao excluir comentário:', error);
-      return null;
+  
+      return { success: false, error: error.sqlMessage || 'Erro ao excluir comentário' };
     }
   },
-
+  
   listarComentarios: async (idPublicacao) => {
     try {
       const [resultado] = await pool.query(`
