@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
    <script src="js/simple-notify.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
-   <script src="js/excluir-comentario"></script>
+   <script src="js/excluir-comentario" defer></script>
  
    
  
@@ -420,17 +420,16 @@ let msgErros = {conteudo: ""};
 <section id="modalDenuncia" class="modal hidden">
   <section class="modal-content">
     <h3>Qual o motivo da denúncia?</h3>
-    <form id="formDenuncia" action="/denunciar-publicacao" method="POST">
-      <!-- Input hidden para passar o ID da publicação -->
+    <form id="formDenuncia">
       <input type="hidden" name="idPublicacao" id="idPublicacaoInput">
-
+      
       <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
       <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
       <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
       <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
       <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
       <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
-
+      
       <button type="submit">Enviar denúncia</button>
       <button type="button" id="fecharModal">Cancelar</button>
     </form>
@@ -549,12 +548,12 @@ let msgErros = {conteudo: ""};
     <%- include('../partials/rodape'); %>
     <!-- <script src="/js/like.js"></script>
      -->
-    <script src="/js/expan-img.js"></script>
-    <script src="/js/mobile-navbar.js"></script>
-    <script src="/js/denuncia-compartilhamento.js"></script>
-    <script src="/js/publicacoesindex.js"></script>
-    <script src="/js/arrumardata.js"></script>
-    <script src="/js/eccomentario.js"></script>
+    <script src="/js/expan-img.js" defer></script>
+    <script src="/js/mobile-navbar.js" defer></script>
+    <script src="/js/denuncia-compartilhamento.js" defer></script>
+    <script src="/js/publicacoesindex.js" defer></script>
+    <script src="/js/arrumardata.js" defer></script>
+    <script src="/js/eccomentario.js" defer></script>
     <script>
 
       function isSalvarComentarioRoute(path) {
