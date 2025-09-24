@@ -9,9 +9,7 @@ const pagamentoController = {
     console.log("Recebido no feedback:", req.body, req.query);
 
     try {
-
-
-        const externalReference = req.body.external_reference || req.query.external_reference;
+ const externalReference = req.body.external_reference || req.query.external_reference;
 const [idPedido, plano] = externalReference.split("_");
 
       const dataInicio = moment();
