@@ -127,7 +127,7 @@ router.get("/publicacao/:id", function (req, res) { //publicacao
 
 router.post(
   "/denunciar-publicacao",
-  publicacoesController.denunciarPublicacao
+  denunciasController.criarDenunciaPublicacao
 );
 
 router.post(
