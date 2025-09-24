@@ -15,7 +15,7 @@
 <section id="principal-content">
     <div class="container">
 
-        <!-- Dados do usuário -->
+       
         <div class="box">
             <h3>Complete sua assinatura</h3>
             <p>Por favor, preencha seus dados para finalizar a assinatura.</p>
@@ -73,11 +73,11 @@
 
 <%- include('../partials/rodape'); %>
 
-<!-- Scripts -->
+
 <script src="https://sdk.mercadopago.com/js/v2"></script>
 
 <script>
-// Máscaras de CPF e celular
+
 document.addEventListener("DOMContentLoaded", function() {
     const celularInput = document.getElementById("celular");
     const cpfInput = document.getElementById("cpf");
@@ -158,7 +158,7 @@ function criarBotao() {
     .catch(err => console.error("Erro ao criar preferência:", err));
 }
 
-// Atualiza botão ao mudar o plano
+
 document.querySelectorAll('input[name="periodo"]').forEach(radio => {
     radio.addEventListener('change', () => {
         const preco = radio.dataset.preco;
@@ -171,7 +171,7 @@ document.querySelectorAll('input[name="periodo"]').forEach(radio => {
     });
 });
 
-// Cria botão ao carregar a página
+
 document.addEventListener("DOMContentLoaded", () => {
     criarBotao();
 });
