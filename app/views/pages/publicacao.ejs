@@ -251,6 +251,7 @@ let msgErros = {conteudo: ""};
       <textarea id="ad-comentario" name="conteudo" rows="4" cols="50" placeholder="Digite seu comentário aqui..." class="<%= cssErros.conteudo %>"></textarea>
       <p class="msg-erro"></p>
       <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
+      <input type="hidden" name="donoPublicacao" value="<%= publicacao.ID_USUARIO %>">
       <br>
       <section class="button-container-submit">
         <% if (!tipo_usuario) { %>

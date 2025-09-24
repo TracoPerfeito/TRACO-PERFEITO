@@ -27,100 +27,47 @@
 <% } %>
 
 
-  
 
-  <section class="container">
-    <h2 class="h2-titulo">Notificações</h2>
 
-    <!-- Bloco resumo -->
-    <section class="summary-box">
-      <section class="left">
-       15 notificações não visualizadas
-      </section>
-      <section class="right">
-        
-      </section>
+<section class="container">
+  <h2 class="h2-titulo">Notificações</h2>
+
+  <!-- Bloco resumo -->
+  <section class="summary-box">
+    <section class="left">
+      <%= total > 0 ? total + " notificações não visualizadas" : "Sem notificações" %>
     </section>
-
-    <!-- Notificação 1 -->
-     <a href="/notificacao" class="notification-link">
-    <section class="notification-box highlight">
-      <section class="left">
-        <img src="imagens/logo.png" alt="Logo" width="24" height="24">
-        <section class="text">
-          <section class="title">Novas publicações venha conferir</section>
-        </section>
-      </section>
-      <section class="right">
-        <section class="not-viewed">Não Visualizada</section>
-        <section>10.05.2025</section>
-      </section>
+    <section class="right">
+      <!-- Aqui você pode colocar botão de limpar todas ou filtro, se quiser -->
     </section>
-    </a>
-
-    <!-- Notificação 2 -->
-     <a href="/notificacao" class="notification-link">
-    <section class="notification-box">
-      <section class="left">
-        <img src="imagens/logo.png" alt="Logo" width="24" height="24">
-        <section class="text">
-          <section class="title">Melhores Profissionais </section>
-        </section>
-      </section>
-      <section class="right">
-        <section>03.05.2025</section>
-      </section>
-    </section>
-
-    <!-- Notificação 3 -->
-     <a href="/notificacao" class="notification-link">
-    <section class="notification-box">
-      <section class="left">
-        <img src="imagens/logo.png" alt="Logo" width="24" height="24">
-        <section class="text">
-          <section class="title">Divulgue sua arte</section>
-        </section>
-      </section>
-      <section class="right">
-        <section>30.04.2025</section>
-      </section>
-    </section>
-
-    <!-- Notificação 4 -->
-     <a href="/notificacao" class="notification-link">
-    <section class="notification-box highlight">
-      <section class="left">
-        <img src="imagens/logo.png" alt="Logo" width="24" height="24">
-        <section class="text">
-          <section class="title">Como achar a arte que você procura</section>
-        </section>
-      </section>
-      <section class="right">
-        <section class="not-viewed">Não Visualizada</section>
-        <section>22.04.2025</section>
-      </section>
-    </section>
-
-    <!-- Notificação 5 -->
-     <a href="/notificacao" class="notification-link">
-    <section class="notification-box highlight">
-      <section class="left">
-        <img src="imagens/logo.png" alt="Logo" width="24" height="24">
-        <section class="text">
-          <section class="title">Venha conferir as novas novidades</section>
-
-        </section>
-      </section>
-      <section class="right">
-        <section class="not-viewed">Não Visualizada</section>
-        <section>18.04.2025</section>
-      </section>
-    </section>
-
-   
-
-
   </section>
+
+  <% if (notificacoes.length === 0) { %>
+    <p class="empty-message">Você não tem notificações no momento.</p>
+    <img src="/imagens/sem-notificacoes.png" alt="Sem notificações" class="empty-img">
+  <% } else { %>
+    <% notificacoes.forEach(n => { %>
+      <a href="/notificacao/<%= n.ID_NOTIFICACAO %>" class="notification-link">
+        <section class="notification-box <%= n.STATUS === 'NAO_LIDA' ? 'highlight' : '' %>">
+          <section class="left">
+            <img src="/imagens/logo.png" alt="Logo" width="24" height="24">
+            <section class="text">
+              <section class="title"><%= n.TITULO_NOTIFICACAO %></section>
+            </section>
+          </section>
+          <section class="right">
+            <% if(n.STATUS === 'NAO_LIDA') { %>
+              <section class="not-viewed">Não Visualizada</section>
+            <% } %>
+            <section><%= new Date(n.DATA_CRIACAO).toLocaleDateString('pt-BR') %></section>
+          </section>
+        </section>
+      </a>
+    <% }) %>
+  <% } %>
+
+</section>
+
 
   
  <%- include('../partials/rodape'); %>

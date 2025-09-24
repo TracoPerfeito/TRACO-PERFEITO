@@ -43,68 +43,65 @@
     <p class="lado-botao"> Perfil de Jaqueline Maria</p>
 </section>
 
-  
   <section class="container">
-    <section class="lista-notificacoes">
-      <section class="notificacao" onclick="abrirMensagem(0)">
-        <h4>Novas publicações</h4>
-        <small>03/06/2025 10:00</small>
-      </section>
-      <section class="notificacao" onclick="abrirMensagem(1)">
-        <h4>Melhores Profissionais</h4>
-        <small>02/06/2025 15:30</small>
-      </section>
-      <section class="notificacao" onclick="abrirMensagem(2)">
-        <h4>Divulgue sua arte</h4>
-        <small>01/06/2025 08:20</small>
-      </section>
-    </section>
+  <section class="lista-notificacoes">
+    <% if (notificacoes.length === 0) { %>
+      <p class="empty-message">Você não tem notificações no momento.</p>
+      <img src="/imagens/sem-notificacoes.png" alt="Sem notificações" class="empty-img">
+    <% } else { %>
+      <% notificacoes.forEach((n, index) => { %>
+        <section class="notificacao <%= n.STATUS === 'NAO_LIDA' ? 'highlight' : '' %>" onclick="abrirMensagem(<%= index %>)">
+          <h4><%= n.TITULO_NOTIFICACAO %></h4>
+          <small><%= new Date(n.DATA_CRIACAO).toLocaleString('pt-BR') %></small>
+        </section>
+      <% }) %>
+    <% } %>
+  </section>
 
-    <section class="conteudo-mensagem">
-      <section class="top-bar">
-        <button class="btn-lida" onclick="marcarComoLida()">Marcar como lida</button>
-      </section>
-      <section class="mensagem-box" id="mensagemContent">
-        
-      </section>
+  <section class="conteudo-mensagem">
+    <section class="top-bar">
+      <button class="btn-lida" onclick="marcarComoLida()">Marcar como lida</button>
+    </section>
+    <section class="mensagem-box" id="mensagemContent">
+      <% if (notificacoes.length > 0) { %>
+        <h2><%= notificacoes[0].TITULO_NOTIFICACAO %></h2>
+        <time><%= new Date(notificacoes[0].DATA_CRIACAO).toLocaleString('pt-BR') %></time>
+        <p><%= notificacoes[0].CONTEUDO_NOTIFICACAO %></p>
+      <% } %>
     </section>
   </section>
-<!-- ola -->
-  <script>
-    const mensagens = [
-      {
-        titulo: "Novas publicações, venha conferir",
-        data: "2025-06-03T10:00:00",
-        conteudo: "Veja as últimas artes publicadas pelos profissionais!"
-      },
-      {
-        titulo: "Melhores Profissionais",
-        data: "2025-06-02T15:30:00",
-        conteudo: "Confira o ranking com os artistas mais bem avaliados. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quibusdam quo minima laudantium illum obcaecati quam harum dolores natus temporibus nihil distinctio officia porro nulla, ab nisi iusto, sit culpa tenetur?"
-      },
-      {
-        titulo: "Divulgue sua arte",
-        data: "2025-06-01T08:20:00",
-        conteudo: "Aprenda como destacar suas criações na nossa plataforma."
-      }
-    ];
+</section>
 
-    function abrirMensagem(index) {
-      const msg = mensagens[index];
-      document.getElementById("mensagemContent").innerHTML = `
-        <h2>${msg.titulo}</h2>
-        <time>${new Date(msg.data).toLocaleString()}</time>
-        <p>${msg.conteudo}</p>
-      `;
+<script>
+  const mensagens = <%- JSON.stringify(notificacoes) %>;
+
+  function abrirMensagem(index) {
+    const msg = mensagens[index];
+    document.getElementById("mensagemContent").innerHTML = `
+      <h2>${msg.TITULO_NOTIFICACAO}</h2>
+      <time>${new Date(msg.DATA_CRIACAO).toLocaleString('pt-BR')}</time>
+      <p>${msg.CONTEUDO_NOTIFICACAO}</p>
+    `;
+
+    // Marcar notificação como lida via fetch
+    if (msg.STATUS === 'NAO_LIDA') {
+      fetch('/notificacao/marcar-como-lida/' + msg.ID_NOTIFICACAO, { method: 'PUT' })
+        .then(() => { msg.STATUS = 'LIDA'; }) 
+        .catch(err => console.error(err));
     }
+  }
 
-    function marcarComoLida() {
-      alert("Notificação marcada como lida!");
-    }
+  function marcarComoLida() {
+    const index = mensagens.findIndex(m => m.STATUS === 'NAO_LIDA');
+    if(index !== -1) abrirMensagem(index); // marca a primeira não lida
+  }
 
-    // Exibir primeira mensagem ao abrir
-    window.onload = () => abrirMensagem(0);
-  </script>
+  // Exibir primeira mensagem ao abrir
+  window.onload = () => {
+    if (mensagens.length > 0) abrirMensagem(0);
+  }
+</script>
+
    <script src="js/mobile-navbar.js"></script>
  <script src="js/voltar.js"></script>
 </body>

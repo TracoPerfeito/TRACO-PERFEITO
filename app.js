@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const env = require("dotenv").config();
+const http = require("http");        // <- adicionado
+const server = http.createServer(app);  // <- adicionado
+
 
 const session = require("express-session");
 app.use(
@@ -35,8 +38,11 @@ app.use("/", rotas);
 const rotaAdm = require("./app/routes/router-adm");
 app.use("/adm", rotaAdm);
 
+const { initSocket } = require("./socket"); // seu arquivo socket.js
+const io = initSocket(server);
 
-app.listen(process.env.APP_PORT, ()=>{
+console.log(io);
+server.listen(process.env.APP_PORT, ()=>{
     console.log(`Servidor onLine!\nhttp://localhost:${process.env.APP_PORT}`);
 });
 

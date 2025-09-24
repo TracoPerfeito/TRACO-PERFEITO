@@ -2,6 +2,7 @@ const comentariosModel = require("../models/comentariosModel");
 const listagensModel = require("../models/listagensModel");
 const denunciasModel = require("../models/denunciasModel");
 const notificacoesModel = require("../models/notificacoesModel");
+const notificacoesController = require("./notificacoesController");
 const { body, validationResult } = require("express-validator");
 const pool = require('../../config/pool_conexoes');
 
@@ -19,7 +20,7 @@ const comentariosController = {
   criarComentario: async (req, res) => {
     try {
       const erros = validationResult(req);
-      const { conteudo, idPublicacao } = req.body;
+      const { conteudo, idPublicacao, donoPublicacao } = req.body;
 
       if (!erros.isEmpty()) {
         const publicacao = await listagensModel.findIdPublicacao(idPublicacao, req.session.autenticado.id);
@@ -43,11 +44,23 @@ const comentariosController = {
         DATA_COMENTARIO: new Date()
       });
 
+
+       await notificacoesController.criar({
+      idUsuario: donoPublicacao,
+      titulo: "Novo comentário!",
+      conteudo: `Seu post recebeu um comentário de ${req.session.autenticado.nome}.`,
+      categoria: "COMENTARIO"
+    });
+
+      
+
       req.session.dadosNotificacao = {
         titulo: 'Comentário enviado!',
         mensagem: 'Seu comentário foi salvo.',
         tipo: 'success'
       };
+
+
 
       return res.redirect("/publicacao/" + idPublicacao);
 

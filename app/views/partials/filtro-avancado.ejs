@@ -1,0 +1,66 @@
+<!-- <section class="filtros-publicacoes">
+  <div class="filtro">
+    <label>Cores:</label>
+    <div class="opcoes-cores" style="display:flex; flex-wrap:wrap; gap:5px;">
+
+    </div>
+  </div>
+  <button id="aplicar-filtros">Filtrar</button>
+</section>
+
+<style>
+.filtros-publicacoes { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:20px; padding:10px; background:#f9f9f9; border-radius:10px; }
+.filtro { display:flex; flex-direction:column; font-size:14px; }
+.cor-opcao { width:30px; height:30px; border:1px solid #000; cursor:pointer; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff; text-shadow: 1px 1px 2px #000; }
+.cor-opcao.selecionada { outline:3px solid #000; }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+<script>
+// --- Mapeamento de tons para cores populares ---
+const tonsCores = {
+  "vermelho": ["#ff0000","#b22222","#dc143c","#ff6347","#ff4500","#c71585"],
+  "laranja": ["#ffa500","#ff8c00","#ff7f50","#ffdab9","#f4a460"],
+  "amarelo": ["#ffff00","#ffd700","#fffacd","#fafad2","#f0e68c"],
+  "verde": ["#008000","#006400","#32cd32","#7cfc00","#00ff7f","#228b22"],
+  "azul": ["#0000ff","#1e90ff","#00bfff","#4169e1","#4682b4","#5f9ea0"],
+  "roxo": ["#800080","#8a2be2","#9932cc","#9400d3","#9370db","#ba55d3"],
+  "rosa": ["#ffc0cb","#ff69b4","#ff1493","#db7093","#c71585","#f08080"],
+  "marrom": ["#a52a2a","#8b4513","#d2691e","#cd853f","#deb887","#f4a460"],
+  "preto": ["#000000","#111111","#222222","#333333","#444444","#555555"],
+  "cinza": ["#808080","#a9a9a9","#d3d3d3","#c0c0c0","#dcdcdc","#f5f5f5"],
+  "branco": ["#ffffff","#fffcf5","#f0f0f0","#fafafa","#f8f8ff"]
+};
+
+// --- Gerar opções de cores ---
+const containerCores = document.querySelector(".opcoes-cores");
+for (const [nome, tons] of Object.entries(tonsCores)) {
+  tons.forEach(cor => {
+    const div = document.createElement("div");
+    div.className = "cor-opcao";
+    div.style.backgroundColor = cor;
+    div.dataset.cor = nome; // agrupa por cor popular
+    div.title = nome;
+    div.addEventListener("click", ()=> div.classList.toggle("selecionada"));
+    containerCores.appendChild(div);
+  });
+}
+
+// --- Função para filtrar publicações ---
+document.getElementById("aplicar-filtros").addEventListener("click", ()=> {
+  const coresSelecionadas = Array.from(document.querySelectorAll(".cor-opcao.selecionada")).map(d=>d.dataset.cor);
+  const publicacoes = document.querySelectorAll(".item-explorar");
+
+  publicacoes.forEach(pub => {
+    const pubCores = pub.dataset.cors ? pub.dataset.cors.split(",") : []; // data-cors="vermelho,azul"
+    const mostrar = pubCores.some(c => coresSelecionadas.includes(c)) || coresSelecionadas.length === 0;
+    pub.style.display = mostrar ? "block" : "none";
+  });
+
+  // Atualizar mensagem
+  const sec = document.querySelector(".resultado-pesquisa");
+  let msg = "Filtrando publicações";
+  if(coresSelecionadas.length>0) msg += ` por cores: ${coresSelecionadas.join(", ")}`;
+  sec.innerHTML = `<h1 class="titulo-termo">${msg}</h1>`;
+});
+</script> -->

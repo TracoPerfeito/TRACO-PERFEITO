@@ -10,6 +10,7 @@ const comentariosController = require("../controllers/comentariosController");
 const denunciasController = require('../controllers/denunciasController');
 const pesquisasController = require('../controllers/pesquisasController');
 const pagamentoController = require("../controllers/pagamentoController");
+const notificacoesController = require("../controllers/notificacoesController");
 
 
  const db = require('../../config/pool_conexoes');
@@ -369,14 +370,19 @@ router.get("/explorar-logado", function (req, res) { //inicial logado
 
 router.get(
   "/notificacoes",function (req, res) {
-    res.render('pages/notificacoes', { autenticado: req.session.autenticado });
+     notificacoesController.listar(req, res);
   }
 );
 
 
+
+
+
+
 router.get(
-  "/notificacao",function (req, res) {
-    res.render('pages/notificacao', { autenticado: req.session.autenticado });
+  "/notificacao/:id",function (req, res) {
+   notificacoesController.exibir(req, res);
+
   }
 );
 

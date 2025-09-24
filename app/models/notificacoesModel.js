@@ -1,16 +1,107 @@
 const pool = require('../../config/pool_conexoes');
+const { getIo } = require('../../socket'); // sobe de models/ para raiz
+
+
+/**
+ * Cria uma notificação no banco e dispara socket em tempo real
+ * @param {Object} params
+ * @param {number} params.idUsuario - ID do usuário que vai receber
+ * @param {string} params.titulo - Título da notificação
+ * @param {string} params.conteudo - Conteúdo textual ou HTML
+ * @param {string} params.categoria - Categoria da notificação
+ */
+
 
 const notificacoesModel = {
-  async notificarAdmins(mensagem) {
-    // Busca todos os administradores
-    const [admins] = await pool.query("SELECT ID_USUARIO, EMAIL_USUARIO FROM USUARIOS WHERE TIPO_USUARIO = 'admnistrador' OR TIPO_USUARIO = 'administrador'");
-    // Aqui você pode implementar envio de e-mail, salvar notificação em tabela, etc.
-    // Exemplo: apenas logar
-    admins.forEach(admin => {
-      console.log(`Notificação para admin ${admin.EMAIL_USUARIO}: ${mensagem}`);
-    });
-    return admins;
+
+  // Cria notificação e dispara via socket
+  criarNotificacao: async ({ idUsuario, titulo, conteudo, categoria }) => {
+    console.log({titulo, conteudo, idUsuario, categoria});
+console.log(typeof titulo, typeof conteudo, typeof idUsuario, typeof categoria);
+
+    try {
+        
+     const [result] = await pool.query(
+  'INSERT INTO NOTIFICACOES (TITULO_NOTIFICACAO, CONTEUDO_NOTIFICACAO, ID_USUARIO, CATEGORIA_NOTIFICACAO, STATUS) VALUES (?, ?, ?, ?, ?)',
+  [
+    String(titulo),          // força string
+    String(conteudo),        // força string
+    Number(idUsuario),       // força number
+    String(categoria),       // força string
+    'NAO_LIDA'
+  ]
+);
+
+
+      const idNotificacao = result.insertId;
+
+      const io = getIo();
+      io.to(idUsuario).emit('notificacao_nova', {
+        ID_NOTIFICACAO: idNotificacao,
+        TITULO: titulo,
+        CONTEUDO: conteudo,
+        CATEGORIA: categoria,
+        STATUS: 'NAO_LIDA'
+      });
+
+      return idNotificacao;
+
+    } catch (err) {
+      console.error('Erro ao criar notificação:', err);
+      throw err;
+    }
+  },
+
+  // Lista todas notificações de um usuário
+  listarNotificacoesUserLogado: async (idUsuario) => {
+    try {
+      const [rows] = await pool.query(
+        'SELECT * FROM NOTIFICACOES WHERE ID_USUARIO = ? ORDER BY DATA_CRIACAO_NOTIFICACAO DESC',
+        [idUsuario]
+      );
+      return rows;
+    } catch (err) {
+      console.error('Erro ao listar notificações:', err);
+      throw err;
+    }
+  },
+
+  // Exibe detalhes de uma notificação específica
+  exibirNotificacao: async (idNotificacao) => {
+    try {
+      const [rows] = await pool.query(
+        'SELECT * FROM NOTIFICACOES WHERE ID_NOTIFICACAO = ?',
+        [idNotificacao]
+      );
+      if (rows.length === 0) return null;
+
+      // Marcar como lida
+      await pool.query(
+        'UPDATE NOTIFICACOES SET STATUS = ? WHERE ID_NOTIFICACAO = ?',
+        ['LIDA', idNotificacao]
+      );
+
+      return rows[0];
+    } catch (err) {
+      console.error('Erro ao exibir notificação:', err);
+      throw err;
+    }
+  },
+
+
+    excluirNotificacao: async (idNotificacao) => {
+    try {
+      const [result] = await pool.query(
+        'DELETE FROM NOTIFICACOES WHERE ID_NOTIFICACAO = ?',
+        [idNotificacao]
+      );
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error('Erro ao excluir notificação:', err);
+      throw err;
+    }
   }
+
 };
 
 module.exports = notificacoesModel;
