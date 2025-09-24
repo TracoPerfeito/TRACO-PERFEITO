@@ -15,6 +15,17 @@ fecharModal.addEventListener('click', function() {
    if (motivo) { 
     alert('Publicação denunciado com o motivo: ' + motivo);
      modal.style.display = 'none'; 
+
+     fetch('/denunciar-publicacao', {
+     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+    idPublicacao: idPublicacaoInput.value, 
+    motivo: motivo
+})
+
+  })
+
     } else { alert('Selecione um motivo para a denúncia.');
 
      } 
@@ -26,7 +37,7 @@ fecharModal.addEventListener('click', function() {
         });
         
         // fechar ao clicar fora document.addEventListener('click', () => { document.querySelectorAll('.menu-opcoes').forEach(menu => { menu.classList.remove('ativo'); }); });
-        
+
     // Script do compartilhar
 
 function openModal(idPublicacao) {
