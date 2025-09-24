@@ -9,28 +9,44 @@ const pagamentoController = {
     console.log("Recebido no feedback:", req.body, req.query);
 
     try {
-        const idPedido = req.query.external_reference; 
+        const plano = req.query.plano; 
+        const dataInicio = moment();
+        let dataFim;
+
+        switch (plano) {
+            case "semanal":
+                dataFim = dataInicio.clone().add(7, "days");
+                break;
+            case "mensal":
+                dataFim = dataInicio.clone().add(1, "month");
+                break;
+            case "anual":
+                dataFim = dataInicio.clone().add(1, "year");
+                break;
+            default:
+                dataFim = null;
+        }
+
         const camposJsonPagamento = {
-            ID_PEDIDO: idPedido,
             ID_USUARIO: req.session.autenticado.id,
-            METODO: req.query.payment_type,
-            VALOR: req.query.preference_id, 
-            STATUS: req.query.status || "pendente",
-            DATA: moment().format("YYYY-MM-DD HH:mm:ss")
+            PLANO: plano,
+            STATUS_PAGAMENTO: req.query.status || "pendente",
+            ID_PAGAMENTO: req.query.preference_id,
+            DATA_INICIO: dataInicio.format("YYYY-MM-DD HH:mm:ss"),
+            DATA_FIM: dataFim ? dataFim.format("YYYY-MM-DD HH:mm:ss") : null
         };
 
         console.log("Dados do pagamento a serem registrados:", camposJsonPagamento);
 
-    
-const create = await pagamentoModel.createAssinatura(camposJsonPagamento);
-console.log("Pagamento registrado com sucesso, ID:", create.insertId);
+        const create = await pagamentoModel.createAssinatura(camposJsonPagamento);
 
-res.json({
-    mensagem: "Pagamento registrado com sucesso!",
-    id_pagamento: create.insertId
-});
+        console.log("Pagamento registrado com sucesso, ID:", create.insertId);
+        res.json({
+            mensagem: "Pagamento registrado com sucesso!",
+            id_pagamento: create.insertId
+        });
     } catch (error) {
-        console.log(error);
+        console.log("Erro no insert:", error);
         res.status(500).json({ erro: "Erro ao registrar pagamento" });
     }
 }
