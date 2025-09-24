@@ -206,7 +206,7 @@ router.post("/create-preference", async function (req, res) {
     // const idPedido = pedido.insertId;
 
     // Se ainda não tiver pedido no banco, pode usar um ID temporário
-    const idPedido = Date.now().toString(); // só para teste, substitua pelo ID real do pedido
+    const idPedido = Date.now().toString(); //de teste mermo
 
     preference.create({
         body: {
@@ -217,7 +217,7 @@ router.post("/create-preference", async function (req, res) {
                     unit_price: planos[plano].preco
                 }
             ],
-            external_reference: idPedido,
+              external_reference: `${idPedido}_${plano}`, 
             back_urls: {
                 success: process.env.URL_BASE + "/feedback",
                 failure: process.env.URL_BASE + "/feedback",

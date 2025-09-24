@@ -9,23 +9,24 @@ const pagamentoController = {
     console.log("Recebido no feedback:", req.body, req.query);
 
     try {
-        const plano = req.query.plano; 
-        const dataInicio = moment();
-        let dataFim;
+        const [idPedido, plano] = req.query.external_reference.split("_"); 
+const dataInicio = moment();
+let dataFim;
 
-        switch (plano) {
-            case "semanal":
-                dataFim = dataInicio.clone().add(7, "days");
-                break;
-            case "mensal":
-                dataFim = dataInicio.clone().add(1, "month");
-                break;
-            case "anual":
-                dataFim = dataInicio.clone().add(1, "year");
-                break;
-            default:
-                dataFim = null;
-        }
+switch (plano) {
+    case "semanal":
+        dataFim = dataInicio.clone().add(7, "days");
+        break;
+    case "mensal":
+        dataFim = dataInicio.clone().add(1, "month");
+        break;
+    case "anual":
+        dataFim = dataInicio.clone().add(1, "year");
+        break;
+    default:
+        dataFim = null;
+}
+
 
         const camposJsonPagamento = {
             ID_USUARIO: req.session.autenticado.id,
