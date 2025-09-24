@@ -190,7 +190,7 @@ router.post("/create-preference", async function (req, res) {
     const { plano } = req.body;
     console.log("Plano selecionado:", plano);
 
-    // tabela dos planos
+   
     const planos = {
         semanal: { title: "Plano Semanal Traço Perfeito", preco: 10 },
         mensal: { title: "Plano Mensal Traço Perfeito", preco: 30 },
@@ -201,12 +201,6 @@ router.post("/create-preference", async function (req, res) {
         return res.status(400).json({ error: "Plano inválido" });
     }
 
-    // Aqui você precisa criar ou pegar o ID do pedido
-    // Exemplo simples, se você gerar um pedido no banco:
-    // const pedido = await PedidoModel.create({ id_usuario: req.session.autenticado.id, plano: plano });
-    // const idPedido = pedido.insertId;
-
-    // Se ainda não tiver pedido no banco, pode usar um ID temporário
     const idPedido = Date.now().toString(); //de teste mermo
 
     preference.create({
