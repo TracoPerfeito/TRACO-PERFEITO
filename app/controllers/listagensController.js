@@ -710,7 +710,7 @@ console.log("Seguindo encontrados:", seguindoLog);
     console.error("Não foi possível listar seguidores.", erro);
     res.status(500).json({ error: "Não foi possível carregar os seguidores" });
   }
-}
+},
 
 
  
