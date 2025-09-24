@@ -62,6 +62,8 @@ const pagamentoController = {
             }
 
 
+
+
             const camposJsonPagamento = {
                 ID_USUARIO: req.session.autenticado.id,
                 PLANO: plano,
