@@ -1,14 +1,14 @@
 const pagamentoModel = require("../models/pagamentoModel");
 
-const moment = require("moment");
+
+
+const moment = require("moment-timezone");
 
 const pagamentoController = {
 
     gravarPagamento: async (req, res) => {
         console.log("Registrando pagamento...");
         console.log("Recebido no feedback:", req.body, req.query);
-
-
 
 
 
@@ -68,9 +68,10 @@ const pagamentoController = {
                 ID_USUARIO: req.session.autenticado.id,
                 PLANO: plano,
                 STATUS_PAGAMENTO: req.query.status || "pendente",
-                ID_PAGAMENTO: req.query.preference_id,
-                DATA_INICIO: dataInicio.format("YYYY-MM-DD HH:mm:ss"),
-                DATA_FIM: dataFim ? dataFim.format("YYYY-MM-DD HH:mm:ss") : null
+                ID_PAGAMENTO: req.query.preference_id,                     
+                DATA_INICIO: moment(dataInicio).tz("America/Sao_Paulo").format("YYYY-MM-DD HH:mm:ss"),
+                DATA_FIM: dataFim ? moment(dataFim).tz("America/Sao_Paulo").format("YYYY-MM-DD HH:mm:ss") : null
+
             };
 
             console.log("Dados do pagamento a serem registrados:", camposJsonPagamento);
