@@ -27,6 +27,9 @@
     <%- include('../partials/aviso-pendente') %>
     
 <% } %>
+
+
+ <%- include('../partials/modal-seguidores') %>
   
   
 
@@ -46,18 +49,17 @@
     <p class="lado-botao"> Perfil de <%= usuario.NOME_USUARIO %></p>
 </section>
 
-
-    <section class="base_cabecalho">
-      <section id="banner-perfil">
-        <img src="/<%= usuario.IMG_BANNER_PASTA_USUARIO %>" id="banner-perfil">
+<section class="base_cabecalho">
+  <section id="banner-perfil">
+    <img src="<%= usuario.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>" id="banner-perfil">
+  </section>
+  <section class="coluna_contaneir">
+    <section class="coluna-esquerda">
+      <section class="img__container"> 
+        <img src="<%= usuario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/foto-perfil.png' %>" alt="Perfil" id="imgFoto">
+        
       </section>
-      <section class="coluna_contaneir">
-        <section class="coluna-esquerda">
 
-          <section class="img__container"> 
-            <img src="/<%= usuario.FOTO_PERFIL_PASTA_USUARIO %>" alt="Perfil" id="imgFoto">
-            <span></span>
-          </section>
 
         <section class="embaixo">
           <h2 id="dados-principais-perfil"> <%= usuario.NOME_USUARIO %> </h2>
@@ -68,9 +70,15 @@
         
             <ul class="quan-p-t-c">
               <li title="Quantidade de publicações feitas por <%= usuario.NOME_USUARIO %>"><span> <%=publicacoes.length %></span>Publicações</li>
-              <li title="Quantidade de portfólios criados por <%= usuario.NOME_USUARIO %>"><span>0</span>Portfólios</li>
+              <li title="Quantidade de portfólios criados por <%= usuario.NOME_USUARIO %>"><span><%= qntPortfolios %></span>Portfólios</li>
               <li title="Quantidade de vezes que <%= usuario.NOME_USUARIO %> fechou negócios pela plataforma."><span>0</span>Contratações</li>
-              
+             
+<li id="btnAbrirModalSeguidores" 
+    data-userid="<%= usuario.ID_USUARIO %>" 
+    title="Quantidade de seguidores de <%= usuario.NOME_USUARIO %>">
+  <span><%= qntSeguidores %></span> Seguidores
+</li>
+
             </ul>
 
          
@@ -124,10 +132,39 @@
                   Conversar
                   <span class="tooltip">Crie uma conta para entrar em contato com outros usuários</span>
                 </button>
+
+                <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
+               <ion-icon name="flag-outline"></ion-icon> Denunciar usuário
+                </button>
+
+             <button class="follow-button" 
+        onclick="localStorage.setItem('scrollPos', window.scrollY); location.href='/seguir-usuario?id=<%= usuario.ID_USUARIO %>&sit=<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>'">
+  <span class="<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>">
+    <%= usuario.SEGUIDO === 1 ? 'Seguindo' : 'Seguir' %>
+  </span>
+</button>
+
+
+
               <% } else { %>
                 <button id="irparachat" onclick="location.href='/chat-logado'">
                   Conversar
                 </button>
+
+                <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
+                <ion-icon name="flag-outline"></ion-icon> Denunciar usuário
+                </button>
+
+
+                <button class="follow-button" 
+        onclick="localStorage.setItem('scrollPos', window.scrollY); location.href='/seguir-usuario?id=<%= usuario.ID_USUARIO %>&sit=<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>'">
+  <span class="<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>">
+    <%= usuario.SEGUIDO === 1 ? 'Seguindo' : 'Seguir' %>
+  </span>
+</button>
+
+
+
               <% } %>
             </section>
 
@@ -536,7 +573,24 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
     
- 
-    
+
+<section id="modalDenunciaUsuario" class="modal">
+  <section class="modal-content">
+    <h3>Qual o motivo da denúncia?</h3>
+    <form id="formDenunciaUsuario">
+      <input type="hidden" name="idUsuarioDenunciado" id="idUsuarioDenunciadoInput">
+
+      <label><input type="radio" name="motivo" value="Assédio"> Assédio</label><br>
+      <label><input type="radio" name="motivo" value="Conteúdo inapropriado"> Conteúdo inapropriado</label><br>
+      <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+
+      <button type="submit">Enviar denúncia</button>
+      <button type="button" id="fecharModalUsuario">Cancelar</button>
+    </form>
+  </section>
+</section>
+
+<script src="/js/denuncia-usuario.js"></script>
+
 </body>
 </html>

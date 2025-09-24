@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
-    <link rel="stylesheet" href="css/meuperfil.css" />
-    <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/meuperfil.css" />
+    <link rel="shortcut icon" href="/imagens/favicon.ico" type="image/x-icon">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -81,17 +81,12 @@ errosArray.forEach((itemErro) => {
    
           let arquivo = { imagem: "imagens/foto-perfil.png" }; 
     
-         if (autenticado.img_perfil_pasta) {
-          arquivo.imagem = autenticado.img_perfil_pasta;
-        } else if (autenticado.img_perfil_banco) {
+        if (autenticado.img_perfil_banco) {
           arquivo.imagem = autenticado.img_perfil_banco;
         }
 
         let arquivocapa = {imagem_capa: "imagens/bg.png" };
 
-        if (autenticado.img_capa_pasta) {
-          arquivocapa.imagem_capa = autenticado.img_capa_pasta;
-        }
         if (autenticado.img_capa_banco) {
           arquivocapa.imagem_capa = autenticado.img_capa_banco;
         }
@@ -145,7 +140,7 @@ errosArray.forEach((itemErro) => {
    
     <section class="base_cabecalho">
       <section id="banner-perfil">
-        <img src="/<%= arquivocapa.imagem_capa %>" id="banner-perfil">
+         <img src="<%= valores.img_capa_banco %>" alt="Capa do perfil" id="banner-perfil">
 
       </section>
       <section class="coluna_contaneir">
@@ -153,7 +148,12 @@ errosArray.forEach((itemErro) => {
 
           <section class="img__container">
 
-            <img src="/<%= arquivo.imagem %>" alt="Perfil" id="imgFoto">
+          
+            
+ <img src="<%= valores.img_perfil_banco %>" alt="Foto de perfil" id="imgFoto">
+           
+       
+            
            
           </section>
 
@@ -178,7 +178,7 @@ errosArray.forEach((itemErro) => {
          <% if (tipo_usuario === 'profissional') { %>
             <ul class="quan-p-t-c">
               <li title="Quantidade de publicações feitas por você."><span> <%=publicacoes.length %></span>Publicações</li>
-              <li title="Quantidade de portfólios criados por você."><span>0</span>Portfólios</li>
+              <li title="Quantidade de portfólios criados por você."><span><%= qntPortfolios %></span>Portfólios</li>
               <li title="Quantidade de vezes que você foi contratado através plataforma."><span>0</span>Contratações</li>
               
             </ul>

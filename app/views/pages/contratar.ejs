@@ -41,12 +41,30 @@
 
     <section class="pesquisas">
   <section class="barra-filtro-centralizada">
-    <section class="search">
-      <section class="icon">
-        <ion-icon name="search-outline"></ion-icon>
-      </section>
-      <input class="search-input" type="search" placeholder="O que você está procurando hoje?">
-    </section>
+      <form action="/pesquisar-profissionais" id="form-pesquisa" method="get">
+                         <section class="search">
+                             <section class="icon" id="btn-pesquisa">
+                             <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
+                             </section>
+                             <input 
+                             name="q"
+                               class="search-input" 
+                               type="search"  
+                               id="input-pesquisa"
+                               placeholder="Qual talento você procura hoje?"
+                               value="<%= termoPesquisa %>"
+                             >
+
+
+                           </section>
+
+                    
+
+                       </form>
+
+                              
+                        <%- include('../partials/ordenar-profissionais') %>
+
     <button id="botao-filtro">
       <ion-icon name="filter-outline" id="icon-filtro"></ion-icon>
     </button>
@@ -134,6 +152,31 @@
 
    
  
+        <section class="resultado-pesquisa">
+  <% if (termoPesquisa) { %>
+    <% if (profissionais.length > 0) { %>
+      <h1 class="titulo-termo"><%= termoPesquisa %></h1>
+      <p class="descricao-termo">
+        <% if (descricaoFamosa) { %>
+          <%= descricaoFamosa %>
+        <% } else { %>
+          <% if (profissionais.length > 5) { %>
+            Encontre os melhores profissionais de "<%= termoPesquisa %>" no Traço Perfeito.
+          <% } else { %>
+            Encontramos alguns profissionais para sua pesquisa por "<%= termoPesquisa %>".
+          <% } %>
+        <% } %>
+      </p>
+    <% } else { %>
+      <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+      <p class="descricao-termo">
+        Não encontramos profissionais relacionados a "<%= termoPesquisa %>". 
+        Tente outro termo ou verifique a ortografia.
+      </p>
+    <% } %>
+  <% } %>
+</section>
+
  
            
  <section class="container-perfis">
@@ -141,15 +184,21 @@
 
     <% if (profissionais.length > 0) { %>
   <% profissionais.forEach(profissional => { %>
-    <section class="card" 
-    onclick="location.href='<%= (autenticado && id_usuario === profissional.ID_USUARIO) ? '/meu-perfil-artista' : ('/perfil/' + profissional.ID_USUARIO) %>'">
+    <section class="card item-profissional"
+    onclick="location.href='<%= (autenticado && id_usuario === profissional.ID_USUARIO) ? '/meu-perfil-artista' : ('/perfil/' + profissional.ID_USUARIO) %>'"
+    data-seguidores="<%= profissional.QUANT_SEGUIDORES || 0 %>"
+    data-contratacoes="0"
+    data-avaliacao="0"
+     data-cadastro="<%= profissional.DATA_CADASTRO ? (new Date(profissional.DATA_CADASTRO)).toISOString().split('T')[0] : '' %>">
+
+    
         <section class="card-header">
-           <img src="<%= profissional.IMG_BANNER_PASTA_USUARIO || '/imagens/bg.jpg' %>"  alt="Background Image"  class="background-image" onerror="this.onerror=null; this.src='/imagens/bg.png'">
+           <img src="<%= profissional.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>"  alt="Background Image"  class="background-image" onerror="this.onerror=null; this.src='/imagens/bg.png'">
 
         </section>
         <section class="card-content">
             <section class="profile">
-                <img src="<%= profissional.FOTO_PERFIL_PASTA_USUARIO || '/imagens/img.png' %>" alt="Profile Picture" class="profile-image" onerror="this.onerror=null; this.src='/imagens/img.png'">
+                <img src="<%= profissional.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" alt="Profile Picture" class="profile-image" onerror="this.onerror=null; this.src='/imagens/img.png'">
 
                 <section class="info-prof">
   <section class="info-header">
@@ -164,6 +213,26 @@
   </section>
 </section>
             </section>
+
+
+            <section class="dados-perfil">
+  <section>
+    <p><%= profissional.QUANT_SEGUIDORES %></p>
+    <span>Seguidores</span>
+  </section>
+  <section>
+    <p>0</p>
+    <span>Contratações</span>
+  </section>
+  <section>
+    <p><%= profissional.QUANT_PUBLICACOES %></p>
+    <span>Publicações</span>
+  </section>
+</section>
+
+
+
+
             <section class="description">
                 <p><%= profissional.DESCRICAO_PERFIL_USUARIO || 'Profissional criativo e dedicado.' %></p>
             </section>

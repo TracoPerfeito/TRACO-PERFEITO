@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="/imagens/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="/css/pagamento.css">
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<title>Assinatura Traço Perfeito</title>
+</head>
+<body>
+
+<%- include('../partials/menu-logado'); %>
+
+<section id="principal-content">
+    <div class="container">
+
+        <!-- Dados do usuário -->
+        <div class="box">
+            <h3>Complete sua assinatura</h3>
+            <p>Por favor, preencha seus dados para finalizar a assinatura.</p>
+
+            <div class="input-group">
+                <input type="text" placeholder="Nome completo" value="<%= nome_usuario %>">
+            </div>
+            <div class="input-group">
+                <input type="email" placeholder="E-mail" value="<%= email_usuario %>">
+            </div>
+            <div class="input-group input-flex">
+                <input type="tel" id="celular" placeholder="Celular" value="<%= celular_usuario %>">
+                <input type="text" id="cpf" placeholder="CPF" value="<%= cpf_usuario %>" readonly>
+            </div>
+
+            <div class="hr-delicate"></div>
+
+            <p>Selecione o período de assinatura:</p>
+            <div class="period-buttons">
+                <input type="radio" id="semanal" name="periodo" value="Semanal" data-preco="10" data-plano="semanal" checked class="plano-btn">
+                <label for="semanal">Semanal</label>
+
+                <input type="radio" id="mensal" name="periodo" value="Mensal" data-preco="30" data-plano="mensal" class="plano-btn">
+                <label for="mensal">Mensal</label>
+
+                <input type="radio" id="anual" name="periodo" value="Anual" data-preco="300" data-plano="anual" class="plano-btn">
+                <label for="anual">Anual</label>
+            </div>
+        </div>
+
+        <!-- Resumo da assinatura -->
+        <div class="box box-summary">
+            <h3>Resumo da assinatura</h3>
+            <div class="summary-line">
+                <span id="resumo-plano">Assinatura (Semanal)</span>
+                <span id="resumo-preco">R$ 10,00</span>
+            </div>
+            <div class="hr-delicate"></div>
+            <div class="plan-description">
+                Acesso ilimitado a portfólios, publicações e propostas.<br>
+                Prioridade nas oportunidades.<br>
+                Destaques nas pesquisas.<br>
+                Sem taxa de vendas.<br>
+                Sem anúncios.
+            </div>
+            <div class="total">
+                <span>Total</span>
+                <span id="total-preco">R$ 10,00</span>
+            </div>
+            <div id="button-checkout"></div>
+        </div>
+
+    </div>
+</section>
+
+<%- include('../partials/rodape'); %>
+
+<!-- Scripts -->
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
+<script>
+// Máscaras de CPF e celular
+document.addEventListener("DOMContentLoaded", function() {
+    const celularInput = document.getElementById("celular");
+    const cpfInput = document.getElementById("cpf");
+
+    function mascaraCelular(input) {
+        let valor = input.value.replace(/\D/g, "");
+        if(valor.length > 11) valor = valor.slice(0, 11);
+        if(valor.length > 10) {
+            valor = valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1)$2-$3");
+        } else if(valor.length > 9) {
+            valor = valor.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1)$2-$3");
+        } else if(valor.length > 5) {
+            valor = valor.replace(/^(\d{2})(\d{1,5})$/, "($1)$2");
+        } else if(valor.length > 2) {
+            valor = valor.replace(/^(\d{2})(\d{0,5})$/, "($1)$2");
+        } else {
+            valor = valor.replace(/^(\d*)$/, "($1");
+        }
+        input.value = valor;
+    }
+
+    function mascaraCPF(input) {
+        let valor = input.value.replace(/\D/g, "");
+        if(valor.length > 11) valor = valor.slice(0, 11);
+        valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+        valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+        valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        input.value = valor;
+    }
+
+    if(celularInput) {
+        mascaraCelular(celularInput);
+        celularInput.addEventListener("input", () => mascaraCelular(celularInput));
+    }
+    if(cpfInput) {
+        mascaraCPF(cpfInput);
+        cpfInput.addEventListener("input", () => mascaraCPF(cpfInput));
+    }
+});
+</script>
+
+<script>
+// Mercado Pago
+const mercadopago = new MercadoPago('APP_USR-94fd4658-b8ab-4b6f-87d3-b2c294f818ba', { locale: 'pt-BR' });
+
+function criarBotao() {
+    const planoSelecionado = document.querySelector('input[name="periodo"]:checked').dataset.plano;
+    console.log("Plano selecionado:", planoSelecionado);
+
+    fetch("/create-preference", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plano: planoSelecionado })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("PreferenceId recebido:", data.id);
+        const bricksBuilder = mercadopago.bricks();
+
+        const renderComponent = async (bricksBuilder) => {
+            if(window.checkoutButton) window.checkoutButton.unmount();
+
+            window.checkoutButton = await bricksBuilder.create(
+                "wallet",
+                "button-checkout",
+                {
+                    initialization: { preferenceId: data.id },
+                    callbacks: {
+                        onError: (err) => console.error(err),
+                        onReady: () => console.log("Botão pronto!")
+                    }
+                }
+            );
+        }
+
+        renderComponent(bricksBuilder);
+    })
+    .catch(err => console.error("Erro ao criar preferência:", err));
+}
+
+// Atualiza botão ao mudar o plano
+document.querySelectorAll('input[name="periodo"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+        const preco = radio.dataset.preco;
+        const plano = radio.value;
+        document.getElementById('resumo-plano').textContent = `Assinatura (${plano})`;
+        document.getElementById('resumo-preco').textContent = `R$ ${preco},00`;
+        document.getElementById('total-preco').textContent = `R$ ${preco},00`;
+
+        criarBotao();
+    });
+});
+
+// Cria botão ao carregar a página
+document.addEventListener("DOMContentLoaded", () => {
+    criarBotao();
+});
+</script>
+
+</body>
+</html>

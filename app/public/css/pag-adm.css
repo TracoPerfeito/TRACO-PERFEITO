@@ -243,8 +243,14 @@
     font-size: 18px;
     font-weight: 500;
     white-space: nowrap;
+    margin-left: 32px;
 }
 
+.profile_name{
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .sidebar.close .profile-details i,
 .sidebar.close .profile-details .profile_name,
 .sidebar.close .profile-details .job{

@@ -28,19 +28,14 @@
 
 
     
-          let arquivo = { imagem: "imagens/foto-perfil.png" }; 
-    
-         if (autenticado.img_perfil_pasta) {
-          arquivo.imagem = autenticado.img_perfil_pasta;
-        } else if (autenticado.img_perfil_banco) {
-          arquivo.imagem = autenticado.img_perfil_banco;
-        }
+        
 
 %>
 
 
    
-    <img src="/<%= arquivo.imagem %>"  alt="Foto de perfil" class="user-avatar">
+    <img src="<%- img_perfil_banco %>" alt="Foto de perfil" class="user-avatar">
+
     
     <p class="user-name">Olá, <%= nomeCurto %>!</p>
  </section>

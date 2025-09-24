@@ -59,9 +59,21 @@ const admModel = {
     listarUsuarios: async () => {
         try {
             const [linhas] = await pool.query(
-                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_PASTA_USUARIO FROM USUARIOS "
+                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_BANCO_USUARIO FROM USUARIOS "
             );
-            return linhas;
+
+
+            const usuarios = linhas.map(p => {
+                return {
+                  ...p,
+                  FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+                    ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+                    : null
+                 
+                };
+              });
+          
+              return usuarios;
         } catch (error) {
             console.log(error);
             return error; //ou []
@@ -73,7 +85,7 @@ const admModel = {
     listarUsuariosPorTipo: async (tipo) => {
         try {
             const [linhas] = await pool.query(
-                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_PASTA_USUARIO FROM USUARIOS WHERE TIPO_USUARIO = ?",
+                "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_BANCO_USUARIO FROM USUARIOS WHERE TIPO_USUARIO = ?",
                 [tipo]
             );
             return linhas;
@@ -93,7 +105,21 @@ const admModel = {
                 "SELECT * FROM USUARIOS LIMIT ?, ?",
                 [inicio, total]
             );
-            return linhas;
+            
+            const usuarios = linhas.map(p => {
+                return {
+                  ...p,
+                  FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+                    ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+                    : null
+                 
+                };
+              });
+          
+              return usuarios;
+
+
+
         } catch (error) {
             console.log(error);
             return []; // Retorna um array vazio em caso de erro

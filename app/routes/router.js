@@ -7,10 +7,17 @@ const usuariosController = require("../controllers/usuariosController");
 const listagensController = require("../controllers/listagensController");
 const publicacoesController = require("../controllers/publicacoesController");
 const comentariosController = require("../controllers/comentariosController");
+const denunciasController = require('../controllers/denunciasController');
+const pesquisasController = require('../controllers/pesquisasController');
+const pagamentoController = require("../controllers/pagamentoController");
+
 
  const db = require('../../config/pool_conexoes');
 
-
+// SDK do Mercado Pago
+const { MercadoPagoConfig, Preference } = require('mercadopago');
+// Adicione credenciais
+const client = new MercadoPagoConfig({ accessToken: process.env.accessToken });
 
 
 const {
@@ -31,6 +38,17 @@ router.get("/", verificarUsuAutenticado, function (req, res) {
 });
 
 
+// rota GET
+router.get("/pesquisar", function(req, res) {
+
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+  pesquisasController.pesquisar(req, res);
+});
+
+
+
 
 
 router.get(
@@ -39,6 +57,20 @@ router.get(
     listagensController.listarProfissionais(req, res);
   }
 );
+
+
+
+
+router.get("/pesquisar-profissionais", function(req, res) {
+
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+  pesquisasController.pesquisarProfissionais(req, res);
+});
+
+
+
 
 router.get("/index", function (req, res) { //index
     res.render('pages/index')
@@ -58,6 +90,18 @@ router.get("/perfil/:id", function (req, res) { //perfil-alheio
  
 });
 
+
+
+
+router.get(
+  "/listar-seguidores", //listar seguidores
+  async function (req, res) {
+    listagensController.listarSeguidoresESeguindo(req, res);
+  }
+);
+
+
+
 router.get("/publicacoes-perfil", function (req, res) { //publicações de um perfil
     res.render('pages/publicacoes-perfil')
  
@@ -66,6 +110,11 @@ router.get("/publicacoes-perfil", function (req, res) { //publicações de um pe
 
 router.get("/favoritar", verificarUsuAutenticado, function (req, res) {
   publicacoesController.favoritar(req, res);
+});
+
+
+router.get("/seguir-usuario", verificarUsuAutenticado, function (req, res) {
+  usuariosController.seguir(req, res);
 });
 
 
@@ -105,6 +154,104 @@ router.post(
   "/denunciar-comentario",
   comentariosController.denunciarComentario
 );
+
+router.post("/denunciar-publicacao", denunciasController.criarDenunciaPublicacao);
+
+router.post('/denunciar-usuario', denunciasController.criarDenunciaUsuario);
+
+// Criar denúncia (usuário denuncia um projeto)
+router.post('/projetos/criar', denunciasController.criarDenunciaProjeto);
+
+// Listar denúncias (acesso do admin)
+router.get('/projetos', denunciasController.listarDenunciasProjetos);
+
+// Atualizar status da denúncia (admin muda status)
+router.post('/projetos/atualizar-status', denunciasController.atualizarStatusProjeto);
+
+
+
+
+
+
+
+router.get("/pagamentos",
+  
+   verificarUsuAutorizado(["profissional"], "pages/acesso-negado"),
+  async function (req, res){ 
+    res.render('pages/pagamentos')
+  }
+);
+
+
+router.post("/create-preference", async function (req, res) {
+    const preference = new Preference(client);
+    console.log("Criando preferência de pagamento com dados:", req.body);
+
+    const { plano } = req.body;
+    console.log("Plano selecionado:", plano);
+
+    // tabela dos planos
+    const planos = {
+        semanal: { title: "Plano Semanal Traço Perfeito", preco: 10 },
+        mensal: { title: "Plano Mensal Traço Perfeito", preco: 30 },
+        anual: { title: "Plano Anual Traço Perfeito", preco: 300 }
+    };
+
+    if (!planos[plano]) {
+        return res.status(400).json({ error: "Plano inválido" });
+    }
+
+    // Aqui você precisa criar ou pegar o ID do pedido
+    // Exemplo simples, se você gerar um pedido no banco:
+    // const pedido = await PedidoModel.create({ id_usuario: req.session.autenticado.id, plano: plano });
+    // const idPedido = pedido.insertId;
+
+    // Se ainda não tiver pedido no banco, pode usar um ID temporário
+    const idPedido = Date.now().toString(); //de teste mermo
+
+    preference.create({
+        body: {
+            items: [
+                {
+                    title: planos[plano].title,
+                    quantity: 1,
+                    unit_price: planos[plano].preco
+                }
+            ],
+              external_reference: `${idPedido}_${plano}`, 
+            back_urls: {
+                success: process.env.URL_BASE + "/feedback",
+                failure: process.env.URL_BASE + "/feedback",
+                pending: process.env.URL_BASE + "/feedback"
+            },
+            auto_return: "approved"
+        }
+    })
+    .then((value) => {
+        console.log("Preferência criada com sucesso:", value);
+        res.json(value);
+    })
+    .catch(err => {
+        console.error("Erro ao criar preferência:", err);
+        res.status(500).json({ erro: "Erro ao criar preferência" });
+    });
+});
+
+
+
+router.get("/feedback", function (req, res) {
+  pagamentoController.gravarPagamento(req, res);
+});
+
+ 
+router.get(
+  "/meu-perfil-artista",
+  verificarUsuAutorizado(["profissional", "comum"], "pages/acesso-negado"),
+  async function (req, res) {
+    usuariosController.mostrarPerfil(req, res);
+  }
+);
+
 
 
 
@@ -147,9 +294,10 @@ router.get(
 
 
 
+
 router.post(
   "/meu-perfil-artista",
- uploadFile("./app/public/imagens/perfil/").multi([
+ uploadFile().multi([
   { name: "img_perfil", maxCount: 1 },
   { name: "img_capa", maxCount: 1 }
 ]),
@@ -314,6 +462,12 @@ router.get("/portfolio/:id/editar-portfolio", verificarDonoPortfolio, function (
   res.render("editar-portfolio", { usuario: req.session.autenticado });
 });
 
+
+router.post(
+  "/excluir-portfolio",
+  publicacoesController.excluirPortfolio
+);
+
 router.post(
   "/editar-portfolio",
  publicacoesController.regrasValidacaoEditarPortfolio,
@@ -331,10 +485,16 @@ router.get("/chat-logado", function (req, res) { //chat
  
 });
 
-router.get("/propostadeprojeto", function (req, res) { //pagina de proposta de projeto
-    res.render('pages/propostadeprojeto')
- 
+
+
+
+router.get("/propostadeprojeto/:id", function (req, res){ //pagina de proposta de projeto
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+    listagensController.exibirProposta(req, res, dadosNotificacao);
+
 });
+
 
 router.get("/avaliacoes", function (req, res) { //pagina das avaliações
     res.render('pages/avaliacoes')
@@ -400,6 +560,17 @@ router.get("/oportunidades", function (req, res) { //oportunidades logado
    listagensController.listarPropostas(req, res);
  
 });
+
+
+router.get("/pesquisar-propostas", function(req, res) {
+
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+  pesquisasController.pesquisarPropostas(req, res);
+});
+
+
 
 
 
@@ -576,7 +747,9 @@ router.get('/verificar', async (req, res) => { //jogar essa validação para o u
     res.json({ existe: resultado.length > 0 });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ erro: 'Erro ao verificar dados' });
+     res.status(500).render('erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
   }
 });
 

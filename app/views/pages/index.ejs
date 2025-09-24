@@ -135,11 +135,32 @@
                     <!---------------------BARRA DE PESQUISA---------------->
                      
                      <section class="pesquisas">
-                        <section class="search">
-                            <section class="icon"> <ion-icon name="search-outline"></ion-icon></section>
-                            <input class="search-input" type="search" placeholder="O que você está procurando hoje?">
-                        
-                        </section> 
+                       <form action="/pesquisar" id="form-pesquisa" method="get">
+                         <section class="search">
+                             <section class="icon" id="btn-pesquisa">
+                             <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
+                             </section>
+                             <input 
+                             name="q"
+                               class="search-input" 
+                               type="search"  
+                               id="input-pesquisa"
+                               placeholder="O que você está procurando hoje?"
+                               value="<%= termoPesquisa %>"
+                             >
+
+
+                           </section>
+                       </form>
+
+
+                        <%- include('../partials/ordenar-publis') %>
+
+
+
+   
+
+
  
                     
 <!--                         
@@ -182,6 +203,57 @@
  
                     <!--------------------------------------CAIXAS--------------------------------------------------------->
                     
+<section class="resultado-pesquisa">
+  <% if (mostrarTextoBusca && termoPesquisa) { %>
+    <% if (publicacoes.length > 0) { %>
+      <h1 class="titulo-termo"><%= termoPesquisa %></h1>
+      <p class="descricao-termo">
+        <% if (descricaoFamosa) { %>
+          <%= descricaoFamosa %>
+        <% } else { %>
+          <% if (publicacoes.length > 5) { %>
+            Encontre as melhores publicações de "<%= termoPesquisa %>" no Traço Perfeito.
+          <% } else { %>
+            Encontramos alguns resultados para sua pesquisa por "<%= termoPesquisa %>".
+          <% } %>
+        <% } %>
+      </p>
+    <% } else { %>
+      <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+      <p class="descricao-termo">
+        Não encontramos publicações relacionadas a "<%= termoPesquisa %>". 
+        Tente outro termo ou verifique a ortografia.
+      </p>
+    <% } %>
+
+  <% } else if (mostrarTextoBusca && typeof filtroNoExplorar !== "undefined") { %>
+    <% if (publicacoes.length > 0) { %>
+      <h1 class="titulo-termo"><%= filtroNoExplorar %></h1>
+      <p class="descricao-termo">
+        <% if (descricaoFiltro) { %>
+          <%= descricaoFiltro %>
+        <% } else { %>
+          <% if (publicacoes.length > 5) { %>
+            Encontre as melhores publicações de "<%= filtroNoExplorar %>" no Traço Perfeito.
+          <% } else { %>
+            Encontramos alguns resultados para sua pesquisa por "<%= filtroNoExplorar %>".
+          <% } %>
+        <% } %>
+      </p>
+    <% } else { %>
+      <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+      <p class="descricao-termo">
+        Não encontramos publicações relacionadas a "<%= filtroNoExplorar %>". 
+        Tente outro filtro ou verifique a ortografia.
+      </p>
+    <% } %>
+  <% } %>
+</section>
+
+
+
+
+
                     <section class="container-pag-explorar">
 
                       <% if (publicacoes.length === 0) { %>
@@ -190,9 +262,15 @@
   </section>
 <% } else { %>
  <% publicacoes.forEach(pub => { %>
-  <section class="item-explorar item-1">
+  <section class="item-explorar item-1" 
+  data-tags="<%= pub.TAGS %>" 
+    data-categoria="<%= pub.CATEGORIA %>"
+    data-curtida ="<%= pub.N_CURTIDAS %>"
+    data-comentarios ="<%= pub.N_COMENTARIOS %>"
+    data-visualizacoes ="<%= pub.N_VISUALIZACOES %>"
+    data-data_publicacao ="<%= pub.DATA_PUBLICACAO %>"
+    >
 
-   
     <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
    
     <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
@@ -263,33 +341,43 @@
       <section class="foto-nome-dono-publi">
         <!-- User profile photo -->
         <img 
-  src="<%= pub.FOTO_PERFIL_PASTA_USUARIO || '/imagens/img.png' %>" 
-  class="foto-perfil-explorar" 
+   src="<%= pub.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" 
+    class="foto-perfil-explorar"  
   alt="Foto do usuário"
   onerror="this.onerror=null; this.src='/imagens/img.png'">
 
        <p class="nome-dono-post-ex">
-  <a href="<%= (autenticado && id_usuario === pub.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + pub.ID_USUARIO %>">
+  <a href="<%= (autenticado && id_usuario === pub.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + pub.ID_USUARIO %>" class="nome-usuario">
 
     <%= pub.NOME_USUARIO %>
   </a>
 </p>
 
+
+
+
+  </section>
+
+  <section class="contagem">
+
+    <ion-icon name="eye"></ion-icon>
+    <small><%= pub.N_VISUALIZACOES %></small>
   </section>
 
 
    
-      <!-- <button class="like-button">
-        <i class="far fa-heart"></i>
-      </button> -->
+       <section class="contagem">
+         <button class="like-button">
+           <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>"  
+              onclick="localStorage.setItem('scrollPos', window.scrollY)">
+             <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
+         
+           </a>
+         
+         </button>
 
-       <button class="like-button">
-  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>"  
-     onclick="localStorage.setItem('scrollPos', window.scrollY)">
-    <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
-
-  </a>
-</button> 
+           <small><%= pub.N_CURTIDAS %></small>
+       </section>
     </section>
 
 
@@ -388,7 +476,7 @@
 
   
 
-// autoplay
+// autoplay aautomático do carrossel
 document.addEventListener('DOMContentLoaded', () => {
   const carrosseis = document.querySelectorAll('.carrossel-imagens-explorar');
 
@@ -415,6 +503,27 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="js/mobile-navbar.js"></script>
 <script src="js/denuncia-compartilhamento.js"></script>
 <script src="js/rolagem-atualizar-pag.js"></script>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+  const nomesdeusuario = document.querySelectorAll('.nome-usuario');
+  const ignorar = ['de', 'da', 'do', 'das', 'dos'];
+
+  nomesdeusuario.forEach(nome => {
+    const partesOriginais = nome.innerText.trim().split(' ');
+    const partesSemLigacao = partesOriginais.filter(p => !ignorar.includes(p.toLowerCase()));
+
+    if (partesSemLigacao.length > 3) {
+      const capitalize = str => str[0].toUpperCase() + str.slice(1).toLowerCase();
+      nome.innerText = `${capitalize(partesSemLigacao[0])} ${capitalize(partesSemLigacao[partesSemLigacao.length - 1])}`;
+    } else {
+      nome.innerText = partesOriginais.join(' ');
+    }
+  });
+});
+
+</script>
 
 <%- include('../partials/editar-publicacao') %>
 

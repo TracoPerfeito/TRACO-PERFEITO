@@ -432,7 +432,7 @@ req.session.dadosNotificacao = {
       });
     }
      
-      const { titulo, categoria, preferencia, data_entrega, orcamento, descricao} = req.body;
+      const { titulo, categoria, preferencia, prazoEntrega, orcamento, descricao} = req.body;
       // Pega o ID do usuário logado.
       const idUsuario = req.session.autenticado.id;
 
@@ -443,7 +443,7 @@ req.session.dadosNotificacao = {
         DESCRICAO_PUBLICACAO: descricao,
         CATEGORIA_PROPOSTA: categoria,
         PREFERENCIA_PROPOSTA: preferencia,
-        PRAZO_ENTREGA: data_entrega,
+        PRAZO_ENTREGA: prazoEntrega,
         ORCAMENTO: orcamento,
         DESCRICAO_PROPOSTA: descricao
              
@@ -904,6 +904,57 @@ editarPortfolio: async (req, res) => {
 
 
 
+  excluirPortfolio: async (req, res) => {
+    try {
+      const { idPortfolio } = req.body;
+      if (!idPortfolio) {
+        return res.status(400).send("ID do portfólio não enviado.");
+      }
+      const portfolio = await listagensModel.buscarPortfolioPorId(idPortfolio);
+      if (!portfolio) {
+        return res.status(404).send("Portfólio não encontrado.");
+      }
+      const idUsuario = req.session.autenticado.id;
+      const tipoUsuario = req.session.autenticado.tipo;
+      // Permitir exclusão se for dono OU administrador
+      if (portfolio.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
+        return res.status(403).send("Você não tem permissão para excluir este portfólio.");
+      }
+
+      let resultado = await publicacoesModel.excluirPortfolio(idPortfolio);
+      console.log(resultado);
+
+            
+      req.session.dadosNotificacao = {
+        titulo: "Portfólio Excluído!",
+        mensagem: "Seu portfólio foi excluído com sucesso.",
+        tipo: "success"
+      };
+
+
+
+
+      return res.redirect("/"); 
+    } catch (erro) {
+      console.error("Erro ao excluir portfólio:", erro);
+
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível excluir seu portfólio.",
+        tipo: "error"
+      };
+
+
+
+
+      return res.redirect("/"); 
+    }
+  },
+
+
+
+
+
 
 
 
@@ -1003,23 +1054,76 @@ return res.redirect(previousUrl || "/");
         res.redirect("/");
     }
 },
-async denunciarPublicacao(req, res) {
-  console.log('Recebi denúncia:', req.body);
 
-  const { idPublicacao, idUsuario, motivo } = req.body;
 
-  if (!idPublicacao || !idUsuario || !motivo) {
-    return res.status(400).json({ erro: 'idPublicacao, idUsuario e motivo são obrigatórios.' });
-  }
 
-  try {
-    await denunciasModel.criarDenunciaPublicacao({ idPublicacao, idUsuario, motivo });
-    return res.status(201).json({ mensagem: 'Denúncia da publicação registrada com sucesso.' });
-  } catch (error) {
-    console.error('Erro ao denunciar publicação:', error);
-    return res.status(500).json({ erro: 'Erro ao processar a denúncia da publicação.' });
-  }
-}
+
+
+
+
+
+
+
+
+
+
+// Excluir Proposta
+  excluirProposta: async (req, res) => {
+    try {
+      const { idProposta } = req.body;
+      if (!idProposta) {
+        return res.status(400).send("ID da proposta não enviado.");
+      }
+      const proposta = await publicacoesModel.findIdProposta(idProposta);
+      if (!proposta) {
+        return res.status(404).send("Proposta não encontrada.");
+      }
+      const idUsuario = req.session.autenticado.id;
+      const tipoUsuario = req.session.autenticado.tipo;
+      // Permitir exclusão se for dono OU administrador
+      if (proposta.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
+        return res.status(403).send("Você não tem permissão para excluir esta proposta de projeto.");
+      }
+
+
+
+      let resultado = await publicacoesModel.excluirProposta(idProposta);
+      console.log(resultado);
+
+            
+      req.session.dadosNotificacao = {
+        titulo: "Proposta de projeto excluída!",
+        mensagem: "Sua proposta de projeto foi excluída com sucesso.",
+        tipo: "success"
+      };
+
+
+
+
+      return res.redirect("/"); 
+    } catch (erro) {
+      console.error("Erro ao excluir proposta:", erro);
+      
+      
+            
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível excluir sua proposta de projeto.",
+        tipo: "error"
+      };
+
+
+
+
+      return res.redirect("/"); 
+    }
+  },
+
+
+
+
+
+
 };
 
 module.exports = publicacoesController;

@@ -1,7 +1,8 @@
 const listagensModel = require("../models/listagensModel");
+const publicacoesModel = require("../models/publicacoesModel");
 const comentariosModel = require("../models/comentariosModel");
 const { body, validationResult } = require("express-validator");
-const favoritoModel = require("../models/favoritoModel");
+const {favoritoModel} = require("../models/favoritoModel");
 const moment = require("moment");
  
  
@@ -11,15 +12,47 @@ const listagensController = {
     listarProfissionais: async (req, res) => {
   try {
     const profissionais = await listagensModel.buscarProfissionaisComEspecializacao();
- 
-    console.log("Profissionais encontrados:", profissionais);
+
+
+     const profissionaisComContagem = await Promise.all(
+      profissionais.map(async (prof) => {
+      
+        const QUANT_SEGUIDORES = await listagensModel.contarSeguidores(prof.ID_USUARIO);
+        const QUANT_PUBLICACOES = await listagensModel.contarPublicacoes(prof.ID_USUARIO);
+
+        return { 
+          ...prof, 
+          QUANT_SEGUIDORES,
+          QUANT_PUBLICACOES
+        };
+      })
+    );
+
+
+ console.log("Profissionais encontrados:", profissionaisComContagem.map(p => ({
+  ID_USUARIO: p.ID_USUARIO,
+  NOME_USUARIO: p.NOME_USUARIO,
+  FOTO_PERFIL: p.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  IMG_BANNER: p.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
+  DESCRICAO_PERFIL_USUARIO: p.DESCRICAO_PERFIL_USUARIO,
+  DATA_CADASTRO: p.DATA_CADASTRO,
+  ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER,
+  QUANT_SEGUIDORES: p.QUANT_SEGUIDORES,
+  QUANT_PUBLICACOES: p.QUANT_PUBLICACOES
+})));
+
     res.render('pages/contratar', {
-      profissionais
+      profissionais: profissionaisComContagem,
+      termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
     });
  
   } catch (error) {
     console.error("Erro no controller ao listar profissionais:", error);
-    res.status(500).send("Erro interno ao buscar profissionais");
+    res.status(500).render('pages/erro-conexao', {
+  mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+});
   }
 },
  
@@ -27,8 +60,11 @@ const listagensController = {
   exibirPerfil: async (req, res) => {
   const id = req.params.id;
   try {
-    const usuario = await listagensModel.findIdusuario(id);
+    const idLogado = req.session.autenticado?.id || null;
+    const usuario = await listagensModel.findIdusuario(id, idLogado);
     const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
+    const qntPortfolios = await listagensModel.contarPortfoliosUsuario(id);
+    const qntSeguidores = await listagensModel.contarSeguidores(id);
  
    
  
@@ -40,44 +76,91 @@ const listagensController = {
     
  
     const especializacao = await listagensModel.findEspecializacaoByUserId(id);
- 
-    console.log("Dados do perfil sendo exibido:", usuario, especializacao, "Publicações: ", publicacoes);
+ console.log("Dados do perfil sendo exibido:", {
+  ID_USUARIO: usuario.ID_USUARIO,
+  NOME_USUARIO: usuario.NOME_USUARIO,
+  EMAIL_USUARIO: usuario.EMAIL_USUARIO,
+  CELULAR_USUARIO: usuario.CELULAR_USUARIO,
+  SENHA_USUARIO: usuario.SENHA_USUARIO,
+  CPF_USUARIO: usuario.CPF_USUARIO,
+  DATA_NASC_USUARIO: usuario.DATA_NASC_USUARIO,
+  GENERO_USUARIO: usuario.GENERO_USUARIO,
+  FOTO_PERFIL_BANCO_USUARIO: usuario.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  IMG_BANNER_BANCO_USUARIO: usuario.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
+  TIPO_USUARIO: usuario.TIPO_USUARIO,
+  STATUS_USUARIO: usuario.STATUS_USUARIO,
+  USER_USUARIO: usuario.USER_USUARIO,
+  DESCRICAO_PERFIL_USUARIO: usuario.DESCRICAO_PERFIL_USUARIO,
+  LINKEDIN_USUARIO: usuario.LINKEDIN_USUARIO,
+  PINTEREST_USUARIO: usuario.PINTEREST_USUARIO,
+  INSTAGRAM_USUARIO: usuario.INSTAGRAM_USUARIO,
+  WHATSAPP_USUARIO: usuario.WHATSAPP_USUARIO,
+   SEGUINDO: Number(usuario.SEGUIDO),
+  Publicacoes: publicacoes
+}, "Especialização:", especializacao, "Quantidade de portfólios:", qntPortfolios, "Quantidade de seguidores:", qntSeguidores);
+
     res.render('pages/perfil', {
       usuario,
       especializacao,
-      publicacoes
+      publicacoes,
+      qntPortfolios,
+      qntSeguidores
     });
   } catch (erro) {
     console.log(erro);
-    res.status(500).send('Erro ao carregar perfil');
+    res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
   }
 },
  
- 
-    listarPublicacoes: async (req, res,  dadosNotificacao) => {
+listarPublicacoes: async (req, res, dadosNotificacao) => {
   try {
     const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id);
- 
-    console.log("Publicações encontradas:", publicacoes.map(pub => ({
-  ID_PUBLICACAO: pub.ID_PUBLICACAO,
-  NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
-  NOME_USUARIO: pub.NOME_USUARIO,
-  TAGS: pub.TAGS,
-  FAVORITO: pub.FAVORITO,    
-  qtdImagens: (pub.imagens || []).length,
-  qtdImagensUrls: (pub.imagensUrls || []).length,
-})));
 
- 
-   
+    const publicacoesComContagem = await Promise.all(
+      publicacoes.map(async (pub) => {
+        const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
+        const N_COMENTARIOS = await publicacoesModel.contarNumComentarios(pub.ID_PUBLICACAO);
+        const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(pub.ID_PUBLICACAO);
+
+        return { 
+          ...pub, 
+          N_CURTIDAS, 
+          N_COMENTARIOS, 
+          N_VISUALIZACOES 
+        };
+      })
+    );
+
+    console.log("Publicações encontradas:", publicacoesComContagem.map(pub => ({
+      ID_PUBLICACAO: pub.ID_PUBLICACAO,
+      NOME_PUBLICACAO: pub.NOME_PUBLICACAO,
+      NOME_USUARIO: pub.NOME_USUARIO,
+      CATEGORIA: pub.CATEGORIA,
+      TAGS: pub.TAGS,
+     N_CURTIDAS: pub.N_CURTIDAS,
+      N_COMENTARIOS: pub.N_COMENTARIOS,
+      N_VISUALIZACOES: pub.N_VISUALIZACOES,
+      FAVORITO: pub.FAVORITO,    
+      DATA_PUBLICACAO: pub.DATA_PUBLICACAO,
+      DESCRICAO_PUBLICACAO: pub.DESCRICAO_PUBLICACAO,
+      qtdImagens: (pub.imagens || []).length,
+      qtdImagensUrls: (pub.imagensUrls || []).length,
+    })));
+
     let id_usuario = null;
     let tipo_usuario = null;
     if (req.session && req.session.autenticado) {
       id_usuario = req.session.autenticado.ID_USUARIO || req.session.autenticado.id || req.session.autenticado.ID;
       tipo_usuario = req.session.autenticado.TIPO_USUARIO || req.session.autenticado.tipo;
     }
+
     res.render('pages/index', {
-      publicacoes,
+      publicacoes: publicacoesComContagem, // envia as publicações já com a contagem
+      termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       id_usuario,
@@ -85,12 +168,14 @@ const listagensController = {
       listaErros: null,
       dadosNotificacao
     });
- 
+
   } catch (error) {
     console.error("Erro no controller ao listar publicações:", error);
-    res.status(500).send("Erro interno ao buscar publicações");
-     res.render('pages/index', {
+    res.status(500).render('pages/index', {
       autenticado: !!req.session.autenticado,
+      termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
       logado: req.session.logado,
       listaErros: ['Erro ao carregar publicações'],
       dadosNotificacao,
@@ -98,15 +183,178 @@ const listagensController = {
     });
   }
 },
+
  
- 
-  exibirPublicacao: async (req, res) => {
+ exibirPublicacao: async (req, res) => {
   const id = req.params.id;
+
   try {
     const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
- 
+
     if (!publicacao) {
-      return res.status(404).send('Publicação não encontrada');
+      console.log("Publicação não encontrada para o ID:", id);
+
+      req.session.dadosNotificacao = {
+        titulo: "Publicação não encontrada",
+        mensagem: "A publicação que você tentou acessar não existe.",
+        tipo: "error"
+      };
+
+      return res.redirect("/");
+    }
+
+    let usuario = null;
+    const sessao = req.session.autenticado;
+
+    if (sessao && typeof sessao === "object") {
+      const idUsuario = sessao.ID_USUARIO || sessao.id || sessao.ID;
+      if (idUsuario) {
+        usuario = await listagensModel.findIdusuario(idUsuario);
+      }
+    } else if (typeof sessao === "number" || typeof sessao === "string") {
+      usuario = await listagensModel.findIdusuario(sessao);
+    }
+
+   if (!req.session.visitas) req.session.visitas = {};
+
+// pega o tempo da última visita para essa publicação
+const ultimaVisita = req.session.visitas[publicacao.ID_PUBLICACAO];
+const agora = new Date();
+
+const intervaloMinutos = 30; // tempo limite entre visualizações
+
+if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000) {
+  // registra visualização no banco
+  const idUsuario = usuario ? (usuario.ID_USUARIO || usuario.id) : null;
+  await publicacoesModel.registrarVisualizacao(publicacao.ID_PUBLICACAO, idUsuario, null);
+
+  // atualiza o tempo da última visita na sessão
+  req.session.visitas[publicacao.ID_PUBLICACAO] = agora;
+}
+    const comentarios = await comentariosModel.listarComentarios(id);
+
+    console.log("Dados da publicação sendo exibida:", {
+      ID_PUBLICACAO: publicacao.ID_PUBLICACAO,
+      NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
+      NOME_USUARIO: publicacao.NOME_USUARIO,
+      TAGS: publicacao.TAGS,
+      FAVORITO: publicacao.FAVORITO,
+      qtdImagens: publicacao.imagens.length,
+      qtdImagensUrls: publicacao.imagensUrls.length,
+    });
+
+    console.log("Comentários da publicação sendo exibida:", comentarios.map(c => ({
+      ID_COMENTARIO: c.ID_COMENTARIO,
+      ID_USUARIO: c.ID_USUARIO,
+      ID_PUBLICACAO: c.ID_PUBLICACAO,
+      CONTEUDO_COMENTARIO: c.CONTEUDO_COMENTARIO,
+      DATA_COMENTARIO: c.DATA_COMENTARIO,
+      NOME_USUARIO: c.NOME_USUARIO,
+      FOTO_PERFIL_BANCO_USUARIO: c.FOTO_PERFIL_BANCO_USUARIO ? "sim" : "não"
+    })));
+
+    console.log("Usuário autenticado passado para a view:", usuario);
+
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+
+    res.render("pages/publicacao", {
+      publicacao,
+      comentarios,
+      listaErros: null,
+      usuario: usuario ? {
+        id: usuario.ID_USUARIO || usuario.id,
+        nome: usuario.NOME_USUARIO || usuario.nome,
+        tipo: usuario.TIPO_USUARIO || usuario.tipo,
+      } : null,
+      autenticado: !!usuario,
+      id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
+      tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
+      dadosNotificacao
+    });
+  } catch (erro) {
+    console.log(erro);
+    res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
+  }
+},
+
+
+
+
+
+
+
+
+listarPropostas: async (req, res) => {
+  try {
+    const propostas = await listagensModel.listarPropostas();
+
+    console.log(propostas)
+
+    console.log("Propostas encontradas:", propostas.map(p => ({
+      ID_PROPOSTA: p.ID_PROPOSTA,
+      TITULO_PROPOSTA: p.TITULO_PROPOSTA,
+      NOME_USUARIO: p.NOME_USUARIO,
+      PROFISSIONAL_REQUERIDO: p.profissionalRequerido,
+      PRAZO_ENTREGA: p.PRAZO_ENTREGA,
+      ORCAMENTO: p.ORCAMENTO
+    })));
+
+    res.render('pages/oportunidades', {
+      propostas,
+       termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
+      autenticado: !!req.session.autenticado,
+      logado: req.session.logado,
+      listaErros: null,
+      dadosNotificacao: null
+    });
+
+  } catch (error) {
+    console.error("Erro no controller ao listar propostas:", error);
+    res.status(500).render('pages/oportunidades', {
+      propostas: [],
+       termoPesquisa: null,
+      mostrarTextoBusca: "false",
+      descricaoFamosa: null,
+      autenticado: !!req.session.autenticado,
+      logado: req.session.logado,
+      listaErros: ['Erro ao carregar propostas'],
+      dadosNotificacao:{
+          titulo: 'Não foi possível carregar Propostas de Projeto.',
+          mensagem: 'Tente novamente mais tarde.',
+          tipo: 'error'
+      }
+    });
+  }
+},
+
+
+
+
+ 
+ 
+  exibirProposta: async (req, res) => {
+  const id = req.params.id;
+  try {
+    const proposta = await listagensModel.findIdProposta(id, req.session.autenticado.id);
+
+
+     if (!proposta) {
+      // Se não existir a proposta
+     console.log("Proposta não encontrada para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Proposta não encontrada",
+          mensagem: "A proposta que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/oportunidades"); 
     }
  
     let usuario = null;
@@ -127,31 +375,32 @@ const sessao = req.session.autenticado;
     
     // Só bloqueia se o usuário estiver autenticado mas não for encontrado no banco
     // Se não encontrar o usuário autenticado, apenas trata como visitante
-    // Se não estiver autenticado, apenas mostra a publicação normalmente
- 
-    const comentarios = await comentariosModel.listarComentarios(id);
- 
- console.log("Dados da publicação sendo exibida:", {
-  ID_PUBLICACAO: publicacao.ID_PUBLICACAO,
-  NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
-  NOME_USUARIO: publicacao.NOME_USUARIO,
-  TAGS: publicacao.TAGS,
-  FAVORITO: publicacao.FAVORITO,
-  qtdImagens: publicacao.imagens.length,
-  qtdImagensUrls: publicacao.imagensUrls.length,
-});
+    console.log("Dados da proposta sendo exibida:", {
+      ID_PROPOSTA: proposta.ID_PROPOSTA,
+      NOME_PROPOSTA: proposta.TITULO_PROPOSTA,
+      NOME_USUARIO: proposta.NOME_USUARIO,
+      PROFISSIONAL_REQUERIDO: proposta.profissionalRequerido,
+      PRAZO_ENTREGA: proposta.PRAZO_ENTREGA,
+      PRAZO_RESTANTE: proposta.prazoRestante, 
+      ORCAMENTO: proposta.ORCAMENTO,
+      DATA_PROPOSTA: proposta.DATA_PROPOSTA,
+      DESCRICAO_PROPOSTA: proposta.DESCRICAO_PROPOSTA,
+      CATEGORIA_PROPOSTA: proposta.CATEGORIA_PROPOSTA,
+      PREFERENCIA_PROPOSTA: proposta.PREFERENCIA_PROPOSTA,
+      STATUS_PROPOSTA: proposta.STATUS_PROPOSTA
+    });
+    
 
-    console.log("Comentarios da publicação sendo exibida: ", comentarios)
-    console.log("Usuário autenticado passado para a view:", usuario);
+ 
+
+  
     
     const dadosNotificacao = req.session.dadosNotificacao || null;
-req.session.dadosNotificacao = null;
+    req.session.dadosNotificacao = null;
 
     console.log("Dados de notificação:", dadosNotificacao);
-    res.render('pages/publicacao', {
-      publicacao,
-      comentarios,
-      listaErros: null,
+    res.render('pages/propostadeprojeto', {
+      proposta,
       usuario: usuario ? {
         id: usuario.ID_USUARIO || usuario.id,
         nome: usuario.NOME_USUARIO || usuario.nome,
@@ -164,7 +413,16 @@ req.session.dadosNotificacao = null;
     });
   } catch (erro) {
     console.log(erro);
-    res.status(500).send('Erro ao carregar publicação');
+   
+
+     req.session.dadosNotificacao = {
+         titulo: "Ocorreu um erro",
+          mensagem: "Não foi possível acessar a proposta de projeto. Tente novamente mais tarde.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/oportunidades"); 
   }
 },
 
@@ -172,45 +430,6 @@ req.session.dadosNotificacao = null;
 
 
 
-
-
-
-listarPropostas: async (req, res) => {
-  try {
-    const propostas = await listagensModel.listarPropostas();
-
-    console.log("Propostas encontradas:", propostas.map(p => ({
-      ID_PROPOSTA: p.ID_PROPOSTA,
-      TITULO_PROPOSTA: p.TITULO_PROPOSTA,
-      NOME_USUARIO: p.NOME_USUARIO,
-      PROFISSIONAL_REQUERIDO: p.profissionalRequerido,
-      PRAZO_ENTREGA: p.PRAZO_ENTREGA,
-      ORCAMENTO: p.ORCAMENTO
-    })));
-
-    res.render('pages/oportunidades', {
-      propostas,
-      autenticado: !!req.session.autenticado,
-      logado: req.session.logado,
-      listaErros: null,
-      dadosNotificacao: null
-    });
-
-  } catch (error) {
-    console.error("Erro no controller ao listar propostas:", error);
-    res.status(500).render('pages/oportunidades', {
-      propostas: [],
-      autenticado: !!req.session.autenticado,
-      logado: req.session.logado,
-      listaErros: ['Erro ao carregar propostas'],
-      dadosNotificacao:{
-          titulo: 'Não foi possível carregar Propostas de Projeto.',
-          mensagem: 'Tente novamente mais tarde.',
-          tipo: 'error'
-      }
-    });
-  }
-},
 
  
 
@@ -239,6 +458,10 @@ listarPropostas: async (req, res) => {
     });
   }
 },
+
+
+
+
  
  
 
@@ -310,12 +533,28 @@ console.log("ID do portfólio:", id);
   try {
     // 1) Buscar dados do portfolio (nome, descrição, tags, etc.)
     const portfolio = await listagensModel.buscarPortfolioPorId(id);
-    console.log("Dados do portfólio buscado:", portfolio);
+    console.log("Dados do portfólio buscado:", portfolio); //ok
+
+
+    if (!portfolio) {
+      // Se não existir o port
+     console.log("Portfólio não encontrado para o ID:", id);
+
+      req.session.dadosNotificacao = {
+         titulo: "Portfólio não encontrado",
+          mensagem: "O portfólio que você tentou acessar não existe.",
+          tipo: "error" 
+        
+        };
+  
+         return res.redirect("/"); 
+    }
+
 
     // 2) Buscar publicações do portfolio
     const publicacoesPortfolio = await listagensModel.listarPublicacoesdoPortfolio(id, req.session.autenticado.id);
 
-    console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
+    // console.log("Publicações do portfólio encontradas:", publicacoesPortfolio);
 
     // 3) Pega o dono do portfolio a partir do portfolio
     const portfolioDono = portfolio
@@ -352,8 +591,8 @@ req.session.currentPortfolioId = id;
     console.log(erro);
     res.render("pages/portfolio", {
       publicacoesPortfolio: [],
-      portfolio,
-      portfolioDono,
+      portfolio: null,
+      portfolioDono: null,
       dadosNotificacao: {
         titulo: "Erro ao carregar o portfólio",
         mensagem: "Tente novamente mais tarde.",
@@ -436,8 +675,44 @@ listarDenuncias: async (req, res) => {
 
 
 
- 
- 
+ listarSeguidoresESeguindo: async (req, res) => {
+  try {
+    const userId = parseInt(req.query.id);
+    if (!userId) return res.status(400).json({ error: "ID do usuário inválido" });
+
+    const { seguidores, seguindo } = await listagensModel.listarSeguidoresESeguindo(userId, req.session?.autenticado?.id);
+
+     const seguidoresLog = seguidores.map(u => ({
+  ID_USUARIO: u.ID_USUARIO,
+  NOME_USUARIO: u.NOME_USUARIO,
+  FOTO_PERFIL: u.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  USER_USUARIO: u.USER_USUARIO,
+  SEGUIDO: u.SEGUIDO // 1 ou 0
+}));
+
+const seguindoLog = seguindo.map(u => ({
+  ID_USUARIO: u.ID_USUARIO,
+  NOME_USUARIO: u.NOME_USUARIO,
+  FOTO_PERFIL: u.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  USER_USUARIO: u.USER_USUARIO,
+  SEGUIDO: u.SEGUIDO
+}));
+
+console.log("Seguidores encontrados:", seguidoresLog);
+console.log("Seguindo encontrados:", seguindoLog);
+    res.json({
+      seguidores,
+      seguindo,
+     usuarioLogado: req.session?.autenticado?.id ? true : false,
+  idUsuarioLogado: req.session?.autenticado?.id || null
+    });
+  } catch (erro) {
+    console.error("Não foi possível listar seguidores.", erro);
+    res.status(500).json({ error: "Não foi possível carregar os seguidores" });
+  }
+}
+
+
  
 }
  

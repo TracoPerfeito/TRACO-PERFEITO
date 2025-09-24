@@ -1,0 +1,156 @@
+@import url(cores.css);
+
+#principal-content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.container {
+    display: flex;
+    gap: 20px;
+    max-width: 1000px;
+    width: 90%;
+    font-family: "Montserrat", sans-serif;
+    margin: 40px 5%;
+    color: var(--text-color);
+}
+
+.box {
+    border: 2px solid var(--text-color);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--cor-fundo);
+    box-sizing: border-box;
+}
+
+.box:first-child {
+    width: 600px;
+}
+
+.box h3 {
+    margin-top: 0;
+}
+
+.box p {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(  --borda-barra-pag);
+      background: var(--cor-fundo);
+      color: var(--text-color);
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.input-flex {
+    display: flex;
+    gap: 10px;
+}
+
+.input-flex input {
+    flex: 1;
+}
+
+.hr-delicate {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+}
+
+/* BOTÕES DE ASSINATURA */
+.period-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.period-buttons label {
+    flex: 1;
+    text-align: center;
+    padding: 15px 0;
+    background: var( --cor-btn-azul);
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.period-buttons input[type="radio"] {
+    display: none;
+}
+
+.period-buttons input[type="radio"]:checked + label {
+    background: #7193C7;
+    color: #fff;
+    border: 2px solid  #7193C7;
+}
+
+.plan-description {
+    font-size: 14px;
+    margin: 15px 0;
+    line-height: 1.4;
+}
+
+.box-summary {
+    width: 350px;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 16px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    background: #132d46;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.btn:hover {
+    background: #0f2340;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .box:first-child, .box-summary {
+        width: 100%;
+    }
+}

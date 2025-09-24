@@ -1,0 +1,164 @@
+<section class="filtro-ordenacao">
+  <button id="btnOrdenar" class="btn-ordenar">Ordenar</button>
+  <section id="opcoesOrdenacao" class="opcoes-ordenacao oculto">
+    <section data-ordem="mais-seguidores">Mais Seguidores</section>
+    <section data-ordem="mais-contratados">Mais Contratados</section>
+    <section data-ordem="melhor-avaliacao">Melhor Avaliação</section>
+    <section data-ordem="mais-recentes">Mais Recentes</section>
+    <section data-ordem="mais-antigos">Mais Antigos</section>
+  </section>
+</section>
+
+<style>
+.filtro-ordenacao {
+  position: relative;
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.btn-ordenar {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-ordenar:hover {
+  background-color: #555;
+}
+
+.opcoes-ordenacao {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: max-content;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.opcoes-ordenacao section {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.opcoes-ordenacao section:hover {
+  background-color: #f0f0f0;
+}
+
+.opcoes-ordenacao .selecionada {
+  background-color: #333;
+  color: #fff;
+  font-weight: bold;
+}
+
+.oculto {
+  display: none;
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("📌 Script de ordenação carregado (DOMContentLoaded)");
+
+  const btnOrdenar = document.getElementById("btnOrdenar");
+  const opcoesOrdenacao = document.getElementById("opcoesOrdenacao");
+
+  if (!btnOrdenar) console.warn("⚠️ btnOrdenar NÃO encontrado");
+  if (!opcoesOrdenacao) console.warn("⚠️ opcoesOrdenacao NÃO encontrado");
+
+  btnOrdenar && btnOrdenar.addEventListener("click", () => {
+    console.log("🔽 Botão Ordenar clicado - toggle dropdown");
+    opcoesOrdenacao.classList.toggle("oculto");
+    console.log("   Dropdown está agora:", opcoesOrdenacao.classList.contains("oculto") ? "OCULTO" : "VISÍVEL");
+  });
+
+  const ordenarProfissionais = (tipo) => {
+    console.log("➡️ ordenarProfissionais chamado com tipo:", tipo);
+
+    const container = document.querySelector(".container-perfis");
+    if (!container) {
+      console.error("❌ container-profissionais NÃO encontrado no DOM");
+      return;
+    }
+    console.log("✅ container-profissionais encontrado");
+
+    const profissionais = Array.from(container.querySelectorAll(".item-profissional"));
+    console.log(`🔎 Encontrados ${profissionais.length} elementos .item-profissional`);
+
+    // Log dos datasets originais
+    profissionais.forEach((p, i) => {
+      console.log(`  [${i}] id?`, p.dataset.id || "(sem id)",
+                  "seguidores=", p.dataset.seguidores,
+                  "contratacoes=", p.dataset.contratacoes,
+                  "avaliacao=", p.dataset.avaliacao,
+                  "cadastro(raw)=", p.dataset.cadastro);
+    });
+
+    try {
+      profissionais.sort((a, b) => {
+        const seguidoresA = parseInt(a.dataset.seguidores) || 0;
+        const seguidoresB = parseInt(b.dataset.seguidores) || 0;
+        const contratacoesA = parseInt(a.dataset.contratacoes) || 0;
+        const contratacoesB = parseInt(b.dataset.contratacoes) || 0;
+        const avaliacaoA = parseFloat(a.dataset.avaliacao) || 0;
+        const avaliacaoB = parseFloat(b.dataset.avaliacao) || 0;
+
+        // tenta parse seguro da data: aceita "YYYY-MM-DD" ou "ISO" ou vazio
+        const parseDateSafe = (raw) => {
+          if (!raw) return new Date(0);
+          // se vier com "T" (ISO), pega antes do T para evitar timezone
+          const part = raw.includes("T") ? raw.split("T")[0] : raw;
+          const d = new Date(part);
+          return isNaN(d) ? new Date(0) : d;
+        };
+
+        const dataA = parseDateSafe(a.dataset.cadastro);
+        const dataB = parseDateSafe(b.dataset.cadastro);
+
+        // debug de comparação
+        // console.log("compare", tipo, "A", {seguidoresA, contratacoesA, avaliacaoA, dataA}, "B", {seguidoresB, contratacoesB, avaliacaoB, dataB});
+
+        switch(tipo) {
+          case "mais-seguidores": return seguidoresB - seguidoresA;
+          case "mais-contratados": return contratacoesB - contratacoesA;
+          case "melhor-avaliacao": return avaliacaoB - avaliacaoA;
+          case "mais-recentes": return dataB - dataA;
+          case "mais-antigos": return dataA - dataB;
+          default: return 0;
+        }
+      });
+
+      console.log("🔁 Ordenação concluída — nova ordem (datasets):");
+      profissionais.forEach((p, i) => {
+        console.log(`  [${i}] id?`, p.dataset.id || "(sem id)", "seguidores=", p.dataset.seguidores, "cadastro=", p.dataset.cadastro);
+      });
+
+      // reinsere no container (isso move os elementos)
+      profissionais.forEach(prof => container.appendChild(prof));
+      console.log("✅ Reinsersão no DOM concluída");
+
+    } catch (err) {
+      console.error("💥 Erro durante a ordenação:", err);
+    }
+  };
+
+  const opcoes = opcoesOrdenacao ? opcoesOrdenacao.querySelectorAll("section") : [];
+  if (!opcoes.length) console.warn("⚠️ Nenhuma opção de ordenação encontrada (opcoes.length = 0)");
+
+  opcoes.forEach(opcao => {
+    opcao.addEventListener("click", () => {
+      console.log("🟢 Opção clicada:", opcao.dataset.ordem);
+      opcoes.forEach(o => o.classList.remove("selecionada"));
+      opcao.classList.add("selecionada");
+      ordenarProfissionais(opcao.dataset.ordem);
+      opcoesOrdenacao.classList.add("oculto");
+    });
+  });
+
+  console.log("✅ Script de ordenação inicializado (pronto para uso)");
+});
+</script>

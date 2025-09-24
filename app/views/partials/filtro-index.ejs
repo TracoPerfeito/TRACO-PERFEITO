@@ -57,3 +57,127 @@
   wrapper.dispatchEvent(new Event('scroll'));
 
 </script>
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM carregado, script iniciado");
+
+  function normalizeString(str) {
+    return str
+      .toLowerCase()
+      .replace(/[-_]/g, " ")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+  }
+
+  const filtroItems = document.querySelectorAll(".filtro-item");
+  const publicacoes = document.querySelectorAll(".item-explorar");
+  const resultadoSec = document.querySelector(".resultado-pesquisa");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const termoPesquisa = urlParams.get('q') || "";
+  const mostrarTexto = !termoPesquisa; // mostra texto apenas se não houver pesquisa
+
+  filtroItems.forEach(filtro => {
+    filtro.addEventListener("click", () => {
+      console.log("Filtro clicado:", filtro.id);
+      const categoriaFiltro = normalizeString(filtro.id);
+      console.log("Categoria filtro normalizada:", categoriaFiltro);
+
+      // Marca filtro ativo
+      filtroItems.forEach(f => f.classList.remove("ativo"));
+      filtro.classList.add("ativo");
+
+      let algumEncontrado = false;
+
+      if (categoriaFiltro === "mais curtidos") {
+        // Filtra por top 30% mais curtidos
+        const cardsArray = Array.from(publicacoes);
+        cardsArray.forEach(card => card.dataset.curtidaNum = Number(card.dataset.curtida) || 0);
+        const ordenados = cardsArray.sort((a, b) => b.dataset.curtidaNum - a.dataset.curtidaNum);
+        const topCount = Math.ceil(ordenados.length * 0.3);
+
+        ordenados.forEach((card, index) => {
+          if (index < topCount) {
+            card.style.display = "block";
+            card.style.opacity = 0;
+            setTimeout(() => card.style.opacity = 1, 50);
+            algumEncontrado = true;
+          } else {
+            card.style.display = "none";
+          }
+        });
+      } else {
+        // Filtro normal por categoria/tags
+        publicacoes.forEach(card => {
+          const categoriaCard = normalizeString(card.dataset.categoria || "");
+          const tagsCard = (card.dataset.tags || "").split(",").map(normalizeString);
+          const matches = categoriaCard === categoriaFiltro || tagsCard.includes(categoriaFiltro);
+
+          if (matches) {
+            card.style.display = "block";
+            card.style.opacity = 0;
+            setTimeout(() => card.style.opacity = 1, 50);
+            algumEncontrado = true;
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      // Atualiza o texto de resultado
+      if (resultadoSec) {
+        resultadoSec.innerHTML = "";
+        const nomeFiltro = filtro.textContent;
+        const titulo = document.createElement("h1");
+        titulo.classList.add("titulo-termo");
+        const descricao = document.createElement("p");
+        descricao.classList.add("descricao-termo");
+
+        if (termoPesquisa) {
+          // estamos em uma pesquisa
+          titulo.textContent = termoPesquisa;
+          if (algumEncontrado) {
+            descricao.textContent = resultadoSec.dataset.textoOriginal || `Encontramos alguns resultados para sua pesquisa por "${termoPesquisa}".`;
+          } else {
+            descricao.textContent = `Não encontramos publicações de ${nomeFiltro} relacionadas a "${termoPesquisa}".`;
+          }
+        } else {
+          // estamos no explorar normal
+          titulo.textContent = nomeFiltro;
+          if (algumEncontrado) {
+            if (categoriaFiltro === "mais curtidos") {
+              descricao.textContent = `Veja as publicações mais curtidas no Traço Perfeito.`;
+            } else {
+              switch (categoriaFiltro) {
+                case "arte digital":
+                  descricao.textContent = `Veja as melhores publicações de ${nomeFiltro} no Traço Perfeito.`;
+                  break;
+                case "design grafico":
+                  descricao.textContent = `Explore as publicações de ${nomeFiltro} e descubra os melhores trabalhos no Traço Perfeito.`;
+                  break;
+                case "ilustracao":
+                  descricao.textContent = `Confira as publicações de ${nomeFiltro} e inspire-se com os ilustradores no Traço Perfeito.`;
+                  break;
+                default:
+                  descricao.textContent = `Publicações filtradas por ${nomeFiltro} no Traço Perfeito.`;
+              }
+            }
+          } else {
+            descricao.textContent = `Nenhuma publicação encontrada para ${nomeFiltro}.`;
+          }
+        }
+
+        resultadoSec.appendChild(titulo);
+        resultadoSec.appendChild(descricao);
+        console.log("Texto atualizado:", descricao.textContent);
+      }
+
+    });
+  });
+});
+</script>

@@ -1,5 +1,15 @@
 @import url(cores.css);
 
+.item-explorar {
+  transition: opacity 0.3s ease;
+}
+
+.filtro-item.ativo {
+  background-color: #a50d0d;
+  color: white;
+  border-radius: 6px;
+}
+
 
 .filtro-container {
     position: relative;

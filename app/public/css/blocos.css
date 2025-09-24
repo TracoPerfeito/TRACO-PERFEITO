@@ -144,6 +144,18 @@
     margin: 10px 0px;
 }
 
+.contagem{
+  font-family: "Josefin Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 5px;
+  margin-left: 6px;
+}
+
+
+
+
 .foto-nome-dono-publi{
     width: 100%;
     display: flex;

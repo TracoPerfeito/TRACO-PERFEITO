@@ -53,6 +53,13 @@ gravarUsuAutenticado = async (req, res, next) => {
     const usuarioEncontrado = results[0];
     console.log("🧾 usuarioEncontrado:", usuarioEncontrado);
 
+    if(!usuarioEncontrado){
+        console.error('Erro no banco de dadios. Conexão interrompida:', error);
+        res.status(500).render('pages/erro-conexao', {
+       mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+     });
+    }
+
     if (usuarioEncontrado.STATUS_USUARIO === 'inativo') {
     console.log("🚫 Usuário inativo tentou fazer login:", usuarioEncontrado.EMAIL_USUARIO);
     return res.render("pages/login", {
@@ -84,14 +91,23 @@ gravarUsuAutenticado = async (req, res, next) => {
         autenticado: usuarioEncontrado.NOME_USUARIO,
         nome: usuarioEncontrado.NOME_USUARIO,
         user: usuarioEncontrado.USER_USUARIO,
+        celular: usuarioEncontrado.CELULAR_USUARIO,
+        email: usuarioEncontrado.EMAIL_USUARIO,
+        cpf: usuarioEncontrado.CPF_USUARIO,
         id: usuarioEncontrado.ID_USUARIO,
         tipo: usuarioEncontrado.TIPO_USUARIO,
         status: usuarioEncontrado.STATUS_USUARIO,
-        img_perfil_pasta: usuarioEncontrado.FOTO_PERFIL_PASTA_USUARIO,
-        img_capa_pasta: usuarioEncontrado.IMG_BANNER_PASTA_USUARIO,
+       img_perfil_banco: usuarioEncontrado.FOTO_PERFIL_BANCO_USUARIO
+        ? `data:image/png;base64,${usuarioEncontrado.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+        : null,
+    img_capa_banco: usuarioEncontrado.IMG_BANNER_BANCO_USUARIO
+        ? `data:image/png;base64,${usuarioEncontrado.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
+        : null,
         descricao_perfil: usuarioEncontrado.DESCRICAO_PERFIL_USUARIO
     };
     console.log("✅ Login realizado com sucesso:", req.session.autenticado);
+   
+
     req.session.logado = 0;
     next();
 };

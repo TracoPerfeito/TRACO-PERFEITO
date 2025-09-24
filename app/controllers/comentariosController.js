@@ -67,9 +67,16 @@ const comentariosController = {
   },
 
   // Excluir comentário
+<<<<<<< HEAD
   excluirComentario: async (req, res) => {
     try {
       const { idComentario, idPublicacao } = req.body;
+=======
+ 
+excluirComentario: async (req, res) => {
+  try {
+    const { idComentario, idPublicacao } = req.body;
+>>>>>>> 217bf9e44911458ebfdd85cf2dcd272e6b921950
 
       if (!idComentario || !idPublicacao) {
         return res.status(400).send("ID do comentário ou da publicação não enviado.");
@@ -106,6 +113,7 @@ const comentariosController = {
       req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Não foi possível excluir o comentário.', tipo: 'error' };
       return res.redirect("/publicacao/" + req.body.idPublicacao);
     }
+<<<<<<< HEAD
   },
 
   // Denunciar comentário
@@ -140,6 +148,97 @@ const comentariosController = {
     }
   }
 
+=======
+
+    const idUsuario = req.session.autenticado.id;
+    const isAdmin = req.session.autenticado.tipo === 'administrador';
+
+    const comentario = await comentariosModel.pegarComentarioPorId(idComentario);
+    if (!comentario) {
+      return res.status(404).send("Comentário não encontrado.");
+    }
+
+    const publicacaoDono = await listagensModel.findIdPublicacao(idPublicacao);
+    if (!publicacaoDono) {
+      return res.status(404).send("Publicação não encontrada.");
+    }
+
+    const podeExcluir = (comentario.ID_USUARIO === idUsuario) || isAdmin || (publicacaoDono.ID_USUARIO === idUsuario);
+    if (!podeExcluir) {
+      return res.status(403).send("Você não tem permissão para excluir este comentário.");
+    }
+
+    const resultado = await comentariosModel.excluirComentario(idComentario);
+
+    req.params.id = idPublicacao;
+
+    if (resultado.error) {
+      req.session.dadosNotificacao = {
+        titulo: 'Erro',
+        mensagem: resultado.error,
+        tipo: 'error'
+      };
+
+      return req.session.save(() => {
+        return res.redirect("/publicacao/" + req.params.id);
+      });
+    }
+
+    req.session.dadosNotificacao = {
+      titulo: 'Comentário excluído.',
+      mensagem: 'Seu comentário foi excluído com sucesso.',
+      tipo: 'success'
+    };
+
+    return req.session.save(() => {
+      return res.redirect("/publicacao/" + req.params.id);
+    });
+
+  } catch (erro) {
+    console.error("Erro ao excluir comentário:", erro);
+    const { idPublicacao } = req.body;
+    const publicacao = await listagensModel.findIdPublicacao(idPublicacao) || {};
+    const comentarios = await comentariosModel.listarComentarios(idPublicacao);
+
+    return res.render('pages/publicacao', {
+      listaErros: [{ msg: 'Erro ao excluir comentário' }],
+      dadosNotificacao: {
+        titulo: 'Ocorreu um erro.',
+        mensagem: 'Não foi possível excluir o comentário.',
+        tipo: 'error'
+      },
+      publicacao,
+      comentarios,
+      usuario: req.session.autenticado || null,
+      autenticado: !!req.session.autenticado
+    });
+  }
+},
+
+  // Denunciar comentário
+denunciarComentario: async (req, res) => {
+  try {
+    const { idComentario, idPublicacao, motivo } = req.body;
+    const idUsuario = req.session.autenticado.id;
+
+    await denunciasModel.criarDenunciaComentario({ idComentario, idUsuario, motivo });
+    await notificacoesModel.notificarAdmins(`Novo comentário denunciado! Motivo: ${motivo}`);
+
+    req.params.id = idPublicacao;
+    req.session.dadosNotificacao = {
+      titulo: 'Denúncia do Comentário feita com Sucesso.',
+      mensagem: 'Seu comentário foi denunciado com sucesso.',
+      tipo: 'success'
+    };
+
+    return res.redirect("/publicacao/" + req.params.id);
+
+  } catch (erro) {
+    console.error("Erro ao denunciar comentário:", erro);
+    return res.status(500).json({ erro: "Erro ao registrar denúncia." });
+  }
+}
+>>>>>>> 217bf9e44911458ebfdd85cf2dcd272e6b921950
 };
 
 module.exports = comentariosController;
