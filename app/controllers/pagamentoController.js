@@ -9,8 +9,16 @@ const pagamentoController = {
     console.log("Recebido no feedback:", req.body, req.query);
 
     try {
- const externalReference = req.body.external_reference || req.query.external_reference;
-const [idPedido, plano] = externalReference.split("_");
+
+const externalReference = req.query.external_reference || req.body.external_reference;
+let idPedido, plano;
+if (externalReference.includes("_")) {
+    [idPedido, plano] = externalReference.split("_");
+} else {
+    idPedido = externalReference;
+    plano = "semanal"; // ou algum default
+}
+
 
       const dataInicio = moment();
 let dataFim;
