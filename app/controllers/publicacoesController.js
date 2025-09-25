@@ -293,7 +293,7 @@ editarPublicacao: async (req, res) => {
       console.log("Erros de validação:", erros.array());
 
           
-      req.params.id = idPublicacao; 
+      
 
       req.session.dadosNotificacao = {
         titulo: "Não foi possível salvar as alterações.",
@@ -301,7 +301,8 @@ editarPublicacao: async (req, res) => {
         tipo: "error"
       };
 
-      return listagensController.exibirPublicacao(req, res);
+      return res.redirect("/publicacao/" + idPublicacao);
+
 
       // return res.render('pages/publicacao', {
       //   idPublicacao,
@@ -373,22 +374,27 @@ req.session.dadosNotificacao = {
   tipo: "success"
 };
 
- return listagensController.exibirPublicacao(req, res);
+
+
+return res.redirect("/publicacao/" + idPublicacao);
+
+
   } catch (erro) {
     console.error("Erro ao editar publicação:", erro);
   
 
-      req.params.id = idPublicacao; 
-
-
+    const idPublicacao = req.body.id_publicacao;
       req.session.dadosNotificacao = {
         titulo: "Ocorreu um erro.",
         mensagem: "Não foi possível atualizar sua publicação.",
         tipo: "error"
       };
 
-     return listagensController.exibirPublicacao(req, res);
-  }
+    
+     return res.redirect("/publicacao/" + idPublicacao);
+
+}
+
 },
 
 

@@ -253,8 +253,92 @@ body {
         }
     }
 
+    /* ========================
+   Menu de Opções Geral
+   ======================== */
+/* ========================
+   Menu de opções
+   ======================== */
+.menu-opcoes {
+    display: block;
+    position: relative;
+}
 
+.icone-menu {
+    cursor: pointer;
+    fill: var(--text-color, #000);
+    transform: translateX(10px);
+}
 
+.opcoes-menu {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: none; /* começa escondido */
+    flex-direction: column;
+    z-index: 1000;
+}
 
+.opcoes-menu button,
+.opcoes-menu .form-excluir button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+}
 
+.opcoes-menu button ion-icon,
+.opcoes-menu .form-excluir button ion-icon {
+    font-size: 18px;
+    vertical-align: middle;
+}
 
+.opcoes-menu button:hover,
+.opcoes-menu .form-excluir button:hover {
+    background-color: #eee;
+}
+
+/* ========================
+   Botões específicos
+   ======================== */
+.btn-editar-proposta,
+.btn-denunciar-proposta,
+.btn-excluir-proposta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.btn-editar-proposta:hover,
+.btn-denunciar-proposta:hover,
+.btn-excluir-proposta:hover {
+    background-color: #eee;
+}
+
+.btn-excluir-proposta {
+    color: #e74c3c;
+}
+
+.btn-excluir-proposta:hover {
+    color: #c0392b;
+}

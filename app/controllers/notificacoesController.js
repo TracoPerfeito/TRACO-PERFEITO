@@ -6,7 +6,7 @@ const listagensModel = require("../models/listagensModel");
 const notificacoesController = {
 
  
-  criar: async ({ idUsuario, titulo, conteudo, categoria }) => {
+  criarNotificacao: async ({ idUsuario, titulo, conteudo, categoria }) => {
     try {
       if (!idUsuario || !titulo || !conteudo || !categoria) {
         throw new Error("Parâmetros insuficientes");

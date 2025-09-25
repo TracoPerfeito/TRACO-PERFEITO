@@ -11,6 +11,8 @@ const denunciasController = require('../controllers/denunciasController');
 const pesquisasController = require('../controllers/pesquisasController');
 const pagamentoController = require("../controllers/pagamentoController");
 const notificacoesController = require("../controllers/notificacoesController");
+const propostaController = require('../controllers/propostaController');
+
 
 
  const db = require('../../config/pool_conexoes');
@@ -762,6 +764,8 @@ router.post(
     publicacoesController.excluirPublicacao(req, res);
   }
 );
+
+router.post('/excluir-proposta', propostaController.excluirProposta);
 
 
 router.get(
