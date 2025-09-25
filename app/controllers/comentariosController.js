@@ -1,8 +1,8 @@
 const comentariosModel = require("../models/comentariosModel");
 const listagensModel = require("../models/listagensModel");
 const denunciasModel = require("../models/denunciasModel");
-const notificacoesModel = require("../models/notificacoesModel");
-const notificacoesController = require("./notificacoesController");
+const notificacoesController = require("../controllers/notificacoesController");
+
 const { body, validationResult } = require("express-validator");
 const pool = require('../../config/pool_conexoes');
 
@@ -45,7 +45,7 @@ const comentariosController = {
       });
 
 
-       await notificacoesController.criar({
+       await notificacoesController.criarNotificacao({
       idUsuario: donoPublicacao,
       titulo: "Novo comentário!",
       conteudo: `Seu post recebeu um comentário de ${req.session.autenticado.nome}.`,

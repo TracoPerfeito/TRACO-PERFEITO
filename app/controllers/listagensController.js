@@ -256,6 +256,7 @@ if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000
     console.log("Usuário autenticado passado para a view:", usuario);
 
 
+    console.log(dadosNotificacao)
     res.render("pages/publicacao", {
       publicacao,
       comentarios,
