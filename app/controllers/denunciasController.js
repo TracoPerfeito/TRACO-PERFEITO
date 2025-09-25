@@ -93,21 +93,55 @@ const denunciasController = {
   // Criar denúncia de publicação
   async criarDenunciaPublicacao(req, res) {
     try {
-      const { idPublicacao, motivo } = req.body;
+      const { idPublicacao, motivo  } = req.body;
       const idUsuario = req.session.autenticado.id;
+console.log("Id da publi: " + idPublicacao);
+console.log("motivo" + motivo)
+      if ( !idPublicacao || !motivo) {
+       
+        const previousUrl = req.get("Referer") || "/";
+        
+        req.session.dadosNotificacao = {
+          titulo: "Ocorreu um erro !",
+          mensagem: "Não foi possível salvar a denúncia.",
+          tipo: "error"
+        };
+  
+  
+return res.redirect(previousUrl || "/");
 
-      if (!idUsuario || !idPublicacao || !motivo) {
-        return res.status(400).json({ error: 'Parâmetros inválidos' });
       }
 
       const insertId = await denunciasModel.criarDenunciaPublicacao({ idUsuario, idPublicacao, motivo });
 
-      res.status(201).json({ message: 'Denúncia criada com sucesso', id: insertId });
+      console.log({ message: 'Denúncia criada com sucesso', id: insertId });
+
+      req.session.dadosNotificacao = {
+        titulo: "Denúncia salva!",
+        mensagem: "Sua denúncia foi salva com sucesso. Os administradores analisarão a denúncia.",
+        tipo: "success"
+      };
+
+
+      const previousUrl = req.get("Referer") || "/";
+        
+     
+return res.redirect(previousUrl || "/");
+
+
     } catch (error) {
       console.error('Erro ao criar denúncia publicação:', error);
-       res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
+      const previousUrl = req.get("Referer") || "/";
+        
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro !",
+        mensagem: "Não foi possível salvar a denúncia.",
+        tipo: "error"
+      };
+
+
+return res.redirect(previousUrl || "/");
+
     }
   },
 

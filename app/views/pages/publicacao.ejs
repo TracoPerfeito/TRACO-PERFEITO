@@ -422,7 +422,7 @@ let msgErros = {conteudo: ""};
   <section class="modal-content">
     <h3>Qual o motivo da denúncia?</h3>
     <form id="formDenuncia" action="/denunciar-publicacao" method="POST">
-      <input type="hidden" name="idPublicacao" id="idPublicacaoInput">
+      <input type="hidden" name="idPublicacao" id="idPublicacaoInput" value=" <%= publicacao.ID_PUBLICACAO %>">
       
       <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
       <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>

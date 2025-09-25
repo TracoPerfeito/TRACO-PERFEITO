@@ -9,27 +9,7 @@ document.querySelectorAll('.btn-denunciar').forEach(botao => {
 fecharModal.addEventListener('click', function() { 
   modal.style.display = 'none';
  }); 
- formDenuncia.addEventListener('submit', function(event) {
-   event.preventDefault(); 
-   const motivo = formDenuncia.motivo.value; 
-   if (motivo) { 
-    alert('Publicação denunciado com o motivo: ' + motivo);
-     modal.style.display = 'none'; 
-
-     fetch('/denunciar-publicacao', {
-     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-    idPublicacao: idPublicacaoInput.value, 
-    motivo: motivo
-})
-
-  })
-
-    } else { alert('Selecione um motivo para a denúncia.');
-
-     } 
-    }); document.querySelectorAll('.icone-menu').forEach(icone => {
+ document.querySelectorAll('.icone-menu').forEach(icone => {
        icone.addEventListener('click', function (e) {
          e.stopPropagation();
           const menu = this.parentElement; menu.classList.toggle('ativo');

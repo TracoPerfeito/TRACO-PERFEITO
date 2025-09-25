@@ -185,7 +185,7 @@ listarPublicacoes: async (req, res, dadosNotificacao) => {
 },
 
  
- exibirPublicacao: async (req, res) => {
+ exibirPublicacao: async (req, res, dadosNotificacao) => {
   const id = req.params.id;
 
   try {
@@ -255,8 +255,6 @@ if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000
 
     console.log("Usuário autenticado passado para a view:", usuario);
 
-    const dadosNotificacao = req.session.dadosNotificacao || null;
-    req.session.dadosNotificacao = null;
 
     res.render("pages/publicacao", {
       publicacao,
