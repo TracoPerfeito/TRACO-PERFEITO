@@ -1,6 +1,7 @@
 const publicacoesModel = require("../models/publicacoesModel");
 const listagensModel = require("../models/listagensModel");
 const {favoritoModel} = require("../models/favoritoModel");
+const notificacoesModel = require("../models/notificacoesModel");
 const listagensController = require("../controllers/listagensController");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
@@ -1007,61 +1008,73 @@ editarPortfolio: async (req, res) => {
 
 
 
-
 favoritar: async (req, res) => {
-    console.log("Chegou no favoritar");
+  console.log("Chegou no favoritar");
 
-    if (!req.session.autenticado?.autenticado) {
-        console.log("O usuário precisa logar. Mandando ele pra página de login.");
-        return res.render("pages/login", { 
-            listaErros: null,
-            dadosNotificacao: {
-                titulo: "Faça seu Login!", 
-                mensagem: "Para favoritar é necessário estar logado!", 
-                tipo: "warning" 
-            },
-            valores: [],
-            retorno: null,
-            errosLogin: null
-        });
-    }
+  if (!req.session.autenticado?.autenticado) {
+    return res.render("pages/login", { 
+      listaErros: null,
+      dadosNotificacao: {
+        titulo: "Faça seu Login!", 
+        mensagem: "Para favoritar é necessário estar logado!", 
+        tipo: "warning" 
+      },
+      valores: [],
+      retorno: null,
+      errosLogin: null
+    });
+  }
 
-    try {
-        const idPublicacao = req.query.id;
-        const situacao = req.query.sit;
-        const idUsuario = req.session.autenticado.id;
+  try {
+    const idPublicacao = req.query.id;
+    const situacao = req.query.sit;
+    const idUsuario = req.session.autenticado.id;
 
-        console.log("id da publicação:", idPublicacao);
-        console.log("situação:", situacao);
-        console.log("id do usuário:", idUsuario);
+    const idDonoPublicacao = req.query.idDono;
+    const nomePublicacao = req.query.nomePub;
 
-        await favoritoModel.favoritar({
-            idPublicacao,
-            situacao,
-            idUsuario
-        });
+    console.log("id da publicação:", idPublicacao);
+    console.log("situação:", situacao);
+    console.log("id do usuário (quem curtiu):", idUsuario);
+    console.log("id do dono da publicação:", idDonoPublicacao);
+    console.log("nome da publicação:", nomePublicacao);
 
-        console.log("Favorito atualizado!");
+    const resultado = await favoritoModel.favoritar({
+  idPublicacao,
+  situacao,
+  idUsuario
+});
 
-        const previousUrl = req.get("Referer") || "/";
+if (resultado.mudou && resultado.status === 1 && idUsuario != idDonoPublicacao) {
+  const idNotificacao = await notificacoesModel.criarNotificacao({
+    idUsuario: idDonoPublicacao,
+    titulo: "Nova curtida!",
+    preview: `${req.session.autenticado.nome} curtiu sua publicação "${nomePublicacao}".`,
+    conteudo: `
+      <p class="comentario-texto">Seu post tá bombando! 🔥 </p>
+      <p>Sua publicação "<strong>${nomePublicacao}</strong>" recebeu uma curtida de 
+      <strong class="nome-comentador">${req.session.autenticado.nome}</strong>! ❤️</p>
+      <a href="/publicacao/${idPublicacao}" class="btn-ver-comentario">Ver publicação</a>
+    `,
+    categoria: "CURTIDA"
+  });
 
-        
-        if (previousUrl.includes("/salvarcomentario") || previousUrl.includes("/excluir-comentario") || previousUrl.includes("/editar-publicacao")) {
-    return res.redirect(`/publicacao/${idPublicacao}`);
-} else if (previousUrl.includes("/editar-portfolio") || previousUrl.includes("/remover-publis-portfolio") || previousUrl.includes("/adicionar-publis-portfolio")) {
-    return res.redirect(`/portfolio/${req.session.currentPortfolioId}`);
+  console.log("Notificação criada com ID:", idNotificacao);
 }
-
-return res.redirect(previousUrl || "/");
-
-
-    } catch (err) {
-        console.error(err);
-        res.redirect("/");
+    const previousUrl = req.get("Referer") || "/";
+    if (previousUrl.includes("/salvarcomentario") || previousUrl.includes("/excluir-comentario") || previousUrl.includes("/editar-publicacao")) {
+      return res.redirect(`/publicacao/${idPublicacao}`);
+    } else if (previousUrl.includes("/editar-portfolio") || previousUrl.includes("/remover-publis-portfolio") || previousUrl.includes("/adicionar-publis-portfolio")) {
+      return res.redirect(`/portfolio/${req.session.currentPortfolioId}`);
     }
+
+    return res.redirect(previousUrl || "/");
+
+  } catch (err) {
+    console.error(err);
+    res.redirect("/");
+  }
 },
-
-
 
 
 
@@ -1095,6 +1108,10 @@ return res.redirect(previousUrl || "/");
 
       let resultado = await publicacoesModel.excluirProposta(idProposta);
       console.log(resultado);
+
+
+
+      
 
             
       req.session.dadosNotificacao = {

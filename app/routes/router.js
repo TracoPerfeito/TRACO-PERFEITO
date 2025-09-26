@@ -372,21 +372,33 @@ router.get("/explorar-logado", function (req, res) { //inicial logado
 
 router.get(
   "/notificacoes",function (req, res) {
-     notificacoesController.listar(req, res);
+     const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+     notificacoesController.listar(req, res, dadosNotificacao);
   }
 );
 
 
+
+router.post("/excluir-notificacoes", function (req, res) {
+ 
+    notificacoesController.excluirNotificacoes(req, res);
+});
+
+
+router.get("/notificacoes/count", notificacoesController.countNaoLidas);
 
 
 
 
 router.get(
   "/notificacao/:id",function (req, res) {
+    const idSelecionado = req.params.id;
    notificacoesController.exibir(req, res);
 
   }
 );
+
 
 
 

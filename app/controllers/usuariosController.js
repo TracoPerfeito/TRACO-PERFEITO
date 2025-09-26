@@ -1,6 +1,7 @@
 const usuariosModel = require("../models/usuariosModel");
 const listagensModel = require("../models/listagensModel");
 const seguidoresModel = require("../models/seguidoresModel");
+const notificacoesModel = require("../models/notificacoesModel");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
 const bcrypt = require("bcryptjs");
@@ -1453,7 +1454,7 @@ recuperarSenha: async (req, res) => {
 
 
 
-//segui usuario
+//seguir usuario
 seguir: async (req, res) => {
     console.log("Chegou no seguir/desseguir");
 
@@ -1489,8 +1490,28 @@ seguir: async (req, res) => {
         });
 
         console.log(resultado);
+      
 
         console.log("Status de seguir atualizado!");
+
+
+        
+      const idNotificacao = await notificacoesModel.criarNotificacao({
+        idUsuario: idSeguido,
+        titulo: "Novo seguidor!",
+      preview: `${req.session.autenticado.nome} começou a te seguir.`,
+
+        conteudo: `
+ 
+  <p class="comentario-texto">Mais popular que nunca! 😎</p>
+   <p>${req.session.autenticado.nome} começou a te seguir.</p>
+  <a href="/perfil/${idUsuario}" class="btn-ver-comentario">Ver perfil de ${req.session.autenticado.nome}</a>
+`,
+
+        categoria: "SEGUIDOR"
+      });
+
+    console.log("Notificação criada com ID:", idNotificacao);
 
         // Redireciona para a página anterior
         const previousUrl = req.get("Referer") || "/";

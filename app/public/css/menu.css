@@ -970,3 +970,16 @@ h2 {
 
 
 
+
+
+
+
+    .badge {
+  background: rgb(195, 123, 123);
+  color: white;
+  font-family: "Josefin Sans", sans-serif;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 8px;
+  margin-left: 5px;
+}

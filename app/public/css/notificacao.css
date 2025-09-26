@@ -124,6 +124,10 @@
          color: var(--text-color);
     }
 
+    .mensagem-box p{
+      font-family: "Josefin Sans", sans-serif;
+    }
+
     .notificacao:hover {
       background-color: var(  --cor-fundo-not-hover);
     }
@@ -131,11 +135,13 @@
     .notificacao h4 {
       margin: 0 0 5px;
       font-size: 16px;
+      font-family: "Montserrat", sans-serif;
     }
 
     .notificacao small {
       color: gray;
       font-size: 12px;
+      font-weight: 400;
     }
 
     .conteudo-mensagem {
@@ -150,6 +156,7 @@
       padding: 25px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      min-height: fit-content;
     }
 
     .mensagem-box h2 {
@@ -192,3 +199,35 @@
         padding: 15px;
       }
     }
+
+    small {
+      font-family: "Josefin Sans", sans-serif;
+      font-weight: 300;
+    }
+
+    .btn-ver-comentario {
+  display: block;          /* garante que ocupe a linha inteira */
+  width: max-content;      /* só o tamanho do conteúdo */
+  background-color: var(--cor-botao);
+  padding: 10px 20px;
+  margin: 20px 0 0 0;     /* top: 20px, bottom 0, centralizado com auto se quiser */
+  border-radius: 10px;
+  border: 1px solid var(--cor-borda-btn-1);
+  text-align: center;
+  text-decoration: none;  
+  font-family: "Montserrat", sans-serif;
+}
+
+
+    .btn-ver-comentario:hover{
+      transform: translateY(-10px);
+      transition: all 0.2s;
+      background-color: var( --cor1-not);
+    }
+
+    .comentario-texto{
+      margin: 30px 0px;
+      font-size: 150%;
+      font-family: "Josefin Sans", sans-serif;
+    }
+
