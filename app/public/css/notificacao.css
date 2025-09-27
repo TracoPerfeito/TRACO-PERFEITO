@@ -231,3 +231,26 @@
       font-family: "Josefin Sans", sans-serif;
     }
 
+.welcome-button{
+  display: block;          /* garante que ocupe a linha inteira */
+  width: max-content;      /* só o tamanho do conteúdo */
+  background-color: var(--cor-botao);
+  padding: 10px 20px;
+  margin: 20px 0 0 0;     /* top: 20px, bottom 0, centralizado com auto se quiser */
+  border-radius: 10px;
+  border: 1px solid var(--cor-borda-btn-1);
+  text-align: center;
+  text-decoration: none;  
+  font-family: "Montserrat", sans-serif;
+}
+
+.welcome-button:hover{
+      transform: translateY(-10px);
+      transition: all 0.2s;
+      background-color: var( --cor1-not);
+      color: var(--text-color);
+}
+
+#mensagemContent p{
+margin: 15px 0;
+}

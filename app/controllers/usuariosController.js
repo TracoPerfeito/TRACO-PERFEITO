@@ -260,7 +260,62 @@ cadastrarUsuario: async (req, res) => {
             console.log("Usuário profissional inserido na tabela USUARIO_PROFISSIONAL.");
         }
 
-     
+// CRIAR UMA NOTIFICAÇÃO DE BOAS VINDAS
+      if (dadosForm.tipo_usuario === 'profissional') {
+              const idNotificacao = await notificacoesModel.criarNotificacao({
+                idUsuario: idUsuario,
+                titulo: "Bem-vindo(a) ao Traço Perfeito! 👋🌟",
+                preview: `👋 Olá, ${dadosForm.nome_usuario}! Seu cadastro foi concluído com sucesso. Vamos conhecer melhor o Traço Perfeito? `,
+
+                conteudo: `
+        
+            <section class="welcome-banner">
+          <section class="welcome-content">
+            <h1>👋 Bem-vindo(a) ao Traço Perfeito, ${dadosForm.nome_usuario}! ✨</h1>
+            <p>Estamos felizes de ter você aqui! Explore, crie e descubra oportunidades incríveis! 🎨💻 </p>
+            <p class="lembrete">💌 Lembrete: ative sua conta pelo link que enviamos para ${dadosForm.email_usuario} antes de começar a aproveitar a plataforma!</p>
+
+            <a href="/" class="welcome-button" >Começar a explorar 🚀</a>
+          </section>
+        </section>
+        `,
+
+                categoria: "BOAS-VINDAS"
+              });
+
+            console.log("Notificação criada com ID:", idNotificacao);
+            
+     }
+
+
+       if (dadosForm.tipo_usuario === 'comum') {
+              const idNotificacao = await notificacoesModel.criarNotificacao({
+                idUsuario: idUsuario,
+                titulo: "Bem-vindo(a) ao Traço Perfeito! 👋🌟",
+                preview: `👋 Olá, ${dadosForm.nome_usuario}! Seu cadastro foi concluído com sucesso. Vamos conhecer melhor o Traço Perfeito? `,
+
+                conteudo: `
+        
+            <section class="welcome-banner">
+          <section class="welcome-content">
+            <h1>👋 Bem-vindo(a) ao Traço Perfeito, ${dadosForm.nome_usuario}! ✨</h1>
+            <p>Estamos felizes de ter você aqui! Explore artes incríveis e encontre profissionais de alto nível! 🎨💻 </p>
+            <p class="lembrete">💌 Lembrete: ative sua conta pelo link que enviamos para ${dadosForm.email_usuario} antes de começar a aproveitar a plataforma!</p>
+
+            <a href="/" class="welcome-button" >Começar a explorar 🚀</a>
+          </section>
+        </section>
+        `,
+
+                categoria: "BOAS-VINDAS"
+              });
+
+            console.log("Notificação criada com ID:", idNotificacao);
+            
+     }
+
+
+
       req.session.autenticado = {
         id: idUsuario,
         tipo: dadosForm.tipo_usuario,
@@ -287,6 +342,9 @@ cadastrarUsuario: async (req, res) => {
             res.redirect("/");
 
       });
+
+
+
        
 
         } catch (error) {
