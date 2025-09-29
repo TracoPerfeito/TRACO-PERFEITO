@@ -1,6 +1,7 @@
+
+
 var express = require("express");
 var router = express.Router();
-// Editar publicação
 
 const { body, validationResult } = require("express-validator");
 const usuariosController = require("../controllers/usuariosController");
@@ -11,11 +12,11 @@ const denunciasController = require('../controllers/denunciasController');
 const pesquisasController = require('../controllers/pesquisasController');
 const pagamentoController = require("../controllers/pagamentoController");
 const notificacoesController = require("../controllers/notificacoesController");
-const propostaController = require('../controllers/propostaController');
 
+const db = require('../../config/pool_conexoes');
 
-
- const db = require('../../config/pool_conexoes');
+// Denunciar proposta de projeto
+router.post('/denunciar-proposta', denunciasController.criarDenunciaProposta);
 
 // SDK do Mercado Pago
 const { MercadoPagoConfig, Preference } = require('mercadopago');
@@ -158,19 +159,10 @@ router.post(
   comentariosController.denunciarComentario
 );
 
+
 router.post("/denunciar-publicacao", denunciasController.criarDenunciaPublicacao);
 
 router.post('/denunciar-usuario', denunciasController.criarDenunciaUsuario);
-
-// Criar denúncia (usuário denuncia um projeto)
-router.post('/projetos/criar', denunciasController.criarDenunciaProjeto);
-
-// Listar denúncias (acesso do admin)
-router.get('/projetos', denunciasController.listarDenunciasProjetos);
-
-// Atualizar status da denúncia (admin muda status)
-router.post('/projetos/atualizar-status', denunciasController.atualizarStatusProjeto);
-
 
 
 
@@ -765,7 +757,7 @@ router.post(
   }
 );
 
-router.post('/excluir-proposta', propostaController.excluirProposta);
+router.post('/excluir-proposta', publicacoesController.excluirProposta);
 
 
 router.get(

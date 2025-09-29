@@ -1,6 +1,15 @@
 const pool = require('../../config/pool_conexoes');
 
 const denunciasModel = {
+  // Denunciar proposta de projeto
+  async criarDenunciaProposta({ idProposta, motivo, idUsuario }) {
+    const sql = `
+      INSERT INTO DENUNCIAS_PROJETOS (ID_USUARIO_DENUNCIANTE, ID_PROJETO, MOTIVO, STATUS, DATA_DENUNCIA)
+      VALUES (?, ?, ?, 'pendente', NOW())
+    `;
+    const [result] = await pool.query(sql, [idUsuario, idProposta, motivo]);
+    return result.insertId;
+  },
   // Denunciar comentário
   async criarDenunciaComentario({ idComentario, idUsuario, motivo }) {
     const sql = `
@@ -77,43 +86,38 @@ const denunciasModel = {
   },
 
     criarDenunciaProjeto: async ({ idProjeto, idUsuario, motivo }) => {
-  try {
-    const sql = `
-      INSERT INTO DENUNCIAS_PROJETOS (ID_USUARIO_DENUNCIANTE, ID_PROJETO, MOTIVO)
-      VALUES (?, ?, ?)
-    `;
-    const [resultado] = await pool.query(sql, [idUsuario, idProjeto, motivo]);
-    return resultado;
-  } catch (error) {
-    console.error('Erro ao criar denúncia de projeto:', error);
-    throw error;
-  }
-},
+    try {
+      const sql = `
+        INSERT INTO DENUNCIAS_PROJETOS 
+        (ID_USUARIO_DENUNCIANTE, ID_PROJETO, MOTIVO, STATUS, DATA_DENUNCIA)
+        VALUES (?, ?, ?, 'pendente', NOW())
+      `;
+      const [resultado] = await pool.query(sql, [idUsuario, idProjeto, motivo]);
+      return resultado.insertId; // retorna o ID da denúncia criada
+    } catch (error) {
+      console.error('Erro ao criar denúncia de projeto:', error);
+      throw error;
+    }
+  },
 
-// Listar denúncias de projetos
-listarDenunciasProjetos: async () => {
-  try {
-    const sql = `
-      SELECT D.*, U.NOME_USUARIO, P.TITULO_PROPOSTA
-      FROM DENUNCIAS_PROJETOS D
-      JOIN USUARIOS U ON D.ID_USUARIO_DENUNCIANTE = U.ID_USUARIO
-      JOIN PROPOSTA_PROJETO P ON D.ID_PROJETO = P.ID_PROPOSTA
-      ORDER BY D.DATA_DENUNCIA DESC
-    `;
-    const [resultado] = await pool.query(sql);
-    return resultado;
-  } catch (error) {
-    console.error('Erro ao listar denúncias de projetos:', error);
-    throw error;
-  }
-},
+  // Listar todas as denúncias de propostas
+  listarDenunciasProjetos: async () => {
+    try {
+      const sql = `
+        SELECT D.*, U.NOME_USUARIO, P.TITULO_PROPOSTA
+        FROM DENUNCIAS_PROJETOS D
+        JOIN USUARIOS U ON D.ID_USUARIO_DENUNCIANTE = U.ID_USUARIO
+        JOIN PROPOSTA_PROJETO P ON D.ID_PROJETO = P.ID_PROPOSTA
+        ORDER BY D.DATA_DENUNCIA DESC
+      `;
+      const [resultado] = await pool.query(sql);
+      return resultado;
+    } catch (error) {
+      console.error('Erro ao listar denúncias de projetos:', error);
+      throw error;
+    }
+  },
 
-// Atualizar status da denúncia de projeto
-atualizarStatusDenunciaProjeto: async (idDenuncia, novoStatus) => {
-  const sql = `UPDATE DENUNCIAS_PROJETOS SET STATUS = ? WHERE ID_DENUNCIA = ?`;
-  const [result] = await pool.query(sql, [novoStatus, idDenuncia]);
-  return result;
-}
 };
 
 module.exports = denunciasModel;
