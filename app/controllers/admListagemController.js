@@ -48,8 +48,22 @@ const listarUsuariosPaginados = async (req, res) => {
     }
 };
 
-    //1 nova atividade
-//PSW3_006 - Paginação de resultados.pdf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = {
     listarUsuariosPaginados

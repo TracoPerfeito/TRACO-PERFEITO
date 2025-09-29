@@ -1,6 +1,7 @@
 const usuariosModel = require("../models/usuariosModel");
 const listagensModel = require("../models/listagensModel");
 const seguidoresModel = require("../models/seguidoresModel");
+const notificacoesModel = require("../models/notificacoesModel");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
 const bcrypt = require("bcryptjs");
@@ -259,7 +260,62 @@ cadastrarUsuario: async (req, res) => {
             console.log("Usuário profissional inserido na tabela USUARIO_PROFISSIONAL.");
         }
 
-     
+// CRIAR UMA NOTIFICAÇÃO DE BOAS VINDAS
+      if (dadosForm.tipo_usuario === 'profissional') {
+              const idNotificacao = await notificacoesModel.criarNotificacao({
+                idUsuario: idUsuario,
+                titulo: "Bem-vindo(a) ao Traço Perfeito! 👋🌟",
+                preview: `👋 Olá, ${dadosForm.nome_usuario}! Seu cadastro foi concluído com sucesso. Vamos conhecer melhor o Traço Perfeito? `,
+
+                conteudo: `
+        
+            <section class="welcome-banner">
+          <section class="welcome-content">
+            <h1>👋 Bem-vindo(a) ao Traço Perfeito, ${dadosForm.nome_usuario}! ✨</h1>
+            <p>Estamos felizes de ter você aqui! Explore, crie e descubra oportunidades incríveis! 🎨💻 </p>
+            <p class="lembrete">💌 Lembrete: ative sua conta pelo link que enviamos para ${dadosForm.email_usuario} antes de começar a aproveitar a plataforma!</p>
+
+            <a href="/" class="welcome-button" >Começar a explorar 🚀</a>
+          </section>
+        </section>
+        `,
+
+                categoria: "BOAS-VINDAS"
+              });
+
+            console.log("Notificação criada com ID:", idNotificacao);
+            
+     }
+
+
+       if (dadosForm.tipo_usuario === 'comum') {
+              const idNotificacao = await notificacoesModel.criarNotificacao({
+                idUsuario: idUsuario,
+                titulo: "Bem-vindo(a) ao Traço Perfeito! 👋🌟",
+                preview: `👋 Olá, ${dadosForm.nome_usuario}! Seu cadastro foi concluído com sucesso. Vamos conhecer melhor o Traço Perfeito? `,
+
+                conteudo: `
+        
+            <section class="welcome-banner">
+          <section class="welcome-content">
+            <h1>👋 Bem-vindo(a) ao Traço Perfeito, ${dadosForm.nome_usuario}! ✨</h1>
+            <p>Estamos felizes de ter você aqui! Explore artes incríveis e encontre profissionais de alto nível! 🎨💻 </p>
+            <p class="lembrete">💌 Lembrete: ative sua conta pelo link que enviamos para ${dadosForm.email_usuario} antes de começar a aproveitar a plataforma!</p>
+
+            <a href="/" class="welcome-button" >Começar a explorar 🚀</a>
+          </section>
+        </section>
+        `,
+
+                categoria: "BOAS-VINDAS"
+              });
+
+            console.log("Notificação criada com ID:", idNotificacao);
+            
+     }
+
+
+
       req.session.autenticado = {
         id: idUsuario,
         tipo: dadosForm.tipo_usuario,
@@ -286,6 +342,9 @@ cadastrarUsuario: async (req, res) => {
             res.redirect("/");
 
       });
+
+
+
        
 
         } catch (error) {
@@ -1453,7 +1512,7 @@ recuperarSenha: async (req, res) => {
 
 
 
-//segui usuario
+//seguir usuario
 seguir: async (req, res) => {
     console.log("Chegou no seguir/desseguir");
 
@@ -1489,8 +1548,28 @@ seguir: async (req, res) => {
         });
 
         console.log(resultado);
+      
 
         console.log("Status de seguir atualizado!");
+
+
+        
+      const idNotificacao = await notificacoesModel.criarNotificacao({
+        idUsuario: idSeguido,
+        titulo: "Novo seguidor!",
+      preview: `${req.session.autenticado.nome} começou a te seguir.`,
+
+        conteudo: `
+ 
+  <p class="comentario-texto">Mais popular que nunca! 😎</p>
+   <p>${req.session.autenticado.nome} começou a te seguir.</p>
+  <a href="/perfil/${idUsuario}" class="btn-ver-comentario">Ver perfil de ${req.session.autenticado.nome}</a>
+`,
+
+        categoria: "SEGUIDOR"
+      });
+
+    console.log("Notificação criada com ID:", idNotificacao);
 
         // Redireciona para a página anterior
         const previousUrl = req.get("Referer") || "/";

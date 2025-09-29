@@ -138,6 +138,33 @@ const admModel = {
         }
     },
 
+    //LISTAGEM DAS DENÚNCIAS 
+
+    listarDenunciasComentarios: async () => {
+        try {
+            const[denuncias_comentarios] = await pool.query(
+                "SELECT ID_DENUNCIA, ID_USUARIO_DENUNCIANTE, ID_COMENTARIO, MOTIVO, STATUS, DATA_DENUNCIA FROM DENUNCIAS_COMENTARIOS"
+            );
+            return denuncias_comentarios;
+
+        } catch (error) {
+            console.log(error);
+            return[]; // Ou retorna error
+        }
+    },
+
+    listarDenunciasUsuarios: async () => {
+        try{
+            const[denuncias_usuarios] = await pool.query(
+                "SELECT ID_DENUNCIA, ID_USUARIO_DENUNCIANTE, ID_USUARIO_DENUNCIADO, MOTIVO, STATUS, DATA_DENUNCIA"
+            );
+            return denuncias_usuarios;
+            
+        } catch (error) {
+            console.log(error);
+            return[];
+        }
+    },
 
 
 

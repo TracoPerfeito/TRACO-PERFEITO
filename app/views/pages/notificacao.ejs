@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-   <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="css/notificacao.css">
+   <link rel="shortcut icon" href="/imagens/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/notificacao.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -19,31 +19,26 @@
   
 </head>
 <body>
-
-  
 <% if (status_usuario === 'pendente') { %>
-    <%- include('../partials/aviso-pendente') %>
-    
+  <%- include('../partials/aviso-pendente') %>
 <% } %>
-  
 
-
-    
-
-   <% if (tipo_usuario === 'profissional') { %>
-  <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
+<% if (tipo_usuario === 'profissional') { %>
+  <%- include('../partials/menu-logado', { tipo_usuario }) %>
 <% } else if (tipo_usuario === 'comum') { %>
-  <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
+  <%- include('../partials/menu-c-c', { tipo_usuario }) %>
 <% } else { %>
-  <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
+  <%- include('../partials/menu', { tipo_usuario }) %>
 <% } %>
 
-   <section class="botao-de-voltar">   
-    <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon></button>
-    <p class="lado-botao"> Perfil de Jaqueline Maria</p>
+<section class="botao-de-voltar">   
+  <button class="btn-voltar" onclick="voltarPagina()"> 
+    <ion-icon name="arrow-back-outline" id="seta"></ion-icon>
+  </button>
+  <p class="lado-botao"> Notificações</p>
 </section>
-
-  <section class="container">
+<section class="container">
+  <!-- Lista lateral de notificações -->
   <section class="lista-notificacoes">
     <% if (notificacoes.length === 0) { %>
       <p class="empty-message">Você não tem notificações no momento.</p>
@@ -52,57 +47,77 @@
       <% notificacoes.forEach((n, index) => { %>
         <section class="notificacao <%= n.STATUS === 'NAO_LIDA' ? 'highlight' : '' %>" onclick="abrirMensagem(<%= index %>)">
           <h4><%= n.TITULO_NOTIFICACAO %></h4>
-          <small><%= new Date(n.DATA_CRIACAO).toLocaleString('pt-BR') %></small>
+          <small>
+            <%= new Date(n.DATA_CRIACAO_NOTIFICACAO.getTime() - (3 * 60 * 60 * 1000))
+                  .toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }) %>
+          </small>
         </section>
       <% }) %>
     <% } %>
   </section>
 
+  <!-- Conteúdo da mensagem -->
   <section class="conteudo-mensagem">
-    <section class="top-bar">
-      <button class="btn-lida" onclick="marcarComoLida()">Marcar como lida</button>
-    </section>
+    <section class="top-bar"></section>
     <section class="mensagem-box" id="mensagemContent">
-      <% if (notificacoes.length > 0) { %>
-        <h2><%= notificacoes[0].TITULO_NOTIFICACAO %></h2>
-        <time><%= new Date(notificacoes[0].DATA_CRIACAO).toLocaleString('pt-BR') %></time>
-        <p><%= notificacoes[0].CONTEUDO_NOTIFICACAO %></p>
-      <% } %>
+      <!-- Conteúdo será preenchido via JS -->
     </section>
   </section>
 </section>
 
+<!-- Passa o array de notificações e o ID selecionado para o front -->
 <script>
   const mensagens = <%- JSON.stringify(notificacoes) %>;
+  const idSelecionado = "<%= idNotificacao %>";
+</script>
 
+<!-- Script de abrir mensagem -->
+<script>
   function abrirMensagem(index) {
     const msg = mensagens[index];
+
     document.getElementById("mensagemContent").innerHTML = `
       <h2>${msg.TITULO_NOTIFICACAO}</h2>
-      <time>${new Date(msg.DATA_CRIACAO).toLocaleString('pt-BR')}</time>
+      <small>${
+        new Date(msg.DATA_CRIACAO_NOTIFICACAO).getTime()
+          ? new Date(new Date(msg.DATA_CRIACAO_NOTIFICACAO).getTime() - (3*60*60*1000))
+              .toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+          : ''
+      }</small>
       <p>${msg.CONTEUDO_NOTIFICACAO}</p>
     `;
 
     // Marcar notificação como lida via fetch
     if (msg.STATUS === 'NAO_LIDA') {
       fetch('/notificacao/marcar-como-lida/' + msg.ID_NOTIFICACAO, { method: 'PUT' })
-        .then(() => { msg.STATUS = 'LIDA'; }) 
+        .then(() => { 
+          msg.STATUS = 'LIDA';
+          const item = document.querySelectorAll('.notificacao')[index];
+          if(item) item.classList.remove('highlight');
+        })
         .catch(err => console.error(err));
     }
   }
 
-  function marcarComoLida() {
-    const index = mensagens.findIndex(m => m.STATUS === 'NAO_LIDA');
-    if(index !== -1) abrirMensagem(index); // marca a primeira não lida
-  }
+  // Ao carregar a página, abre a notificação correta
+  window.addEventListener('DOMContentLoaded', () => {
+    if (mensagens.length === 0) return;
 
-  // Exibir primeira mensagem ao abrir
-  window.onload = () => {
-    if (mensagens.length > 0) abrirMensagem(0);
-  }
+    // Procura a notificação pelo ID recebido
+    const index = mensagens.findIndex(msg => msg.ID_NOTIFICACAO == idSelecionado);
+
+    if (index !== -1) abrirMensagem(index);
+    else abrirMensagem(0); // fallback: abre a primeira
+  });
 </script>
 
-   <script src="js/mobile-navbar.js"></script>
- <script src="js/voltar.js"></script>
+<script src="/js/mobile-navbar.js"></script>
+<script src="/js/voltar.js"></script>
 </body>
 </html>
