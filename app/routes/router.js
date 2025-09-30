@@ -321,7 +321,7 @@ router.post("/contratacoes/create-preference", async (req, res) => {
                     unit_price: Number(valor)
                 }
             ],
-            external_reference: `${idPedido}_contratacao`,
+            external_reference: `${idContratacao}_contratacao`,
             back_urls: {
                 success: process.env.URL_BASE + "/feedback-contratacao",
                 failure: process.env.URL_BASE + "/feedback-contratacao",

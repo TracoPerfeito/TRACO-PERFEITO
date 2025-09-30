@@ -164,6 +164,8 @@ gravarPagamentoContratacao: async (req, res) => {
 
     try {
         // Pegar dados do feedback
+
+
         const externalReference = req.query.external_reference || req.body.external_reference;
         const preferenceId = req.query.preference_id || req.body.preference_id;
         const statusPagamento = req.query.status || "pendente";
