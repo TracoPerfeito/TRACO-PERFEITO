@@ -50,6 +50,7 @@ main {
     margin-top: 15px;    
     overflow: hidden;         
     text-overflow: ellipsis;   
+    
    
     font-family: "Josefin Sans";
 }
@@ -358,6 +359,8 @@ p.desc {
   font-size: 0.9rem;
   color: #4b5563;
   margin-bottom: 12px;
+  line-height: 1.6;
+
 }
 
 /* ----------------------------- ORÇAMENTO E PROFISSIONAL ----------------------------- */
@@ -372,6 +375,7 @@ p.desc {
   font-weight: bold;
   font-size: 1.1rem;
   color: #2563eb;
+  margin-top: 20px;
 }
 
 /* ----------------------------- PRAZO ----------------------------- */
