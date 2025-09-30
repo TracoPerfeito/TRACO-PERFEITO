@@ -146,8 +146,6 @@ const comentariosController = {
         return res.redirect("/publicacao/" + idPublicacao);
       }
 
-      await notificacoesModel.notificarAdmins(`Novo comentário denunciado! Motivo: ${motivo}`);
-
       req.session.dadosNotificacao = {
         titulo: 'Denúncia enviada',
         mensagem: 'Seu comentário foi denunciado com sucesso.',
