@@ -74,7 +74,7 @@
                   <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
                      <!-- Editar proposta -->
                         <button 
-                           class="btn-editar-proposta" 
+                           class="btn-editar" 
                            title="Editar proposta" 
                            id="abrirModalEditar"
                            data-id="<%= proposta.ID_PROPOSTA %>"
@@ -89,8 +89,7 @@
                      <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
             <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
             <button type="submit" class="btn-excluir-proposta" 
-                    title="Excluir proposta" 
-                    onclick="return confirm('Tem certeza que deseja excluir esta proposta?');">
+                    title="Excluir proposta">
                <ion-icon name="trash-outline"></ion-icon>
                Excluir
             </button>
@@ -205,60 +204,55 @@
                                 <button type="button" id="fecharModal">Cancelar</button>
                             </form>
                             </section>
+
                         </section>
+
+
+   <!-- Tagify CDN para funcionamento do campo de tags do modal de edição -->
+   <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+
+   <!-- Modal de edição de proposta -->
+   <%- include('../partials/editar-proposta'); %>
 
    <!-- Rodapé -->
    <%- include('../partials/rodape'); %>
 
-      <!-- Modal de edição de proposta -->
-      <section id="modalEditarProposta" class="modal">
-         <section class="modal-content">
-            <h3>Editar Proposta</h3>
-            <form id="formEditarProposta" action="/editar-proposta" method="post">
-               <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
-               <label for="tituloEditar">Título:</label>
-               <input type="text" id="tituloEditar" name="titulo" value="<%= proposta.TITULO_PROPOSTA %>" required>
-               <label for="descricaoEditar">Descrição:</label>
-               <textarea id="descricaoEditar" name="descricao" rows="4" required><%= proposta.DESCRICAO_PROPOSTA %></textarea>
-               <label for="categoriaEditar">Categoria:</label>
-               <input type="text" id="categoriaEditar" name="categoria" value="<%= proposta.CATEGORIA_PROPOSTA %>" required>
-               <section style="display:flex; gap:12px; justify-content:center; margin-top:18px;">
-                  <button type="submit" class="btn-enviar-editar" style="background:#183153; color:#fff; border:none; padding:10px 22px; border-radius:6px; font-size:1em; cursor:pointer;">Salvar</button>
-                  <button type="button" class="btn-cancelar-editar" style="background:#6c757d; color:#fff; border:none; padding:10px 22px; border-radius:6px; font-size:1em; cursor:pointer;" onclick="fecharModalEditar()">Cancelar</button>
-               </section>
-            </form>
-         </section>
-      </section>
-
    <!-- Scripts -->
    <script src="js/voltar.js"></script>
    <script src="js/mobile-navbar.js"></script>
-      <script>
-         // Abrir modal de edição
-         document.addEventListener('DOMContentLoaded', function() {
-            var btnEditar = document.getElementById('abrirModalEditar');
-            var modalEditar = document.getElementById('modalEditarProposta');
-            var btnCancelar = document.querySelector('.btn-cancelar-editar');
-            if(btnEditar && modalEditar) {
-               btnEditar.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  modalEditar.style.display = 'block';
-               });
-            }
-            if(btnCancelar && modalEditar) {
-               btnCancelar.addEventListener('click', function() {
-                  modalEditar.style.display = 'none';
-               });
-            }
-            // Fecha o modal ao clicar fora do conteúdo
-            if(modalEditar) {
-               modalEditar.addEventListener('click', function(e) {
-                  if(e.target === modalEditar) {
-                     modalEditar.style.display = 'none';
-                  }
-               });
-            }
-         });
-      </script>
+   <script>
+      // Remover proposta da página após exclusão
+      document.addEventListener('DOMContentLoaded', function() {
+         var excluirForm = document.querySelector('.form-excluir-proposta');
+         if(excluirForm) {
+            excluirForm.addEventListener('submit', function(e) {
+               e.preventDefault();
+               if(confirm('Tem certeza que deseja excluir esta proposta?')) {
+                  var idProposta = excluirForm.querySelector('input[name="idProposta"]').value;
+                  fetch('/excluir-proposta', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                     body: 'idProposta=' + encodeURIComponent(idProposta)
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                     if(data.sucesso) {
+                        var card = document.querySelector('.containerp');
+                        if(card) card.remove();
+                        alert('Proposta excluída com sucesso!');
+                     } else {
+                        alert(data.erro || 'Erro ao excluir a proposta.');
+                     }
+                  })
+
+                  .catch(() => {
+                     alert('Erro ao excluir a proposta.');
+                  });
+               }
+            });
+         }
+      });
+   </script>
 </body>
 </html>

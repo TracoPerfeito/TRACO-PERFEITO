@@ -141,6 +141,14 @@ router.post(
   publicacoesController.editarPublicacao              // controller)};
 );
  
+
+router.post(
+  "/editar-proposta", 
+
+  publicacoesController.regrasValidacaoEditarProposta, // validações
+  publicacoesController.editarProposta              // controller)};
+);
+
 router.post(
   "/salvarcomentario",
   comentariosController.regrasValidacaoComentario,

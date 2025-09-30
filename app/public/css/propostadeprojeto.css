@@ -379,6 +379,10 @@ body {
   max-width: 400px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.18);
 }
+.erro-campo {
+    border: 2px solid #e74c3c !important;
+    background: #fff6f6;
+}
 
 .modal-content h2 {
   margin-bottom: 18px;

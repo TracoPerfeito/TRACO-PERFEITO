@@ -1,4 +1,5 @@
 const publicacoesModel = require("../models/publicacoesModel");
+const pool = require("../../config/pool_conexoes");
 const listagensModel = require("../models/listagensModel");
 const {favoritoModel} = require("../models/favoritoModel");
 const notificacoesModel = require("../models/notificacoesModel");
@@ -137,6 +138,35 @@ const publicacoesController = {
   
 
   body("descricao_publicacao")
+    .trim()
+    .isLength({ min: 1, max: 2000 })
+    .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
+
+  body("tags")
+    .custom((value) => {
+      try {
+        const tags = JSON.parse(value);
+        if (!Array.isArray(tags)) throw new Error();
+        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+        return true;
+      } catch {
+        throw new Error("Tags inválidas, envie um array JSON.");
+      }
+    }),
+
+
+],
+
+
+    regrasValidacaoEditarProposta: [
+  body("titulo_proposta")
+    .trim()
+    .isLength({ min: 1, max: 70 })
+    .withMessage("A Proposta deve ter entre 1 e 70 caracteres."),
+  
+  
+
+  body("descricao_proposta")
     .trim()
     .isLength({ min: 1, max: 2000 })
     .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
@@ -399,6 +429,72 @@ return res.redirect("/publicacao/" + idPublicacao);
 },
 
 
+editarProposta: async (req, res) => {
+  console.log("Chegou no editarProposta");
+
+  try {
+    const { id_proposta, titulo_proposta, descricao_proposta, categoria_proposta, preferencia_proposta, prazo_entrega, orcamento } = req.body;
+    const idUsuario = req.session.autenticado.id;
+
+    console.log("Editando proposta:", id_proposta);
+    console.log("Body recebido:", req.body);
+
+    // Validação
+    const erros = validationResult(req);
+    if (!erros.isEmpty()) {
+      console.log("Erros de validação:", erros.array());
+
+      req.session.dadosNotificacao = {
+        titulo: "Não foi possível salvar as alterações.",
+        mensagem: "Preencha os campos corretamente.",
+        tipo: "error"
+      };
+
+      return res.redirect("/proposta/" + id_proposta);
+    }
+
+    // Categoria (permite "outra categoria")
+    let categoriaFinal = categoria_proposta;
+    if (req.body.outraCategoria && req.body.outraCategoria.trim() !== "") {
+      categoriaFinal = req.body.outraCategoria.trim();
+    }
+
+    // Atualiza os dados da proposta
+    await publicacoesModel.atualizarProposta({
+      ID_PROPOSTA: id_proposta,
+      TITULO_PROPOSTA: titulo_proposta,
+      DESCRICAO_PROPOSTA: descricao_proposta,
+      CATEGORIA_PROPOSTA: categoriaFinal,
+      PREFERENCIA_PROPOSTA: preferencia_proposta,
+      PRAZO_ENTREGA: prazo_entrega,
+      ORCAMENTO: orcamento,
+      ID_USUARIO: idUsuario
+    });
+
+    console.log("Proposta atualizada com sucesso!");
+
+    // Notificação de sucesso
+    req.session.dadosNotificacao = {
+      titulo: "Atualização feita!",
+      mensagem: "Sua proposta foi atualizada com sucesso.",
+      tipo: "success"
+    };
+
+    return res.redirect("/proposta/" + id_proposta);
+
+  } catch (erro) {
+    console.error("Erro ao editar proposta:", erro);
+
+    const idProposta = req.body.id_proposta;
+    req.session.dadosNotificacao = {
+      titulo: "Ocorreu um erro.",
+      mensagem: "Não foi possível atualizar sua proposta.",
+      tipo: "error"
+    };
+
+    return res.redirect("/proposta/" + idProposta);
+  }
+},
 
 
 
