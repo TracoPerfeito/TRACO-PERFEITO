@@ -340,7 +340,7 @@ router.post("/contratacoes/create-preference", async (req, res) => {
 
 
 router.get("/feedback-contratacao", function (req, res) {
-  pagamentoController.gravarPagamento(req, res);
+  pagamentoController.gravarPagamentoContratacao(req, res);
 });
 
 
