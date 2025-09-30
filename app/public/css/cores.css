@@ -50,7 +50,9 @@
      --borda-barra-pag: #d3d3d3;
   --borda-filtros-not: #4e6fa0;
     --cor-fundo-form-not: #faf9f6;
-}
+--table:#f9f9f9;
+--table-1: #faf9f6;
+  }
 
 /* #264869 */ 
 /* rgb(22, 24, 29); rgb(27, 26, 32); Outra cor legal pro fundo no modo escuro*/
@@ -103,5 +105,9 @@
      --borda-barra-pag:rgb(224, 224, 224);
      --borda-filtros-not: rgb(224, 224, 224);
        --cor-fundo-form-not:  rgb(55, 58, 70);
-}
+
+--table:#3b3e46;
+
+--table-1:#27292e;
+      }
 
