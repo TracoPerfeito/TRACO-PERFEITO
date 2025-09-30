@@ -216,7 +216,7 @@ router.post("/create-preference", async function (req, res) {
                     unit_price: planos[plano].preco
                 }
             ],
-              external_reference: `${idPedido}_${plano}`, 
+                external_reference: `${idPedido}_${plano}`, 
             back_urls: {
                 success: process.env.URL_BASE + "/feedback",
                 failure: process.env.URL_BASE + "/feedback",
@@ -321,7 +321,7 @@ router.post("/contratacoes/create-preference", async (req, res) => {
                     unit_price: Number(valor)
                 }
             ],
-            external_reference: `${idContratacao}_contratacao`,
+            external_reference: `${idContratacao}`,
             back_urls: {
                 success: process.env.URL_BASE + "/feedback-contratacao",
                 failure: process.env.URL_BASE + "/feedback-contratacao",
