@@ -310,6 +310,10 @@ listarPropostas: async (req, res) => {
       logado: req.session.logado,
       listaErros: null,
       dadosNotificacao: null
+        ,
+        id_usuario: req.session.autenticado ? (req.session.autenticado.ID_USUARIO || req.session.autenticado.id || req.session.autenticado.ID) : null
+        ,
+        tipo_usuario: req.session.autenticado ? (req.session.autenticado.TIPO_USUARIO || req.session.autenticado.tipo) : null
     });
 
   } catch (error) {

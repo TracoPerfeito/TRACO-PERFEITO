@@ -1,6 +1,19 @@
 const pool = require("../../config/pool_conexoes");
 
 const publicacoesModel = {
+  // Buscar proposta de projeto por ID
+  findIdProposta: async (idProposta) => {
+    try {
+      const [rows] = await pool.query(
+        'SELECT * FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?',
+        [idProposta]
+      );
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Erro ao buscar proposta por ID:', error);
+      return null;
+    }
+  },
   // 🔍 Buscar publicação por ID
   findIdPublicacao: async (idPublicacao) => {
     try {
@@ -364,7 +377,7 @@ atualizarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICAC
 // 🗑️ Excluir proposta de projeto
 excluirProposta: async (idProposta) => {
   try {
-    await pool.query('DELETE FROM PROPOSTAS_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
+  await pool.query('DELETE FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
 
     console.log("Proposta de projeto esxcluída com sucesso.");
     return true;
@@ -374,8 +387,7 @@ excluirProposta: async (idProposta) => {
   }
 },
 
-
-
+// Adicione outras funções aqui, se necessário
 };
 
 module.exports = publicacoesModel;

@@ -1,3 +1,14 @@
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <script>
+        alert('<%= dadosNotificacao.mensagem %>');
+      </script>
+   <% } %>
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <section class="notificacao <%= dadosNotificacao.tipo %>">
+        <strong><%= dadosNotificacao.titulo %></strong><br>
+        <span><%= dadosNotificacao.mensagem %></span>
+      </section>
+   <% } %>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -17,6 +28,11 @@
    <script src="/js/proposta.js"></script>
 </head>
 <body>
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <script>
+        alert('<%= dadosNotificacao.mensagem %>');
+      </script>
+   <% } %>
 
    <!-- Aviso de conta pendente -->
    <% if (status_usuario === 'pendente') { %>
@@ -57,16 +73,17 @@
                <section class="opcoes-menu">
                   <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
                      <!-- Editar proposta -->
-                     <button 
-                        class="btn-editar-proposta" 
-                        title="Editar proposta" 
-                        data-id="<%= proposta.ID_PROPOSTA %>"
-                        data-titulo="<%= proposta.TITULO_PROPOSTA %>"
-                        data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
-                        data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
-                        <ion-icon name="create-outline"></ion-icon>
-                        Editar
-                     </button>
+                        <button 
+                           class="btn-editar-proposta" 
+                           title="Editar proposta" 
+                           id="abrirModalEditar"
+                           data-id="<%= proposta.ID_PROPOSTA %>"
+                           data-titulo="<%= proposta.TITULO_PROPOSTA %>"
+                           data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
+                           data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
+                           <ion-icon name="create-outline"></ion-icon>
+                           Editar
+                        </button>
 
                      <!-- Excluir proposta -->
                      <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
@@ -170,11 +187,78 @@
       </aside>
    </section>
 
+   
+                                                <!-- Modal de denúncia -->
+                        <section id="modalDenuncia" class="modal">
+                            <section class="modal-content">
+                            <h3>Qual o motivo da denúncia?</h3>
+                            <form id="formDenuncia" action="/denunciar-proposta" method="post">
+                               <input type="hidden" id="idPropostaInput" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+                                <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
+                                <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+                                <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+                                <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+                                <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+                                <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+                                
+                                <button type="submit">Enviar denúncia</button>
+                                <button type="button" id="fecharModal">Cancelar</button>
+                            </form>
+                            </section>
+                        </section>
+
    <!-- Rodapé -->
    <%- include('../partials/rodape'); %>
+
+      <!-- Modal de edição de proposta -->
+      <section id="modalEditarProposta" class="modal">
+         <section class="modal-content">
+            <h3>Editar Proposta</h3>
+            <form id="formEditarProposta" action="/editar-proposta" method="post">
+               <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+               <label for="tituloEditar">Título:</label>
+               <input type="text" id="tituloEditar" name="titulo" value="<%= proposta.TITULO_PROPOSTA %>" required>
+               <label for="descricaoEditar">Descrição:</label>
+               <textarea id="descricaoEditar" name="descricao" rows="4" required><%= proposta.DESCRICAO_PROPOSTA %></textarea>
+               <label for="categoriaEditar">Categoria:</label>
+               <input type="text" id="categoriaEditar" name="categoria" value="<%= proposta.CATEGORIA_PROPOSTA %>" required>
+               <section style="display:flex; gap:12px; justify-content:center; margin-top:18px;">
+                  <button type="submit" class="btn-enviar-editar" style="background:#183153; color:#fff; border:none; padding:10px 22px; border-radius:6px; font-size:1em; cursor:pointer;">Salvar</button>
+                  <button type="button" class="btn-cancelar-editar" style="background:#6c757d; color:#fff; border:none; padding:10px 22px; border-radius:6px; font-size:1em; cursor:pointer;" onclick="fecharModalEditar()">Cancelar</button>
+               </section>
+            </form>
+         </section>
+      </section>
 
    <!-- Scripts -->
    <script src="js/voltar.js"></script>
    <script src="js/mobile-navbar.js"></script>
+      <script>
+         // Abrir modal de edição
+         document.addEventListener('DOMContentLoaded', function() {
+            var btnEditar = document.getElementById('abrirModalEditar');
+            var modalEditar = document.getElementById('modalEditarProposta');
+            var btnCancelar = document.querySelector('.btn-cancelar-editar');
+            if(btnEditar && modalEditar) {
+               btnEditar.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  modalEditar.style.display = 'block';
+               });
+            }
+            if(btnCancelar && modalEditar) {
+               btnCancelar.addEventListener('click', function() {
+                  modalEditar.style.display = 'none';
+               });
+            }
+            // Fecha o modal ao clicar fora do conteúdo
+            if(modalEditar) {
+               modalEditar.addEventListener('click', function(e) {
+                  if(e.target === modalEditar) {
+                     modalEditar.style.display = 'none';
+                  }
+               });
+            }
+         });
+      </script>
 </body>
 </html>
