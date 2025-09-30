@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Contratações</title>
+<style>
+  
+ 
+  main { max-width:1200px; margin:auto; padding:2rem;}
+  h2 { margin-top:2rem;}
+  .cards { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;}
+  .card { flex:1; min-width:150px; background:white; padding:1rem; border-radius:6px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+  .contratacoes-container { display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
+  .contratacao-card { flex:1 1 300px; background:white; padding:1rem; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+  .contratacao-card h3 { margin-top:0;}
+  .btn { padding:0.4rem 0.8rem; margin-right:0.3rem; border:none; border-radius:4px; cursor:pointer;}
+  .aceitar { background:#28a745; color:white;}
+  .recusar { background:#dc3545; color:white;}
+  .ver-detalhes { background:#17a2b8; color:white;}
+  .criar-btn { background:#007bff; color:white; padding:0.5rem 1rem; border:none; border-radius:6px; margin-bottom:1rem; cursor:pointer;}
+  table { width:100%; border-collapse: collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+  th, td { padding:0.75rem; border-bottom:1px solid #ddd; text-align:left;}
+  th { background:#f0f0f0;}
+  @media(max-width:768px){
+    .contratacoes-container { flex-direction: column; }
+    .cards { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+    
+
+   <% if (tipo_usuario === 'profissional') { %>
+  <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
+<% } else if (tipo_usuario === 'comum') { %>
+  <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
+<% } else { %>
+  <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
+<% } %>
+
+
+<h1>Minhas contratações</h1><main>
+  <!-- Botão Criar Contratação -->
+  <a href="/criar-contratacao" class="criar-btn">+ Criar Nova Contratação</a>
+
+  <!-- Cards de resumo -->
+  <div class="cards">
+    <div class="card">
+      <h3>Aguardando Aceite</h3>
+      <p id="aguardando"><%= aguardandoAceite.length %></p>
+    </div>
+    <div class="card">
+      <h3>Em Andamento</h3>
+      <p id="andamento"><%= emAndamento.length %></p>
+    </div>
+    <div class="card">
+      <h3>Concluídas</h3>
+      <p id="concluidas"><%= concluidas.length %></p>
+    </div>
+    <div class="card">
+      <h3>Canceladas</h3>
+      <p id="canceladas"><%= canceladas.length %></p>
+    </div>
+  </div>
+
+  <!-- Contratações aguardando aceite -->
+  <h2>Contratações Aguardando Aceite</h2>
+  <div class="contratacoes-container" id="aguardandoAceite">
+    <% aguardandoAceite.forEach(c => { %>
+      <div class="contratacao-card">
+        <h3><%= c.NOME_PROJETO %></h3>
+        <p><strong>Cliente:</strong> <%= c.ID_CLIENTE %></p>
+    <p><strong>Valor:</strong> R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
+
+
+        <p><strong>Prazo:</strong> <%= new Date(c.DATA_ENTREGA).toLocaleDateString('pt-BR') %></p>
+        <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+          <button class="aceitar">Aceitar</button>
+        </form>
+        <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+          <button class="recusar">Recusar</button>
+        </form>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Contratações em andamento -->
+<% if(emAndamento.length > 0) { %>
+  <h2>Contratações Em Andamento</h2>
+  <div class="contratacoes-container" id="emAndamento">
+    <% emAndamento.forEach(c => { %>
+      <div class="contratacao-card">
+        <h3><%= c.NOME_PROJETO %></h3>
+        <p><strong>Cliente:</strong> <%= c.ID_CLIENTE %></p>
+        <p><strong>Valor:</strong> R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
+        <p><strong>Prazo:</strong> <%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %></p>
+    <a href="#" class="ver-detalhes" 
+   data-id-contratacao="<%= c.ID_CONTRATACAO %>"
+   data-projeto="<%= c.NOME_PROJETO %>" 
+   data-cliente="<%= c.ID_CLIENTE %>" 
+   data-profissional="<%= c.ID_PROFISSIONAL %>" 
+   data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
+   data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
+   data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
+   data-contratante="<%= c.ID_CLIENTE %>">
+   Ver Detalhes
+</a>
+
+ </div>
+    <% }) %>
+  </div>
+<% } %>
+
+
+  <!-- Tabela completa de contratações -->
+  <h2>Todos os Projetos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Projeto</th>
+        <th>Cliente</th>
+        <th>Valor</th>
+        <th>Prazo</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="listaContratacoes">
+      <% todas.forEach(c => { %>
+        <tr>
+          <td><%= c.NOME_PROJETO %></td>
+          <td><%= c.ID_CLIENTE %></td>
+          <td>R$ <%= c.VALOR_TOTAL.toFixed(2) %></td>
+          <td><%= new Date(c.DATA_ENTREGA).toLocaleDateString('pt-BR') %></td>
+          <td><%= c.STATUS.replace('_', ' ') %></td>
+         <td>
+  <% if(c.STATUS === "AGUARDANDO_CONFIRMACAO") { %>
+    <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+      <button class="aceitar">Aceitar</button>
+    </form>
+    <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+      <button class="recusar">Recusar</button>
+    </form>
+  <% } %>
+
+ <% if(Number(c.ID_CLIENTE) === id_usuario && c.STATUS === "EM_ANDAMENTO") { %>
+  <!-- Mostrar botão de pagamento apenas para contratante -->
+  <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn">Pagar para iniciar projeto</a>
+<% } %>
+
+  <a href="#" class="ver-detalhes" 
+     data-id-contratacao="<%= c.ID_CONTRATACAO %>"
+     data-projeto="<%= c.NOME_PROJETO %>" 
+     data-cliente="<%= c.ID_CLIENTE %>" 
+     data-profissional="<%= c.ID_PROFISSIONAL %>" 
+     data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
+     data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
+     data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
+     data-contratante="<%= c.ID_CLIENTE %>">
+     Ver Detalhes
+  </a>
+</td>
+
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</main>
+
+<!-- Modal de detalhes -->
+<div id="modalDetalhes" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
+  <div style="background:white; padding:2rem; border-radius:8px; max-width:500px; width:90%; position:relative;">
+    <button id="fecharModal" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; border-radius:4px; cursor:pointer;">X</button>
+    <h2 id="modalProjeto"></h2>
+    <p><strong>Cliente:</strong> <span id="modalCliente"></span></p>
+    <p><strong>Profissional:</strong> <span id="modalProfissional"></span></p>
+    <p><strong>Valor:</strong> R$ <span id="modalValor"></span></p>
+    <p><strong>Prazo:</strong> <span id="modalPrazo"></span></p>
+    <p><strong>Observações:</strong> <span id="modalObs"></span></p>
+    <a href="#" id="btnPagar" class="btn" style="display:none; margin-top:1rem;">Pagar para iniciar projeto</a>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modalDetalhes");
+  const fechar = document.getElementById("fecharModal");
+  const btnPagar = document.getElementById("btnPagar");
+const usuarioLogado = <%= id_usuario %>;
+
+
+  document.querySelectorAll(".ver-detalhes").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Preencher dados
+      document.getElementById("modalProjeto").textContent = btn.dataset.projeto;
+      document.getElementById("modalCliente").textContent = btn.dataset.cliente;
+      document.getElementById("modalProfissional").textContent = btn.dataset.profissional;
+      document.getElementById("modalValor").textContent = btn.dataset.valor;
+      document.getElementById("modalPrazo").textContent = btn.dataset.prazo;
+      document.getElementById("modalObs").textContent = btn.dataset.obs;
+
+      // Mostrar botão de pagar se usuário logado for o contratante
+      if(Number(btn.dataset.contratante) === usuarioLogado){
+        btnPagar.style.display = "inline-block";
+        btnPagar.href = `/contratacoes/pagar/${btn.dataset.idContratacao}`;
+      } else {
+        btnPagar.style.display = "none";
+      }
+
+      modal.style.display = "flex";
+    });
+  });
+
+  fechar.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  // Fechar ao clicar fora do modal
+  modal.addEventListener("click", (e) => {
+    if(e.target === modal) modal.style.display = "none";
+  });
+});
+</script>
+
+
+
+
+
+</body>
+</html>

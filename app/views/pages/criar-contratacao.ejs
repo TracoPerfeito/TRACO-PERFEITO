@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Contratação</title>
+    <link rel="stylesheet" href="css/criar-contratacao.css">
+    
+    <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="js/simple-notify.js"></script>
+
+</head>
+
+    
+  
+<body>
+
+
+   <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
+ 
+
+    
+<% if (status_usuario === 'pendente') { %>
+    <%- include('../partials/aviso-pendente') %>
+    
+<% } %>
+  
+    
+  
+
+
+   <% if (tipo_usuario === 'profissional') { %>
+  <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
+<% } else if (tipo_usuario === 'comum') { %>
+  <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
+<% } else { %>
+  <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
+<% } %>
+
+<main class="container mt-4">
+
+  <h1 class="criarContratacao mb-4">Criar Contratação</h1>
+
+
+<form action="/salvarcontratacao" method="POST">
+
+  <!-- IDs temporários -->
+  <div class="mb-3">
+    <label for="id_cliente" class="form-label">ID Cliente</label>
+    <input type="number" class="form-control" id="id_cliente" name="ID_CLIENTE" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="id_profissional" class="form-label">ID Profissional</label>
+    <input type="number" class="form-control" id="id_profissional" name="ID_PROFISSIONAL" required>
+  </div>
+
+  <!-- Informações da contratação -->
+  <div class="mb-3">
+    <label for="nome_projeto" class="form-label">Nome do Projeto</label>
+    <input type="text" class="form-control" id="nome_projeto" name="NOME_PROJETO" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="finalidade" class="form-label">Finalidade</label>
+    <textarea class="form-control" id="finalidade" name="DESCRICAO" rows="4" required></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="observacoes" class="form-label">Observações</label>
+    <textarea class="form-control" id="observacoes" name="OBSERVACOES" rows="3"></textarea>
+  </div>
+
+  <!-- Valores -->
+  <div class="mb-3">
+    <label for="valor_total" class="form-label">Valor Total (R$)</label>
+    <input type="number" step="0.01" class="form-control" id="valor_total" name="VALOR_TOTAL" required>
+  </div>
+
+  <!-- Datas -->
+  <div class="mb-3">
+    <label for="data_entrega" class="form-label">Data de Entrega</label>
+    <input type="date" class="form-control" id="data_entrega" name="DATA_ENTREGA" required>
+  </div>
+
+  <!-- Termos e condições -->
+  <div class="card p-3 mb-3">
+    <h5>Termos e Condições</h5>
+    <p class="small text-muted">
+      Ao criar esta contratação, você concorda que o pagamento será processado pela plataforma
+      e só será liberado ao profissional após a confirmação do cliente.
+      A plataforma poderá reter taxas administrativas e intermediar disputas quando necessário.
+    </p>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="aceitar_termos" name="ACEITAR_TERMOS" required>
+      <label class="form-check-label" for="aceitar_termos">
+        Li e aceito os termos e condições
+      </label>
+    </div>
+  </div>
+
+  <!-- Botão -->
+  <button type="submit" class="btn btn-primary">Criar Contratação</button>
+</form>
+
+
+</main>
+
+
+           
+<script src="js/mobile-navbar.js"></script>
+</body>
+</html>
+
+

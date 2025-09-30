@@ -12,6 +12,7 @@ const denunciasController = require('../controllers/denunciasController');
 const pesquisasController = require('../controllers/pesquisasController');
 const pagamentoController = require("../controllers/pagamentoController");
 const notificacoesController = require("../controllers/notificacoesController");
+const contratacaoController = require("../controllers/contratacaoController");
 
 const db = require('../../config/pool_conexoes');
 
@@ -242,6 +243,97 @@ router.get(
 );
 
 
+ 
+router.get(
+  "/contratacoes",
+  verificarUsuAutorizado(["profissional", "comum"], "pages/acesso-negado"),
+  async function (req, res) {
+    contratacaoController.listarContratacoes(req, res);
+  }
+);
+
+
+router.post(
+  "/contratacoes/aceitar/:id",function(req, res){
+  verificarUsuAutorizado(["profissional"]),
+ contratacaoController.aceitarContratacao(req, res);
+  
+});
+
+
+router.post(
+  "/contratacoes/recusar/:id", function(req, res){
+  verificarUsuAutorizado(["profissional"]),
+ contratacaoController.recusarContratacao(req, res);
+  
+});
+
+
+
+
+router.get("/pagarcontratacao/:id", function(req, res){
+  contratacaoController.exibirPagamento(req, res)
+});
+
+// Exibir página de pagamento da contratação
+router.get("/pagarcontratacao/:id", 
+  
+    async (req, res) => {
+        const contratacaoId = req.params.id;
+        const usuarioLogadoId = req.session.autenticado.id;
+
+        // Buscar contratação no model
+        const contratacao = await contratacaoModel.findId(contratacaoId);
+
+        if (!contratacao) return res.status(404).send("Contratação não encontrada.");
+
+        if (Number(contratacao.ID_CLIENTE) !== usuarioLogadoId) {
+            return res.status(403).send("Você não tem permissão para acessar esta contratação.");
+        }
+
+        res.render("pages/pagarcontratacao", { contratacao });
+    }
+);
+
+// Criar preferência Mercado Pago
+router.post("/contratacoes/create-preference", async (req, res) => {
+    const preference = new Preference(client);
+    const { idContratacao, valor, nomeProjeto } = req.body;
+
+    console.log("Criando preferência para contratação:", req.body);
+
+    const idPedido = Date.now().toString();
+
+    preference.create({
+        body: {
+            items: [
+                {
+                    title: `Pagamento da contratação: ${nomeProjeto}`,
+                    quantity: 1,
+                    unit_price: Number(valor)
+                }
+            ],
+            external_reference: `${idPedido}_contratacao`,
+            back_urls: {
+                success: process.env.URL_BASE + "/feedback-contratacao",
+                failure: process.env.URL_BASE + "/feedback-contratacao",
+                pending: process.env.URL_BASE + "/feedback-contratacao"
+            },
+            auto_return: "approved"
+        }
+    })
+    .then(value => res.json(value))
+    .catch(err => {
+        console.error("Erro ao criar preferência:", err);
+        res.status(500).json({ erro: "Erro ao criar preferência" });
+    });
+});
+
+
+
+router.get("/feedback-contratacao", function (req, res) {
+  pagamentoController.gravarPagamento(req, res);
+});
 
 
 router.get("/chat", function (req, res) { //chat
@@ -400,6 +492,50 @@ router.get(
 
 
 
+
+router.get("/contratacoes", function (req, res) { 
+
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+    res.render('pages/contratacoes', { dadosNotificacao });
+ 
+});
+
+
+
+
+router.get("/criar-contratacao", function (req, res) { 
+
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+    res.render('pages/criar-contratacao', { dadosNotificacao });
+ 
+});
+
+
+
+router.post(
+  "/salvarcontratacao",
+ contratacaoController.regrasValidacaoCriarContratacao,
+  async function (req, res) {
+    contratacaoController.criarContratacao(req, res);
+  }
+);
+
+
+
+router.post(
+  "/enviar-publicacao",
+ uploadFile().multi([
+   { name: "images", maxCount: 10 }
+]),
+ publicacoesController.regrasValidacaoCriarPublicacao,
+  async function (req, res) {
+    publicacoesController.criarPublicacao(req, res);
+  }
+);
 
 router.get("/nova-publicacao", function (req, res) { //publicação logado
     res.render('pages/nova-publicacao')

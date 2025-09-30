@@ -1,0 +1,81 @@
+
+/* ====== Container ====== */
+main.container {
+  max-width: 800px;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
+
+/* ====== Título ====== */
+h1.criarContratacao {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* ====== Inputs ====== */
+form .form-label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* ====== Card de termos ====== */
+.card {
+  border: 1px solid #ddd;
+  background: #fdfdfd;
+  border-radius: 8px;
+}
+
+.card h5 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.card p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #555;
+}
+
+/* ====== Botão ====== */
+button.btn-primary {
+  background: #007bff;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: block;
+  width: 100%;
+}
+
+button.btn-primary:hover {
+  background: #0056b3;
+}
