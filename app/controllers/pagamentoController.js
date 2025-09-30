@@ -1,5 +1,7 @@
 const pagamentoModel = require("../models/pagamentoModel");
 const notificacoesModel = require("../models/notificacoesModel");
+const contratacaoModel = require('../models/contratacaoModel');
+
 
 
 const moment = require("moment-timezone");
@@ -187,13 +189,13 @@ gravarPagamentoContratacao: async (req, res) => {
             DATA_PAGAMENTO: new Date()
         };
 
-        const pagamentoCriado = await pagamentoModel.createPagamentoContratacao(camposPagamento);
+        const pagamentoCriado = await contratacaoModel.createPagamentoContratacao(camposPagamento);
         console.log("Pagamento registrado com sucesso:", pagamentoCriado.insertId);
 
         // Atualizar campo PAGO da contratação se aprovado
-        if (statusPagamento === "approved") {
-            await contratacaoModel.atualizarPago(idContratacao, "sim");
-        }
+      if (statusPagamento === "approved") {
+    await contratacaoModel.updateContratacao({ PAGO: "sim" }, idContratacao);
+}
 
         // Criar notificação pro cliente
         await notificacoesModel.criarNotificacao({

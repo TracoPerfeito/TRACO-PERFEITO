@@ -126,7 +126,24 @@ findId: async (id) => {
         } catch (error) {
             return error;
         }
+    },
+
+
+  
+createPagamentoContratacao: async (camposPagamento) => {
+    try {
+        const [result] = await pool.query(
+            "INSERT INTO PAGAMENTOS_CONTRATACOES SET ?",
+            [camposPagamento]
+        );
+        console.log("Pagamento de contratação inserido:", result);
+        return result;
+    } catch (error) {
+        console.log("Erro ao inserir pagamento de contratação:", error);
+        throw error;
     }
+},
+
 
 };
 
