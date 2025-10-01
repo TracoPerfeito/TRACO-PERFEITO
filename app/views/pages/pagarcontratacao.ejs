@@ -12,9 +12,9 @@
 
 <%- include('../partials/menu-logado'); %>
 
-<main class="container">
+<main class="page-detalhes-container">
     <!-- Detalhes da Contratação oaq-->
-    <div class="box">
+    <div class="page-detalhes-box">
         <h2>Detalhes da Contratação</h2>
         <p><strong>Projeto:</strong> <%= contratacao.NOME_PROJETO %></p>
         <p><strong>Contratante:</strong> <%= contratacao.NOME_CONTRATANTE %></p>
@@ -25,16 +25,17 @@
         <p><strong>Valor:</strong> R$ <%= contratacao.VALOR_TOTAL.toFixed(2) %></p>
         <p><strong>Prazo de entrega:</strong> <%= contratacao.DATA_ENTREGA.toLocaleDateString('pt-BR') %></p>
 
-        <div class="hr-delicate"></div>
+        <div class="page-detalhes-hr"></div>
 
-        <h3>Atenção</h3>
-        <p>Após realizar o pagamento, o projeto será iniciado pelo contratado.</p>
-        <p>Certifique-se de que os dados estão corretos antes de prosseguir.</p>
-    </div>
+        <section class="page-detallhes-box-attention">
+            <h3>Atenção!</h3>
+            <p>Após realizar o pagamento, o projeto será iniciado pelo contratado.</p>
+            <p>Certifique-se de que os dados estão corretos antes de prosseguir.</p>
+        </section>  </div>
 
     <!-- Resumo e Pagamento -->
     <div class="box box-summary">
-        <h2>Resumo do Pagamento</h2>
+        <h2 id="resumo">Resumo do Pagamento</h2>
         <div class="summary-line">
             <span>Projeto:</span>
             <span><%= contratacao.NOME_PROJETO %></span>
@@ -105,3 +106,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,141 @@
+<!-- Floating Action Button -->
+<section class="fab-container">
+  <!-- Botão principal -->
+  <button class="fab-main" id="fabMain">
+    <ion-icon name="add-outline"></ion-icon>
+  </button>
+
+  <!-- Opções -->
+  <section class="fab-options">
+    <a href="/nova-publicacao" class="fab-option" title="Nova Publicação" id="nova-publi">
+      <ion-icon name="document-text-outline"></ion-icon>
+    </a>
+    <a href="/novo-portfolio" class="fab-option" title="Novo Portfólio" id="novo-port">
+      <ion-icon name="albums-outline"></ion-icon>
+    </a>
+    <a href="/nova-publi-pedido" class="fab-option" title="Nova Proposta de Projeto" id="nova-prop">
+      <ion-icon name="briefcase-outline"></ion-icon>
+    </a>
+  </section>
+</section>
+
+<!-- Ionicons CDN -->
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+<style>
+/* Container fixo no canto inferior direito */
+.fab-container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  flex-direction: column-reverse;
+  gap: 10px;
+}
+
+/* Botão principal */
+.fab-main {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background:#7490C9;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  transition: transform 0.3s;
+}
+
+.fab-main:hover {
+  transform: rotate(45deg);
+}
+
+/* Opções escondidas por padrão */
+.fab-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 15px;
+  margin-bottom: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(20px);
+}
+
+/* Cada opção */
+.fab-option {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  color: #132d46;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  position: relative;
+  font-size: 24px;
+  transition: background 0.3s;
+}
+
+/* Tooltip */
+.fab-option::after {
+  content: attr(title);
+  position: absolute;
+  right: 60px;
+  background: #ffffff;
+  color: #132d46;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 0.3s;
+  font-size: 14px;
+  font-family: "Josefin Sans";
+}
+
+.fab-option:hover::after {
+  opacity: 1;
+}
+
+/* Mostrar opções ao abrir */
+.fab-container.open .fab-options {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+
+#nova-publi {
+background-color: #92C4E2;
+}
+
+#novo-port{
+background-color: #B9DCC1;
+
+}
+
+#nova-prop{
+background-color: #969ED0;
+}
+</style>
+
+<script>
+const fabContainer = document.querySelector(".fab-container");
+const fabMain = document.getElementById("fabMain");
+
+fabMain.addEventListener("click", () => {
+  fabContainer.classList.toggle("open");
+});
+</script>

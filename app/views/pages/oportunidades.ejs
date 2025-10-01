@@ -292,6 +292,16 @@ o<!DOCTYPE html>
      
     </main>
 
+
+    
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
+
     <%- include('../partials/rodape'); %>
 
     <script src="js/filtro.js"></script>

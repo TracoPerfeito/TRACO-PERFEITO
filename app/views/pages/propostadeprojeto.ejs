@@ -217,6 +217,21 @@
    <!-- Modal de edição de proposta -->
    <%- include('../partials/editar-proposta'); %>
 
+
+
+
+
+
+
+   
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
+
    <!-- Rodapé -->
    <%- include('../partials/rodape'); %>
 

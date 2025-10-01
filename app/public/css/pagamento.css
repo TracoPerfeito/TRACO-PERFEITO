@@ -8,7 +8,7 @@
 
 
 .container {
-    display: flex;
+    display: flex;  
     gap: 20px;
     max-width: 1000px;
     width: 90%;
@@ -151,6 +151,169 @@ input[type="tel"] {
     }
 
     .box:first-child, .box-summary {
+        width: 100%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* pagar contratacao */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Página detalhes da contratação */
+.page-detalhes-container {
+    display: flex;  
+    gap: 25px;
+    max-width: 1000px;
+    width: 90%;
+    margin: 40px auto;
+    font-family: "Montserrat", sans-serif;
+    color: var(--text-color);
+}
+
+.page-detalhes-box {
+    border: 2px solid var(--text-color);
+    border-radius: 12px;
+    padding: 25px;
+    background: var(--cor-fundo);
+    box-sizing: border-box;
+    flex: 1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.page-detalhes-box h2 {
+    margin-top: 0;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.page-detalhes-box p {
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+.page-detalhes-hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+}
+
+.page-detalhes-box h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #e74c3c;
+}
+
+/* Resumo do pagamento */
+.page-detalhes-summary {
+    width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.page-detalhes-summary h2 {
+    margin-top: 0;
+       color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.page-detalhes-summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    padding: 8px 12px;
+    background: #f4f4f4;
+    border-radius: 6px;
+}
+
+.page-detalhes-summary-line span:first-child {
+    color: #555;
+}
+
+#resumo {
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.page-detalhes-summary .page-detalhes-total {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Botão Mercado Pago */
+#button-checkout {
+    margin-top: 20px;
+}
+
+/* Aviso/atenção */
+.page-detalhes-box-attention {
+    background: #fff4e5;
+    border-left: 4px solid #ffa500;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .page-detalhes-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .page-detalhes-box,
+    .page-detalhes-summary {
         width: 100%;
     }
 }
