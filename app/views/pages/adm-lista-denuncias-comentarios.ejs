@@ -1,134 +1,59 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/pag-adm.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Denúncias</title>
+  <link rel="stylesheet" href="/css/pag-adm.css">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'> 
+  <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css">
 
-    <title>Página do Administrador</title>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
-
-
-        <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
-
-
-
-   <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css">
 </head>
-
 <body>
-    <!--INICIO DO MENU TOP ADM -->
 
-        <%- include('../partials/menu_top_adm.ejs'); %>
+      <!--INICIO DO MENU TOP ADM -->
+
+    <%- include('../partials/menu_top_adm.ejs'); %>
 
     <!--FIM DO MENU TOP ADM  -->
 
 
     <!-- MENU LATERAL DO ADM -->
 
-        <%- include('../partials/menu_lateral_adm.ejs'); %>
+    <%- include('../partials/menu_lateral_adm.ejs'); %>
 
     <!-- MENU LATERAL DO ADM -->
 
-    <!-- LISTAGEM DAS DENÚNCIAS DE COMENTÁRIOS -->
 
-   
-    <section class="conteudo-denuncias-comentarios">
-<div class="container">
-    <!-- Header -->
-    <header class="top">
-      <div class="brand">
-        <div class="logo">DP</div>
-        <div class="titles">
-          <h1>📋 Denúncias de Comentários</h1>
-          <p>Lista compacta · moderação rápida</p>
+
+
+  <div class="container">
+    <% if (denuncias.length > 0) { %>
+      <% denuncias.forEach(denuncia => { %>
+        <div class="card">
+          <div class="card-header">
+            <h2>Denúncia #<%= denuncia.ID_DENUNCIA %></h2>
+            <span class="status <%= denuncia.STATUS %>">
+              <%= denuncia.STATUS %>
+            </span>
+          </div>
+          <div class="card-body">
+            <p><span class="label">Usuário Denunciante:</span> <%= denuncia.ID_USUARIO_DENUNCIANTE || 'Anônimo' %></p>
+            <p><span class="label">Comentário:</span> #<%= denuncia.ID_COMENTARIO %></p>
+            <p><span class="label">Motivo:</span> <%= denuncia.MOTIVO %></p>
+            <p><span class="label">Data da denúncia:</span> <%= new Date(denuncia.DATA_DENUNCIA).toLocaleString('pt-BR') %></p>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-detalhes">🔎 Detalhes</button>
+            <button class="btn btn-status">✔️ Alterar Status</button>
+          </div>
         </div>
-      </div>
-
-      <div class="controls" role="region" aria-label="Controles de filtro">
-        <div class="search" title="Pesquisar denúncias">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <input id="q" placeholder="Pesquisar comentário, usuário ou tag" />
-        </div>
-        <select id="filter" class="select" aria-label="Filtrar por status">
-          <option value="all">Todos</option>
-          <option value="pendente">Pendente</option>
-          <option value="em-analise">Em análise</option>
-          <option value="resolvido">Resolvido</option>
-        </select>
-        <select id="sort" class="select" aria-label="Ordenar por">
-          <option value="recent">Mais recentes</option>
-          <option value="oldest">Mais antigos</option>
-          <option value="status">Status</option>
-        </select>
-        <button class="btn primary" id="bulkResolve">Marcar tudo como resolvido</button>
-      </div>
-    </header>
-
-    <!-- Lista de denúncias -->
-    <section class="list" id="reports" aria-live="polite">
-      <% denuncias.forEach(d => { %>
-        <article class="row" data-status="<%= d.STATUS %>" data-id="<%= d.ID_DENUNCIA %>">
-          <div class="avatar" style="background: linear-gradient(135deg, #8bc3e1, #76aea6);">
-            <%= d.ID_USUARIO_DENUNCIANTE ? d.ID_USUARIO_DENUNCIANTE.toString().slice(0,2).toUpperCase() : "AN" %>
-          </div>
-
-          <div class="meta">
-            <div class="comment-text">"<%= d.MOTIVO %>"</div>
-            <div class="meta-sub">
-              <span class="tag">Comentário ID: <%= d.ID_COMENTARIO %></span>
-              <span>Denunciado por <strong><%= d.ID_USUARIO_DENUNCIANTE || "Anônimo" %></strong></span>
-              <span class="time"><%= new Date(d.DATA_DENUNCIA).toLocaleString("pt-BR") %></span>
-            </div>
-
-            <div class="expand">
-              <div style="margin-bottom:8px">Status atual: <strong><%= d.STATUS %></strong></div>
-            </div>
-          </div>
-
-          <div class="right">
-            <div class="status-badge status-<%= d.STATUS %>"><%= d.STATUS %></div>
-            <div class="actions">
-              <button class="icon-btn toggle" title="Expandir" aria-label="Expandir denúncia">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="icon-btn resolve" title="Marcar como resolvido" aria-label="Resolver denúncia">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="icon-btn delete" title="Remover" aria-label="Remover denúncia">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 6h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M10 11v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M14 11v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </article>
       <% }) %>
-    </section>
-
-    <footer>
-      Visualização local — abra este arquivo no navegador para testar interações.
-    </footer>
-  </div></section>
-  <script>
-    // Expandir detalhes
-    document.querySelectorAll(".btn-expandir").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const extras = btn.closest(".item-denuncia").querySelector(".extras");
-        extras.classList.toggle("ativo");
-      });
-    });
-  </script>
-
-
+    <% } else { %>
+      <p style="text-align: center; font-size: 18px; grid-column: 1 / -1;">❌ Nenhuma denúncia encontrada</p>
+    <% } %>
+  </div>
 </body>
+</html>

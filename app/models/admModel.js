@@ -142,17 +142,28 @@ const admModel = {
 
     listarDenunciasComentarios: async () => {
         try {
-            const[denuncias_comentarios] = await pool.query(
-                "SELECT ID_DENUNCIA, ID_USUARIO_DENUNCIANTE, ID_COMENTARIO, MOTIVO, STATUS, DATA_DENUNCIA FROM DENUNCIAS_COMENTARIOS"
+            const [denuncias_comentarios] = await pool.query(
+                `SELECT 
+                    dc.ID_DENUNCIA, 
+                    dc.ID_USUARIO_DENUNCIANTE, 
+                    dc.ID_COMENTARIO, 
+                    dc.MOTIVO, 
+                    dc.STATUS, 
+                    dc.DATA_DENUNCIA,
+                    c.ID_USUARIO AS ID_USUARIO_COMENTARIO,
+                    c.CONTEUDO_COMENTARIO,
+                    c.DATA_COMENTARIO
+                FROM DENUNCIAS_COMENTARIOS dc
+                INNER JOIN COMENTARIOS c ON dc.ID_COMENTARIO = c.ID_COMENTARIO`
             );
             return denuncias_comentarios;
-
+    
         } catch (error) {
             console.log(error);
-            return[]; // Ou retorna error
+            return []; // ou retorna error
         }
     },
-
+    
     listarDenunciasUsuarios: async () => {
         try{
             const[denuncias_usuarios] = await pool.query(
