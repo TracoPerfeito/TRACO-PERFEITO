@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+o<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -225,7 +225,7 @@
             Editar
           </button>
           <form action="/excluir-proposta" method="POST" style="display:inline;">
-            <input type="hidden" name="idProposta" value="<%= pub.ID_PROPOSTA %>">
+            <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
             <button type="submit" class="btn-excluir-publicacao" title="Excluir proposta" onclick="return confirm('Tem certeza que deseja excluir esta proposta? Esta ação não poderá ser desfeita.');">
               <ion-icon name="trash-outline"></ion-icon>
               Excluir
@@ -233,7 +233,7 @@
           </form>
         <% } %>
 
-        <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal('<%= .ID_PROPOSTA %>')">
+        <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal('<%= proposta.ID_PROPOSTA %>')">
           <ion-icon name="share-social-outline"></ion-icon>
           Compartilhar
         </button>
