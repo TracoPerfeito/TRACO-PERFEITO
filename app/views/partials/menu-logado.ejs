@@ -5,7 +5,7 @@
     <img src="/imagens/traço perfeito.png"  id="logo-2"  onclick="location.href='/'">
    
     <input class="menu-btn" type="checkbox" id="menu-btn" />
-    <label class="menu-icon" for="menu-btn"><section class="navicon"></section></label>
+    <label class="menu-icon" for="menu-btn"><section class="navicon"></section>  <span id="badge-menu-mobile" class="badge-notificacoes-mobile"></span></label>
     <ul class="menu">
       <li><a href=/ >Explorar</a></li>
       <li><a href=/contratar >Contratar</a></li>
@@ -31,10 +31,10 @@
         
 
 %>
-
-
-   
+  <span class="avatar-wrapper" style="position: relative; display: inline-block;">
     <img src="<%- img_perfil_banco %>" alt="Foto de perfil" class="user-avatar">
+    <span id="badge-notificacoes-avatar" class="badge-notificacoes-avatar"></span>
+  </span>
 
     
     <p class="user-name">Olá, <%= nomeCurto %>!</p>
@@ -44,8 +44,18 @@
     <ul>
       <li><a href="/meu-perfil-artista"> <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z"/></svg>Meu Perfil</a></li>
       <li><a href="/planos-assinaturas"> <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="m387-412 35-114-92-74h114l36-112 36 112h114l-93 74 35 114-92-71-93 71ZM240-40v-309q-38-42-59-96t-21-115q0-134 93-227t227-93q134 0 227 93t93 227q0 61-21 115t-59 96v309l-240-80-240 80Zm240-280q100 0 170-70t70-170q0-100-70-170t-170-70q-100 0-170 70t-70 170q0 100 70 170t170 70ZM320-159l160-41 160 41v-124q-35 20-75.5 31.5T480-240q-44 0-84.5-11.5T320-283v124Zm160-62Z"/></svg> Planos e Assinaturas</a></li>
-     
-           <li><a href='/notificacoes' ><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>Notificações</a></li>
+     <li>
+  <a href="/notificacoes" style="display: flex; align-items: center; gap: 5px;">
+    <span style="position: relative; display: inline-block;">
+      <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff">
+        <path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/>
+      </svg>
+      <span class="badge-notificacoes"  id="badge-notificacoes" ></span>
+    </span>
+    <span class="texto-link">Notificações</span>
+  </a>
+</li>
+
       <li><a href="/chat-logado"> <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/></svg>Minhas Conversas</a></li>
     
       <li class="config-dropdown" >
@@ -127,7 +137,68 @@
   <%- include('../partials/modal-logout'); %>
 
  
-  
-  
+
 <script src="/js/menu.js"></script>
 <script src="/js/modos.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM carregado, iniciando script de notificações...");
+
+  const badgeLink = document.getElementById("badge-notificacoes");
+  const badgeAvatar = document.getElementById("badge-notificacoes-avatar");
+  const badgeMobile = document.getElementById("badge-menu-mobile");
+  const menuBtn = document.getElementById("menu-btn");
+
+  // Atualiza o badge mobile ao abrir/fechar o menu
+  if (menuBtn) {
+    menuBtn.addEventListener("change", function() {
+      const configSection = document.querySelector(".config-section");
+      if (configSection) configSection.classList.remove("open"); 
+
+      if (this.checked) {
+        if (badgeMobile) badgeMobile.style.display = "none";
+      } else {
+        const naoLidas = Number(badgeMobile?.textContent) || 0;
+        if (badgeMobile) badgeMobile.style.display = naoLidas > 0 ? "inline-block" : "none";
+      }
+    });
+  }
+
+  async function atualizarBadgeNotificacoes() {
+    try {
+      const resposta = await fetch("/notificacoes/count");
+      if (!resposta.ok) {
+        console.error("Erro na resposta do servidor:", resposta.status);
+        return;
+      }
+
+      const dados = await resposta.json();
+      const naoLidas = Number(dados.naoLidas) || 0;
+
+      if (badgeLink) {
+        badgeLink.textContent = naoLidas;
+        badgeLink.style.display = naoLidas > 0 ? "inline-block" : "none";
+      }
+
+      if (badgeAvatar) {
+        badgeAvatar.textContent = naoLidas;
+        badgeAvatar.style.display = naoLidas > 0 ? "inline-block" : "none";
+      }
+
+      if (badgeMobile) {
+        badgeMobile.textContent = naoLidas;
+      
+        badgeMobile.style.display = (!menuBtn.checked && naoLidas > 0) ? "inline-block" : "none";
+      }
+
+    } catch (err) {
+      console.error("Erro ao atualizar notificações:", err);
+    }
+  }
+
+  atualizarBadgeNotificacoes();
+
+ 
+  setInterval(atualizarBadgeNotificacoes, 30000);
+});
+</script>

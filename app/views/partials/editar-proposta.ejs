@@ -1,0 +1,297 @@
+<link rel="stylesheet" href="/css/editar-publicacao.css">
+
+<!-- Modal específico para edição de publicação -->
+<section id="modal-editar-publicacao" class="modal-editar-publicacao">
+  <section class="modal-content-editar-publicacao">
+    <span class="fechar-editar-publicacao" id="fechar-modal-editar-publicacao">&times;</span>
+    <h2 class="titulo-modal-editar-publicacao">Editar essa Proposta de Projeto</h2>
+
+   
+
+      <!-- Coluna direita: Campos de edição -->
+      <section class="form-editar-publicacao">
+        <form action="/editar-proposta" method="POST">
+          <input type="hidden" name="id_publicacao" id="id-editar-publicacao" value="">
+
+
+          <section class="conteudo-editar-publicacao">
+           
+            </section>
+            <section class="dados">
+  
+                  <!-- Título -->
+                  <section class="form-grupo-1" id="titulo-editar-publicacao-container">
+                    <label for="titulo-editar-publicacao">Título:</label>
+                    <input type="text" id="titulo-editar-publicacao" name="titulo_publicacao" class="caixa-texto" required>
+                    
+                  </section>
+        
+                  <!-- Categoria -->
+                  <section class="form-grupo-1" id="categoria-editar-publicacao-container">
+                    <label for="categoria-editar-publicacao">Categoria:</label>
+                    <select id="categoria-editar-publicacao" name="categoria" class="caixa-texto" required>
+                      <option value="">-- Selecione a categoria --</option>
+                      <option value="design_grafico">Design Gráfico</option>
+                      <option value="ilustracao">Ilustração</option>
+                      <option value="uiux">UI/UX</option>
+                      <option value="arte_digital">Arte Digital</option>
+                      <option value="arte_3d">Arte 3D</option>
+                      <option value="animacao">Animação</option>
+                      <option value="branding">Branding</option>
+                      <option value="tipografia">Tipografia</option>
+                      <option value="modelagem_3d">Modelagem 3D</option>
+                      <option value="design_de_produto">Design de Produto</option>
+                      <option value="design_editorial">Design Editorial</option>
+                      <option value="design_de_jogos">Design de Jogos</option>
+                      <option value="fotografia">Fotografia</option>
+                      <option value="outro">Outros</option>
+                    </select>
+                                                      
+                          
+<section id="outra-categoria-container" style="display:none; margin-top:10px;">
+  <label for="outraCategoria">Digite a categoria:</label>
+  <input type="text" id="outraCategoria" name="outraCategoria" placeholder="Ex: Lettering">
+</section>
+
+<script>
+const select = document.getElementById('categoria-editar-publicacao');
+const container = document.getElementById('outra-categoria-container');
+const inputOutra = document.getElementById('outraCategoria');
+
+select.addEventListener('change', () => {
+  if (select.value === 'outro') {
+    container.style.display = 'block';
+    inputOutra.required = true; // torna obrigatório
+  } else {
+    container.style.display = 'none';
+    inputOutra.required = false;
+    inputOutra.value = ""; // limpa caso mude
+  }
+});
+
+// Antes de enviar o form, se "outro" estiver preenchido, envia o valor do input
+const form = document.querySelector('#modal-editar-publicacao form');
+form.addEventListener('submit', () => {
+  if (select.value === 'outro' && inputOutra.value.trim() !== '') {
+    select.value = inputOutra.value.trim(); // substitui o valor do select pelo input
+  }
+});
+</script>
+                  </section>
+        
+                  <!-- Descrição -->
+                  <section class="form-grupo-1" id="descricao-editar-publicacao-container">
+                    <label for="descricao-editar-publicacao">Descrição:</label>
+                    <textarea id="descricao-editar-publicacao" name="descricao_publicacao" class="caixa-texto grande"></textarea>
+                  </section>
+        
+                  <!-- Tags -->
+                  <section class="form-grupo-1" id="tags-editar-publicacao-container">
+                    <label for="tagInput-editar">Tags:</label>
+                    <input id="tagInput-editar" name="tags" class="tags-look tagify--custom-dropdown caixa-texto" placeholder="Adicione tags à sua Proposta de Projeto...">
+                  </section>
+
+               </section> 
+
+
+
+
+                </section>
+  
+            <section class="secao-btns-modal">
+
+<!-- 
+                <button type="submit" class="btn-excluir-editar-publicacao"><ion-icon name="trash-outline" id="ion-trash"></ion-icon> Excluir</button>
+               -->
+              <button type="submit" class="btn-salvar-editar-publicacao">Salvar Alterações</button>
+            </section>
+
+            
+              
+           
+     
+        </form>
+
+          <form action="/excluir-proposta" method="POST" style="display:inline;" class="btn-excluir-editar-publicacao">
+            <input type="hidden" name="idPublicacao" id="id-editar-publicacao-excluir" value="">
+            <button type="submit" class="btn-excluir-publicacao" title="Excluir publicação" onclick="return confirm('Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.');">
+              <ion-icon name="trash-outline"></ion-icon>
+              Excluir
+            </button>
+          </form>
+      </section>
+    </section>
+  </section>
+</section>
+<script>
+  // Cores para as tags no Tagify
+var coresTags = ['#7490C9','#969ED0','#92C4E2','#B8D9BD','#9BB7CF','#C3E3DF','#C2E5F0','#ADBCE2'];
+
+function transformarTag(tagData) {
+  var cor = coresTags[Math.floor(Math.random() * coresTags.length)];
+  tagData.color = cor;
+  tagData.style = "--tag-bg:" + cor;
+}
+
+// Inicializa Tagify no input das tags do modal
+var tagifyEditar = new Tagify(document.querySelector('#tagInput-editar'), {
+  maxTags: 10,
+  dropdown: { maxItems: 20, classname: 'tags-look', enabled: 0, closeOnSelect: false },
+  transformTag: transformarTag
+});
+
+// Função que ajusta altura do modal no mobile e trava o fundo
+function ajustarModalMobile(modal) {
+  const content = modal.querySelector(".modal-content-editar-publicacao");
+  const alturaVisivel = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+  if (window.innerWidth <= 768) { // só mobile
+    content.style.maxHeight = (alturaVisivel - 20) + "px"; // 20px de margem
+    content.style.overflowY = "auto";
+  } else {
+    content.style.maxHeight = "90vh"; // desktop
+    content.style.overflowY = "auto";
+  }
+
+  document.body.style.overflow = "hidden"; // bloqueia scroll do fundo
+}
+
+// Listener global para abrir modal ao clicar no botão editar
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest(".btn-editar");
+  if (!btn) return;
+
+  // Pega os dados do botão (data-*)
+  const idPublicacao = btn.getAttribute("data-id") || "";
+  const titulo = btn.getAttribute("data-titulo") || "";
+  const categoria = btn.getAttribute("data-categoria") || "";
+  const descricao = btn.getAttribute("data-descricao") || "";
+  const tagsStr = btn.getAttribute("data-tags") || "";
+  const imagensStr = btn.getAttribute("data-imagens") || "[]";
+
+  let tags = tagsStr ? tagsStr.split(",").map(t => t.trim()) : [];
+  let imagens = [];
+  try { imagens = JSON.parse(imagensStr); } catch { imagens = []; }
+
+  // Preenche os campos do formulário
+  document.getElementById("id-editar-publicacao").value = idPublicacao;
+  document.getElementById("id-editar-publicacao-excluir").value = idPublicacao;
+  document.getElementById("titulo-editar-publicacao").value = titulo;
+  document.getElementById("categoria-editar-publicacao").value = categoria;
+  document.getElementById("descricao-editar-publicacao").value = descricao;
+
+  // Preenche tags
+  tagifyEditar.removeAllTags();
+  tagifyEditar.addTags(tags);
+
+  // Preenche carrossel
+  const carrossel = document.querySelector('.lista-imagens-editar-publicacao');
+  const controlesCarrossel = document.querySelector('.controles-carrossel-editar');
+  const indicadoresContainer = controlesCarrossel.querySelector('.indicadores-carrossel-editar');
+  const btnEsquerda = controlesCarrossel.querySelector('.seta-carrossel-esquerda');
+  const btnDireita = controlesCarrossel.querySelector('.seta-carrossel-direita');
+
+  carrossel.innerHTML = '';
+  indicadoresContainer.innerHTML = '';
+
+  if (imagens.length > 0) {
+    imagens.forEach((url, idx) => {
+      const div = document.createElement('div');
+      div.classList.add('item-imagem-editar-publicacao');
+      if (idx !== 0) div.style.display = 'none';
+
+      div.innerHTML = `
+        <img src="${url}" alt="Imagem da publicação">
+        <button class="btn-remover-imagem-editar-publicacao" title="Remover imagem">🗑</button>
+      `;
+      carrossel.appendChild(div);
+
+      const indicador = document.createElement('p');
+      indicador.classList.toggle('ativo', idx === 0);
+      indicador.addEventListener('click', () => mostrarImagem(idx));
+      indicadoresContainer.appendChild(indicador);
+    });
+
+    controlesCarrossel.style.display = imagens.length > 1 ? 'flex' : 'none';
+  }
+
+  let indiceAtual = 0;
+  function mostrarImagem(novoIndice) {
+    const itens = carrossel.querySelectorAll('.item-imagem-editar-publicacao');
+    const indicadores = indicadoresContainer.querySelectorAll('p');
+    if (novoIndice < 0) novoIndice = itens.length - 1;
+    if (novoIndice >= itens.length) novoIndice = 0;
+    itens[indiceAtual].style.display = 'none';
+    indicadores[indiceAtual].classList.remove('ativo');
+    itens[novoIndice].style.display = 'block';
+    indicadores[novoIndice].classList.add('ativo');
+    indiceAtual = novoIndice;
+  }
+
+  // Exibe o modal
+  const modal = document.getElementById("modal-editar-publicacao");
+  modal.style.display = "flex";
+
+  // Ajusta altura e trava fundo
+  ajustarModalMobile(modal);
+});
+
+// Fecha o modal ao clicar no "X"
+document.getElementById("fechar-modal-editar-publicacao").addEventListener("click", function () {
+  fecharModalEditarPublicacao();
+});
+
+// Fecha o modal clicando fora do conteúdo
+window.addEventListener("click", function (event) {
+  if (event.target.id === "modal-editar-publicacao") {
+    fecharModalEditarPublicacao();
+  }
+});
+
+// Função de fechar modal
+function fecharModalEditarPublicacao() {
+  const modal = document.getElementById("modal-editar-publicacao");
+  modal.style.display = "none";
+  document.body.style.overflow = ""; // libera scroll do fundo
+  const content = modal.querySelector(".modal-content-editar-publicacao");
+  content.style.maxHeight = "";
+  content.style.overflowY = "";
+}
+
+// Reajusta altura ao redimensionar a tela
+window.addEventListener("resize", function() {
+  const modal = document.getElementById("modal-editar-publicacao");
+  if (modal.style.display === "flex") {
+    ajustarModalMobile(modal);
+  }
+});
+
+
+
+
+
+
+
+
+</script>
+
+
+<script src="/js/editar-publi-validacoes.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

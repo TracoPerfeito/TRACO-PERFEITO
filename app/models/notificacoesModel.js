@@ -15,42 +15,42 @@ const { getIo } = require('../../socket'); // sobe de models/ para raiz
 const notificacoesModel = {
 
   // Cria notificação e dispara via socket
-  criarNotificacao: async ({ idUsuario, titulo, conteudo, categoria }) => {
-    console.log({titulo, conteudo, idUsuario, categoria});
-console.log(typeof titulo, typeof conteudo, typeof idUsuario, typeof categoria);
+  criarNotificacao: async ({ idUsuario, titulo, conteudo, categoria, preview}) => {
+  console.log({titulo, conteudo, idUsuario, categoria, preview});
 
-    try {
-        
-     const [result] = await pool.query(
-  'INSERT INTO NOTIFICACOES (TITULO_NOTIFICACAO, CONTEUDO_NOTIFICACAO, ID_USUARIO, CATEGORIA_NOTIFICACAO, STATUS) VALUES (?, ?, ?, ?, ?)',
-  [
-    String(titulo),          // força string
-    String(conteudo),        // força string
-    Number(idUsuario),       // força number
-    String(categoria),       // força string
-    'NAO_LIDA'
-  ]
-);
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO NOTIFICACOES (TITULO_NOTIFICACAO, CONTEUDO_NOTIFICACAO, ID_USUARIO, CATEGORIA_NOTIFICACAO, STATUS, PREVIEW_NOTIFICACAO) VALUES (?, ?, ?, ?, ?, ?)',
+      [
+        String(titulo),
+        String(conteudo),
+        Number(idUsuario),
+        String(categoria),
+        'NAO_LIDA',      // STATUS
+        String(preview)  // PREVIEW
+      ]
+    );
 
+    const idNotificacao = result.insertId;
 
-      const idNotificacao = result.insertId;
+    const io = getIo();
+    io.to(idUsuario).emit('notificacao_nova', {
+      ID_NOTIFICACAO: idNotificacao,
+      TITULO: titulo,
+      CONTEUDO: conteudo,
+      CATEGORIA: categoria,
+      STATUS: 'NAO_LIDA',
+      PREVIEW: preview
+    });
 
-      const io = getIo();
-      io.to(idUsuario).emit('notificacao_nova', {
-        ID_NOTIFICACAO: idNotificacao,
-        TITULO: titulo,
-        CONTEUDO: conteudo,
-        CATEGORIA: categoria,
-        STATUS: 'NAO_LIDA'
-      });
+    return idNotificacao;
 
-      return idNotificacao;
+  } catch (err) {
+    console.error('Erro ao criar notificação:', err);
+    throw err;
+  }
+},
 
-    } catch (err) {
-      console.error('Erro ao criar notificação:', err);
-      throw err;
-    }
-  },
 
   // Lista todas notificações de um usuário
   listarNotificacoesUserLogado: async (idUsuario) => {
@@ -68,6 +68,7 @@ console.log(typeof titulo, typeof conteudo, typeof idUsuario, typeof categoria);
 
   // Exibe detalhes de uma notificação específica
   exibirNotificacao: async (idNotificacao) => {
+    console.log("Exibindo notificação:", idNotificacao);
     try {
       const [rows] = await pool.query(
         'SELECT * FROM NOTIFICACOES WHERE ID_NOTIFICACAO = ?',
@@ -100,7 +101,30 @@ console.log(typeof titulo, typeof conteudo, typeof idUsuario, typeof categoria);
       console.error('Erro ao excluir notificação:', err);
       throw err;
     }
-  }
+  },
+
+
+  countNaoLidas: async (idUsuario) => {
+    try {
+     const [rows] = await pool.query(
+  `SELECT COUNT(*) AS total 
+   FROM NOTIFICACOES 
+   WHERE ID_USUARIO = ? AND STATUS = 'NAO_LIDA'`,
+  [idUsuario]
+);
+
+      return rows[0].total;
+    } catch (err) {
+      console.error("Erro ao contar notificações:", err);
+      return 0;
+    }
+  },
+
+
+
+
+
+
 
 };
 

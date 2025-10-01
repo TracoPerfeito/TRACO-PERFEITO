@@ -77,7 +77,9 @@ const pagamentoModel = {
         } catch (error) {
             return error;
         }
-    }
+    },
+
+    
 };
 
 module.exports = pagamentoModel; 

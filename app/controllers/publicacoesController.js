@@ -1,6 +1,8 @@
 const publicacoesModel = require("../models/publicacoesModel");
+const pool = require("../../config/pool_conexoes");
 const listagensModel = require("../models/listagensModel");
 const {favoritoModel} = require("../models/favoritoModel");
+const notificacoesModel = require("../models/notificacoesModel");
 const listagensController = require("../controllers/listagensController");
 const { body, validationResult } = require("express-validator");
 const moment = require("moment");
@@ -136,6 +138,35 @@ const publicacoesController = {
   
 
   body("descricao_publicacao")
+    .trim()
+    .isLength({ min: 1, max: 2000 })
+    .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
+
+  body("tags")
+    .custom((value) => {
+      try {
+        const tags = JSON.parse(value);
+        if (!Array.isArray(tags)) throw new Error();
+        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+        return true;
+      } catch {
+        throw new Error("Tags inválidas, envie um array JSON.");
+      }
+    }),
+
+
+],
+
+
+    regrasValidacaoEditarProposta: [
+  body("titulo_proposta")
+    .trim()
+    .isLength({ min: 1, max: 70 })
+    .withMessage("A Proposta deve ter entre 1 e 70 caracteres."),
+  
+  
+
+  body("descricao_proposta")
     .trim()
     .isLength({ min: 1, max: 2000 })
     .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
@@ -398,6 +429,72 @@ return res.redirect("/publicacao/" + idPublicacao);
 },
 
 
+editarProposta: async (req, res) => {
+  console.log("Chegou no editarProposta");
+
+  try {
+    const { id_proposta, titulo_proposta, descricao_proposta, categoria_proposta, preferencia_proposta, prazo_entrega, orcamento } = req.body;
+    const idUsuario = req.session.autenticado.id;
+
+    console.log("Editando proposta:", id_proposta);
+    console.log("Body recebido:", req.body);
+
+    // Validação
+    const erros = validationResult(req);
+    if (!erros.isEmpty()) {
+      console.log("Erros de validação:", erros.array());
+
+      req.session.dadosNotificacao = {
+        titulo: "Não foi possível salvar as alterações.",
+        mensagem: "Preencha os campos corretamente.",
+        tipo: "error"
+      };
+
+      return res.redirect("/proposta/" + id_proposta);
+    }
+
+    // Categoria (permite "outra categoria")
+    let categoriaFinal = categoria_proposta;
+    if (req.body.outraCategoria && req.body.outraCategoria.trim() !== "") {
+      categoriaFinal = req.body.outraCategoria.trim();
+    }
+
+    // Atualiza os dados da proposta
+    await publicacoesModel.atualizarProposta({
+      ID_PROPOSTA: id_proposta,
+      TITULO_PROPOSTA: titulo_proposta,
+      DESCRICAO_PROPOSTA: descricao_proposta,
+      CATEGORIA_PROPOSTA: categoriaFinal,
+      PREFERENCIA_PROPOSTA: preferencia_proposta,
+      PRAZO_ENTREGA: prazo_entrega,
+      ORCAMENTO: orcamento,
+      ID_USUARIO: idUsuario
+    });
+
+    console.log("Proposta atualizada com sucesso!");
+
+    // Notificação de sucesso
+    req.session.dadosNotificacao = {
+      titulo: "Atualização feita!",
+      mensagem: "Sua proposta foi atualizada com sucesso.",
+      tipo: "success"
+    };
+
+    return res.redirect("/proposta/" + id_proposta);
+
+  } catch (erro) {
+    console.error("Erro ao editar proposta:", erro);
+
+    const idProposta = req.body.id_proposta;
+    req.session.dadosNotificacao = {
+      titulo: "Ocorreu um erro.",
+      mensagem: "Não foi possível atualizar sua proposta.",
+      tipo: "error"
+    };
+
+    return res.redirect("/proposta/" + idProposta);
+  }
+},
 
 
 
@@ -1007,61 +1104,73 @@ editarPortfolio: async (req, res) => {
 
 
 
-
 favoritar: async (req, res) => {
-    console.log("Chegou no favoritar");
+  console.log("Chegou no favoritar");
 
-    if (!req.session.autenticado?.autenticado) {
-        console.log("O usuário precisa logar. Mandando ele pra página de login.");
-        return res.render("pages/login", { 
-            listaErros: null,
-            dadosNotificacao: {
-                titulo: "Faça seu Login!", 
-                mensagem: "Para favoritar é necessário estar logado!", 
-                tipo: "warning" 
-            },
-            valores: [],
-            retorno: null,
-            errosLogin: null
-        });
-    }
+  if (!req.session.autenticado?.autenticado) {
+    return res.render("pages/login", { 
+      listaErros: null,
+      dadosNotificacao: {
+        titulo: "Faça seu Login!", 
+        mensagem: "Para favoritar é necessário estar logado!", 
+        tipo: "warning" 
+      },
+      valores: [],
+      retorno: null,
+      errosLogin: null
+    });
+  }
 
-    try {
-        const idPublicacao = req.query.id;
-        const situacao = req.query.sit;
-        const idUsuario = req.session.autenticado.id;
+  try {
+    const idPublicacao = req.query.id;
+    const situacao = req.query.sit;
+    const idUsuario = req.session.autenticado.id;
 
-        console.log("id da publicação:", idPublicacao);
-        console.log("situação:", situacao);
-        console.log("id do usuário:", idUsuario);
+    const idDonoPublicacao = req.query.idDono;
+    const nomePublicacao = req.query.nomePub;
 
-        await favoritoModel.favoritar({
-            idPublicacao,
-            situacao,
-            idUsuario
-        });
+    console.log("id da publicação:", idPublicacao);
+    console.log("situação:", situacao);
+    console.log("id do usuário (quem curtiu):", idUsuario);
+    console.log("id do dono da publicação:", idDonoPublicacao);
+    console.log("nome da publicação:", nomePublicacao);
 
-        console.log("Favorito atualizado!");
+    const resultado = await favoritoModel.favoritar({
+  idPublicacao,
+  situacao,
+  idUsuario
+});
 
-        const previousUrl = req.get("Referer") || "/";
+if (resultado.mudou && resultado.status === 1 && idUsuario != idDonoPublicacao) {
+  const idNotificacao = await notificacoesModel.criarNotificacao({
+    idUsuario: idDonoPublicacao,
+    titulo: "Nova curtida!",
+    preview: `${req.session.autenticado.nome} curtiu sua publicação "${nomePublicacao}".`,
+    conteudo: `
+      <p class="comentario-texto">Seu post tá bombando! 🔥 </p>
+      <p>Sua publicação "<strong>${nomePublicacao}</strong>" recebeu uma curtida de 
+      <strong class="nome-comentador">${req.session.autenticado.nome}</strong>! ❤️</p>
+      <a href="/publicacao/${idPublicacao}" class="btn-ver-comentario">Ver publicação</a>
+    `,
+    categoria: "CURTIDA"
+  });
 
-        
-        if (previousUrl.includes("/salvarcomentario") || previousUrl.includes("/excluir-comentario") || previousUrl.includes("/editar-publicacao")) {
-    return res.redirect(`/publicacao/${idPublicacao}`);
-} else if (previousUrl.includes("/editar-portfolio") || previousUrl.includes("/remover-publis-portfolio") || previousUrl.includes("/adicionar-publis-portfolio")) {
-    return res.redirect(`/portfolio/${req.session.currentPortfolioId}`);
+  console.log("Notificação criada com ID:", idNotificacao);
 }
-
-return res.redirect(previousUrl || "/");
-
-
-    } catch (err) {
-        console.error(err);
-        res.redirect("/");
+    const previousUrl = req.get("Referer") || "/";
+    if (previousUrl.includes("/salvarcomentario") || previousUrl.includes("/excluir-comentario") || previousUrl.includes("/editar-publicacao")) {
+      return res.redirect(`/publicacao/${idPublicacao}`);
+    } else if (previousUrl.includes("/editar-portfolio") || previousUrl.includes("/remover-publis-portfolio") || previousUrl.includes("/adicionar-publis-portfolio")) {
+      return res.redirect(`/portfolio/${req.session.currentPortfolioId}`);
     }
+
+    return res.redirect(previousUrl || "/");
+
+  } catch (err) {
+    console.error(err);
+    res.redirect("/");
+  }
 },
-
-
 
 
 
@@ -1096,6 +1205,10 @@ return res.redirect(previousUrl || "/");
       let resultado = await publicacoesModel.excluirProposta(idProposta);
       console.log(resultado);
 
+
+
+      
+
             
       req.session.dadosNotificacao = {
         titulo: "Proposta de projeto excluída!",
@@ -1124,6 +1237,79 @@ return res.redirect(previousUrl || "/");
       return res.redirect("/"); 
     }
   },
+
+   buscarPropostaPorId: async (req, res) => {
+      try {
+        const { idProposta } = req.params;
+        const [proposta] = await pool.query('SELECT * FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
+  
+        if (!proposta[0]) {
+          req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Proposta não encontrada', tipo: 'erro' };
+          return res.redirect('/projetos');
+        }
+  
+        res.render('pages/editar-proposta', { proposta: proposta[0] });
+      } catch (error) {
+        console.error('Erro ao buscar proposta:', error);
+        res.status(500).render('pages/erro-conexao', { mensagem: 'Não foi possível acessar a proposta.' });
+      }
+    },
+  
+    // Atualizar proposta
+    editarProposta: async (req, res) => {
+      try {
+        const { idProposta } = req.params;
+        const { titulo, descricao, categoria, preferencia, prazoEntrega, orcamento, status } = req.body;
+        const idUsuarioLogado = req.session.autenticado.id;
+  
+        // Verifica se o usuário é dono da proposta
+        const [proposta] = await pool.query('SELECT ID_USUARIO FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
+        if (!proposta[0]) {
+          req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Proposta não encontrada', tipo: 'erro' };
+          return res.redirect('/projetos');
+        }
+        if (proposta[0].ID_USUARIO !== idUsuarioLogado) {
+          req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Você não pode editar esta proposta', tipo: 'erro' };
+          return res.redirect('/projetos');
+        }
+  
+        // Atualiza os dados da proposta
+        await pool.query(
+          `UPDATE PROPOSTA_PROJETO 
+           SET TITULO_PROPOSTA=?, DESCRICAO_PROPOSTA=?, CATEGORIA_PROPOSTA=?, PREFERENCIA_PROPOSTA=?, PRAZO_ENTREGA=?, ORCAMENTO=?, STATUS_PROPOSTA=?
+           WHERE ID_PROPOSTA=?`,
+          [titulo, descricao, categoria, preferencia, prazoEntrega || null, orcamento || null, status, idProposta]
+        );
+  
+        req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Proposta atualizada!', tipo: 'sucesso' };
+        res.redirect(`/projetos/${idProposta}`);
+      } catch (error) {
+        console.error('Erro ao editar proposta:', error);
+        res.status(500).render('pages/erro-conexao', { mensagem: 'Não foi possível atualizar a proposta.' });
+      }
+    },
+  
+    // Denunciar proposta
+    denunciarProposta: async (req, res) => {
+      try {
+        const { idProposta, motivo } = req.body;
+        const idUsuario = req.session.autenticado.id;
+  
+        if (!idProposta || !motivo) {
+          req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Parâmetros inválidos', tipo: 'erro' };
+          return res.redirect('/projetos');
+        }
+  
+        await denunciasModel.criarDenunciaProjeto({ idProjeto: idProposta, idUsuario, motivo });
+  
+        req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Denúncia enviada com sucesso!', tipo: 'sucesso' };
+        res.redirect('/projetos');
+  
+      } catch (error) {
+        console.error('Erro ao denunciar proposta:', error);
+        res.status(500).render('pages/erro-conexao', { mensagem: 'Não foi possível denunciar a proposta.' });
+      }
+    }
 
 
 

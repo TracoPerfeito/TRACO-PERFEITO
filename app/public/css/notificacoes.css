@@ -84,8 +84,15 @@ a {
       border-radius: 5px;
       background-color: var( --cor2-not);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      font-family: "Josefin Sans", sans-serif;
     }
 
+    .notification-box:hover{
+    transition: all 0.3s;
+    cursor: pointer;
+      transform: scale(1.02); 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
     .highlight {
       background-color: var( --cor1-not);
     }
@@ -106,9 +113,10 @@ a {
     }
 
     .left .text .title {
-      font-size: 15px;
+      font-size: 18px;
     color: var(--text-color);
       font-weight: 500;
+      font-family: "Montserrat";
     }
 
     .left .text .tags {
@@ -118,7 +126,7 @@ a {
 
     .right {
       text-align: right;
-      font-size: 12px;
+      font-size: 15px;
       color: var(--text-color);
     }
 
@@ -156,7 +164,6 @@ a {
       color: #000;
     }
 
-    /* Ícones (placeholders como emojis ou imagens) */
     .icon-doc {
       width: 20px;
       height: 20px;
@@ -170,3 +177,179 @@ a {
       background: url('https://cdn-icons-png.flaticon.com/512/149/149071.png') no-repeat center center;
       background-size: contain;
     }
+
+
+    .preview{
+ color: var(--text-color);
+ opacity: 0.8;
+ padding-right: 10px;
+ font-size: 14px;
+ font-weight:300 ;
+    }
+
+/* Dropdowns */
+.select-dropdown, .filter-dropdown {
+  position: relative;
+  display: inline-block;
+   font-family: "Josefin Sans", sans-serif;
+  margin-left: 10px;
+}
+.select-dropdown button, .filter-dropdown button {
+  background: transparent;
+  border: 1px solid var(--borda-filtros-not);
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 7px;
+  color: var(--borda-filtros-not);
+   font-family: "Josefin Sans", sans-serif;
+}
+.select-options, .filter-options {
+  display: none;
+  position: absolute;
+  top: 35px;
+  left: 0;
+  background: var(--cor-fundo);
+  border: 1px solid #ccc;
+  color: var(--text-color);
+  min-width: 160px;
+  z-index: 999;
+  padding: 10px;
+  font-size: 15px;
+}
+.select-options section, .filter-options section {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.select-options section:hover, .filter-options section:hover {
+  background:   #6a7990;
+  color: White;
+
+}
+
+.p-strong{
+    color: White;
+font-family: "Montserrat";
+margin: 8px 0;
+}
+
+.select-options p{
+  margin: 5px 0px;
+  font-family: "Montserrat";
+}
+.select-dropdown.active .select-options,
+.filter-dropdown.active .filter-options {
+  display: block;
+}
+
+/* Confirmação de exclusão */
+.confirm-delete-box {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(  --cor-fundo-form-not);
+ 
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -2px 5px var(--text-color);
+  z-index: 100;
+  display: none;
+  height: 170px;
+   font-family: "Josefin Sans", sans-serif;
+  
+}
+
+.empty-message{
+  color: var(--text-color);
+  font-family: "Montserrat";
+  font-size: 30px;
+}
+
+#confirm-text{
+   font-size: 150%;
+}
+
+.conteudo-form-excluir{
+  margin: 20px 10%;
+  color: var(--text-color);
+}
+
+#cancel-btn{
+  background-color: var(--cor-fundo-card-perfis);
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+  padding: 10px;
+  border-radius: 7px;
+  margin-top: 15px;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 20px;
+}
+
+#cancel-btn:hover{
+  background-color: var( --cor1-not);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+#delete-btn{
+    background-color: rgb(153, 18, 18);
+  color: White;
+  padding: 10px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  margin-left: 10px;
+   font-family: "Josefin Sans", sans-serif;
+  margin-top: 15px;
+   font-size: 20px;
+}
+
+#delete-btn:hover{
+   background-color: rgb(218, 32, 32);
+   cursor: pointer;
+}
+
+
+
+/* Esconde o checkbox real */
+.select-notificacao {
+  display: none;
+}
+
+/* Estilo da checkbox personalizada */
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--text-color);
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+  margin-right: 8px;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all 0.2s;
+   aspect-ratio: 1 / 1; 
+}
+
+/* Marca quando checked */
+.select-notificacao:checked + .custom-checkbox::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0px;
+  width: 6px;
+  height: 12px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+transform: translateX(2px) rotate(45deg);
+
+  background-color: transparent;
+  border-color: #ffffff; 
+
+}
+
+.select-notificacao:checked + .custom-checkbox {
+  background-color:  #82a9e4;
+  border-color: #82a9e4;
+}

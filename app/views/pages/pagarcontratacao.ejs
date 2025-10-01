@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagamento da Contratação</title>
+<link rel="stylesheet" href="/css/pagamento.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+<body>
+
+<%- include('../partials/menu-logado'); %>
+
+<main class="container">
+    <!-- Detalhes da Contratação oaq-->
+    <div class="box">
+        <h2>Detalhes da Contratação</h2>
+        <p><strong>Projeto:</strong> <%= contratacao.NOME_PROJETO %></p>
+        <p><strong>Contratante:</strong> <%= contratacao.NOME_CONTRATANTE %></p>
+        <p><strong>Contratado:</strong> <%= contratacao.NOME_PROFISSIONAL %></p>
+        <p><strong>CPF do Pagador:</strong> <%= contratacao.CPF_CONTRATANTE %></p>
+        <p><strong>Celular:</strong> <%= contratacao.CELULAR_CONTRATANTE %></p>
+        <p><strong>E-mail:</strong> <%= contratacao.EMAIL_CONTRATANTE %></p>
+        <p><strong>Valor:</strong> R$ <%= contratacao.VALOR_TOTAL.toFixed(2) %></p>
+        <p><strong>Prazo de entrega:</strong> <%= contratacao.DATA_ENTREGA.toLocaleDateString('pt-BR') %></p>
+
+        <div class="hr-delicate"></div>
+
+        <h3>Atenção</h3>
+        <p>Após realizar o pagamento, o projeto será iniciado pelo contratado.</p>
+        <p>Certifique-se de que os dados estão corretos antes de prosseguir.</p>
+    </div>
+
+    <!-- Resumo e Pagamento -->
+    <div class="box box-summary">
+        <h2>Resumo do Pagamento</h2>
+        <div class="summary-line">
+            <span>Projeto:</span>
+            <span><%= contratacao.NOME_PROJETO %></span>
+        </div>
+        <div class="summary-line">
+            <span>Valor Total:</span>
+            <span>R$ <%= contratacao.VALOR_TOTAL.toFixed(2) %></span>
+        </div>
+        <div class="hr-delicate"></div>
+
+        <!-- Botão Mercado Pago -->
+        <div id="button-checkout"></div>
+    </div>
+</main><%- include('../partials/rodape'); %>
+
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
+<script>
+// Mercado Pago
+const mercadopago = new MercadoPago('APP_USR-94fd4658-b8ab-4b6f-87d3-b2c294f818ba', { locale: 'pt-BR' });
+
+function criarBotao() {
+    const idContratacao = "<%= contratacao.ID_CONTRATACAO %>";
+    const valor = "<%= contratacao.VALOR_TOTAL %>";
+    const nomeProjeto = "<%= contratacao.NOME_PROJETO %>";
+
+    console.log("Criando pagamento para contratação:", nomeProjeto, "Valor:", valor);
+
+    fetch("/contratacoes/create-preference", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            idContratacao,
+            valor,
+            nomeProjeto
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("PreferenceId recebido:", data.id);
+        const bricksBuilder = mercadopago.bricks();
+
+        const renderComponent = async (bricksBuilder) => {
+            if(window.checkoutButton) window.checkoutButton.unmount();
+
+            window.checkoutButton = await bricksBuilder.create(
+                "wallet",
+                "button-checkout",
+                {
+                    initialization: { preferenceId: data.id },
+                    callbacks: {
+                        onError: (err) => console.error(err),
+                        onReady: () => console.log("Botão pronto!")
+                    }
+                }
+            );
+        }
+
+        renderComponent(bricksBuilder);
+    })
+    .catch(err => console.error("Erro ao criar preferência:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    criarBotao();
+});
+</script>
+
+</body>
+</html>

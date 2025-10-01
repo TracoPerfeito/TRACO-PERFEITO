@@ -197,14 +197,14 @@ let msgErros = {conteudo: ""};
     <!-- Nome da publicação -->
     <p class="nome-da-publicacao"><%= publicacao.NOME_PUBLICACAO %></p>
  
-  <button class="like-button">
  
-  <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>"  
+
+         <button class="like-button">
+  <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>&idDono=<%= publicacao.ID_USUARIO %>&nomePub=<%= encodeURIComponent(publicacao.NOME_PUBLICACAO) %>"  
      onclick="localStorage.setItem('scrollPos', window.scrollY)">
     <i class="<%= publicacao.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= publicacao.FAVORITO %>"></i>
-
   </a>
-</button> 
+</button>
   </section>
  
   <!-- Descrição da publicação -->
@@ -253,6 +253,7 @@ let msgErros = {conteudo: ""};
       <p class="msg-erro"></p>
       <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
       <input type="hidden" name="donoPublicacao" value="<%= publicacao.ID_USUARIO %>">
+      <input type="hidden" name="nomePublicacao" value="<%= publicacao.NOME_PUBLICACAO %>">
       <br>
       <section class="button-container-submit">
         <% if (!tipo_usuario) { %>

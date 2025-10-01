@@ -24,3 +24,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Modal de denúncia de proposta
+document.addEventListener('DOMContentLoaded', () => {
+    const btnDenunciar = document.querySelector('.btn-denunciar-proposta');
+    const modalDenuncia = document.getElementById('modalDenuncia');
+    const btnFechar = document.getElementById('fecharModal');
+
+    if (btnDenunciar && modalDenuncia) {
+        btnDenunciar.addEventListener('click', (e) => {
+            e.preventDefault();
+            modalDenuncia.style.display = 'block';
+        });
+    }
+    if (btnFechar && modalDenuncia) {
+        btnFechar.addEventListener('click', () => {
+            modalDenuncia.style.display = 'none';
+        });
+    }
+    // Fecha o modal ao clicar fora do conteúdo
+    if (modalDenuncia) {
+        modalDenuncia.addEventListener('click', (e) => {
+            if (e.target === modalDenuncia) {
+                modalDenuncia.style.display = 'none';
+            }
+        });
+    }
+});

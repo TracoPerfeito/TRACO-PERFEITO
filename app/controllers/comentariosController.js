@@ -21,7 +21,7 @@ const comentariosController = {
   criarComentario: async (req, res) => {
     try {
       const erros = validationResult(req);
-      const { conteudo, idPublicacao, donoPublicacao } = req.body;
+      const { conteudo, idPublicacao, donoPublicacao, nomePublicacao } = req.body;
 
       if (!erros.isEmpty()) {
         const publicacao = await listagensModel.findIdPublicacao(idPublicacao, req.session.autenticado.id);
@@ -46,21 +46,34 @@ const comentariosController = {
       });
 
 
+      if(req.session.autenticado.id != donoPublicacao){
       const idNotificacao = await notificacoesModel.criarNotificacao({
         idUsuario: donoPublicacao,
         titulo: "Novo comentário!",
-        conteudo: `Seu post recebeu um comentário de ${req.session.autenticado.nome}.`,
+        preview:`Seu post "${nomePublicacao}" recebeu um comentário de ${req.session.autenticado.nome}.`,
+        conteudo: `
+  <p>Seu post "<strong>${nomePublicacao}</strong>" recebeu um comentário de 
+  <strong class="nome-comentador">${req.session.autenticado.nome}</strong>!</p>
+  <p class="comentario-texto">Comentário: "${conteudo}"</p>
+  <a href="/publicacao/${idPublicacao}" class="btn-ver-comentario">Ir para a publicação</a>
+`,
+
         categoria: "COMENTARIO"
       });
+
       
 
     console.log("Notificação criada com ID:", idNotificacao);
+
+      }
 
       req.session.dadosNotificacao = {
         titulo: 'Comentário enviado!',
         mensagem: 'Seu comentário foi salvo.',
         tipo: 'success'
       };
+
+
 
 
 
@@ -132,8 +145,6 @@ const comentariosController = {
         req.session.dadosNotificacao = { titulo: 'Erro', mensagem: resultado.error, tipo: 'error' };
         return res.redirect("/publicacao/" + idPublicacao);
       }
-
-      await notificacoesModel.notificarAdmins(`Novo comentário denunciado! Motivo: ${motivo}`);
 
       req.session.dadosNotificacao = {
         titulo: 'Denúncia enviada',

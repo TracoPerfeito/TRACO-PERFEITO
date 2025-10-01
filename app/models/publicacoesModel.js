@@ -1,6 +1,19 @@
 const pool = require("../../config/pool_conexoes");
 
 const publicacoesModel = {
+  // Buscar proposta de projeto por ID
+  findIdProposta: async (idProposta) => {
+    try {
+      const [rows] = await pool.query(
+        'SELECT * FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?',
+        [idProposta]
+      );
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Erro ao buscar proposta por ID:', error);
+      return null;
+    }
+  },
   // 🔍 Buscar publicação por ID
   findIdPublicacao: async (idPublicacao) => {
     try {
@@ -364,9 +377,10 @@ atualizarPublicacao: async ({ ID_PUBLICACAO, NOME_PUBLICACAO, DESCRICAO_PUBLICAC
 // 🗑️ Excluir proposta de projeto
 excluirProposta: async (idProposta) => {
   try {
-    await pool.query('DELETE FROM PROPOSTAS_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
-
-    console.log("Proposta de projeto esxcluída com sucesso.");
+    // Exclui denúncias relacionadas antes de excluir a proposta
+    await pool.query('DELETE FROM DENUNCIAS_PROJETOS WHERE ID_PROJETO = ?', [idProposta]);
+    await pool.query('DELETE FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
+    console.log("Proposta de projeto excluída com sucesso.");
     return true;
   } catch (error) {
     console.error('Erro ao excluir proposta: ', error);
@@ -374,8 +388,41 @@ excluirProposta: async (idProposta) => {
   }
 },
 
+// Adicione outras funções aqui, se necessário
 
+atualizarProposta: async (proposta) => {
+    try {
+      const sql = `
+        UPDATE PROPOSTA_PROJETO 
+        SET TITULO_PROPOSTA = ?, 
+            DESCRICAO_PROPOSTA = ?, 
+            CATEGORIA_PROPOSTA = ?, 
+            PREFERENCIA_PROPOSTA = ?, 
+            PRAZO_ENTREGA = ?, 
+            ORCAMENTO = ?
+        WHERE ID_PROPOSTA = ? AND ID_USUARIO = ?
+      `;
 
+      const params = [
+        proposta.TITULO_PROPOSTA,
+        proposta.DESCRICAO_PROPOSTA,
+        proposta.CATEGORIA_PROPOSTA,
+        proposta.PREFERENCIA_PROPOSTA,
+        proposta.PRAZO_ENTREGA,
+        proposta.ORCAMENTO,
+        proposta.ID_PROPOSTA,
+        proposta.ID_USUARIO
+      ];
+
+      const [result] = await pool.query(sql, params);
+      return result;
+    } catch (err) {
+      console.error("Erro no atualizarProposta:", err);
+      throw err;
+    }
+  }
 };
+
+
 
 module.exports = publicacoesModel;

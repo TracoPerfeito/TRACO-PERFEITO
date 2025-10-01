@@ -1,4 +1,3 @@
-
 const mysql = require('mysql2')
 require('dotenv').config();
 
@@ -11,20 +10,20 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 5,
     queueLimit: 0,
-     connectTimeout: 1000000
-    
+    connectTimeout: 1000000
 });
 
+// Testar conexão
 pool.getConnection((err, conn) => {
     if (err) {
-        console.log(err)
-        conn.release()
+        console.log("Erro ao conectar:", err);
+    } else {
+        console.log("Conectado ao SGBD!");
+        conn.release(); 
     }
-    else
-        console.log("Conectado ao SGBD!")
-})
+});
 
-module.exports = pool.promise()
+module.exports = pool.promise();
 
 
 

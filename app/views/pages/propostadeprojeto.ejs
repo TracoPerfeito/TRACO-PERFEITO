@@ -1,3 +1,14 @@
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <script>
+        alert('<%= dadosNotificacao.mensagem %>');
+      </script>
+   <% } %>
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <section class="notificacao <%= dadosNotificacao.tipo %>">
+        <strong><%= dadosNotificacao.titulo %></strong><br>
+        <span><%= dadosNotificacao.mensagem %></span>
+      </section>
+   <% } %>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -17,6 +28,11 @@
    <script src="/js/proposta.js"></script>
 </head>
 <body>
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <script>
+        alert('<%= dadosNotificacao.mensagem %>');
+      </script>
+   <% } %>
 
    <!-- Aviso de conta pendente -->
    <% if (status_usuario === 'pendente') { %>
@@ -57,23 +73,23 @@
                <section class="opcoes-menu">
                   <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
                      <!-- Editar proposta -->
-                     <button 
-                        class="btn-editar-proposta" 
-                        title="Editar proposta" 
-                        data-id="<%= proposta.ID_PROPOSTA %>"
-                        data-titulo="<%= proposta.TITULO_PROPOSTA %>"
-                        data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
-                        data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
-                        <ion-icon name="create-outline"></ion-icon>
-                        Editar
-                     </button>
+                        <button 
+                           class="btn-editar" 
+                           title="Editar proposta" 
+                           id="abrirModalEditar"
+                           data-id="<%= proposta.ID_PROPOSTA %>"
+                           data-titulo="<%= proposta.TITULO_PROPOSTA %>"
+                           data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
+                           data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
+                           <ion-icon name="create-outline"></ion-icon>
+                           Editar
+                        </button>
 
                      <!-- Excluir proposta -->
                      <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
             <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
             <button type="submit" class="btn-excluir-proposta" 
-                    title="Excluir proposta" 
-                    onclick="return confirm('Tem certeza que deseja excluir esta proposta?');">
+                    title="Excluir proposta">
                <ion-icon name="trash-outline"></ion-icon>
                Excluir
             </button>
@@ -170,11 +186,73 @@
       </aside>
    </section>
 
+   
+                                                <!-- Modal de denúncia -->
+                        <section id="modalDenuncia" class="modal">
+                            <section class="modal-content">
+                            <h3>Qual o motivo da denúncia?</h3>
+                            <form id="formDenuncia" action="/denunciar-proposta" method="post">
+                               <input type="hidden" id="idPropostaInput" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+                                <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
+                                <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+                                <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+                                <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+                                <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+                                <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+                                
+                                <button type="submit">Enviar denúncia</button>
+                                <button type="button" id="fecharModal">Cancelar</button>
+                            </form>
+                            </section>
+
+                        </section>
+
+
+   <!-- Tagify CDN para funcionamento do campo de tags do modal de edição -->
+   <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+
+   <!-- Modal de edição de proposta -->
+   <%- include('../partials/editar-proposta'); %>
+
    <!-- Rodapé -->
    <%- include('../partials/rodape'); %>
 
    <!-- Scripts -->
    <script src="js/voltar.js"></script>
    <script src="js/mobile-navbar.js"></script>
+   <script>
+      // Remover proposta da página após exclusão
+      document.addEventListener('DOMContentLoaded', function() {
+         var excluirForm = document.querySelector('.form-excluir-proposta');
+         if(excluirForm) {
+            excluirForm.addEventListener('submit', function(e) {
+               e.preventDefault();
+               if(confirm('Tem certeza que deseja excluir esta proposta?')) {
+                  var idProposta = excluirForm.querySelector('input[name="idProposta"]').value;
+                  fetch('/excluir-proposta', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                     body: 'idProposta=' + encodeURIComponent(idProposta)
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                     if(data.sucesso) {
+                        var card = document.querySelector('.containerp');
+                        if(card) card.remove();
+                        alert('Proposta excluída com sucesso!');
+                     } else {
+                        alert(data.erro || 'Erro ao excluir a proposta.');
+                     }
+                  })
+
+                  .catch(() => {
+                     alert('Erro ao excluir a proposta.');
+                  });
+               }
+            });
+         }
+      });
+   </script>
 </body>
 </html>
