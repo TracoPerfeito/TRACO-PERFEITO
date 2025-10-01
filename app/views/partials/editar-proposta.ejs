@@ -46,7 +46,7 @@
             <!-- Orçamento -->
             <section class="form-grupo-1">
               <label for="orcamento-editar-proposta">Orçamento (R$):</label>
-              <input type="number" id="orcamento-editar-proposta" name="orcamento" class="caixa-texto" step="0.01">
+              <input type="number" id="orcamento-editar-proposta" name="orcamento" class="caixa-texto" >
             </section>
 
             <!-- Prazo de entrega -->
@@ -55,8 +55,6 @@
               <input type="date" id="prazo-editar-proposta" name="prazo_entrega" class="caixa-texto">
             </section>
 
-            <!-- Tags -->
-          
           </section>
         </section>
 
@@ -79,13 +77,14 @@
 <!-- Incluir Quill CSS e JS (pode ser no <head> da página) -->
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-  
   <script>
     // Inicializa Quill no campo descrição
+    console.log('Inicializando Quill...');
     const quill = new Quill('#editor-descricao', {
       theme: 'snow',
       placeholder: 'Descreva detalhadamente...'
     });
+    console.log('Quill inicializado:', quill);
   
     // Mostrar campo "outra categoria"
     const selectCategoria = document.getElementById('categoria-editar-proposta');
@@ -93,31 +92,46 @@
     const containerOutraCategoria = document.getElementById('outra-categoria-container-proposta');
   
     selectCategoria.addEventListener('change', () => {
+      console.log('Categoria mudou para:', selectCategoria.value);
       if (selectCategoria.value === 'outro') {
         containerOutraCategoria.style.display = 'block';
         inputOutraCategoria.required = true;
+        console.log('Mostrando campo "Outra Categoria" e tornando obrigatório');
       } else {
         containerOutraCategoria.style.display = 'none';
         inputOutraCategoria.required = false;
         inputOutraCategoria.value = "";
+        console.log('Escondendo campo "Outra Categoria" e limpando valor');
       }
     });
   
     const formProposta = document.querySelector('#modal-editar-proposta form');
-    formProposta.addEventListener('submit', () => {
+    formProposta.addEventListener('submit', (event) => {
+      console.log('Formulário enviado. Preparando dados...');
+  
       // Antes de enviar, copia conteúdo do Quill para input hidden
-      document.getElementById('descricao-editar-proposta').value = quill.root.innerHTML;
+      const descricaoHTML = quill.root.innerHTML;
+      document.getElementById('descricao-editar-proposta').value = descricaoHTML;
+      console.log('Conteúdo do Quill copiado para textarea:', descricaoHTML);
   
       // Ajusta categoria se "outro" preenchido
       if (selectCategoria.value === 'outro' && inputOutraCategoria.value.trim() !== '') {
+        console.log('Categoria "outro" preenchida com:', inputOutraCategoria.value.trim());
         selectCategoria.value = inputOutraCategoria.value.trim();
+        console.log('selectCategoria.value ajustado para:', selectCategoria.value);
+      } else {
+        console.log('Categoria não é "outro" ou campo "outra categoria" vazio');
       }
     });
   
     // Abrir modal e preencher campos
     document.addEventListener('click', function (e) {
       const btn = e.target.closest('.btn-editar');
-      if (!btn) return;
+      if (!btn) {
+        // Se não clicar no botão editar, ignora
+        return;
+      }
+      console.log('Botão editar clicado:', btn);
   
       const idProposta = btn.getAttribute('data-id');
       const titulo = btn.getAttribute('data-titulo') || '';
@@ -126,6 +140,10 @@
       const prazoEntrega = btn.getAttribute('data-prazoentrega') || '';
       const orcamento = btn.getAttribute('data-orcamento') || '';
   
+      console.log('Dados extraídos do botão:');
+      console.log({ idProposta, titulo, categoria, descricao, prazoEntrega, orcamento });
+  
+      // Preencher campos do formulário
       document.getElementById('id-editar-proposta').value = idProposta;
       document.getElementById('id-editar-proposta-excluir').value = idProposta;
       document.getElementById('titulo-editar-proposta').value = titulo;
@@ -137,31 +155,41 @@
         inputOutraCategoria.required = true;
         inputOutraCategoria.value = '';
         selectCategoria.value = 'outro';
+        console.log('Categoria é "outro", mostrando campo para digitar categoria');
       } else {
         containerOutraCategoria.style.display = 'none';
         inputOutraCategoria.required = false;
         inputOutraCategoria.value = '';
+        console.log('Categoria não é "outro", escondendo campo para digitar categoria');
       }
   
       // Atualiza conteúdo do Quill com a descrição (HTML)
+      console.log('Atualizando conteúdo do Quill com descrição:', descricao);
       quill.root.innerHTML = descricao;
   
+      // Atualiza outros campos
       document.getElementById('prazo-editar-proposta').value = prazoEntrega;
+      console.log('Prazo de entrega setado para:', prazoEntrega);
+  
       document.getElementById('orcamento-editar-proposta').value = orcamento;
+      console.log('Orçamento setado para:', orcamento);
   
       // Mostrar modal
       const modal = document.getElementById('modal-editar-proposta');
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
+      console.log('Modal aberto e scroll da página desativado');
     });
   
     // Fechar modal
     document.getElementById('fechar-modal-editar-proposta').addEventListener('click', () => {
+      console.log('Fechar modal clicado');
       fecharModalProposta();
     });
   
     window.addEventListener('click', (event) => {
       if (event.target.id === 'modal-editar-proposta') {
+        console.log('Clique fora do modal detectado, fechando modal');
         fecharModalProposta();
       }
     });
@@ -170,6 +198,7 @@
       const modal = document.getElementById('modal-editar-proposta');
       modal.style.display = 'none';
       document.body.style.overflow = '';
+      console.log('Modal fechado e scroll da página ativado');
     }
   </script>
   

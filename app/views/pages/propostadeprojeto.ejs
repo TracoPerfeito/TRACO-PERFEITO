@@ -79,6 +79,8 @@
                            id="abrirModalEditar"
                            data-id="<%= proposta.ID_PROPOSTA %>"
                            data-titulo="<%= proposta.TITULO_PROPOSTA %>"
+                           data-orcamento="<%= proposta.ORCAMENTO %>"
+                           data-prazoentrega="<%= new Date(proposta.PRAZO_ENTREGA).toLocaleDateString() %>"
                            data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
                            data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
                            <ion-icon name="create-outline"></ion-icon>
