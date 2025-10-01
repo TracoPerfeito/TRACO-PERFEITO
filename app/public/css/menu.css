@@ -174,6 +174,16 @@ a {
   top: 0;
 }
 
+.header .menu-btn:checked ~ .menu-icon #badge-menu-mobile {
+  display: none !important;
+}
+
+/* Exibe normalmente quando fechado */
+.header .menu-icon #badge-menu-mobile {
+  display: inline-block; 
+}
+
+
 .divisor {
  
   display: inline-block; 
@@ -389,6 +399,14 @@ a {
   gap: 10px;
 }
 
+.nome-img {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row-reverse; 
+}
+
+
 .config-toggle{
   width: 100%;
 }
@@ -421,6 +439,32 @@ a {
 }
 
 
+.badge-notificacoes-avatar {
+  display: inline-block;
+}
+
+
+.badge-notificacoes-mobile {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgb(210, 110, 110);
+  font-family: "Montserrat";
+  color: white;
+  font-size: 10px;
+  padding: 3px 3px;
+  border-radius: 50%;
+  width: 10px;
+  border: 1px solid var(--azul-menu);
+  text-align: center;
+  line-height: 1;
+  z-index: 10;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 
 @media (max-width: 1230px) {
@@ -439,6 +483,15 @@ a {
     margin-top: 7px;
   }
 
+  
+.nome-img {
+  
+  flex-direction: row; 
+}
+
+.badge-notificacoes-avatar{
+display: none !important;
+}
   
 
   .user-menu li a {
@@ -466,6 +519,14 @@ a {
   font-size: 90%;
   order: 2;
 }
+
+ .badge-notificacoes-avatar {
+    display: none !important;
+  }
+
+  .badge-notificacoes-mobile {
+    display: inline-block;
+  }
 
 
     .config-dropdown{
@@ -969,4 +1030,55 @@ h2 {
 
 
 
+
+
+
+li a svg {
+  position: relative; 
+}
+
+.badge-notificacoes {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: rgb(210, 110, 110);
+  font-family: "Montserrat";
+  color: white;
+  font-size: 10px;
+  padding: 3px 3px;
+  border-radius: 50%;
+  width: 10px;
+  border: 1px solid var(--azul-menu);
+  text-align: center;
+  line-height: 1;
+  z-index: 10;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.texto-link {
+  margin-left: 4px; 
+}
+
+.badge-notificacoes-avatar {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: rgb(210, 110, 110);
+  font-family: "Montserrat";
+  color: white;
+  font-size: 10px;
+  padding: 3px 3px;
+  border-radius: 50%;
+  width: 10px;
+  border: 1px solid var(--azul-menu);
+  text-align: center;
+  line-height: 1;
+  z-index: 10;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 

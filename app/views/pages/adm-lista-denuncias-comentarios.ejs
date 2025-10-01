@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Denúncias</title>
+  <link rel="stylesheet" href="/css/pag-adm.css">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'> 
+  <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css">
+
+</head>
+<body>
+
+      <!--INICIO DO MENU TOP ADM -->
+
+    <%- include('../partials/menu_top_adm.ejs'); %>
+
+    <!--FIM DO MENU TOP ADM  -->
+
+
+    <!-- MENU LATERAL DO ADM -->
+
+    <%- include('../partials/menu_lateral_adm.ejs'); %>
+
+    <!-- MENU LATERAL DO ADM -->
+
+
+
+
+  <div class="container">
+    <% if (denuncias.length > 0) { %>
+      <% denuncias.forEach(denuncia => { %>
+        <div class="card">
+          <div class="card-header">
+            <h2>Denúncia #<%= denuncia.ID_DENUNCIA %></h2>
+            <span class="status <%= denuncia.STATUS %>">
+              <%= denuncia.STATUS %>
+            </span>
+          </div>
+          <div class="card-body">
+            <p><span class="label">Usuário Denunciante:</span> <%= denuncia.ID_USUARIO_DENUNCIANTE || 'Anônimo' %></p>
+            <p><span class="label">Comentário:</span> #<%= denuncia.ID_COMENTARIO %></p>
+            <p><span class="label">Motivo:</span> <%= denuncia.MOTIVO %></p>
+            <p><span class="label">Data da denúncia:</span> <%= new Date(denuncia.DATA_DENUNCIA).toLocaleString('pt-BR') %></p>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-detalhes">🔎 Detalhes</button>
+            <button class="btn btn-status">✔️ Alterar Status</button>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p style="text-align: center; font-size: 18px; grid-column: 1 / -1;">❌ Nenhuma denúncia encontrada</p>
+    <% } %>
+  </div>
+</body>
+</html>

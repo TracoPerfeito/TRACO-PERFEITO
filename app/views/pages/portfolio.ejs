@@ -208,13 +208,14 @@
             <p class="descricao-item-explorar"><%= pub.DESCRICAO_PUBLICACAO %></p>
       
 
-           <button class="like-button">
-  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>"  
+        
+
+         <button class="like-button">
+  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>&idDono=<%= pub.ID_USUARIO %>&nomePub=<%= encodeURIComponent(pub.NOME_PUBLICACAO) %>"  
      onclick="localStorage.setItem('scrollPos', window.scrollY)">
     <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
-
   </a>
-</button> 
+</button>
         </section>
 
         <!-- Descrição da publicação -->

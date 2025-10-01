@@ -56,6 +56,7 @@ body {
     gap: 10%;
     margin-bottom: 50px;
     color: var(--text-color);
+    
 }
 
 
@@ -74,6 +75,7 @@ body {
 .projeto {
    
     margin-right: 20px;
+
 }
 
 
@@ -153,11 +155,19 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
+    
 }
 
 .prop-rel-info p {
     color: var(--text-color);
     margin-left: 10px;
+
+}
+
+.info-proposta p {
+    padding-bottom: 10px;
+    color: var(--text-color);
+   
 }
 
 
@@ -253,8 +263,218 @@ body {
         }
     }
 
+    /* ========================
+   Menu de Opções Geral
+   ======================== */
+/* ========================
+   Menu de opções
+   ======================== */
+.menu-opcoes {
+    display: block;
+    position: relative;
+}
 
+.icone-menu {
+    cursor: pointer;
+    fill: var(--text-color, #000);
+    transform: translateX(10px);
+    margin-left: 60%;
+   
+}
 
+.opcoes-menu {
+    position: absolute;
+    top: 28px;
+    font-family: "Josefin Sans";
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: none; /* começa escondido */
+    flex-direction: column;
+    z-index: 1000;
+    margin-left: 60%;
+}
 
+.opcoes-menu button,
+.opcoes-menu .form-excluir button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+}
 
+.opcoes-menu button ion-icon,
+.opcoes-menu .form-excluir button ion-icon {
+    font-size: 18px;
+    vertical-align: middle;
+}
 
+.opcoes-menu button:hover,
+.opcoes-menu .form-excluir button:hover {
+    background-color: #eee;
+}
+
+/* ========================
+   Botões específicos
+   ======================== */
+.btn-editar-proposta,
+.btn-denunciar-proposta,
+.btn-excluir-proposta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.btn-editar-proposta:hover,
+.btn-denunciar-proposta:hover,
+.btn-excluir-proposta:hover {
+    background-color: #eee;
+}
+
+.btn-excluir-proposta {
+    color: #e74c3c;
+}
+
+.btn-excluir-proposta:hover {
+    color: #c0392b;
+}
+
+/* Modal de denúncia de proposta - padrão perfil */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+    font-family: "Josefin Sans";
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+}
+.erro-campo {
+    border: 2px solid #e74c3c !important;
+    background: #fff6f6;
+}
+
+.modal-content h2 {
+  margin-bottom: 18px;
+  font-size: 1.35em;
+  color: #222;
+  text-align: center;
+    font-family: "Josefin Sans";
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1em;
+  color: #222;
+  cursor: pointer;
+}
+/* Modal de denúncia - botões e layout */
+.modal-content form {
+    margin-top: 18px;
+}
+.modal-content form label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1em;
+    color: #222;
+    cursor: pointer;
+}
+.modal-content form input[type="radio"] {
+    margin-right: 8px;
+}
+.modal-content .botoes-modal-denuncia {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 18px;
+}
+.modal-content button[type="submit"],
+.modal-content button[type="button"] {
+    background: #183153;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.modal-content button[type="button"] {
+    background: #6c757d;
+}
+.modal-content button[type="submit"]:hover {
+    background: #0f223a;
+}
+.modal-content button[type="button"]:hover {
+    background: #495057;
+}
+
+.modal-content input[type="radio"] {
+  margin-right: 8px;
+}
+
+.modal-content section {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.btn-enviar-denuncia {
+  background: #183153;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-enviar-denuncia:hover {
+  background: #0f223a;
+}
+
+.btn-cancelar-denuncia {
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-cancelar-denuncia:hover {
+  background: #495057;
+}

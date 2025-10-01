@@ -39,6 +39,30 @@ mostrarhome: (req, res, dadosNotificacao) => {
     } });
 },
 
+listarDenunciasComentarios: async (req, res, dadosNotificacao) => {
+    console.log("Chegou no listar denúncias de comentários");
+    try {
+      let DenunciasComentarios = await admModel.listarDenunciasComentarios();
+      console.log({ DenunciasComentarios });
+      res.render("pages/adm-lista-denuncias-comentarios", {
+        autenticado: req.session.autenticado,
+        logado: req.session.logado,
+        denuncias: DenunciasComentarios || []
+      });
+    } catch (error) {
+      console.error("Erro ao listar denúncias de comentários:", error);
+      res.status(500).render("pages/erro-conexao", {
+        mensagem:
+          "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+      });
+    }
+}
+
+//ORGANIZAR ISSO E O ROUTER
+
+
+
+
 };
 
 module.exports = admController;

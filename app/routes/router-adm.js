@@ -164,7 +164,15 @@ router.get(
 );
 
 
+//Listagem de denúncias de comentários
 
+router.get(
+  "/adm-lista-denuncias-comentarios",  function(req, res) {
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  admController.listarDenunciasComentarios(req, res)}
+
+);
 
 
 

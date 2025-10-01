@@ -77,37 +77,87 @@ const favoritoModel = {
         }
     },
 
-    favoritar: async (dadosFavorito) => {
-        try {
-            if (dadosFavorito.situacao == "favorito") {
-                const resultados = await favoritoModel.update(
-                    { status_favorito: 0 }, dadosFavorito.idPublicacao, dadosFavorito.idUsuario
-                );
-            } else if (dadosFavorito.situacao == "favoritar") {
-                const result = await favoritoModel.findID(
-                    dadosFavorito.idPublicacao, dadosFavorito.idUsuario
-                );
-                var total = Object.keys(result).length;
-                if (total == 0) {
-                    let obj = {
-                        ID_PUBLICACAO: dadosFavorito.idPublicacao,
-                        ID_USUARIO: dadosFavorito.idUsuario,
-                        DT_INCLUSAO_FAVORITO: moment().format("YYYY/MM/DD"),
-                        STATUS_FAVORITO: 1
-                    }
-                    const resultados = await favoritoModel.create(obj);
-                } else {
-                    const resultados = await favoritoModel.update(
-                        { STATUS_FAVORITO: 1 }, dadosFavorito.idPublicacao, dadosFavorito.idUsuario
-                    );
-                }
+    // favoritar: async (dadosFavorito) => {
+    //     try {
+    //         if (dadosFavorito.situacao == "favorito") {
+    //             const resultados = await favoritoModel.update(
+    //                 { status_favorito: 0 }, dadosFavorito.idPublicacao, dadosFavorito.idUsuario
+    //             );
+    //         } else if (dadosFavorito.situacao == "favoritar") {
+    //             const result = await favoritoModel.findID(
+    //                 dadosFavorito.idPublicacao, dadosFavorito.idUsuario
+    //             );
+    //             var total = Object.keys(result).length;
+    //             if (total == 0) {
+    //                 let obj = {
+    //                     ID_PUBLICACAO: dadosFavorito.idPublicacao,
+    //                     ID_USUARIO: dadosFavorito.idUsuario,
+    //                     DT_INCLUSAO_FAVORITO: moment().format("YYYY/MM/DD"),
+    //                     STATUS_FAVORITO: 1
+    //                 }
+    //                 const resultados = await favoritoModel.create(obj);
+    //             } else {
+    //                 const resultados = await favoritoModel.update(
+    //                     { STATUS_FAVORITO: 1 }, dadosFavorito.idPublicacao, dadosFavorito.idUsuario
+    //                 );
+    //             }
 
-            }
-        } catch (error) {
-            console.log(error);
-            return error;
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //         return error;
+    //     }
+    // }
+
+
+
+    favoritar: async (dadosFavorito) => {
+  try {
+    if (dadosFavorito.situacao == "favorito") {
+      // descurtindo
+      await favoritoModel.update(
+        { STATUS_FAVORITO: 0 }, 
+        dadosFavorito.idPublicacao, 
+        dadosFavorito.idUsuario
+      );
+      return { mudou: true, status: 0 }; // retornando que mudou
+    } else if (dadosFavorito.situacao == "favoritar") {
+      const result = await favoritoModel.findID(
+        dadosFavorito.idPublicacao, 
+        dadosFavorito.idUsuario
+      );
+
+      if (result.length === 0) {
+        // nunca existiu curtida -> criar
+        let obj = {
+          ID_PUBLICACAO: dadosFavorito.idPublicacao,
+          ID_USUARIO: dadosFavorito.idUsuario,
+          DT_INCLUSAO_FAVORITO: moment().format("YYYY/MM/DD"),
+          STATUS_FAVORITO: 1
+        };
+        await favoritoModel.create(obj);
+        return { mudou: true, status: 1 };
+      } else {
+        const jaCurtido = result[0].STATUS_FAVORITO === 1;
+        if (!jaCurtido) {
+          // estava descurtido → agora curtiu
+          await favoritoModel.update(
+            { STATUS_FAVORITO: 1 }, 
+            dadosFavorito.idPublicacao, 
+            dadosFavorito.idUsuario
+          );
+          return { mudou: true, status: 1 };
         }
+        // já estava curtido, não mudou nada
+        return { mudou: false, status: 1 };
+      }
     }
+  } catch (error) {
+    console.log(error);
+    return { mudou: false, error };
+  }
+}
+
 
 }
 

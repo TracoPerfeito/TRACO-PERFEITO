@@ -1,138 +1,258 @@
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <script>
+        alert('<%= dadosNotificacao.mensagem %>');
+      </script>
+   <% } %>
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <section class="notificacao <%= dadosNotificacao.tipo %>">
+        <strong><%= dadosNotificacao.titulo %></strong><br>
+        <span><%= dadosNotificacao.mensagem %></span>
+      </section>
+   <% } %>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traço Perfeito</title>
-    <link rel="shortcut icon" href="/imagens/favicon.ico" type="image/x-icon">
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="/css/propostadeprojeto.css">
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">  
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Traço Perfeito</title>
+   <link rel="shortcut icon" href="/imagens/favicon.ico" type="image/x-icon">
+   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link rel="stylesheet" href="/css/propostadeprojeto.css">
+   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">  
+   <script src="/js/proposta.js"></script>
 </head>
 <body>
+   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
+      <script>
+        alert('<%= dadosNotificacao.mensagem %>');
+      </script>
+   <% } %>
 
-    <!--barra de menu logado-->
+   <!-- Aviso de conta pendente -->
+   <% if (status_usuario === 'pendente') { %>
+      <%- include('../partials/aviso-pendente') %>
+   <% } %>
 
-    
-<% if (status_usuario === 'pendente') { %>
-    <%- include('../partials/aviso-pendente') %>
-    
-<% } %>
-  
+   <!-- Barra de menu logado -->
+   <%- include('../partials/menu-logado'); %>
 
-    <%- include('../partials/menu-logado'); %>
+   <!-- Botão voltar -->
+   <section class="botao-de-voltar">   
+      <button class="btn-voltar" onclick="voltarPagina()"> 
+         <ion-icon name="arrow-back-outline" id="seta"></ion-icon>
+      </button>
+      <p class="lado-botao">Proposta de <%= proposta.NOME_USUARIO %></p>
+   </section>
 
-    <!--Resto da página-->
-
-    
-    <section class="botao-de-voltar">   
-        <button class="btn-voltar" onclick="voltarPagina()"> <ion-icon name="arrow-back-outline" id="seta"></ion-icon>
-            
-           
-        </button>
-        <p class="lado-botao">Publicação de Jaqueline Maria </p>
-    </section>
-
-<section class="conteudo">
-    
+   <section class="conteudo">
       <section class="containerp">
-  <section class="projeto">
-    <h1 class="titulo-maior">Proposta de projeto</h1>
-    <br>
+         <section class="projeto">
+          
+            <h1 class="titulo-maior">Proposta de projeto</h1>
+            <br>
 
-    <!-- Perfil do usuário que criou a proposta -->
-    <section class="perfil">
-      <section class="foto-nome">
-        <% if (proposta.FOTO_PERFIL) { %>
-          <img src="data:image/jpeg;base64,<%= proposta.FOTO_PERFIL %>" class="foto-perfil-explorar">
-        <% } else { %>
-          <img src="/imagens/fotoperfil-default.jpeg" class="foto-perfil-explorar">
-        <% } %>
-        <p class="nome-dono-post-ex">
-          <a href="/perfil/<%= proposta.ID_USUARIO %>"><%= proposta.NOME_USUARIO %></a>
-        </p>
+            <!-- Menu de opções -->
+            <section class="menu-opcoes"> 
+               <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" 
+                    viewBox="0 -960 960 960" width="24px" fill="#000">
+                  <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 
+                           23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 
+                           56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 
+                           23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 
+                           56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 
+                           23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 
+                           56.5T480-640Z"/>
+               </svg>
+
+               <section class="opcoes-menu">
+                  <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
+                     <!-- Editar proposta -->
+                        <button 
+                           class="btn-editar" 
+                           title="Editar proposta" 
+                           id="abrirModalEditar"
+                           data-id="<%= proposta.ID_PROPOSTA %>"
+                           data-titulo="<%= proposta.TITULO_PROPOSTA %>"
+                           data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
+                           data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
+                           <ion-icon name="create-outline"></ion-icon>
+                           Editar
+                        </button>
+
+                     <!-- Excluir proposta -->
+                     <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
+            <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+            <button type="submit" class="btn-excluir-proposta" 
+                    title="Excluir proposta">
+               <ion-icon name="trash-outline"></ion-icon>
+               Excluir
+            </button>
+         </form>
+                  <% } %>
+
+
+                  <!-- Denunciar -->
+                   <button class="btn-denunciar-proposta" 
+              title="Denunciar" 
+              data-id="<%= proposta.ID_PROPOSTA %>">
+         <ion-icon name="flag-outline"></ion-icon>
+         Denunciar
+      </button>
+   </section>
+</section>
+
+            <!-- Perfil do usuário -->
+            <section class="perfil">
+               <section class="foto-nome">
+                  <% if (proposta.FOTO_PERFIL) { %>
+                     <img src="data:image/jpeg;base64,<%= proposta.FOTO_PERFIL %>" class="foto-perfil-explorar">
+                  <% } else { %>
+                     <img src="/imagens/fotoperfil-default.jpeg" class="foto-perfil-explorar">
+                  <% } %>
+                  <p class="nome-dono-post-ex">
+                     <a href="/perfil/<%= proposta.ID_USUARIO %>"><%= proposta.NOME_USUARIO %></a>
+                  </p>
+               </section>
+               <button class="conversar" onclick="location.href='/chat-logado'">Conversar</button>
+            </section>
+
+            <!-- Informações gerais -->
+            <section class="info-proposta">
+               <p><strong>Nome da proposta:</strong> <%= proposta.TITULO_PROPOSTA %></p>
+               <p><strong>Categoria:</strong> <%= proposta.CATEGORIA_PROPOSTA %></p>
+               <p><strong>Profissional requerido:</strong> <%= proposta.PROFISSIONAL_REQUERIDO %></p>
+               <p><strong>Prazo de entrega:</strong>
+                  <% if (proposta.PRAZO_ENTREGA) { %>
+                     <%= new Date(proposta.PRAZO_ENTREGA).toLocaleDateString() %>
+                  <% } else { %>
+                     Não definido
+                  <% } %>
+               </p>
+               <p><strong>Orçamento:</strong> R$ <%= proposta.ORCAMENTO %></p>
+               <p><strong>Status:</strong> <%= proposta.STATUS_PROPOSTA %></p>
+               <p><strong>Preferência:</strong> <%= proposta.PREFERENCIA_PROPOSTA %></p>
+               <p><strong>Data da proposta:</strong>
+                  <% if (proposta.DATA_PROPOSTA) { %>
+                     <%= new Date(proposta.DATA_PROPOSTA).toLocaleDateString() %>
+                  <% } else { %>
+                     Não definido
+                  <% } %>
+               </p>
+            </section>
+
+            <!-- Descrição -->
+            <section class="pedidodescrito">
+               <%- proposta.DESCRICAO_PROPOSTA %>
+            </section>
+         </section>
       </section>
-      <button class="conversar" onclick="location.href='/chat-logado'">Conversar</button>
-    </section>
 
-    <!-- Informações gerais da proposta -->
-    <section class="info-proposta">
-      <p><strong>Nome da proposta:</strong> <%= proposta.TITULO_PROPOSTA %></p>
-      <p><strong>Categoria:</strong> <%= proposta.CATEGORIA_PROPOSTA %></p>
-      <p><strong>Profissional requerido:</strong> <%= proposta.PROFISSIONAL_REQUERIDO %></p>
-      <p><strong>Prazo de entrega:</strong>
-        <% if (proposta.PRAZO_ENTREGA) { %>
-          <%= new Date(proposta.PRAZO_ENTREGA).toLocaleDateString() %>
-        <% } else { %>
-          Não definido
-        <% } %>
-      </p>
-      <p><strong>Orçamento:</strong> R$ <%= proposta.ORCAMENTO %></p>
-      <p><strong>Status:</strong> <%= proposta.STATUS_PROPOSTA %></p>
-      <p><strong>Preferência:</strong> <%= proposta.PREFERENCIA_PROPOSTA %></p>
-      <p><strong>Data da proposta:</strong>
-        <% if (proposta.DATA_PROPOSTA) { %>
-          <%= new Date(proposta.DATA_PROPOSTA).toLocaleDateString() %>
-        <% } else { %>
-          Não definido
-        <% } %>
-      </p>
-    </section>
+      <!-- Outras propostas -->
+      <aside class="outras-propostas">
+         <h2 class="titulo-medio">Outras propostas</h2>
+         <section class="outras-p-container">
+            <section class="propostas">
+               <section class="prop-rel-info">
+                  <img src="imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
+                  <a href=/perfilalogado>
+                     <p class="nome-comentario"> Mariana Sanchez</p>
+                  </a>
+               </section>
+               <p>
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, dicta sunt explicabo.
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
+               </p>
+            </section>
 
-    <!-- Descrição da proposta (HTML do Quill) -->
-    <section class="pedidodescrito">
-      <%- proposta.DESCRICAO_PROPOSTA %>
-    </section>
-  </section>
-</section>
+            <section class="propostas">
+               <section class="prop-rel-info">
+                  <img src="imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
+                  <a href=/perfilalogado>
+                     <p class="nome-comentario"> Mariana Sanchez</p>
+                  </a>
+               </section>
+               <p>
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, dicta sunt explicabo.
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
+               </p>
+            </section>
+         </section>
+      </aside>
+   </section>
 
+   
+                                                <!-- Modal de denúncia -->
+                        <section id="modalDenuncia" class="modal">
+                            <section class="modal-content">
+                            <h3>Qual o motivo da denúncia?</h3>
+                            <form id="formDenuncia" action="/denunciar-proposta" method="post">
+                               <input type="hidden" id="idPropostaInput" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+                                <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
+                                <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+                                <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+                                <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+                                <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+                                <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+                                
+                                <button type="submit">Enviar denúncia</button>
+                                <button type="button" id="fecharModal">Cancelar</button>
+                            </form>
+                            </section>
 
-            <aside class="outras-propostas">
-                <h2 class="titulo-medio">Outras propostas</h2>
-                <section class="outras-p-container">
-                    <section class="propostas">
-                        <section class="prop-rel-info">
-                            <img src="imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                            <a href=/perfilalogado>
-                                <p class="nome-comentario"> Mariana Sanchez</p>
-                            </a>
                         </section>
-                        
-                        <p>
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, dicta sunt explicabo.
-                            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
-                        </p>
-                    </section>
 
 
-                    <section class="propostas">
+   <!-- Tagify CDN para funcionamento do campo de tags do modal de edição -->
+   <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
 
-                        <section class="prop-rel-info">
-                            <img src="imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                            <a href=/perfilalogado>
-                                <p class="nome-comentario"> Mariana Sanchez</p>
-                            </a>
-                        </section>
-                        
-                        <p>
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, dicta sunt explicabo.
-                            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
-                        </p>
-                    </section>
-                </section>
-            </aside>
-        </section>
-</section>
+   <!-- Modal de edição de proposta -->
+   <%- include('../partials/editar-proposta'); %>
 
-    <%- include('../partials/rodape'); %>
+   <!-- Rodapé -->
+   <%- include('../partials/rodape'); %>
 
-    <script src="js/voltar.js"></script>
-    <script src="js/mobile-navbar.js"></script>
+   <!-- Scripts -->
+   <script src="js/voltar.js"></script>
+   <script src="js/mobile-navbar.js"></script>
+   <script>
+      // Remover proposta da página após exclusão
+      document.addEventListener('DOMContentLoaded', function() {
+         var excluirForm = document.querySelector('.form-excluir-proposta');
+         if(excluirForm) {
+            excluirForm.addEventListener('submit', function(e) {
+               e.preventDefault();
+               if(confirm('Tem certeza que deseja excluir esta proposta?')) {
+                  var idProposta = excluirForm.querySelector('input[name="idProposta"]').value;
+                  fetch('/excluir-proposta', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                     body: 'idProposta=' + encodeURIComponent(idProposta)
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                     if(data.sucesso) {
+                        var card = document.querySelector('.containerp');
+                        if(card) card.remove();
+                        alert('Proposta excluída com sucesso!');
+                     } else {
+                        alert(data.erro || 'Erro ao excluir a proposta.');
+                     }
+                  })
+
+                  .catch(() => {
+                     alert('Erro ao excluir a proposta.');
+                  });
+               }
+            });
+         }
+      });
+   </script>
 </body>
 </html>

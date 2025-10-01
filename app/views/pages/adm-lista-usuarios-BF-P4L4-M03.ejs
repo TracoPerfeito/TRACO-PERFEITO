@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/pag-adm.css">
+
+    <title>Página do Administrador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+
+
+        <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+
+
+    <link rel="stylesheet" href="/css/adm-lista-usuarios.css">
+   
+</head>
+<body>
+    
+    <!--INICIO DO MENU TOP ADM -->
+
+    <%- include('../partials/menu_top_adm.ejs'); %>
+
+    <!--FIM DO MENU TOP ADM  -->
+
+
+    <!-- MENU LATERAL DO ADM -->
+
+    <%- include('../partials/menu_lateral_adm.ejs'); %>
+
+    <!-- MENU LATERAL DO ADM -->
+
+
+
+
+  <!-- LISTAGEM DOS USUÁRIOS -->
+
+  <section class="usuarios-section">
+  <header>
+    <h2 class="tittle-usuarios-geral">Usuários</h2>
+  </header>
+
+  <section class="usuarios-list">
+
+    <% var usuarios = typeof usuarios !== 'undefined' ? usuarios : []; %>
+
+
+    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>User</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% usuarios.forEach(usuario => { %>
+          <tr>
+            <td style="text-align:center;">
+              <% if (usuario.FOTO_PERFIL_BANCO_USUARIO) { %>
+                <img src="<%= usuario.FOTO_PERFIL_BANCO_USUARIO %>" 
+                     alt="Foto de <%= usuario.NOME_USUARIO %>" 
+                     width="50" height="50" 
+                     style="border-radius:50%;"
+                     onerror="this.onerror=null; this.src='/imagens/img.png'">
+              <% } else { %>
+                <img src="/images/foto-perfil.png" 
+                     alt="Sem foto" 
+                     width="50" height="50" 
+                     style="border-radius:50%;">
+              <% } %>
+            </td>
+            <td><%= usuario.NOME_USUARIO %></td>
+            <td><%= usuario.EMAIL_USUARIO %></td>
+            <td><%= usuario.USER_USUARIO %></td>
+            <td><%= usuario.TIPO_USUARIO.charAt(0).toUpperCase() + usuario.TIPO_USUARIO.slice(1) %></td>
+            <td>
+              <% if (usuario.STATUS_USUARIO === 'ativo') { %>
+                <span class="status ativo" style="color: green; font-weight: bold;">Ativo</span>
+              <% } else if (usuario.STATUS_USUARIO === 'inativo') { %>
+                <span class="status inativo" style="color: red; font-weight: bold;">Inativo</span>
+              <% } else { %>
+                <span class="status pendente" style="color: #a96807; font-weight: bold;"><%= usuario.STATUS_USUARIO %></span>
+              <% } %>
+            </td>
+            <td style="text-align:center;">
+              <a href="/adm-usuarios/observacoes/<%= usuario.ID_USUARIO %>" title="Detalhes">🔍</a>
+              &nbsp;
+              <a href="/adm-usuarios/editar/<%= usuario.ID_USUARIO %>" title="Editar">✏️</a>
+              &nbsp;
+              <a href="/adm-usuarios/excluir/<%= usuario.ID_USUARIO %>" title="Inativar" onclick="return confirm('Tem certeza?')">🗑️</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    
+
+
+
+    
+  </section>
+</section>
+    <!-- FIM DA LISTAGEM DOS USUÁRIOS -->
+
+
+
+    <!-- PAGINAÇÃO DO NEGOCIO -->
+
+    <input onclick="window.location='/adicionar'" type="button" value="Novo">
+
+    <% if (paginador) { %>
+        <section class="notificador">
+            <ul>
+                <% for (var i = 1; i <= paginador.total_paginas; i++) { %>
+                    <% if (paginador.pagina_atual == i) { %>
+                        <li><a class="atual" href="?pagina=<%= i %>"><%= i %></a></li>
+                    <% } else { %>
+                        <li><a href="?pagina=<%= i %>"><%= i %></a></li>
+                    <% } %>
+                <% } %>
+            </ul>
+        </section>
+    <% } %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <!-- LINK DO MENU LATERAL -->
+      <script src="/js/menu-lateral-adm.js"></script>
+
+</body>
+</html>

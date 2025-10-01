@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import url(cores.css);
-body {
+/* body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
 
@@ -197,4 +197,422 @@ ul {
       padding: 8px;
       border: 1px solid #ccc;
       border-radius: 5px;
+    } */
+
+
+
+   
+     h2, .faq h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: var(--text-color);
     }
+    .hero span.typing {
+      color:#7193C7;
+      border-right: 2px solid var(--primary-color);
+      padding-right: 4px;
+      animation: blink 0.7s infinite;
+    }
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+
+   
+
+    .plano h2 {
+    font-family: "Montserrat";
+    text-align: left;
+    }
+
+    .plano strong {
+      font-size: 1.6em;
+      display: block;
+      margin: 10px 0 30px 0;
+    }
+
+    .plano ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+.plano p {
+    margin-bottom: 20px;
+}
+
+    .plano footer {
+      display: flex;
+      gap: 10px;
+    }
+
+    .card-card {
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        margin: 50px 0px;
+        padding: 80px 0px;
+    }
+
+    button {
+      border: 1px solid #b6b6b6;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+
+    }
+
+    .btns{
+
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 2fr;
+         font-family: "Montserrat";
+    }
+    
+
+    button.assinar {
+      background: rgb(36, 36, 86);
+      color: white;
+      font-family: "Montserrat";
+    }
+
+    .assinar a{
+        color: white;
+         font-family: "Montserrat";
+    }
+
+    button.assinar:hover {
+      background: var(--azul-mais-escuro);
+    }
+
+    /* FAQ estilo accordion */
+    .faq {
+      max-width: 700px;
+      margin: 50px auto;
+      font-family: "Montserrat";
+      color: var(--text-color);
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--linha-pesquisa);
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      font-family: "Montserrat";
+      text-align: left;
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--text-color);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-question .arrow {
+      transition: transform 0.3s;
+      fill: var(--text-color);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      padding: 0 15px;
+      color: var(--text-color-mais-claro);
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 200px;
+      padding: 15px;
+    }
+
+    .faq-item.active .arrow {
+      transform: rotate(180deg);
+    }
+
+.arrow ion-icon {
+  color: var(--text-color);
+}
+
+     .hero {
+    display: flex;
+    justify-content:flex-start ;
+    align-items: center;
+
+    margin: 0 0 50px 0 ;
+  
+    width: 100%;
+    height: 500px;
+      background: linear-gradient(270deg, #132d46, #316886,rgb(30, 36, 48));
+    background-size: 400% 400%;
+    animation: shimmer 8s ease infinite;
+    box-shadow: 0 0 20px rgba(49, 104, 134, 0.5);
+    padding: 30px 0;
+
+  }
+
+  .highlight-box {
+    padding: 10px 40px;
+    width: 100%;
+  
+    border-radius: 15px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+  
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .highlight-box p {
+    margin: 0 0 20px 0;
+  }
+
+  .cta-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    background: #7193C7;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: "Montserrat";
+    transition: transform 0.2s, background 0.3s;
+    
+  }
+
+  .cta-btn:hover {
+    background:#4e6fa0;
+    transform: translateY(-3px);
+  }
+
+
+  .p-esquerda{
+     text-align: left;
+  
+  top: 20px;
+  font-family: "Montserrat";
+  }
+
+.planos-comparacao {
+  width: 100%;
+  font-family: "Montserrat", sans-serif;
+  margin: 40px 0; /* só margem vertical, lateral já no container */
+}
+
+.planos-comparacao h2{
+  color: var(--text-color);
+}
+
+/* Container da tabela com scroll apenas se necessário */
+.table-wrapper {
+  width: 90%;      /* ocupa 90% da largura da tela */
+  max-width: 100%; /* nunca ultrapassa 100% */
+  margin: 0 auto;  /* centraliza */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* suaviza no mobile */
+}
+
+/* Tabela ocupa 100% do container */
+.planos-comparacao table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.planos-comparacao thead {
+  background: linear-gradient(90deg, #316886, #132d46);
+  color: white;
+  font-size: 1rem;
+}
+
+.planos-comparacao thead th {
+  padding: 15px 20px;
+}
+
+.planos-comparacao tbody td {
+  padding: 15px 20px;
+  background: var(--table-1);
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.planos-comparacao tbody tr:nth-child(even) td {
+  background: var(--table)
+}
+
+.plan-gratis {
+  background: #f0f0f0;
+  color: #555;
+  font-weight: bold;
+}
+
+.plan-premium {
+  background: linear-gradient(135deg, #edc531, #c9a227);
+  color: #132d46;
+  font-weight: bold;
+}
+
+.planos-comparacao tbody td:first-child {
+  text-align: left;
+  font-weight: 500;
+   color: var(--text-color);
+}
+
+.planos-comparacao tbody td:last-child, 
+.planos-comparacao tbody td:nth-child(2) {
+  font-size: 1.2rem;
+}
+
+/* cores para check e traço */
+.ok {
+  color: #28a745; /* verde */
+  font-weight: bold;
+}
+
+.nao {
+  color: #999999; /* cinza */
+  font-weight: bold;
+}
+
+/* ajustes mobile */
+@media (max-width: 768px) {
+  .planos-comparacao thead th,
+  .planos-comparacao tbody td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .planos-comparacao tbody td:last-child,
+  .planos-comparacao tbody td:nth-child(2) {
+    font-size: 1rem;
+  }
+}
+
+.nome-card {
+  background: #6b88d6; 
+  width: 100%;
+  padding: 1rem;
+  
+  box-sizing: border-box;
+}
+
+  .nome-card h2{
+font-size: 25px;
+margin: 5px 0 10px 0;
+  }
+
+  .nome-card p, h3, span {
+      color: white;
+  }
+
+.card-plano ul{
+  padding: 1rem;
+  box-sizing: border-box;
+  margin: 5px 10px;
+}
+
+.card-plano {
+  display: flex;
+  flex-direction: column;
+  background: var(--cor-fundo);
+  border-radius: 10px;
+  overflow: hidden;
+  color: var(--text-color);
+  max-width: 400px;
+  margin: auto;
+    box-sizing: border-box;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+     border: solid 1px var(--text-color);
+}
+
+.card-img img {
+  width: 100%;
+  display: none;
+}
+
+.card-info {
+  padding: 0;
+  font-family: "Montserrat";
+}
+
+
+.tag {
+  display: inline-block;
+  background: white;
+  color: #6b88d6;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+
+.btns {
+  display: flex;
+  gap: 10px;
+  margin: 5px 10px 15px 10px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-light {
+  background: transparent;
+  color: #6b88d6;
+  text-transform: uppercase;
+  width:40%;
+  border: 1px solid #6b88d6;
+  text-align: center;
+}
+
+.btn-dark {
+  background: #7193C7;
+  color: white;
+  text-transform: uppercase;
+  width: 60%;
+}
+
+/* --- Modo desktop --- */
+@media (min-width: 768px) {
+  .card-plano {
+    flex-direction: row;
+    width: 60%;
+      max-width: none;
+  
+  }
+  .card-info {
+    background: white;
+    
+    flex: 1;
+  }
+  .card-img  {
+    flex: 1;
+  }
+  .card-img img {
+  width: 100%;
+  display: block;
+}
+}

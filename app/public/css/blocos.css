@@ -1,3 +1,20 @@
+/* Notificação padrão igual outras páginas */
+.notificacao {
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 400px;
+  font-family: 'Montserrat', 'Josefin Sans', sans-serif;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fff;
+  color: #333;
+  border-left: 6px solid #4caf50;
+  display: block;
+}
+.notificacao.success { border-left-color: #4caf50; }
+.notificacao.error { border-left-color: #e74c3c; }
+.notificacao strong { font-weight: 600; }
 /* Modal de confirmação de exclusão de publicação (reutiliza modal-coment) */
 .modal-coment {
   position: fixed;

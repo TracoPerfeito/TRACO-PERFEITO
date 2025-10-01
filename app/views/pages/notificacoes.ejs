@@ -2,9 +2,20 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Minhas Notificações</title>
   <link rel="stylesheet" href="css/notificacoes.css">
   <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
+  
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="js/simple-notify.js"></script>
   
 </head>
 <body>
@@ -28,49 +39,281 @@
 
 
 
+ 
+ <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
+
+
 
 <section class="container">
   <h2 class="h2-titulo">Notificações</h2>
 
-  <!-- Bloco resumo -->
   <section class="summary-box">
     <section class="left">
-      <%= total > 0 ? total + " notificações não visualizadas" : "Sem notificações" %>
+      <% if (total === 0) { %>
+        Sem notificações não lidas
+      <% } else if (total === 1) { %>
+        1 notificação não visualizada
+      <% } else { %>
+        <%= total %> notificações não visualizadas
+      <% } %>
     </section>
-    <section class="right">
-      <!-- Aqui você pode colocar botão de limpar todas ou filtro, se quiser -->
+
+    <section class="right controls">
+      <!-- Seleção múltipla -->
+      <section class="select-dropdown">
+        <button id="select-btn">Selecionar <i class="fa fa-caret-down"></i></button>
+        <section class="select-options">
+          <section data-action="all">Todas</section>
+          <section data-action="none">Nenhuma</section>
+          <section data-action="nao-lidas">Apenas não lidas</section>
+          <section data-action="lidas">Apenas lidas</section>
+        </section>
+      </section>
+
+      <!-- Filtro e ordenação -->
+      <section class="filter-dropdown">
+        <button id="filter-btn">Filtrar / Ordenar <i class="fa fa-caret-down"></i></button>
+        <section class="filter-options">
+          <p class="p-strong"><strong>Filtrar por:</strong></p>
+          <section data-filter="all">Todas</section>
+          <section data-filter="nao-lidas">Não Lidas</section>
+          <section data-filter="lidas">Lidas</section>
+          <p class="p-strong"><strong>Ordenar por:</strong></p>
+          <section data-sort="recentes">Mais Recentes</section>
+          <section data-sort="antigas">Mais Antigas</section>
+        </section>
+      </section>
     </section>
   </section>
 
+  <!-- Lista de notificações -->
   <% if (notificacoes.length === 0) { %>
     <p class="empty-message">Você não tem notificações no momento.</p>
-    <img src="/imagens/sem-notificacoes.png" alt="Sem notificações" class="empty-img">
   <% } else { %>
-    <% notificacoes.forEach(n => { %>
-      <a href="/notificacao/<%= n.ID_NOTIFICACAO %>" class="notification-link">
-        <section class="notification-box <%= n.STATUS === 'NAO_LIDA' ? 'highlight' : '' %>">
+    <form id="notificacoes-form" action="/excluir-notificacoes" method="post">
+      <input type="hidden" name="ids[]" class="hidden-id" value="">
+
+      <% notificacoes.forEach((n) => { %>
+        <section class="notification-box <%= n.STATUS === 'NAO_LIDA' ? 'highlight' : '' %>"  onclick="window.location.href='/notificacao/<%= n.ID_NOTIFICACAO %>'">
           <section class="left">
-            <img src="/imagens/logo.png" alt="Logo" width="24" height="24">
+             <input type="checkbox" id="notif-<%= n.ID_NOTIFICACAO %>" class="select-notificacao" data-id="<%= n.ID_NOTIFICACAO %>" onclick="event.stopPropagation()">
+  <label for="notif-<%= n.ID_NOTIFICACAO %>" class="custom-checkbox" onclick="event.stopPropagation()"></label>
+  <img src="/imagens/logo.png" width="24" height="24" alt="Logo">
             <section class="text">
               <section class="title"><%= n.TITULO_NOTIFICACAO %></section>
+              <p class="preview"><%= n.PREVIEW_NOTIFICACAO %></p>
             </section>
           </section>
+
           <section class="right">
-            <% if(n.STATUS === 'NAO_LIDA') { %>
+            <% if(n.STATUS === 'NAO_LIDA'){ %>
               <section class="not-viewed">Não Visualizada</section>
             <% } %>
-            <section><%= new Date(n.DATA_CRIACAO).toLocaleDateString('pt-BR') %></section>
-          </section>
-        </section>
-      </a>
-    <% }) %>
-  <% } %>
-
+          <section data-timestamp="<%= n.DATA_CRIACAO_NOTIFICACAO.getTime() %>">
+  <%= new Date(n.DATA_CRIACAO_NOTIFICACAO.getTime() - (3*60*60*1000))
+    .toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) %>
 </section>
 
+          </section>
+        </section>
+      <% }) %>
+    </form>
+  <% } %>
 
-  
- <%- include('../partials/rodape'); %>
+  <p class="empty-message" style="display:none;">Você não tem notificações no momento.</p>
+  <!-- Confirmação de exclusão fixa -->
+  <section id="confirm-delete" class="confirm-delete-box">
+    <section class="conteudo-form-excluir">
+      <p id="confirm-text"></p>
+      <button type="button" id="cancel-btn">Cancelar</button>
+      <button type="submit" form="notificacoes-form" id="delete-btn">Excluir</button>
+    </section>
+  </section>
+</section>
+
+<%- include('../partials/rodape'); %>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM carregado');
+
+  const selectDropdown = document.querySelector('.select-dropdown');
+  const selectBtn = document.getElementById('select-btn');
+
+  const filterDropdown = document.querySelector('.filter-dropdown');
+  const filterBtn = document.getElementById('filter-btn');
+
+  const confirmBox = document.getElementById('confirm-delete');
+  const confirmText = document.getElementById('confirm-text');
+  const cancelBtn = document.getElementById('cancel-btn');
+
+  const emptyMessage = document.querySelector('.empty-message');
+
+  let filterValue = 'all';
+  let sortValue = 'recentes';
+
+  // Atualiza box de exclusão
+  function updateConfirmBox() {
+    const checkboxes = document.querySelectorAll('.select-notificacao');
+    const selected = Array.from(checkboxes).filter(cb => cb.checked);
+    console.log('Atualizando confirm box - selecionadas:', selected.length);
+
+    if (selected.length > 0) {
+      confirmBox.style.display = 'flex';
+      confirmText.textContent = selected.length === 1 ?
+        'Tem certeza que quer excluir esta notificação? Essa ação é irreversível.' :
+        `Tem certeza que quer excluir essas ${selected.length} notificações? Essa ação é irreversível.`;
+      console.log('Confirm box visível');
+    } else {
+      confirmBox.style.display = 'none';
+      console.log('Confirm box escondida');
+    }
+  }
+
+  // Event delegation para checkboxes
+  document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('select-notificacao')) {
+      console.log('Checkbox alterado:', e.target.dataset.id, 'checked:', e.target.checked);
+      updateConfirmBox();
+    }
+  });
+
+  // Cancelar exclusão
+  cancelBtn.addEventListener('click', () => {
+    console.log('Cancelar clicado');
+    document.querySelectorAll('.select-notificacao').forEach(cb => cb.checked = false);
+    updateConfirmBox();
+  });
+
+  const form = document.getElementById('notificacoes-form');
+form.addEventListener('submit', (e) => {
+  // Remove antigos hidden inputs
+  document.querySelectorAll('.hidden-id').forEach(el => el.remove());
+
+  // Cria hidden inputs para cada notificação selecionada
+  document.querySelectorAll('.select-notificacao:checked').forEach(cb => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'ids';
+    input.value = cb.dataset.id;
+    input.classList.add('hidden-id');
+    form.appendChild(input);
+  });
+});
+
+  // Toggle dropdown Selecionar
+  selectBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectDropdown.classList.toggle('active');
+    console.log('Dropdown Selecionar toggled');
+  });
+
+  // Toggle dropdown Filtro
+  filterBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    filterDropdown.classList.toggle('active');
+    console.log('Dropdown Filtro toggled');
+  });
+
+  // Dropdown Selecionar
+  selectDropdown.querySelectorAll('.select-options section').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const action = opt.dataset.action;
+      console.log('Seleção dropdown action:', action);
+      const checkboxes = document.querySelectorAll('.select-notificacao');
+      checkboxes.forEach(cb => {
+        const isNaoLida = cb.closest('.notification-box').classList.contains('highlight');
+        if (action === 'all') cb.checked = true;
+        else if (action === 'none') cb.checked = false;
+        else if (action === 'nao-lidas') cb.checked = isNaoLida;
+        else if (action === 'lidas') cb.checked = !isNaoLida;
+      });
+      selectDropdown.classList.remove('active');
+      updateConfirmBox();
+    });
+  });
+
+  // Dropdown Filtro/Ordenar
+  filterDropdown.querySelectorAll('.filter-options section').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if (opt.dataset.filter) filterValue = opt.dataset.filter;
+      if (opt.dataset.sort) sortValue = opt.dataset.sort;
+      console.log('Filtro clicado - filterValue:', filterValue, 'sortValue:', sortValue);
+      filterDropdown.classList.remove('active');
+      applyFilterSort();
+    });
+  });
+
+  // Filtrar + Ordenar notificações
+  function applyFilterSort() {
+    console.log('--- Aplicando filtro e ordenação ---');
+    console.log('Filtro atual:', filterValue, '| Ordenação:', sortValue);
+
+    const boxes = Array.from(document.querySelectorAll('.notification-box'));
+    console.log('Boxes encontradas:', boxes.length);
+
+    // Reset display
+    boxes.forEach(box => {
+      box.style.display = 'flex';
+    });
+
+    // Filtro
+    if (filterValue === 'nao-lidas') {
+      boxes.forEach(box => {
+        if (!box.classList.contains('highlight')) box.style.display = 'none';
+      });
+    }
+    if (filterValue === 'lidas') {
+      boxes.forEach(box => {
+        if (box.classList.contains('highlight')) box.style.display = 'none';
+      });
+    }
+
+    const visibleBoxesBeforeSort = boxes.filter(box => box.style.display !== 'none');
+    console.log('Boxes visíveis após filtro:', visibleBoxesBeforeSort.length);
+
+    // Ordenação
+    const sortedBoxes = boxes.slice().sort((a, b) => {
+      const tsAEl = a.querySelector('[data-timestamp]');
+      const tsBEl = b.querySelector('[data-timestamp]');
+      const dateA = tsAEl ? parseInt(tsAEl.dataset.timestamp) : 0;
+      const dateB = tsBEl ? parseInt(tsBEl.dataset.timestamp) : 0;
+
+      console.log('Timestamp A:', dateA, '| Timestamp B:', dateB);
+      return sortValue === 'recentes' ? dateB - dateA : dateA - dateB;
+    });
+
+    console.log('Boxes ordenadas:', sortedBoxes.map(b => b.querySelector('[data-timestamp]')?.dataset.timestamp));
+
+    // Aplica a ordem no DOM
+    sortedBoxes.forEach(box => box.parentNode.appendChild(box));
+
+    // Mensagem de vazio
+    const visibleBoxes = boxes.filter(box => box.style.display !== 'none');
+    console.log('Boxes visíveis após ordenar:', visibleBoxes.length);
+
+    if (emptyMessage) {
+      emptyMessage.style.display = visibleBoxes.length === 0 ? 'block' : 'none';
+      console.log('Mensagem de vazio visível?', emptyMessage.style.display !== 'none');
+    }
+  }
+
+  // Fechar dropdowns ao clicar fora
+  document.addEventListener('click', () => {
+    selectDropdown.classList.remove('active');
+    filterDropdown.classList.remove('active');
+  });
+
+  // Inicializa
+  console.log('Inicializando confirm box e filtro/ordenação');
+  updateConfirmBox();
+  applyFilterSort();
+});
+</script>
 
  
  <script src="https://kit.fontawesome.com/2fcd7931ea.js" crossorigin="anonymous"></script>
