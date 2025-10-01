@@ -283,25 +283,25 @@ router.get("/pagarcontratacao/:id", function(req, res){
   contratacaoController.exibirPagamento(req, res)
 });
 
-// Exibir página de pagamento da contratação
-router.get("/pagarcontratacao/:id", 
+// // Exibir página de pagamento da contratação
+// router.get("/pagar-contratacao/:id", 
   
-    async (req, res) => {
-        const contratacaoId = req.params.id;
-        const usuarioLogadoId = req.session.autenticado.id;
+//     async (req, res) => {
+//         const contratacaoId = req.params.id;
+//         const usuarioLogadoId = req.session.autenticado.id;
 
-        // Buscar contratação no model
-        const contratacao = await contratacaoModel.findId(contratacaoId);
+//         // Buscar contratação no model
+//         const contratacao = await contratacaoModel.findId(contratacaoId);
 
-        if (!contratacao) return res.status(404).send("Contratação não encontrada.");
+//         if (!contratacao) return res.status(404).send("Contratação não encontrada.");
 
-        if (Number(contratacao.ID_CLIENTE) !== usuarioLogadoId) {
-            return res.status(403).send("Você não tem permissão para acessar esta contratação.");
-        }
+//         if (Number(contratacao.ID_CLIENTE) !== usuarioLogadoId) {
+//             return res.status(403).send("Você não tem permissão para acessar esta contratação.");
+//         }
 
-        res.render("pages/pagarcontratacao", { contratacao });
-    }
-);
+//         res.render("pages/pagarcontratacao", { contratacao });
+//     }
+// );
 
 // Criar preferência Mercado Pago
 router.post("/contratacoes/create-preference", async (req, res) => {

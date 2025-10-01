@@ -29,10 +29,7 @@
 </style>
 </head>
 <body>
-
-    
-
-   <% if (tipo_usuario === 'profissional') { %>
+<% if (tipo_usuario === 'profissional') { %>
   <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
 <% } else if (tipo_usuario === 'comum') { %>
   <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
@@ -40,8 +37,8 @@
   <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
 <% } %>
 
-
-<h1>Minhas contratações</h1><main>
+<h1>Minhas contratações</h1>
+<main>
   <!-- Botão Criar Contratação -->
   <a href="/criar-contratacao" class="criar-btn">+ Criar Nova Contratação</a>
 
@@ -72,22 +69,23 @@
       <div class="contratacao-card">
         <h3><%= c.NOME_PROJETO %></h3>
         <p><strong>Cliente:</strong> <%= c.ID_CLIENTE %></p>
-    <p><strong>Valor:</strong> R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
-
-
+        <p><strong>Valor:</strong> R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
         <p><strong>Prazo:</strong> <%= new Date(c.DATA_ENTREGA).toLocaleDateString('pt-BR') %></p>
-        <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-          <button class="aceitar">Aceitar</button>
-        </form>
-        <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-          <button class="recusar">Recusar</button>
-        </form>
+       <% if(Number(c.ID_USUARIO_CRIADOR) !== id_usuario) { %>
+  <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+    <button class="aceitar">Aceitar</button>
+  </form>
+  <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+    <button class="recusar">Recusar</button>
+  </form>
+<% } %>
+
       </div>
     <% }) %>
   </div>
 
   <!-- Contratações em andamento -->
-<% if(emAndamento.length > 0) { %>
+  <% if(emAndamento.length > 0) { %>
   <h2>Contratações Em Andamento</h2>
   <div class="contratacoes-container" id="emAndamento">
     <% emAndamento.forEach(c => { %>
@@ -96,23 +94,27 @@
         <p><strong>Cliente:</strong> <%= c.ID_CLIENTE %></p>
         <p><strong>Valor:</strong> R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
         <p><strong>Prazo:</strong> <%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %></p>
-    <a href="#" class="ver-detalhes" 
-   data-id-contratacao="<%= c.ID_CONTRATACAO %>"
-   data-projeto="<%= c.NOME_PROJETO %>" 
-   data-cliente="<%= c.ID_CLIENTE %>" 
-   data-profissional="<%= c.ID_PROFISSIONAL %>" 
-   data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
-   data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
-   data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
-   data-contratante="<%= c.ID_CLIENTE %>">
-   Ver Detalhes
-</a>
 
- </div>
+        <a href="#" class="ver-detalhes" 
+           data-id-contratacao="<%= c.ID_CONTRATACAO %>"
+           data-projeto="<%= c.NOME_PROJETO %>" 
+           data-cliente="<%= c.ID_CLIENTE %>" 
+           data-profissional="<%= c.ID_PROFISSIONAL %>" 
+           data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
+           data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
+           data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
+           data-contratante="<%= c.ID_CLIENTE %>" 
+           data-pago="<%= c.PAGO %>">
+           Ver Detalhes
+        </a>
+
+        <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao') { %>
+          <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn">Pagar para iniciar projeto</a>
+        <% } %>
+      </div>
     <% }) %>
   </div>
-<% } %>
-
+  <% } %>
 
   <!-- Tabela completa de contratações -->
   <h2>Todos os Projetos</h2>
@@ -124,6 +126,7 @@
         <th>Valor</th>
         <th>Prazo</th>
         <th>Status</th>
+
         <th>Ações</th>
       </tr>
     </thead>
@@ -135,34 +138,33 @@
           <td>R$ <%= c.VALOR_TOTAL.toFixed(2) %></td>
           <td><%= new Date(c.DATA_ENTREGA).toLocaleDateString('pt-BR') %></td>
           <td><%= c.STATUS.replace('_', ' ') %></td>
-         <td>
-  <% if(c.STATUS === "AGUARDANDO_CONFIRMACAO") { %>
-    <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-      <button class="aceitar">Aceitar</button>
-    </form>
-    <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-      <button class="recusar">Recusar</button>
-    </form>
-  <% } %>
+          <td>
+            <% if(c.STATUS === "AGUARDANDO_CONFIRMACAO") { %>
+              <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+                <button class="aceitar">Aceitar</button>
+              </form>
+              <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+                <button class="recusar">Recusar</button>
+              </form>
+            <% } %>
 
- <% if(Number(c.ID_CLIENTE) === id_usuario && c.STATUS === "EM_ANDAMENTO") { %>
-  <!-- Mostrar botão de pagamento apenas para contratante -->
-  <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn">Pagar para iniciar projeto</a>
-<% } %>
+            <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao' && c.STATUS === "AGUARDANDO PAGAMENTO") { %>
+              <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn">Pagar para iniciar projeto</a>
+            <% } %>
 
-  <a href="#" class="ver-detalhes" 
-     data-id-contratacao="<%= c.ID_CONTRATACAO %>"
-     data-projeto="<%= c.NOME_PROJETO %>" 
-     data-cliente="<%= c.ID_CLIENTE %>" 
-     data-profissional="<%= c.ID_PROFISSIONAL %>" 
-     data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
-     data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
-     data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
-     data-contratante="<%= c.ID_CLIENTE %>">
-     Ver Detalhes
-  </a>
-</td>
-
+            <a href="#" class="ver-detalhes" 
+               data-id-contratacao="<%= c.ID_CONTRATACAO %>"
+               data-projeto="<%= c.NOME_PROJETO %>" 
+               data-cliente="<%= c.ID_CLIENTE %>" 
+               data-profissional="<%= c.ID_PROFISSIONAL %>" 
+               data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
+               data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
+               data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
+               data-contratante="<%= c.ID_CLIENTE %>" 
+               data-pago="<%= c.PAGO %>">
+               Ver Detalhes
+            </a>
+          </td>
         </tr>
       <% }) %>
     </tbody>
@@ -182,13 +184,13 @@
     <a href="#" id="btnPagar" class="btn" style="display:none; margin-top:1rem;">Pagar para iniciar projeto</a>
   </div>
 </div>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("modalDetalhes");
   const fechar = document.getElementById("fecharModal");
   const btnPagar = document.getElementById("btnPagar");
-const usuarioLogado = <%= id_usuario %>;
-
+  const usuarioLogado = <%= id_usuario %>;
 
   document.querySelectorAll(".ver-detalhes").forEach(btn => {
     btn.addEventListener("click", (e) => {
@@ -202,10 +204,10 @@ const usuarioLogado = <%= id_usuario %>;
       document.getElementById("modalPrazo").textContent = btn.dataset.prazo;
       document.getElementById("modalObs").textContent = btn.dataset.obs;
 
-      // Mostrar botão de pagar se usuário logado for o contratante
-      if(Number(btn.dataset.contratante) === usuarioLogado){
+      // Mostrar botão de pagar se usuário logado for o contratante e não tiver pago
+      if(Number(btn.dataset.contratante) === usuarioLogado && btn.dataset.pago === 'nao'){
         btnPagar.style.display = "inline-block";
-        btnPagar.href = `/contratacoes/pagar/${btn.dataset.idContratacao}`;
+        btnPagar.href = `/pagarcontratacao/${btn.dataset.idContratacao}`;
       } else {
         btnPagar.style.display = "none";
       }

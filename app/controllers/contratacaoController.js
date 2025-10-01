@@ -67,7 +67,9 @@ const contratacoesController = {
         VALOR_TOTAL,
         DATA_ENTREGA,
         OBSERVACOES: OBSERVACOES || null,
-        STATUS: "AGUARDANDO_CONFIRMACAO"
+        STATUS: "AGUARDANDO_CONFIRMACAO",
+        ID_USUARIO_CRIADOR: req.session.autenticado.id,
+        
       };
 
       const resultado = await contratacaoModel.createContratacao(novoRegistro);
@@ -105,7 +107,7 @@ const contratacoesController = {
       console.log("Chegou no aceitar contratação.");
     try {
       const id = req.params.id;
-      await contratacaoModel.updateContratacao({ STATUS: "EM_ANDAMENTO" }, id);
+      await contratacaoModel.updateContratacao({ STATUS: "AGUARDANDO PAGAMENTO" }, id);
 
       req.session.dadosNotificacao = {
         titulo: "Contratação aceita",
