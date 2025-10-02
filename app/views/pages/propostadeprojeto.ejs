@@ -80,7 +80,7 @@
                            data-id="<%= proposta.ID_PROPOSTA %>"
                            data-titulo="<%= proposta.TITULO_PROPOSTA %>"
                            data-orcamento="<%= proposta.ORCAMENTO %>"
-                           data-prazoentrega="<%= new Date(proposta.PRAZO_ENTREGA).toLocaleDateString() %>"
+                           data-prazoentrega="<%= proposta.PRAZO_ENTREGA ? (new Date(proposta.PRAZO_ENTREGA).toISOString().slice(0,10)) : '' %>"
                            data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
                            data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
                            <ion-icon name="create-outline"></ion-icon>

@@ -25,6 +25,18 @@
                 <option value="">-- Selecione a categoria --</option>
                 <option value="design_grafico">Design Gráfico</option>
                 <option value="ilustracao">Ilustração</option>
+                <option value="UI/UX">UI/UX</option>
+                <option value="arte_digital">Arte Digital</option>
+                <option value="arte_3D">Arte 3D</option>
+                <option value="animacao">Animação</option>
+                <option value="branding">Branding</option>
+                <option value="tipografia">Tipografia</option>
+                <option value="modelagem_3d">Modelagem 3D</option>
+                <option value="design_de_produto">Design de Produto</option>
+                <option value="design-editorial">Design Editorial</option>
+                <option value="design_de_jogos">Design de jogos</option>
+                <option value="fotografia">Fotografia</option>
+                
                 <!-- ... (outras opções) -->
                 <option value="outro">Outros</option>
               </select>
@@ -147,8 +159,23 @@
       document.getElementById('id-editar-proposta').value = idProposta;
       document.getElementById('id-editar-proposta-excluir').value = idProposta;
       document.getElementById('titulo-editar-proposta').value = titulo;
+
+      // Se a categoria não existir nas opções, adiciona dinamicamente
+      let found = false;
+      for (let i = 0; i < selectCategoria.options.length; i++) {
+        if (selectCategoria.options[i].value === categoria) {
+          found = true;
+          break;
+        }
+      }
+      if (!found && categoria && categoria !== 'outro') {
+        const opt = document.createElement('option');
+        opt.value = categoria;
+        opt.textContent = categoria.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        selectCategoria.appendChild(opt);
+      }
       selectCategoria.value = categoria;
-  
+
       // Mostrar ou ocultar campo "outra categoria"
       if (categoria === 'outro') {
         containerOutraCategoria.style.display = 'block';
@@ -167,9 +194,22 @@
       console.log('Atualizando conteúdo do Quill com descrição:', descricao);
       quill.root.innerHTML = descricao;
   
-      // Atualiza outros campos
-      document.getElementById('prazo-editar-proposta').value = prazoEntrega;
-      console.log('Prazo de entrega setado para:', prazoEntrega);
+
+      // Preenche o campo data: se vier vazio, tenta buscar do card da proposta
+      const inputPrazo = document.getElementById('prazo-editar-proposta');
+      if (prazoEntrega) {
+        inputPrazo.value = prazoEntrega;
+        console.log('Prazo de entrega setado para:', prazoEntrega);
+      } else {
+        // Busca o card da proposta pelo id
+        const card = document.querySelector(`.card[data-id='${idProposta}']`);
+        let prazoCard = '';
+        if (card) {
+          prazoCard = card.getAttribute('data-prazoentrega') || '';
+        }
+        inputPrazo.value = prazoCard;
+        console.log('Prazo de entrega recuperado do card:', prazoCard);
+      }
   
       document.getElementById('orcamento-editar-proposta').value = orcamento;
       console.log('Orçamento setado para:', orcamento);

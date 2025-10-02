@@ -456,14 +456,16 @@ editarProposta: async (req, res) => {
       categoriaFinal = req.body.outraCategoria.trim();
     }
 
-    // Atualiza os dados da proposta
+    // Corrige o valor do prazo_entrega: se vazio, envia null para o banco
+    let prazoFinal = prazo_entrega && prazo_entrega.trim() !== '' ? prazo_entrega : null;
+
     await publicacoesModel.atualizarProposta({
       ID_PROPOSTA: id_proposta,
       TITULO_PROPOSTA: titulo_proposta,
       DESCRICAO_PROPOSTA: descricao_proposta,
       CATEGORIA_PROPOSTA: categoriaFinal,
       PREFERENCIA_PROPOSTA: preferencia_proposta,
-      PRAZO_ENTREGA: prazo_entrega,
+      PRAZO_ENTREGA: prazoFinal,
       ORCAMENTO: orcamento,
       ID_USUARIO: idUsuario
     });
