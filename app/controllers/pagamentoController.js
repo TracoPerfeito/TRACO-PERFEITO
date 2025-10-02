@@ -230,7 +230,6 @@ gravarPagamentoContratacao: async (req, res) => {
                         <h1>⚠️ Ocorreu um problema no pagamento</h1>
                         <p>Infelizmente não conseguimos concluir a transação. 😕 Seu projeto não será iniciado enquanto o pagamento não for confirmado.</p>
                         <p>Por favor, revise as informações de pagamento e tente novamente. Se o problema persistir, entre em contato com o suporte. 💬</p>
-                        
                         <a href="/suporte" class="payment-error-button">Entrar em contato com o suporte</a>
                         </section>
                     </section>
