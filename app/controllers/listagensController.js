@@ -62,7 +62,26 @@ const listagensController = {
   try {
     const idLogado = req.session.autenticado?.id || null;
     const usuario = await listagensModel.findIdusuario(id, idLogado);
-    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
+
+
+
+    const publicacoes = await listagensModel.listarPublicacoes(id, req.session.autenticado.id);
+
+    const publicacoesComContagem = await Promise.all(
+      publicacoes.map(async (pub) => {
+        const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
+        const N_COMENTARIOS = await publicacoesModel.contarNumComentarios(pub.ID_PUBLICACAO);
+        const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(pub.ID_PUBLICACAO);
+
+        return { 
+          ...pub, 
+          N_CURTIDAS, 
+          N_COMENTARIOS, 
+          N_VISUALIZACOES 
+        };
+      })
+    );
+
     const qntPortfolios = await listagensModel.contarPortfoliosUsuario(id);
     const qntSeguidores = await listagensModel.contarSeguidores(id);
  
@@ -102,7 +121,7 @@ const listagensController = {
     res.render('pages/perfil', {
       usuario,
       especializacao,
-      publicacoes,
+      publicacoes: publicacoesComContagem,
       qntPortfolios,
       qntSeguidores
     });

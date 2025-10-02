@@ -167,7 +167,7 @@ width: 100%;
   display: flex;
   flex-direction: column;
   color: #818181;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 .base_cabecalho .coluna_contaneir .coluna-esquerda .quan-p-t-c li span {
   color: var(--text-color);
@@ -412,7 +412,10 @@ input[type='file'] {
 .like-button:hover{
   font-size: 115%;
   transform: translateY(-3px) ;
- 
+ border: none;
+ background-color: none;
+ transform: none;
+  box-shadow: none;
 
  
 }
@@ -422,6 +425,7 @@ input[type='file'] {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 5px;
 }
 
 /* Responsiveness */
@@ -797,6 +801,11 @@ button:hover {
    
   }
 
+  .base_cabecalho .coluna_contaneir .coluna-esquerda .quan-p-t-c li {
+   
+    font-size: 0.75rem;
+  }
+
 
 }
 
@@ -897,4 +906,38 @@ button:hover {
 
 .opcoes-menu-usuario button:hover {
   filter: brightness(1.2);
+}
+
+
+
+
+.contagem{
+  font-family: "Josefin Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 5px;
+  margin-left: 6px;
+  color: var(--text-color);
+}
+
+.contagens-likes-visu{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.descricao-item-explorar {
+  font-family: "Josefin Sans";
+  font-size: 12px;
+  display: -webkit-box;
+-webkit-line-clamp: 2; /* número de linhas */
+-webkit-box-orient: vertical;
+overflow: hidden;
+text-overflow: ellipsis;
+ flex-grow: 1;
+ color: var(--text-color);
+
 }

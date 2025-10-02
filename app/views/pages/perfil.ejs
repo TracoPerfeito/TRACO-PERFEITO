@@ -248,15 +248,34 @@
 
         <!-- Nome e botão de like -->
         <section class="nome-btn-like">
-          <span><%= pub.NOME_PUBLICACAO %></span>
+          <p class="descricao-item-explorar"><%= pub.NOME_PUBLICACAO %></p>
+
+
+          
+          <section class="contagens-likes-visu">
+  
+            <section class="contagem">
+        
+              <ion-icon name="eye"></ion-icon>
+              <small><%= pub.N_VISUALIZACOES %></small>
+            </section>
+        
+        
+        
+                 <section class="contagem">
+        
+                  <button class="like-button">
+                    <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>&idDono=<%= pub.ID_USUARIO %>&nomePub=<%= encodeURIComponent(pub.NOME_PUBLICACAO) %>"  
+                       onclick="localStorage.setItem('scrollPos', window.scrollY)">
+                      <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
+                    </a>
+                  </button>
+                  
+        <small><%= pub.N_CURTIDAS %></small>
+        </section>
+      </section>
       
 
-         <button class="like-button">
-  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>&idDono=<%= pub.ID_USUARIO %>&nomePub=<%= encodeURIComponent(pub.NOME_PUBLICACAO) %>"  
-     onclick="localStorage.setItem('scrollPos', window.scrollY)">
-    <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
-  </a>
-</button>
         </section>
 
       </section>

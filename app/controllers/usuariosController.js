@@ -1,8 +1,10 @@
 const usuariosModel = require("../models/usuariosModel");
 const listagensModel = require("../models/listagensModel");
 const seguidoresModel = require("../models/seguidoresModel");
+const publicacoesModel = require("../models/publicacoesModel");
 const notificacoesModel = require("../models/notificacoesModel");
 const { body, validationResult } = require("express-validator");
+const {favoritoModel} = require("../models/favoritoModel");
 const moment = require("moment");
 const bcrypt = require("bcryptjs");
 var salt = bcrypt.genSaltSync(10);
@@ -393,7 +395,24 @@ cadastrarUsuario: async (req, res) => {
     try {
         let results = await usuariosModel.findId(req.session.autenticado.id);
         const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
-        const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id, req.session.autenticado.id);
+
+        const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id,  req.session.autenticado.id);
+
+        const publicacoesComContagem = await Promise.all(
+          publicacoes.map(async (pub) => {
+            const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
+            const N_COMENTARIOS = await publicacoesModel.contarNumComentarios(pub.ID_PUBLICACAO);
+            const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(pub.ID_PUBLICACAO);
+    
+            return { 
+              ...pub, 
+              N_CURTIDAS, 
+              N_COMENTARIOS, 
+              N_VISUALIZACOES 
+            };
+          })
+        );
+
         const qntPortfolios = await listagensModel.contarPortfoliosUsuario(req.session.autenticado.id);
  
 const usuario = results[0];
@@ -447,7 +466,7 @@ console.log("Resultado da consulta:", {
   USER_USUARIO: results[0].USER_USUARIO,
 });
 
-        res.render("pages/meu-perfil-artista", { listaErros: null, dadosNotificacao: notificacao,  valores: campos, msgErro: null, publicacoes, qntPortfolios });
+        res.render("pages/meu-perfil-artista", { listaErros: null, dadosNotificacao: notificacao,  valores: campos, msgErro: null, publicacoes: publicacoesComContagem, qntPortfolios });
     } catch (e) {
         console.log(e);
         res.render("pages/meu-perfil-artista", {

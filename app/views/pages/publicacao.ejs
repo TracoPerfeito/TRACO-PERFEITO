@@ -197,24 +197,26 @@ let msgErros = {conteudo: ""};
     <p class="nome-da-publicacao"><%= publicacao.NOME_PUBLICACAO %></p>
  
  
-
-    <section class="contagem">
-
-      <ion-icon name="eye"></ion-icon>
-      <small><%= N_VISUALIZACOES %></small>
-    </section>
+<section class="contagens-likes-visu">
+  
+      <section class="contagem">
+  
+        <ion-icon name="eye"></ion-icon>
+        <small><%= N_VISUALIZACOES %></small>
+      </section>
   
   
-     
-         <section class="contagem">
-
-         <button class="like-button">
-  <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>&idDono=<%= publicacao.ID_USUARIO %>&nomePub=<%= encodeURIComponent(publicacao.NOME_PUBLICACAO) %>"  
-     onclick="localStorage.setItem('scrollPos', window.scrollY)">
-    <i class="<%= publicacao.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= publicacao.FAVORITO %>"></i>
-  </a>
-</button>
-<small><%= N_CURTIDAS %></small>
+  
+           <section class="contagem">
+  
+           <button class="like-button">
+    <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>&idDono=<%= publicacao.ID_USUARIO %>&nomePub=<%= encodeURIComponent(publicacao.NOME_PUBLICACAO) %>"
+       onclick="localStorage.setItem('scrollPos', window.scrollY)">
+      <i class="<%= publicacao.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= publicacao.FAVORITO %>"></i>
+    </a>
+  </button>
+  <small><%= N_CURTIDAS %></small>
+  </section>
 </section>
   </section>
  
