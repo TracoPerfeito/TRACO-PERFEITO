@@ -52,6 +52,20 @@
 <section class="base_cabecalho">
   <section id="banner-perfil">
     <img src="<%= usuario.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>" id="banner-perfil">
+  
+ <div id="menu-usuario-wrapper">
+    <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff" onclick="toggleMenu()">
+      <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
+    </svg>
+
+    <div class="opcoes-menu-usuario" id="menuUsuario">
+      <button class="btn-compartilhar" title="Compartilhar">Compartilhar</button>
+      <button class="btn-denunciar" title="Denunciar">Denunciar</button>
+    </div>
+  </div>
+
+
+  
   </section>
   <section class="coluna_contaneir">
     <section class="coluna-esquerda">
@@ -127,45 +141,31 @@
    
             </ul>
             <section class="button-holder">
-              <% if (!tipo_usuario) { %>
-                <button id="irparachat" onclick="location.href='/cadastro'">
-                  Conversar
-                  <span class="tooltip">Crie uma conta para entrar em contato com outros usuários</span>
-                </button>
-
-                <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
-               <ion-icon name="flag-outline"></ion-icon> Denunciar usuário
-                </button>
-
-             <button class="follow-button" 
-        onclick="localStorage.setItem('scrollPos', window.scrollY); location.href='/seguir-usuario?id=<%= usuario.ID_USUARIO %>&sit=<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>'">
-  <span class="<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>">
-    <%= usuario.SEGUIDO === 1 ? 'Seguindo' : 'Seguir' %>
-  </span>
-</button>
+          
+                
 
 
-
-              <% } else { %>
                 <button id="irparachat" onclick="location.href='/chat-logado'">
-                  Conversar
+                 <ion-icon name="chatbubbles-outline" style="font-size:15px; width:15px; height:15px;"></ion-icon>  Conversar
                 </button>
 
-                <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
+                <!-- <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
                 <ion-icon name="flag-outline"></ion-icon> Denunciar usuário
                 </button>
-
+ -->
 
                 <button class="follow-button" 
         onclick="localStorage.setItem('scrollPos', window.scrollY); location.href='/seguir-usuario?id=<%= usuario.ID_USUARIO %>&sit=<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>'">
-  <span class="<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>">
+  <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M480-240Zm-320 80v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440h14q-11 18-16.5 38.5T472-360q-54 1-107.5 14.5T260-306q-9 5-14.5 14t-5.5 20v32h283l80 80H160Zm320-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm236 480L576-300q-13-13-18.5-28t-5.5-30q0-32 23-57t59-25q28 0 44 13t38 35q20-20 36.5-34t45.5-14q37 0 59.5 25.5T880-357q0 15-6 30t-18 27L716-160Z"/></svg>
+ 
+        <span class="<%= usuario.SEGUIDO === 1 ? 'seguindo' : 'seguir' %>">
     <%= usuario.SEGUIDO === 1 ? 'Seguindo' : 'Seguir' %>
   </span>
 </button>
 
 
 
-              <% } %>
+           
             </section>
 
           </section>
@@ -248,15 +248,34 @@
 
         <!-- Nome e botão de like -->
         <section class="nome-btn-like">
-          <span><%= pub.NOME_PUBLICACAO %></span>
+          <p class="descricao-item-explorar"><%= pub.NOME_PUBLICACAO %></p>
+
+
+          
+          <section class="contagens-likes-visu">
+  
+            <section class="contagem">
+        
+              <ion-icon name="eye"></ion-icon>
+              <small><%= pub.N_VISUALIZACOES %></small>
+            </section>
+        
+        
+        
+                 <section class="contagem">
+        
+                  <button class="like-button">
+                    <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>&idDono=<%= pub.ID_USUARIO %>&nomePub=<%= encodeURIComponent(pub.NOME_PUBLICACAO) %>"  
+                       onclick="localStorage.setItem('scrollPos', window.scrollY)">
+                      <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
+                    </a>
+                  </button>
+                  
+        <small><%= pub.N_CURTIDAS %></small>
+        </section>
+      </section>
       
 
-         <button class="like-button">
-  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>&idDono=<%= pub.ID_USUARIO %>&nomePub=<%= encodeURIComponent(pub.NOME_PUBLICACAO) %>"  
-     onclick="localStorage.setItem('scrollPos', window.scrollY)">
-    <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
-  </a>
-</button>
         </section>
 
       </section>
@@ -539,6 +558,16 @@
         
         <button class="carousel-button next">&#10095;</button>
     </section>
+
+
+    
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
     
     <%- include('../partials/rodape'); %>
     
@@ -573,6 +602,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
     
+
+
+<script>
+function toggleMenu() {
+  const menuUser = document.getElementById('menuUsuario');
+  menuUser.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+}
+</script>
 
 <section id="modalDenunciaUsuario" class="modal">
   <section class="modal-content">

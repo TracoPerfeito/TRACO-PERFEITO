@@ -32,7 +32,6 @@
  
 <body>
  
- 
   
 <% if (status_usuario === 'pendente') { %>
     <%- include('../partials/aviso-pendente') %>
@@ -43,7 +42,7 @@
  
  
  
-   <% if (tipo_usuario === 'profissional') { %>
+<% if (tipo_usuario === 'profissional') { %>
   <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
 <% } else if (tipo_usuario === 'comum') { %>
   <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
@@ -198,13 +197,27 @@ let msgErros = {conteudo: ""};
     <p class="nome-da-publicacao"><%= publicacao.NOME_PUBLICACAO %></p>
  
  
-
-         <button class="like-button">
-  <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>&idDono=<%= publicacao.ID_USUARIO %>&nomePub=<%= encodeURIComponent(publicacao.NOME_PUBLICACAO) %>"  
-     onclick="localStorage.setItem('scrollPos', window.scrollY)">
-    <i class="<%= publicacao.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= publicacao.FAVORITO %>"></i>
-  </a>
-</button>
+<section class="contagens-likes-visu">
+  
+      <section class="contagem">
+  
+        <ion-icon name="eye"></ion-icon>
+        <small><%= N_VISUALIZACOES %></small>
+      </section>
+  
+  
+  
+           <section class="contagem">
+  
+           <button class="like-button">
+    <a href="/favoritar?id=<%= publicacao.ID_PUBLICACAO %>&sit=<%= publicacao.FAVORITO %>&idDono=<%= publicacao.ID_USUARIO %>&nomePub=<%= encodeURIComponent(publicacao.NOME_PUBLICACAO) %>"
+       onclick="localStorage.setItem('scrollPos', window.scrollY)">
+      <i class="<%= publicacao.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= publicacao.FAVORITO %>"></i>
+    </a>
+  </button>
+  <small><%= N_CURTIDAS %></small>
+  </section>
+</section>
   </section>
  
   <!-- Descrição da publicação -->
@@ -544,6 +557,16 @@ let msgErros = {conteudo: ""};
     </main>
     
  
+
+
+    
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
  
  
  

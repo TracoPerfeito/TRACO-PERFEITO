@@ -4,29 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel de Contratações</title>
-<style>
-  
+<link rel="stylesheet" href="/css/contratacoes.css">
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  
-  main { max-width:1200px; margin:auto; padding:2rem;}
-  h2 { margin-top:2rem;}
-  .cards { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;}
-  .card { flex:1; min-width:150px; background:white; padding:1rem; border-radius:6px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-  .contratacoes-container { display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
-  .contratacao-card { flex:1 1 300px; background:white; padding:1rem; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.15);}
-  .contratacao-card h3 { margin-top:0;}
-  .btn { padding:0.4rem 0.8rem; margin-right:0.3rem; border:none; border-radius:4px; cursor:pointer;}
-  .aceitar { background:#28a745; color:white;}
-  .recusar { background:#dc3545; color:white;}
-  .ver-detalhes { background:#17a2b8; color:white;}
-  .criar-btn { background:#007bff; color:white; padding:0.5rem 1rem; border:none; border-radius:6px; margin-bottom:1rem; cursor:pointer;}
-  table { width:100%; border-collapse: collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-  th, td { padding:0.75rem; border-bottom:1px solid #ddd; text-align:left;}
-  th { background:#f0f0f0;}
-  @media(max-width:768px){
-    .contratacoes-container { flex-direction: column; }
-    .cards { flex-direction: column; }
-  }
-</style>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+
 </head>
 <body>
 <% if (tipo_usuario === 'profissional') { %>
@@ -37,197 +24,499 @@
   <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
 <% } %>
 
-<h1>Minhas contratações</h1>
+<h1 id="hpag" class="texto-cor">Minhas contratações</h1>
 <main>
   <!-- Botão Criar Contratação -->
   <a href="/criar-contratacao" class="criar-btn">+ Criar Nova Contratação</a>
 
   <!-- Cards de resumo -->
   <div class="cards">
-    <div class="card">
+  <div class="card" id="card-aguardando">
+     <ion-icon name="person-add-outline"></ion-icon>
+    <section class="card-text">
       <h3>Aguardando Aceite</h3>
       <p id="aguardando"><%= aguardandoAceite.length %></p>
-    </div>
-    <div class="card">
+    </section>
+  </div>
+
+  <div class="card" id="card-aguardando-pag">
+     <ion-icon name="card-outline"></ion-icon>
+    <section class="card-text">
+      <h3>Aguardando Pagamento</h3>
+      <p id="aguardando-pag"><%= aguardandoPag.length %></p>
+    </section>
+  </div>
+
+  <div class="card" id="card-andamento">
+     <ion-icon name="play-circle-outline"></ion-icon>
+    <section class="card-text">
       <h3>Em Andamento</h3>
       <p id="andamento"><%= emAndamento.length %></p>
-    </div>
-    <div class="card">
+    </section>
+  </div>
+
+  <div class="card" id="card-concluidas">
+     <ion-icon name="checkmark-done-outline"></ion-icon>
+    <section class="card-text">
       <h3>Concluídas</h3>
       <p id="concluidas"><%= concluidas.length %></p>
-    </div>
-    <div class="card">
+    </section>
+  </div>
+
+  <div class="card" id="card-canceladas">
+     <ion-icon name="close-circle-outline"></ion-icon>
+    <section class="card-text">
       <h3>Canceladas</h3>
       <p id="canceladas"><%= canceladas.length %></p>
-    </div>
+    </section>
   </div>
+</div>
 
-  <!-- Contratações aguardando aceite -->
-  <h2>Contratações Aguardando Aceite</h2>
-  <div class="contratacoes-container" id="aguardandoAceite">
-    <% aguardandoAceite.forEach(c => { %>
-      <div class="contratacao-card">
+
+
+
+
+<!-- Contratações -->
+<% if(aguardandoAceite.length > 0) { %>
+<h2 class="texto-cor">Contratações Aguardando Aceite</h2>
+<div class="contratacoes-container">
+  <% aguardandoAceite.forEach(c => { 
+       const hoje = new Date();
+       const entrega = new Date(c.DATA_ENTREGA);
+       const diffDias = Math.ceil((entrega - hoje) / (1000*60*60*24));
+  %>
+    <div class="contratacao-card">
+      <!-- Cabeçalho -->
+      <div class="card-header">
         <h3><%= c.NOME_PROJETO %></h3>
-        <p><strong>Cliente:</strong> <%= c.ID_CLIENTE %></p>
-        <p><strong>Valor:</strong> R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
-        <p><strong>Prazo:</strong> <%= new Date(c.DATA_ENTREGA).toLocaleDateString('pt-BR') %></p>
-       <% if(Number(c.ID_USUARIO_CRIADOR) !== id_usuario) { %>
-  <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-    <button class="aceitar">Aceitar</button>
-  </form>
-  <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-    <button class="recusar">Recusar</button>
-  </form>
+        <span class="status-tag status-aguardando">Aguardando Aceite</span>
+      </div>
+
+      <!-- Informações principais -->
+      <div class="card-info">
+        <div class="info-block">
+          <strong>Cliente</strong>
+          <p><%= c.NOME_CLIENTE %></p>
+          <small><%= c.EMAIL_CLIENTE %></small>
+        </div>
+        <div class="info-block">
+          <strong>Profissional</strong>
+          <p><%= c.NOME_PROFISSIONAL %></p>
+          <small><%= c.EMAIL_PROFISSIONAL %></small>
+        </div>
+        <div class="info-block">
+          <strong>Valor</strong>
+          <p>R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
+        </div>
+        <div class="info-block">
+          <strong>Prazo</strong>
+          <p><%= entrega.toLocaleDateString('pt-BR') %></p>
+          <small class="tempo-restante"><%= diffDias >= 0 ? diffDias : 0 %> dias restantes</small>
+        </div>
+      </div>
+
+      <!-- Observações -->
+      <% if(c.OBSERVACOES && c.OBSERVACOES.trim() !== '') { %>
+      <div class="card-observacoes">
+        <strong>Observações</strong>
+        <p><%= c.OBSERVACOES %></p>
+      </div>
+      <% } %>
+
+      <!-- Botões -->
+      <div class="card-buttons">
+        <a href="#" class="ver-detalhes"
+           data-id-contratacao="<%= c.ID_CONTRATACAO %>"
+           data-projeto="<%= c.NOME_PROJETO %>"
+           data-cliente="<%= c.NOME_CLIENTE %>"
+           data-profissional="<%= c.NOME_PROFISSIONAL %>"
+           data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>"
+           data-prazo="<%= entrega.toLocaleDateString('pt-BR') %>"
+           data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>"
+           data-contratante="<%= c.ID_CLIENTE %>"
+           data-pago="<%= c.PAGO %>">
+           Ver Detalhes
+        </a>
+
+        <% if(Number(c.ID_USUARIO_CRIADOR) !== id_usuario) { %>
+          <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST">
+            <button class="aceitar">Aceitar</button>
+          </form>
+          <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST">
+            <button class="recusar">Recusar</button>
+          </form>
+        <% } %>
+
+      
+      </div>
+    </div>
+  <% }) %>
+</div>
 <% } %>
 
-      </div>
-    <% }) %>
-  </div>
 
-  <!-- Contratações em andamento -->
-  <% if(emAndamento.length > 0) { %>
-  <h2>Contratações Em Andamento</h2>
-  <div class="contratacoes-container" id="emAndamento">
-    <% emAndamento.forEach(c => { %>
-      <div class="contratacao-card">
+<!-- Contratações Aguardando Pagamento -->
+<% if(aguardandoPag.length > 0) { %>
+<h2 class="texto-cor">Contratações Aguardando Pagamento</h2>
+<div class="contratacoes-container">
+  <% aguardandoPag.forEach(c => { 
+       const hoje = new Date();
+       const entrega = new Date(c.DATA_ENTREGA);
+       const diffDias = Math.ceil((entrega - hoje) / (1000*60*60*24));
+  %>
+    <div class="contratacao-card">
+      <!-- Cabeçalho -->
+      <div class="card-header">
         <h3><%= c.NOME_PROJETO %></h3>
-        <p><strong>Cliente:</strong> <%= c.ID_CLIENTE %></p>
-        <p><strong>Valor:</strong> R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
-        <p><strong>Prazo:</strong> <%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %></p>
+        <span class="status-aguardando-pag status-tag">Aguardando Pagamento</span>
+      </div>
 
-        <a href="#" class="ver-detalhes" 
+      <!-- Informações principais -->
+      <div class="card-info">
+        <div class="info-block">
+          <strong>Cliente</strong>
+          <p><%= c.NOME_CLIENTE %></p>
+          <small><%= c.EMAIL_CLIENTE %></small>
+        </div>
+        <div class="info-block">
+          <strong>Profissional</strong>
+          <p><%= c.NOME_PROFISSIONAL %></p>
+          <small><%= c.EMAIL_PROFISSIONAL %></small>
+        </div>
+        <div class="info-block">
+          <strong>Valor</strong>
+          <p>R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
+        </div>
+        <div class="info-block">
+          <strong>Prazo</strong>
+          <p><%= entrega.toLocaleDateString('pt-BR') %></p>
+          <small class="tempo-restante"><%= diffDias >= 0 ? diffDias : 0 %> dias restantes</small>
+        </div>
+      </div>
+
+      <!-- Observações -->
+      <% if(c.OBSERVACOES && c.OBSERVACOES.trim() !== '') { %>
+      <div class="card-observacoes">
+        <strong>Observações</strong>
+        <p><%= c.OBSERVACOES %></p>
+      </div>
+      <% } %>
+
+      <!-- Botões -->
+      <div class="card-buttons">
+        <a href="#" class="ver-detalhes"
            data-id-contratacao="<%= c.ID_CONTRATACAO %>"
-           data-projeto="<%= c.NOME_PROJETO %>" 
-           data-cliente="<%= c.ID_CLIENTE %>" 
-           data-profissional="<%= c.ID_PROFISSIONAL %>" 
-           data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
-           data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
-           data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
-           data-contratante="<%= c.ID_CLIENTE %>" 
+           data-projeto="<%= c.NOME_PROJETO %>"
+           data-cliente="<%= c.NOME_CLIENTE %>"
+           data-profissional="<%= c.NOME_PROFISSIONAL %>"
+           data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>"
+           data-prazo="<%= entrega.toLocaleDateString('pt-BR') %>"
+           data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>"
+           data-contratante="<%= c.ID_CLIENTE %>"
            data-pago="<%= c.PAGO %>">
            Ver Detalhes
         </a>
 
         <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao') { %>
-          <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn">Pagar para iniciar projeto</a>
+          <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn btn-pagar">Pagar para iniciar projeto</a>
         <% } %>
       </div>
-    <% }) %>
-  </div>
-  <% } %>
+    </div>
+  <% }) %>
+</div>
+<% } %>
+
+<!-- Contratações Em Andamento -->
+<% if(emAndamento.length > 0) { %>
+<h2 class="texto-cor">Contratações Em Andamento</h2>
+<div class="contratacoes-container">
+  <% emAndamento.forEach(c => { 
+       const hoje = new Date();
+       const entrega = new Date(c.DATA_ENTREGA);
+       const diffDias = Math.ceil((entrega - hoje) / (1000*60*60*24));
+  %>
+    <div class="contratacao-card">
+      <!-- Cabeçalho -->
+      <div class="card-header">
+        <h3><%= c.NOME_PROJETO %></h3>
+        <span class=" status-andamento  status-tag">Em Andamento</span>
+      </div>
+
+      <!-- Informações principais -->
+      <div class="card-info">
+        <div class="info-block">
+          <strong>Cliente</strong>
+          <p><%= c.NOME_CLIENTE %></p>
+          <small><%= c.EMAIL_CLIENTE %></small>
+        </div>
+        <div class="info-block">
+          <strong>Profissional</strong>
+          <p><%= c.NOME_PROFISSIONAL %></p>
+          <small><%= c.EMAIL_PROFISSIONAL %></small>
+        </div>
+        <div class="info-block">
+          <strong>Valor</strong>
+          <p>R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
+        </div>
+        <div class="info-block">
+          <strong>Prazo</strong>
+          <p><%= entrega.toLocaleDateString('pt-BR') %></p>
+          <small class="tempo-restante"><%= diffDias >= 0 ? diffDias : 0 %> dias restantes</small>
+        </div>
+      </div>
+
+      <!-- Observações -->
+      <% if(c.OBSERVACOES && c.OBSERVACOES.trim() !== '') { %>
+      <div class="card-observacoes">
+        <strong>Observações</strong>
+        <p><%= c.OBSERVACOES %></p>
+      </div>
+      <% } %>
+
+      <!-- Botões -->
+      <div class="card-buttons">
+        <a href="#" class="ver-detalhes"
+           data-id-contratacao="<%= c.ID_CONTRATACAO %>"
+           data-projeto="<%= c.NOME_PROJETO %>"
+           data-cliente="<%= c.NOME_CLIENTE %>"
+           data-profissional="<%= c.NOME_PROFISSIONAL %>"
+           data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>"
+           data-prazo="<%= entrega.toLocaleDateString('pt-BR') %>"
+           data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>"
+           data-contratante="<%= c.ID_CLIENTE %>"
+           data-pago="<%= c.PAGO %>">
+           Ver Detalhes
+        </a>
+
+        <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao') { %>
+          <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn btn-pagar">Pagar para iniciar projeto</a>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+<% } %>
+
+
+
+
+
+
+
+
+
+
+
+
 
   <!-- Tabela completa de contratações -->
-  <h2>Todos os Projetos</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Projeto</th>
-        <th>Cliente</th>
-        <th>Valor</th>
-        <th>Prazo</th>
-        <th>Status</th>
-
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="listaContratacoes">
-      <% todas.forEach(c => { %>
+  <h2 class="texto-cor">Todos os Projetos</h2>
+  <section class="table-container">
+    <table>
+      <thead>
         <tr>
-          <td><%= c.NOME_PROJETO %></td>
-          <td><%= c.ID_CLIENTE %></td>
-          <td>R$ <%= c.VALOR_TOTAL.toFixed(2) %></td>
-          <td><%= new Date(c.DATA_ENTREGA).toLocaleDateString('pt-BR') %></td>
-          <td><%= c.STATUS.replace('_', ' ') %></td>
-          <td>
-            <% if(c.STATUS === "AGUARDANDO_CONFIRMACAO") { %>
-              <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-                <button class="aceitar">Aceitar</button>
-              </form>
-              <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
-                <button class="recusar">Recusar</button>
-              </form>
-            <% } %>
-
-            <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao' && c.STATUS === "AGUARDANDO PAGAMENTO") { %>
-              <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn">Pagar para iniciar projeto</a>
-            <% } %>
-
-            <a href="#" class="ver-detalhes" 
-               data-id-contratacao="<%= c.ID_CONTRATACAO %>"
-               data-projeto="<%= c.NOME_PROJETO %>" 
-               data-cliente="<%= c.ID_CLIENTE %>" 
-               data-profissional="<%= c.ID_PROFISSIONAL %>" 
-               data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>" 
-               data-prazo="<%= c.DATA_ENTREGA.toLocaleDateString('pt-BR') %>" 
-               data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>" 
-               data-contratante="<%= c.ID_CLIENTE %>" 
-               data-pago="<%= c.PAGO %>">
-               Ver Detalhes
-            </a>
-          </td>
+          <th>Projeto</th>
+          <th>Cliente</th>
+          <th>Valor</th>
+          <th>Prazo</th>
+          <th>Status</th>
+          <th>Ações</th>
         </tr>
-      <% }) %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody id="listaContratacoes">
+        <% todas.forEach(c => { %>
+          <tr>
+            <td data-label="Projeto"><span><%= c.NOME_PROJETO %></span></td>
+    <td data-label="Cliente"><span><%= c.ID_CLIENTE %></span></td>
+    <td data-label="Valor"><span>R$ <%= c.VALOR_TOTAL.toFixed(2) %></span></td>
+    <td data-label="Prazo"><span><%= new Date(c.DATA_ENTREGA).toLocaleDateString('pt-BR') %></span></td>
+    <td data-label="Status"><span><%= c.STATUS.replace('_', ' ') %></span></td>
+    <td data-label="Ações">
+      <section class="acoes">
+        <% if(c.STATUS === "AGUARDANDO_CONFIRMACAO") { %>
+          <form action="/contratacoes/aceitar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+            <button class="aceitar">Aceitar</button>
+          </form>
+          <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+            <button class="recusar">Recusar</button>
+          </form>
+        <% } %>
+                <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao' && c.STATUS === "AGUARDANDO PAGAMENTO") { %>
+                  <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn-pagar btn">Pagar para iniciar projeto</a>
+                <% } %>
+                <a href="#" class="ver-detalhes"
+           data-id-contratacao="<%= c.ID_CONTRATACAO %>"
+           data-projeto="<%= c.NOME_PROJETO %>"
+           data-descricao="<%= c.DESCRICAO || '' %>"
+           data-cliente="<%= c.NOME_CLIENTE %>"
+           data-email-cliente="<%= c.EMAIL_CLIENTE || '' %>"
+           data-user-cliente="<%= c.USER_CLIENTE || '' %>"
+           data-profissional="<%= c.NOME_PROFISSIONAL %>"
+           data-email-profissional="<%= c.EMAIL_PROFISSIONAL || '' %>"
+           data-user-profissional="<%= c.USER_PROFISSIONAL || '' %>"
+           data-valor="<%= c.VALOR_TOTAL.toFixed(2) %>"
+           data-prazo="<%= c.DATA_ENTREGA.toISOString() %>"
+           data-data-criacao="<%= c.DATA_CRIACAO.toISOString() %>"
+           data-obs="<%= c.OBSERVACOES || 'Nenhuma' %>"
+           data-status="<%= c.STATUS %>"
+           data-contratante="<%= c.ID_CLIENTE %>"
+           data-pago="<%= c.PAGO %>">
+           Ver Detalhes
+        </a>
+      </section>
+
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </section>
 </main>
 
-<!-- Modal de detalhes -->
-<div id="modalDetalhes" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
-  <div style="background:white; padding:2rem; border-radius:8px; max-width:500px; width:90%; position:relative;">
-    <button id="fecharModal" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; border-radius:4px; cursor:pointer;">X</button>
-    <h2 id="modalProjeto"></h2>
-    <p><strong>Cliente:</strong> <span id="modalCliente"></span></p>
-    <p><strong>Profissional:</strong> <span id="modalProfissional"></span></p>
-    <p><strong>Valor:</strong> R$ <span id="modalValor"></span></p>
-    <p><strong>Prazo:</strong> <span id="modalPrazo"></span></p>
-    <p><strong>Observações:</strong> <span id="modalObs"></span></p>
-    <a href="#" id="btnPagar" class="btn" style="display:none; margin-top:1rem;">Pagar para iniciar projeto</a>
+
+
+
+<div id="modalDetalhes" class="modal-detalhes">
+  <div class="modal-detalhes__content">
+    <button id="fecharModal" class="modal-detalhes__close">×</button>
+    <h2 id="modalProjeto" class="modal-info__title"></h2>
+
+    <div class="modal-info__info">
+      <div class="modal-info__info-block">
+        <strong>Descrição do Projeto</strong>
+        <p id="modalDescricao"></p>
+      </div>
+      <div class="modal-info__info-block">
+        <strong>Cliente</strong>
+        <p id="modalCliente"></p>
+        <small id="modalEmailCliente"></small>
+        <small id="modalUserCliente"></small>
+      </div>
+      <div class="modal-info__info-block">
+        <strong>Profissional</strong>
+        <p id="modalProfissional"></p>
+        <small id="modalEmailProfissional"></small>
+        <small id="modalUserProfissional"></small>
+      </div>
+      <div class="modal-info__info-block">
+        <strong>Valor</strong>
+        <p>R$ <span id="modalValor"></span></p>
+      </div>
+      <div class="modal-info__info-block">
+        <strong>Prazo de Entrega</strong>
+        <p id="modalPrazo"></p>
+        <small id="modalDiasRestantes"></small>
+      </div>
+      <div class="modal-info__info-block">
+        <strong>Data de Criação</strong>
+        <p id="modalDataCriacao"></p>
+      </div>
+      <div class="modal-info__info-block modal-info__info-block--full">
+        <strong>Observações</strong>
+        <p id="modalObs"></p>
+      </div>
+      <div class="modal-info__info-block">
+        <strong>Status</strong>
+        <p id="modalStatus"></p>
+      </div>
+    </div>
+
+    <div class="modal-info__buttons">
+      <a href="#" id="btnPagar" class="modal-info__btn modal-info__btn--pagar">Pagar para iniciar projeto</a>
+    </div>
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const modal = document.getElementById("modalDetalhes");
+  console.log("DOM carregado, script do modal iniciado");
+const modal = document.querySelector(".modal-detalhes");
+
+  console.log("Modal selecionado:", modal);
+
   const fechar = document.getElementById("fecharModal");
+  console.log("Botão fechar selecionado:", fechar);
+
   const btnPagar = document.getElementById("btnPagar");
+  console.log("Botão pagar selecionado:", btnPagar);
+
   const usuarioLogado = <%= id_usuario %>;
+  console.log("ID do usuário logado:", usuarioLogado);
 
-  document.querySelectorAll(".ver-detalhes").forEach(btn => {
-    btn.addEventListener("click", (e) => {
+  const detalhesBtns = document.querySelectorAll(".ver-detalhes");
+  console.log("Botões 'ver detalhes' encontrados:", detalhesBtns.length);
+
+  detalhesBtns.forEach(btn => {
+    btn.addEventListener("click", e => {
       e.preventDefault();
+      console.log("Botão clicado:", btn.dataset);
 
-      // Preencher dados
-      document.getElementById("modalProjeto").textContent = btn.dataset.projeto;
-      document.getElementById("modalCliente").textContent = btn.dataset.cliente;
-      document.getElementById("modalProfissional").textContent = btn.dataset.profissional;
-      document.getElementById("modalValor").textContent = btn.dataset.valor;
-      document.getElementById("modalPrazo").textContent = btn.dataset.prazo;
-      document.getElementById("modalObs").textContent = btn.dataset.obs;
+      const hoje = new Date();
+      const entrega = new Date(btn.dataset.prazo);
+      const diffDias = Math.ceil((entrega - hoje)/(1000*60*60*24));
+      console.log("Data entrega:", entrega, "Dias restantes:", diffDias);
 
-      // Mostrar botão de pagar se usuário logado for o contratante e não tiver pago
+      try {
+        document.getElementById("modalProjeto").textContent = btn.dataset.projeto;
+        document.getElementById("modalDescricao").textContent = btn.dataset.descricao || "Nenhuma descrição";
+        document.getElementById("modalCliente").textContent = btn.dataset.cliente;
+        document.getElementById("modalEmailCliente").textContent = btn.dataset.emailCliente || '';
+        document.getElementById("modalUserCliente").textContent = btn.dataset.userCliente || '';
+        document.getElementById("modalProfissional").textContent = btn.dataset.profissional;
+        document.getElementById("modalEmailProfissional").textContent = btn.dataset.emailProfissional || '';
+        document.getElementById("modalUserProfissional").textContent = btn.dataset.userProfissional || '';
+        document.getElementById("modalValor").textContent = btn.dataset.valor;
+        document.getElementById("modalPrazo").textContent = entrega.toLocaleDateString('pt-BR');
+        document.getElementById("modalDiasRestantes").textContent = `${diffDias >= 0 ? diffDias : 0} dias restantes`;
+        document.getElementById("modalDataCriacao").textContent = new Date(btn.dataset.dataCriacao).toLocaleDateString('pt-BR');
+        document.getElementById("modalObs").textContent = btn.dataset.obs || 'Nenhuma';
+        document.getElementById("modalStatus").textContent = btn.dataset.status;
+        console.log("Dados do modal preenchidos com sucesso");
+      } catch(err) {
+        console.error("Erro ao preencher modal:", err);
+      }
+
       if(Number(btn.dataset.contratante) === usuarioLogado && btn.dataset.pago === 'nao'){
         btnPagar.style.display = "inline-block";
         btnPagar.href = `/pagarcontratacao/${btn.dataset.idContratacao}`;
+        console.log("Botão pagar mostrado");
       } else {
         btnPagar.style.display = "none";
+        console.log("Botão pagar escondido");
       }
 
-      modal.style.display = "flex";
+      try {
+        modal.style.display = "flex";
+        console.log("Modal aberto");
+      } catch(err) {
+        console.error("Erro ao abrir modal:", err);
+      }
     });
   });
 
   fechar.addEventListener("click", () => {
     modal.style.display = "none";
+    console.log("Modal fechado pelo botão X");
   });
 
-  // Fechar ao clicar fora do modal
-  modal.addEventListener("click", (e) => {
-    if(e.target === modal) modal.style.display = "none";
+  modal.addEventListener("click", e => { 
+    if(e.target === modal) {
+      modal.style.display = "none"; 
+      console.log("Modal fechado clicando fora");
+    }
   });
 });
 </script>
 
 
+
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
 
 
 

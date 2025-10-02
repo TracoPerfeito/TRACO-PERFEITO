@@ -289,6 +289,7 @@
     </main>
 
 
+<<<<<<< HEAD
     <!-- Modal de denúncia (igual ao propostadeprojeto) -->
     <section id="modalDenuncia" class="modal">
       <section class="modal-content">
@@ -309,6 +310,16 @@
 
     <!-- Modal de edição de proposta -->
     <%- include('../partials/editar-proposta'); %>
+=======
+    
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
+>>>>>>> 12f39a864defeaececaa49c21801e7dbd02c92e4
 
     <%- include('../partials/rodape'); %>
 

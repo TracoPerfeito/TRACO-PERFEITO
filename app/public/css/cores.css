@@ -52,6 +52,8 @@
     --cor-fundo-form-not: #faf9f6;
 --table:#f9f9f9;
 --table-1: #faf9f6;
+--cor-dashboard: white;
+--cor-texto-dashboard:#3a435d;
   }
 
 /* #264869 */ 
@@ -109,5 +111,7 @@
 --table:#3b3e46;
 
 --table-1:#27292e;
+--cor-dashboard:  rgb(55, 58, 70);
+--cor-texto-dashboard:rgb(224, 224, 224);
       }
 

@@ -1149,6 +1149,21 @@ input[type='file'] {
 }
 
 
+.contagem{
+  font-family: "Josefin Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 5px;
+  margin-left: 6px;
+}
+
+.contagens-likes-visu{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
 
 
 

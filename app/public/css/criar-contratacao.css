@@ -1,81 +1,176 @@
+@import url(cores.css);
 
-/* ====== Container ====== */
+
+body{
+  background-color: var(--cor-fundo);
+}
+
+/* Container principal */
 main.container {
-  max-width: 800px;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  margin-top: 2rem;
+ 
+  font-family: "Josefin Sans";
+  color: var(--text-color);
+
 }
 
-/* ====== Título ====== */
-h1.criarContratacao {
+/* Título */
+.criarContratacao {
+  font-family: "Montserrat";
   font-size: 1.8rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-/* ====== Inputs ====== */
-form .form-label {
   font-weight: 600;
-  margin-bottom: 0.4rem;
-  display: block;
+  margin-bottom: 20px;
+  color: var(--text-color);
 }
 
+/* Labels */
+form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  font-family: "Josefin Sans";
+  color: var(--text-color);
+}
+
+/* Inputs e textareas */
 form input,
 form textarea,
 form select {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  transition: border-color 0.3s;
+  background-color: transparent !important;
+  border-radius: 5px !important;
+  border: 1px solid var(--cor-borda-n-pub) !important;
+  width: 100% !important;
+  padding: 10px;
+  font-family: "Josefin Sans";
+  color: var(--text-color);
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease;
+}
+
+form textarea{
+  width: 100% !important;
 }
 
 form input:focus,
 form textarea:focus,
 form select:focus {
-  border-color: #007bff;
+  border: 1px solid var(--cor-av-borda-n-pub) !important;
   outline: none;
 }
 
-/* ====== Card de termos ====== */
+/* Placeholder */
+form input::placeholder,
+form textarea::placeholder {
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+/* Área de termos */
 .card {
-  border: 1px solid #ddd;
-  background: #fdfdfd;
+  border: 1px solid var(--cor-borda-n-pub);
   border-radius: 8px;
+  background: transparent;
+  color: var(--text-color);
 }
 
 .card h5 {
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  font-family: "Montserrat";
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-color);
 }
 
 .card p {
   font-size: 0.9rem;
-  line-height: 1.4;
-  color: #555;
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-bottom: 15px;
 }
 
-/* ====== Botão ====== */
-button.btn-primary {
-  background: #007bff;
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  padding: 0.7rem 1.2rem;
-  border-radius: 8px;
+/* Checkbox */
+.form-check-input {
+  accent-color: var(--cor-av-borda-n-pub);
   cursor: pointer;
-  transition: background 0.3s;
-  display: block;
+  margin-right: 8px;
+}
+
+.form-check-label {
+  font-size: 0.95rem;
+}
+
+/* Botão */
+form button[type="submit"] {
+  background-color: var(--cor-av-borda-n-pub);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  padding: 12px;
+  font-family: "Montserrat";
+  font-weight: 600;
+  transition: all 0.4s;
+}
+
+form button[type="submit"]:hover {
+  cursor: pointer;
+  transform: translateY(-3px);
+  background-color: var(--cor-borda-n-pub);
+}
+
+/* Responsividade */
+@media (max-width: 650px) {
+  main.container {
+    margin: 15px;
+  }
+
+  .criarContratacao {
+    text-align: center;
+    font-size: 1.5rem;
+  }
+
+  form button[type="submit"] {
+    width: 100%;
+  }
+}
+
+
+/* Grelha do formulário: mobile empilha; desktop mostra 2 colunas */
+.form-grid {
+  display: block; /* mobile: empilha */
+  gap: 20px;
+}
+
+/* garante que cada coluna ocupe 100% no mobile */
+.form-grid > .col {
   width: 100%;
 }
 
-button.btn-primary:hover {
-  background: #0056b3;
+/* no desktop vira 2 colunas */
+@media (min-width: 768px) {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* esquerda | direita */
+    gap: 40px;
+    align-items: start; /* alinha topo das colunas */
+  }
+}
+
+/* opcional: faz os textareas da coluna direita terem altura maior por padrão */
+.form-grid > .col textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* se quiser diferenciar left/right (ex.: right alinhado ao topo) */
+.form-grid > .right-col { align-self: start; }
+
+
+
+
+#section-termos{
+  width: 100%;
+}
+
+
+.conteudo-principal {
+  padding: 10px 2rem;
 }

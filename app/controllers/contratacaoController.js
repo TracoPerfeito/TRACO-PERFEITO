@@ -32,10 +32,29 @@ const contratacoesController = {
       .notEmpty()
       .isFloat({ min: 0 })
       .withMessage("O valor total deve ser um número positivo."),
-    body("DATA_ENTREGA")
+      body("DATA_ENTREGA")
       .notEmpty()
       .isDate({ format: "YYYY-MM-DD" })
-      .withMessage("A data de entrega deve ser uma data válida."),
+      .withMessage("A data de entrega deve ser uma data válida.")
+      .custom((value) => {
+        const data = moment(value, "YYYY-MM-DD", true);
+        if (!data.isValid()) {
+          throw new Error("Data inválida.");
+        }
+    
+        const hoje = moment().startOf("day");
+        const limite = moment("2030-12-31"); // impossivel ser adepois di=sso
+    
+        if (data.isBefore(hoje)) {
+          throw new Error("A data de entrega não pode ser no passado.");
+        }
+        if (data.isAfter(limite)) {
+          throw new Error("A data de entrega não pode ser muito distante no futuro.");
+        }
+    
+        return true; // passou
+      }),
+    
     body("OBSERVACOES")
       .optional({ checkFalsy: true })
       .trim()
@@ -67,7 +86,7 @@ const contratacoesController = {
         VALOR_TOTAL,
         DATA_ENTREGA,
         OBSERVACOES: OBSERVACOES || null,
-        STATUS: "AGUARDANDO_CONFIRMACAO",
+        STATUS: "AGUARDANDO CONFIRMAÇÃO",
         ID_USUARIO_CRIADOR: req.session.autenticado.id,
         
       };
@@ -170,15 +189,17 @@ listarContratacoes: async (req, res) => {
     }));
 
     // Separar por status a partir do array convertido
-    const aguardandoAceite = contratacoesConvertidas.filter(c => c.STATUS === "AGUARDANDO_CONFIRMACAO");
-    const emAndamento = contratacoesConvertidas.filter(c => c.STATUS === "EM_ANDAMENTO");
-    const concluidas = contratacoesConvertidas.filter(c => c.STATUS === "CONCLUIDA");
+    const aguardandoAceite = contratacoesConvertidas.filter(c => c.STATUS === "AGUARDANDO CONFIRMAÇÃO");
+    const aguardandoPag = contratacoesConvertidas.filter(c => c.STATUS === "AGUARDANDO PAGAMENTO");
+    const emAndamento = contratacoesConvertidas.filter(c => c.STATUS === "EM ANDAMENTO");
+    const concluidas = contratacoesConvertidas.filter(c => c.STATUS === "CONCLUÍDA");
     const canceladas = contratacoesConvertidas.filter(c => c.STATUS === "CANCELADA");
 
     console.log("Exibindo pagina de contratacoes com os seguintes dados:", contratacoesConvertidas);
 
     res.render("pages/contratacoes", {
       aguardandoAceite,
+      aguardandoPag,
       emAndamento,
       concluidas,
       canceladas,
