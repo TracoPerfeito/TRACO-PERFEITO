@@ -1232,3 +1232,14 @@ body{
 .btn-excluir-publicacao ion-icon{ color:#e74c3c !important; }
 .btn-excluir-publicacao:hover{ background:#fceaea; color:#c0392b; }
 .btn-excluir-publicacao:hover ion-icon{ color:#c0392b !important; }
+
+
+
+.contagem{
+    font-family: "Josefin Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+    margin-left: 6px;
+  }

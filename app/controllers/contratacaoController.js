@@ -32,10 +32,29 @@ const contratacoesController = {
       .notEmpty()
       .isFloat({ min: 0 })
       .withMessage("O valor total deve ser um número positivo."),
-    body("DATA_ENTREGA")
+      body("DATA_ENTREGA")
       .notEmpty()
       .isDate({ format: "YYYY-MM-DD" })
-      .withMessage("A data de entrega deve ser uma data válida."),
+      .withMessage("A data de entrega deve ser uma data válida.")
+      .custom((value) => {
+        const data = moment(value, "YYYY-MM-DD", true);
+        if (!data.isValid()) {
+          throw new Error("Data inválida.");
+        }
+    
+        const hoje = moment().startOf("day");
+        const limite = moment("2030-12-31"); // impossivel ser adepois di=sso
+    
+        if (data.isBefore(hoje)) {
+          throw new Error("A data de entrega não pode ser no passado.");
+        }
+        if (data.isAfter(limite)) {
+          throw new Error("A data de entrega não pode ser muito distante no futuro.");
+        }
+    
+        return true; // passou
+      }),
+    
     body("OBSERVACOES")
       .optional({ checkFalsy: true })
       .trim()

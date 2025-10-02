@@ -190,6 +190,11 @@ listarPublicacoes: async (req, res, dadosNotificacao) => {
 
   try {
     const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
+    const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(id);
+    const N_CURTIDAS = await favoritoModel.countCurtidas(id);
+
+
+
 
     if (!publicacao) {
       console.log("Publicação não encontrada para o ID:", id);
@@ -241,6 +246,8 @@ if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000
       FAVORITO: publicacao.FAVORITO,
       qtdImagens: publicacao.imagens.length,
       qtdImagensUrls: publicacao.imagensUrls.length,
+      N_VISUALIZACOES,
+      N_CURTIDAS
     });
 
     console.log("Comentários da publicação sendo exibida:", comentarios.map(c => ({
@@ -260,6 +267,8 @@ if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000
     res.render("pages/publicacao", {
       publicacao,
       comentarios,
+      N_VISUALIZACOES,
+      N_CURTIDAS,
       listaErros: null,
       usuario: usuario ? {
         id: usuario.ID_USUARIO || usuario.id,
