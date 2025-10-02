@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+o<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -208,6 +208,42 @@
           
         
         </section>
+
+        <section>
+          
+      <section class="opcoes-menu">
+
+        <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
+          <button 
+            class="btn-editar" 
+            title="Editar Proposta" 
+            data-dataproposta="<%= proposta.DATA_PROPOSTA %>"
+            data-prazoentrega="<%= proposta.PRAZO_ENTREGA %>"
+            data-orcamento="<%= proposta.ORCAMENTO %>"
+            data-titulo="<%= proposta.TITULO_PROPOSTA %>">
+            <ion-icon name="create-outline"></ion-icon>
+            Editar
+          </button>
+          <form action="/excluir-proposta" method="POST" style="display:inline;">
+            <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+            <button type="submit" class="btn-excluir-publicacao" title="Excluir proposta" onclick="return confirm('Tem certeza que deseja excluir esta proposta? Esta ação não poderá ser desfeita.');">
+              <ion-icon name="trash-outline"></ion-icon>
+              Excluir
+            </button>
+          </form>
+        <% } %>
+
+        <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal('<%= proposta.ID_PROPOSTA %>')">
+          <ion-icon name="share-social-outline"></ion-icon>
+          Compartilhar
+        </button>
+        <button class="btn-denunciar" title="Denunciar">
+          <ion-icon name="flag-outline"></ion-icon>
+          Denunciar
+        </button>
+      </section>
+    </section>
+        </section>
       </section>
 
       <!-- Nome da proposta -->
@@ -255,6 +291,16 @@
 
      
     </main>
+
+
+    
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
 
     <%- include('../partials/rodape'); %>
 

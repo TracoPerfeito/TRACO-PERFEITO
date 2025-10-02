@@ -38,41 +38,50 @@ findId: async (id) => {
   }
 },
 
+findByUsuarioDetalhado: async (usuarioId) => {
+  try {
+    const [resultados] = await pool.query(
+      `SELECT 
+         c.*,
+         uCliente.NOME_USUARIO AS NOME_CLIENTE,
+         uCliente.EMAIL_USUARIO AS EMAIL_CLIENTE,
+         uCliente.USER_USUARIO AS USER_CLIENTE,
+         uProfissional.NOME_USUARIO AS NOME_PROFISSIONAL,
+         uProfissional.EMAIL_USUARIO AS EMAIL_PROFISSIONAL,
+         uProfissional.USER_USUARIO AS USER_PROFISSIONAL,
+         CASE 
+           WHEN c.ID_CLIENTE = ? THEN 'cliente'
+           ELSE 'profissional'
+         END AS tipoUsuario
+       FROM CONTRATACOES c
+       LEFT JOIN USUARIOS uCliente ON c.ID_CLIENTE = uCliente.ID_USUARIO
+       LEFT JOIN USUARIOS uProfissional ON c.ID_PROFISSIONAL = uProfissional.ID_USUARIO
+       WHERE c.ID_CLIENTE = ? OR c.ID_PROFISSIONAL = ?`,
+      [usuarioId, usuarioId, usuarioId]
+    );
 
-      findByUsuarioDetalhado: async (usuarioId) => {
-    try {
-      const [resultados] = await pool.query(
-        `SELECT *,
-        CASE 
-          WHEN ID_CLIENTE = ? THEN 'cliente'
-          ELSE 'profissional'
-        END AS tipoUsuario
-        FROM CONTRATACOES
-        WHERE ID_CLIENTE = ? OR ID_PROFISSIONAL = ?`,
-        [usuarioId, usuarioId, usuarioId]
-      );
+    // Processar cada registro para adicionar tempo restante e status amigável
+    const hoje = new Date();
+    const contratacoes = resultados.map(c => {
+      const dataEntrega = new Date(c.DATA_ENTREGA);
+      const diffMs = dataEntrega - hoje;
+      const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
-      // Processar cada registro para adicionar tempo restante e status amigável
-      const hoje = new Date();
-      const contratacoes = resultados.map(c => {
-        const dataEntrega = new Date(c.DATA_ENTREGA);
-        const diffMs = dataEntrega - hoje;
-        const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return {
+        ...c,
+        tipoUsuario: c.tipoUsuario,
+        diasRestantes: diffDias >= 0 ? diffDias : 0,
+        statusAmigavel: c.STATUS.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+      };
+    });
 
-        return {
-          ...c,
-          tipoUsuario: c.tipoUsuario,
-          diasRestantes: diffDias >= 0 ? diffDias : 0,
-          statusAmigavel: c.STATUS.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
-        };
-      });
+    return contratacoes;
+  } catch (error) {
+    console.error("Erro em findByUsuarioDetalhado:", error);
+    throw error;
+  }
+},
 
-      return contratacoes;
-    } catch (error) {
-      console.error("Erro em findByUsuarioDetalhado:", error);
-      throw error;
-    }
-  },
 
     // Buscar contratações de um usuário (como cliente ou profissional)
     findByUsuario: async (usuarioId) => {

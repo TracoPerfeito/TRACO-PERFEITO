@@ -167,27 +167,11 @@ router.get(
 //Listagem de denúncias de comentários
 
 router.get(
-  "/adm-lista-denuncias-comentarios",
+  "/adm-lista-denuncias-comentarios",  function(req, res) {
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  admController.listarDenunciasComentarios(req, res)}
 
-  async (req, res) => {
-    try {
-      const listarDenunciasComentarios = await admModel.listarDenunciasComentarios();
-      console.log({listarDenunciasComentarios});
-
-      res.render("pages/adm-lista-denuncias-comentarios", {
-        autenticado: req.session.autenticado,
-        logado: req.session.logado,
-        denuncias: listarDenunciasComentarios || []
-      });
-    } catch (error) {
-      console.error("Erro ao listar denúncias de comentários:", error);
-      res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-    }
-  }
 );
 
 

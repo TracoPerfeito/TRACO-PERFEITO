@@ -190,19 +190,22 @@ gravarPagamentoContratacao: async (req, res) => {
         const pagamentoCriado = await contratacaoModel.createPagamentoContratacao(camposPagamento);
         console.log("Pagamento registrado com sucesso:", pagamentoCriado.insertId);
 
-        // Atualizar campo PAGO da contratação se aprovado
-      if (statusPagamento === "approved") {
-    await contratacaoModel.updateContratacao({ PAGO: "sim" }, idContratacao);
-}
+        // Atualizar campo PAGO e o status da contratação se aprovado
+            await contratacaoModel.updateContratacao(
+            { PAGO: "sim", STATUS: "INICIADO" }, 
+            idContratacao
+            );
 
-        // Criar notificação pro cliente dizendo que deu certo
-        await notificacoesModel.criarNotificacao({
-            idUsuario: req.session.autenticado.id,
-            titulo: "🎉 Pagamento aprovado!",
-            preview: `✅ Pagamento da contratação "${contratacao.NOME_PROJETO}" confirmado com sucesso.`,
-            conteudo: `<p>O pagamento de R$${camposPagamento.VALOR_PAGO.toFixed(2)} foi aprovado.</p>`,
-            categoria: "PAGAMENTO"
-        });
+
+                    await notificacoesModel.criarNotificacao({
+                idUsuario: req.session.autenticado.id,
+                titulo: "🎉 Pagamento aprovado!",
+                preview: `✅ Pagamento da contratação "${contratacao.NOME_PROJETO}" destinado para ${contratacao.NOME_PROFISSIONAL} confirmado com sucesso.`,
+                conteudo: `<h2>Seu pagamento foi aprovado!</h2> 
+                    <p>O pagamento de R$${camposPagamento.VALOR_PAGO.toFixed(2)} destinado para <strong>${contratacao.NOME_PROFISSIONAL}</strong> 
+                    referente ao projeto <strong>${contratacao.NOME_PROJETO}</strong> foi aprovado.</p>`,
+                categoria: "PAGAMENTO"
+            });
 
         req.session.dadosNotificacao = {
             titulo: 'Pagamento confirmado!',
@@ -214,11 +217,42 @@ gravarPagamentoContratacao: async (req, res) => {
     } catch (error) {
         console.error("Erro ao registrar pagamento:", error);
 
+
+                 try {
+                await notificacoesModel.criarNotificacao({
+                    idUsuario: req.session.autenticado.id,
+                    titulo: "⚠️ Erro no pagamento",
+                    preview: `❌ Olá, ${req.session.autenticado.nome_usuario}! Ocorreu um problema ao processar seu pagamento. Verifique os dados ou tente novamente.`,
+
+                    conteudo: `
+                    <section class="payment-error-banner">
+                        <section class="payment-error-content">
+                        <h1>⚠️ Ocorreu um problema no pagamento</h1>
+                        <p>Infelizmente não conseguimos concluir a transação. 😕 Seu projeto não será iniciado enquanto o pagamento não for confirmado.</p>
+                        <p>Por favor, revise as informações de pagamento e tente novamente. Se o problema persistir, entre em contato com o suporte. 💬</p>
+                        
+                        <a href="/suporte" class="payment-error-button">Entrar em contato com o suporte</a>
+                        </section>
+                    </section>
+                    `,
+                    categoria: "PAGAMENTO-ERRO"
+                });
+
+                console.log("✅ Notificação de erro registrada com sucesso!");
+
+                } catch (erro) {
+                console.error("⚠️ Falha ao salvar notificação de erro:", erro.message);
+           
+                }
+
+
         req.session.dadosNotificacao = {
             titulo: 'Ocorreu um erro.',
             mensagem: 'Seu pagamento não foi registrado. Entre em contato com a equipe de suporte.',
             tipo: 'error'
         };
+
+       
 
         res.redirect("/"); 
     }

@@ -67,7 +67,7 @@ const contratacoesController = {
         VALOR_TOTAL,
         DATA_ENTREGA,
         OBSERVACOES: OBSERVACOES || null,
-        STATUS: "AGUARDANDO_CONFIRMACAO",
+        STATUS: "AGUARDANDO CONFIRMAÇÃO",
         ID_USUARIO_CRIADOR: req.session.autenticado.id,
         
       };
@@ -170,15 +170,17 @@ listarContratacoes: async (req, res) => {
     }));
 
     // Separar por status a partir do array convertido
-    const aguardandoAceite = contratacoesConvertidas.filter(c => c.STATUS === "AGUARDANDO_CONFIRMACAO");
-    const emAndamento = contratacoesConvertidas.filter(c => c.STATUS === "EM_ANDAMENTO");
-    const concluidas = contratacoesConvertidas.filter(c => c.STATUS === "CONCLUIDA");
+    const aguardandoAceite = contratacoesConvertidas.filter(c => c.STATUS === "AGUARDANDO CONFIRMAÇÃO");
+    const aguardandoPag = contratacoesConvertidas.filter(c => c.STATUS === "AGUARDANDO PAGAMENTO");
+    const emAndamento = contratacoesConvertidas.filter(c => c.STATUS === "EM ANDAMENTO");
+    const concluidas = contratacoesConvertidas.filter(c => c.STATUS === "CONCLUÍDA");
     const canceladas = contratacoesConvertidas.filter(c => c.STATUS === "CANCELADA");
 
     console.log("Exibindo pagina de contratacoes com os seguintes dados:", contratacoesConvertidas);
 
     res.render("pages/contratacoes", {
       aguardandoAceite,
+      aguardandoPag,
       emAndamento,
       concluidas,
       canceladas,
