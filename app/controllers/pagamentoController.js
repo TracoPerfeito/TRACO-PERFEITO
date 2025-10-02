@@ -165,18 +165,16 @@ gravarPagamentoContratacao: async (req, res) => {
     console.log("Recebido no feedback:", req.body, req.query);
 
     try {
-        // Pegar dados do feedback
-
+      
 
         const externalReference = req.query.external_reference || req.body.external_reference;
         const preferenceId = req.query.preference_id || req.body.preference_id;
         const statusPagamento = req.query.status || "pendente";
 
-        // Supondo que externalReference seja apenas o ID da contratação
+      
         const idContratacao = Number(externalReference);
         if (!idContratacao) throw new Error("ID da contratação inválido.");
 
-        // Buscar dados da contratação (opcional, para verificar valor total)
         const contratacao = await contratacaoModel.findId(idContratacao);
         if (!contratacao) return res.status(404).send("Contratação não encontrada.");
 
@@ -185,7 +183,7 @@ gravarPagamentoContratacao: async (req, res) => {
             ID_CONTRATACAO: idContratacao,
             ID_PAGAMENTO_MERCADO_PAGO: preferenceId,
             STATUS_PAGAMENTO: statusPagamento,
-            VALOR_PAGO: Number(req.query.transaction_amount || contratacao.VALOR_TOTAL), // ou passar valor no external_reference
+            VALOR_PAGO: Number(req.query.transaction_amount || contratacao.VALOR_TOTAL), 
             DATA_PAGAMENTO: new Date()
         };
 
@@ -197,7 +195,7 @@ gravarPagamentoContratacao: async (req, res) => {
     await contratacaoModel.updateContratacao({ PAGO: "sim" }, idContratacao);
 }
 
-        // Criar notificação pro cliente
+        // Criar notificação pro cliente dizendo que deu certo
         await notificacoesModel.criarNotificacao({
             idUsuario: req.session.autenticado.id,
             titulo: "🎉 Pagamento aprovado!",
