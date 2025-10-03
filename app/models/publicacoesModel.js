@@ -392,6 +392,12 @@ excluirProposta: async (idProposta) => {
 
 atualizarProposta: async (proposta) => {
     try {
+      // Garante que PRAZO_ENTREGA nunca seja string vazia
+      let prazo = proposta.PRAZO_ENTREGA;
+      if (typeof prazo === 'string' && prazo.trim() === '') {
+        prazo = null;
+      }
+
       const sql = `
         UPDATE PROPOSTA_PROJETO 
         SET TITULO_PROPOSTA = ?, 
@@ -408,7 +414,7 @@ atualizarProposta: async (proposta) => {
         proposta.DESCRICAO_PROPOSTA,
         proposta.CATEGORIA_PROPOSTA,
         proposta.PREFERENCIA_PROPOSTA,
-        proposta.PRAZO_ENTREGA,
+        prazo,
         proposta.ORCAMENTO,
         proposta.ID_PROPOSTA,
         proposta.ID_USUARIO

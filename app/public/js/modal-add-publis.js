@@ -96,10 +96,10 @@ btnAbrir.addEventListener("click", () => {
   carregarPublicacoes();
 });
 
-document.getElementById("fechar-modal-add-publis").addEventListener("click", fecharModal);
+document.getElementById("fechar-modal-add-publis").addEventListener("click", fecharModaladd);
 
 modaladdpub.addEventListener("click", (event) => {
-  if (event.target.id === "modal-add-publis") fecharModal();
+  if (event.target.id === "modal-add-publis") fecharModaladd();
 });
 
 window.addEventListener("resize", () => {

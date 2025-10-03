@@ -146,7 +146,8 @@ a {
 }
 
 .header .menu-btn:checked ~ .menu {
-  max-height: 600px;
+  max-height: 700px;
+  
 }
 
 
@@ -327,6 +328,7 @@ a {
   gap: 10px;
   cursor: pointer;
   padding: 10px 20px;
+
   
 }
 

@@ -1,297 +1,244 @@
 <link rel="stylesheet" href="/css/editar-publicacao.css">
-
-<!-- Modal específico para edição de publicação -->
-<section id="modal-editar-publicacao" class="modal-editar-publicacao">
+<!-- Modal para edição de proposta de projeto -->
+<section id="modal-editar-proposta" class="modal-editar-publicacao">
   <section class="modal-content-editar-publicacao">
-    <span class="fechar-editar-publicacao" id="fechar-modal-editar-publicacao">&times;</span>
-    <h2 class="titulo-modal-editar-publicacao">Editar essa Proposta de Projeto</h2>
+    <span class="fechar-editar-publicacao" id="fechar-modal-editar-proposta">&times;</span>
+    <h2 class="titulo-modal-editar-publicacao">Editar Proposta de Projeto</h2>
 
-   
+    <section class="form-editar-publicacao">
+      <form action="/editar-proposta" method="POST">
+        <input type="hidden" name="id_proposta" id="id-editar-proposta" value="">
 
-      <!-- Coluna direita: Campos de edição -->
-      <section class="form-editar-publicacao">
-        <form action="/editar-proposta" method="POST">
-          <input type="hidden" name="id_publicacao" id="id-editar-publicacao" value="">
+        <section class="conteudo-editar-publicacao">
+          <section class="dados">
 
-
-          <section class="conteudo-editar-publicacao">
-           
+            <!-- Título -->
+            <section class="form-grupo-1">
+              <label for="titulo-editar-proposta">Título:</label>
+              <input type="text" id="titulo-editar-proposta" name="titulo_proposta" class="caixa-texto" required>
             </section>
-            <section class="dados">
-  
-                  <!-- Título -->
-                  <section class="form-grupo-1" id="titulo-editar-publicacao-container">
-                    <label for="titulo-editar-publicacao">Título:</label>
-                    <input type="text" id="titulo-editar-publicacao" name="titulo_publicacao" class="caixa-texto" required>
-                    
-                  </section>
-        
-                  <!-- Categoria -->
-                  <section class="form-grupo-1" id="categoria-editar-publicacao-container">
-                    <label for="categoria-editar-publicacao">Categoria:</label>
-                    <select id="categoria-editar-publicacao" name="categoria" class="caixa-texto" required>
-                      <option value="">-- Selecione a categoria --</option>
-                      <option value="design_grafico">Design Gráfico</option>
-                      <option value="ilustracao">Ilustração</option>
-                      <option value="uiux">UI/UX</option>
-                      <option value="arte_digital">Arte Digital</option>
-                      <option value="arte_3d">Arte 3D</option>
-                      <option value="animacao">Animação</option>
-                      <option value="branding">Branding</option>
-                      <option value="tipografia">Tipografia</option>
-                      <option value="modelagem_3d">Modelagem 3D</option>
-                      <option value="design_de_produto">Design de Produto</option>
-                      <option value="design_editorial">Design Editorial</option>
-                      <option value="design_de_jogos">Design de Jogos</option>
-                      <option value="fotografia">Fotografia</option>
-                      <option value="outro">Outros</option>
-                    </select>
-                                                      
-                          
-<section id="outra-categoria-container" style="display:none; margin-top:10px;">
-  <label for="outraCategoria">Digite a categoria:</label>
-  <input type="text" id="outraCategoria" name="outraCategoria" placeholder="Ex: Lettering">
+
+            <!-- Categoria -->
+            <section class="form-grupo-1">
+              <label for="categoria-editar-proposta">Categoria:</label>
+              <select id="categoria-editar-proposta" name="categoria_proposta" class="caixa-texto" required>
+                <option value="">-- Selecione a categoria --</option>
+                <option value="design_grafico">Design Gráfico</option>
+                <option value="ilustracao">Ilustração</option>
+                <option value="UI/UX">UI/UX</option>
+                <option value="arte_digital">Arte Digital</option>
+                <option value="arte_3D">Arte 3D</option>
+                <option value="animacao">Animação</option>
+                <option value="branding">Branding</option>
+                <option value="tipografia">Tipografia</option>
+                <option value="modelagem_3d">Modelagem 3D</option>
+                <option value="design_de_produto">Design de Produto</option>
+                <option value="design-editorial">Design Editorial</option>
+                <option value="design_de_jogos">Design de jogos</option>
+                <option value="fotografia">Fotografia</option>
+                
+                <!-- ... (outras opções) -->
+                <option value="outro">Outros</option>
+              </select>
+
+              <section id="outra-categoria-container-proposta" style="display:none; margin-top:10px;">
+                <label for="outraCategoriaProposta">Digite a categoria:</label>
+                <input type="text" id="outraCategoriaProposta" name="outraCategoria" placeholder="Ex: Lettering">
+              </section>
+            </section>
+
+         <!-- Descrição (substituindo textarea pelo Quill) -->
+<section class="form-grupo-1">
+  <label for="descricao-editar-proposta">Descrição:</label>
+  <div id="editor-descricao" style="height: 200px; background: white;"></div>
+  <input type="hidden" id="descricao-editar-proposta" name="descricao_proposta" />
 </section>
 
-<script>
-const select = document.getElementById('categoria-editar-publicacao');
-const container = document.getElementById('outra-categoria-container');
-const inputOutra = document.getElementById('outraCategoria');
 
-select.addEventListener('change', () => {
-  if (select.value === 'outro') {
-    container.style.display = 'block';
-    inputOutra.required = true; // torna obrigatório
-  } else {
-    container.style.display = 'none';
-    inputOutra.required = false;
-    inputOutra.value = ""; // limpa caso mude
-  }
-});
-
-// Antes de enviar o form, se "outro" estiver preenchido, envia o valor do input
-const form = document.querySelector('#modal-editar-publicacao form');
-form.addEventListener('submit', () => {
-  if (select.value === 'outro' && inputOutra.value.trim() !== '') {
-    select.value = inputOutra.value.trim(); // substitui o valor do select pelo input
-  }
-});
-</script>
-                  </section>
-        
-                  <!-- Descrição -->
-                  <section class="form-grupo-1" id="descricao-editar-publicacao-container">
-                    <label for="descricao-editar-publicacao">Descrição:</label>
-                    <textarea id="descricao-editar-publicacao" name="descricao_publicacao" class="caixa-texto grande"></textarea>
-                  </section>
-        
-                  <!-- Tags -->
-                  <section class="form-grupo-1" id="tags-editar-publicacao-container">
-                    <label for="tagInput-editar">Tags:</label>
-                    <input id="tagInput-editar" name="tags" class="tags-look tagify--custom-dropdown caixa-texto" placeholder="Adicione tags à sua Proposta de Projeto...">
-                  </section>
-
-               </section> 
-
-
-
-
-                </section>
-  
-            <section class="secao-btns-modal">
-
-<!-- 
-                <button type="submit" class="btn-excluir-editar-publicacao"><ion-icon name="trash-outline" id="ion-trash"></ion-icon> Excluir</button>
-               -->
-              <button type="submit" class="btn-salvar-editar-publicacao">Salvar Alterações</button>
+            <!-- Orçamento -->
+            <section class="form-grupo-1">
+              <label for="orcamento-editar-proposta">Orçamento (R$):</label>
+              <input type="number" id="orcamento-editar-proposta" name="orcamento" class="caixa-texto" >
             </section>
 
-            
-              
-           
-     
-        </form>
+            <!-- Prazo de entrega -->
+            <section class="form-grupo-1">
+              <label for="prazo-editar-proposta">Prazo de Entrega:</label>
+              <input type="date" id="prazo-editar-proposta" name="prazo_entrega" class="caixa-texto">
+            </section>
 
-          <form action="/excluir-proposta" method="POST" style="display:inline;" class="btn-excluir-editar-publicacao">
-            <input type="hidden" name="idPublicacao" id="id-editar-publicacao-excluir" value="">
-            <button type="submit" class="btn-excluir-publicacao" title="Excluir publicação" onclick="return confirm('Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.');">
-              <ion-icon name="trash-outline"></ion-icon>
-              Excluir
-            </button>
-          </form>
-      </section>
+          </section>
+        </section>
+
+        <section class="secao-btns-modal">
+          <button type="submit" class="btn-salvar-editar-publicacao">Salvar Alterações</button>
+        </section>
+      </form>
+
+      <!-- Botão de exclusão -->
+      <form action="/excluir-proposta" method="POST" style="display:inline;" class="btn-excluir-editar-publicacao">
+        <input type="hidden" name="idProposta" id="id-editar-proposta-excluir" value="">
+        <button type="submit" class="btn-excluir-publicacao" title="Excluir proposta" onclick="return confirm('Tem certeza que deseja excluir esta proposta?');">
+          <ion-icon name="trash-outline"></ion-icon>
+          Excluir
+        </button>
+      </form>
     </section>
   </section>
 </section>
-<script>
-  // Cores para as tags no Tagify
-var coresTags = ['#7490C9','#969ED0','#92C4E2','#B8D9BD','#9BB7CF','#C3E3DF','#C2E5F0','#ADBCE2'];
-
-function transformarTag(tagData) {
-  var cor = coresTags[Math.floor(Math.random() * coresTags.length)];
-  tagData.color = cor;
-  tagData.style = "--tag-bg:" + cor;
-}
-
-// Inicializa Tagify no input das tags do modal
-var tagifyEditar = new Tagify(document.querySelector('#tagInput-editar'), {
-  maxTags: 10,
-  dropdown: { maxItems: 20, classname: 'tags-look', enabled: 0, closeOnSelect: false },
-  transformTag: transformarTag
-});
-
-// Função que ajusta altura do modal no mobile e trava o fundo
-function ajustarModalMobile(modal) {
-  const content = modal.querySelector(".modal-content-editar-publicacao");
-  const alturaVisivel = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-  if (window.innerWidth <= 768) { // só mobile
-    content.style.maxHeight = (alturaVisivel - 20) + "px"; // 20px de margem
-    content.style.overflowY = "auto";
-  } else {
-    content.style.maxHeight = "90vh"; // desktop
-    content.style.overflowY = "auto";
-  }
-
-  document.body.style.overflow = "hidden"; // bloqueia scroll do fundo
-}
-
-// Listener global para abrir modal ao clicar no botão editar
-document.addEventListener("click", function (e) {
-  const btn = e.target.closest(".btn-editar");
-  if (!btn) return;
-
-  // Pega os dados do botão (data-*)
-  const idPublicacao = btn.getAttribute("data-id") || "";
-  const titulo = btn.getAttribute("data-titulo") || "";
-  const categoria = btn.getAttribute("data-categoria") || "";
-  const descricao = btn.getAttribute("data-descricao") || "";
-  const tagsStr = btn.getAttribute("data-tags") || "";
-  const imagensStr = btn.getAttribute("data-imagens") || "[]";
-
-  let tags = tagsStr ? tagsStr.split(",").map(t => t.trim()) : [];
-  let imagens = [];
-  try { imagens = JSON.parse(imagensStr); } catch { imagens = []; }
-
-  // Preenche os campos do formulário
-  document.getElementById("id-editar-publicacao").value = idPublicacao;
-  document.getElementById("id-editar-publicacao-excluir").value = idPublicacao;
-  document.getElementById("titulo-editar-publicacao").value = titulo;
-  document.getElementById("categoria-editar-publicacao").value = categoria;
-  document.getElementById("descricao-editar-publicacao").value = descricao;
-
-  // Preenche tags
-  tagifyEditar.removeAllTags();
-  tagifyEditar.addTags(tags);
-
-  // Preenche carrossel
-  const carrossel = document.querySelector('.lista-imagens-editar-publicacao');
-  const controlesCarrossel = document.querySelector('.controles-carrossel-editar');
-  const indicadoresContainer = controlesCarrossel.querySelector('.indicadores-carrossel-editar');
-  const btnEsquerda = controlesCarrossel.querySelector('.seta-carrossel-esquerda');
-  const btnDireita = controlesCarrossel.querySelector('.seta-carrossel-direita');
-
-  carrossel.innerHTML = '';
-  indicadoresContainer.innerHTML = '';
-
-  if (imagens.length > 0) {
-    imagens.forEach((url, idx) => {
-      const div = document.createElement('div');
-      div.classList.add('item-imagem-editar-publicacao');
-      if (idx !== 0) div.style.display = 'none';
-
-      div.innerHTML = `
-        <img src="${url}" alt="Imagem da publicação">
-        <button class="btn-remover-imagem-editar-publicacao" title="Remover imagem">🗑</button>
-      `;
-      carrossel.appendChild(div);
-
-      const indicador = document.createElement('p');
-      indicador.classList.toggle('ativo', idx === 0);
-      indicador.addEventListener('click', () => mostrarImagem(idx));
-      indicadoresContainer.appendChild(indicador);
+<!-- Incluir Quill CSS e JS (pode ser no <head> da página) -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script>
+    // Inicializa Quill no campo descrição
+    console.log('Inicializando Quill...');
+    const quill = new Quill('#editor-descricao', {
+      theme: 'snow',
+      placeholder: 'Descreva detalhadamente...'
     });
+    console.log('Quill inicializado:', quill);
+  
+    // Mostrar campo "outra categoria"
+    const selectCategoria = document.getElementById('categoria-editar-proposta');
+    const inputOutraCategoria = document.getElementById('outraCategoriaProposta');
+    const containerOutraCategoria = document.getElementById('outra-categoria-container-proposta');
+  
+    selectCategoria.addEventListener('change', () => {
+      console.log('Categoria mudou para:', selectCategoria.value);
+      if (selectCategoria.value === 'outro') {
+        containerOutraCategoria.style.display = 'block';
+        inputOutraCategoria.required = true;
+        console.log('Mostrando campo "Outra Categoria" e tornando obrigatório');
+      } else {
+        containerOutraCategoria.style.display = 'none';
+        inputOutraCategoria.required = false;
+        inputOutraCategoria.value = "";
+        console.log('Escondendo campo "Outra Categoria" e limpando valor');
+      }
+    });
+  
+    const formProposta = document.querySelector('#modal-editar-proposta form');
+    formProposta.addEventListener('submit', (event) => {
+      console.log('Formulário enviado. Preparando dados...');
+  
+      // Antes de enviar, copia conteúdo do Quill para input hidden
+      const descricaoHTML = quill.root.innerHTML;
+      document.getElementById('descricao-editar-proposta').value = descricaoHTML;
+      console.log('Conteúdo do Quill copiado para textarea:', descricaoHTML);
+  
+      // Ajusta categoria se "outro" preenchido
+      if (selectCategoria.value === 'outro' && inputOutraCategoria.value.trim() !== '') {
+        console.log('Categoria "outro" preenchida com:', inputOutraCategoria.value.trim());
+        selectCategoria.value = inputOutraCategoria.value.trim();
+        console.log('selectCategoria.value ajustado para:', selectCategoria.value);
+      } else {
+        console.log('Categoria não é "outro" ou campo "outra categoria" vazio');
+      }
+    });
+  
+    // Abrir modal e preencher campos
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn-editar');
+      if (!btn) {
+        // Se não clicar no botão editar, ignora
+        return;
+      }
+      console.log('Botão editar clicado:', btn);
+  
+      const idProposta = btn.getAttribute('data-id');
+      const titulo = btn.getAttribute('data-titulo') || '';
+      const categoria = btn.getAttribute('data-categoria') || '';
+      const descricao = btn.getAttribute('data-descricao') || '';
+      const prazoEntrega = btn.getAttribute('data-prazoentrega') || '';
+      const orcamento = btn.getAttribute('data-orcamento') || '';
+  
+      console.log('Dados extraídos do botão:');
+      console.log({ idProposta, titulo, categoria, descricao, prazoEntrega, orcamento });
+  
+      // Preencher campos do formulário
+      document.getElementById('id-editar-proposta').value = idProposta;
+      document.getElementById('id-editar-proposta-excluir').value = idProposta;
+      document.getElementById('titulo-editar-proposta').value = titulo;
 
-    controlesCarrossel.style.display = imagens.length > 1 ? 'flex' : 'none';
-  }
+      // Se a categoria não existir nas opções, adiciona dinamicamente
+      let found = false;
+      for (let i = 0; i < selectCategoria.options.length; i++) {
+        if (selectCategoria.options[i].value === categoria) {
+          found = true;
+          break;
+        }
+      }
+      if (!found && categoria && categoria !== 'outro') {
+        const opt = document.createElement('option');
+        opt.value = categoria;
+        opt.textContent = categoria.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        selectCategoria.appendChild(opt);
+      }
+      selectCategoria.value = categoria;
 
-  let indiceAtual = 0;
-  function mostrarImagem(novoIndice) {
-    const itens = carrossel.querySelectorAll('.item-imagem-editar-publicacao');
-    const indicadores = indicadoresContainer.querySelectorAll('p');
-    if (novoIndice < 0) novoIndice = itens.length - 1;
-    if (novoIndice >= itens.length) novoIndice = 0;
-    itens[indiceAtual].style.display = 'none';
-    indicadores[indiceAtual].classList.remove('ativo');
-    itens[novoIndice].style.display = 'block';
-    indicadores[novoIndice].classList.add('ativo');
-    indiceAtual = novoIndice;
-  }
+      // Mostrar ou ocultar campo "outra categoria"
+      if (categoria === 'outro') {
+        containerOutraCategoria.style.display = 'block';
+        inputOutraCategoria.required = true;
+        inputOutraCategoria.value = '';
+        selectCategoria.value = 'outro';
+        console.log('Categoria é "outro", mostrando campo para digitar categoria');
+      } else {
+        containerOutraCategoria.style.display = 'none';
+        inputOutraCategoria.required = false;
+        inputOutraCategoria.value = '';
+        console.log('Categoria não é "outro", escondendo campo para digitar categoria');
+      }
+  
+      // Atualiza conteúdo do Quill com a descrição (HTML)
+      console.log('Atualizando conteúdo do Quill com descrição:', descricao);
+      quill.root.innerHTML = descricao;
+  
 
-  // Exibe o modal
-  const modal = document.getElementById("modal-editar-publicacao");
-  modal.style.display = "flex";
-
-  // Ajusta altura e trava fundo
-  ajustarModalMobile(modal);
-});
-
-// Fecha o modal ao clicar no "X"
-document.getElementById("fechar-modal-editar-publicacao").addEventListener("click", function () {
-  fecharModalEditarPublicacao();
-});
-
-// Fecha o modal clicando fora do conteúdo
-window.addEventListener("click", function (event) {
-  if (event.target.id === "modal-editar-publicacao") {
-    fecharModalEditarPublicacao();
-  }
-});
-
-// Função de fechar modal
-function fecharModalEditarPublicacao() {
-  const modal = document.getElementById("modal-editar-publicacao");
-  modal.style.display = "none";
-  document.body.style.overflow = ""; // libera scroll do fundo
-  const content = modal.querySelector(".modal-content-editar-publicacao");
-  content.style.maxHeight = "";
-  content.style.overflowY = "";
-}
-
-// Reajusta altura ao redimensionar a tela
-window.addEventListener("resize", function() {
-  const modal = document.getElementById("modal-editar-publicacao");
-  if (modal.style.display === "flex") {
-    ajustarModalMobile(modal);
-  }
-});
-
-
-
-
-
-
-
-
-</script>
-
-
-<script src="/js/editar-publi-validacoes.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      // Preenche o campo data: se vier vazio, tenta buscar do card da proposta
+      const inputPrazo = document.getElementById('prazo-editar-proposta');
+      if (prazoEntrega) {
+        inputPrazo.value = prazoEntrega;
+        console.log('Prazo de entrega setado para:', prazoEntrega);
+      } else {
+        // Busca o card da proposta pelo id
+        const card = document.querySelector(`.card[data-id='${idProposta}']`);
+        let prazoCard = '';
+        if (card) {
+          prazoCard = card.getAttribute('data-prazoentrega') || '';
+        }
+        inputPrazo.value = prazoCard;
+        console.log('Prazo de entrega recuperado do card:', prazoCard);
+      }
+  
+      document.getElementById('orcamento-editar-proposta').value = orcamento;
+      console.log('Orçamento setado para:', orcamento);
+  
+      // Mostrar modal
+      const modal = document.getElementById('modal-editar-proposta');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('Modal aberto e scroll da página desativado');
+    });
+  
+    // Fechar modal
+    document.getElementById('fechar-modal-editar-proposta').addEventListener('click', () => {
+      console.log('Fechar modal clicado');
+      fecharModalProposta();
+    });
+  
+    window.addEventListener('click', (event) => {
+      if (event.target.id === 'modal-editar-proposta') {
+        console.log('Clique fora do modal detectado, fechando modal');
+        fecharModalProposta();
+      }
+    });
+  
+    function fecharModalProposta() {
+      const modal = document.getElementById('modal-editar-proposta');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+      console.log('Modal fechado e scroll da página ativado');
+    }
+  </script>
+  

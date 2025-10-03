@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="theme-color" content="#191E29">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"  content="width=device-width, initial-scale=1.0">
 
 
   <meta name="description" content="Contrate ilustradores e designers freelancers para criar artes personalizadas. Descubra talentos, veja portfólios e transforme suas ideias em projetos incríveis no Traço Perfeito.">
@@ -24,8 +24,8 @@
     <link rel="stylesheet" href="css/filtro-index.css">
     <link rel="stylesheet" href="css/share-button.css">
    
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
    <script src="js/simple-notify.js"></script>
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
@@ -275,27 +275,73 @@
 
     <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
    
-    <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
-  <div class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
+    <!-- <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
+  <section class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
     <% pub.imagens.forEach((img, idx) => { %>
       <img 
         src="data:image/jpeg;base64,<%= img.toString('base64') %>" 
         class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>" 
         alt="Imagem da publicação"/>
     <% }) %>
-  </div>
+  </section>
 
   <% if (pub.imagens.length > 1) { %>
     <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)"><ion-icon name="chevron-back-outline"></ion-icon></button>
     <button class="seta-carrossel direita" onclick="event.preventDefault();nextImg(this)"><ion-icon name="chevron-forward-outline"></ion-icon></button>
 
-    <div class="indicadores">
+    <section class="indicadores">
       <% pub.imagens.forEach((_, idx) => { %>
         <span class="indicador<%= idx === 0 ? ' ativo' : '' %>"></span>
       <% }) %>
-    </div>
+    </section>
   <% }  %>
+</section> -->
+
+
+<section class="carrossel-imagens-explorar" 
+  onmouseenter="mostrarControles(this)" 
+  onmouseleave="esconderControles(this)">
+  
+  <section class="container-imgs" 
+    ontouchstart="startSwipe(event, this)" 
+    ontouchmove="swipeMove(event)" 
+    ontouchend="endSwipe(event, this)">
+
+    <% if (pub.imagens && pub.imagens.length > 0) { %>
+      <% pub.imagens.forEach((img, idx) => { %>
+        <img 
+          src="data:image/jpeg;base64,<%= img.toString('base64') %>" 
+          class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>" 
+          alt="Imagem da publicação"
+          onerror="this.src='/imagens/fallback.png';"
+        />
+      <% }) %>
+    <% } else { %>
+    
+      <img 
+        src="/imagens/img-quebrada.png" 
+        class="publicacao-img ativa" 
+        alt="Imagem padrão"
+      />
+    <% } %>
+  </section>
+
+  <% if (pub.imagens && pub.imagens.length > 1) { %>
+    <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+    <button class="seta-carrossel direita" onclick="event.preventDefault();nextImg(this)">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+
+    <section class="indicadores">
+      <% pub.imagens.forEach((_, idx) => { %>
+        <span class="indicador<%= idx === 0 ? ' ativo' : '' %>"></span>
+      <% }) %>
+    </section>
+  <% } %>
 </section>
+
 
   </a>
 
@@ -461,7 +507,14 @@
 
                 
 
-               
+
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
 
                
 

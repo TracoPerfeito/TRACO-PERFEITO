@@ -1,0 +1,630 @@
+/* ===============================
+   Reset e fontes
+================================= */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Josefin Sans', sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--text-color);
+}
+
+
+#hpag{
+ margin: 10px auto 0px auto;
+  padding: 2rem;
+}
+.texto-cor {
+     font-family: 'Montserrat', sans-serif;
+  color: var(--text-color);
+  margin: 15px 0;
+
+}
+
+.texto-cor h2{
+      padding: 2rem;
+}
+
+
+/* ===============================
+   Main Dashboard Layout
+================================= */
+main {
+  padding: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ===============================
+   Botão Criar Contratação
+================================= */
+.criar-btn {
+  display: inline-block;
+  margin-bottom: 2rem;
+  padding: 0.7rem 1.5rem;
+  background-color: var(--cor-botao);
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.criar-btn:hover {
+  background-color: var(--azul-mais-escuro);
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   Cards de Resumo (Status)
+================================= */
+.cards {
+   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+  margin-bottom: 3rem;
+    display: flex;
+  flex-wrap: wrap; /* permite quebrar linha quando não cabe mais */
+  gap: 1rem;
+}
+
+.cards .card {
+  display: flex;
+  align-items: center; /* centraliza verticalmente */
+  justify-content: flex-start; /* ícone à esquerda */
+  gap: 1rem; /* espaço entre ícone e texto */
+  padding: 1.5rem;
+  border-radius: 10px;
+  background-color: var(--card-dashboard);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+#card-aguardando ion-icon {
+  color: #f9e87d;
+}
+#card-aguardando {
+  border-bottom: 4px solid #f9e87d;
+}
+
+#card-aguardando-pag ion-icon {
+  color: #fbbc58;
+}
+#card-aguardando-pag {
+  border-bottom: 4px solid #fbbc58;
+}
+
+#card-andamento ion-icon {
+  color: #316886;
+}
+#card-andamento {
+  border-bottom: 4px solid #316886;
+}
+
+#card-concluidas ion-icon {
+  color: #73bda8;
+}
+#card-concluidas {
+  border-bottom: 4px solid #73bda8;
+}
+
+#card-canceladas ion-icon {
+  color: #ff6452;
+}
+#card-canceladas {
+  border-bottom: 4px solid #ff6452;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+   color: var(--cor-texto-dashboard);
+}
+
+.card p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: var(--text-color);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.cards .card ion-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0; /* não encolhe */
+}
+
+.cards .card .card-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* mantém nome e número alinhados à esquerda */
+  justify-content: center;
+}
+
+.card{
+      flex: 1 1 180px;
+  aspect-ratio: 5 / 2;  
+  max-width: 180px;
+}
+
+/* ===============================
+   Contratações Container
+================================= */
+.contratacoes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+
+/* Container dos cards */
+.contratacoes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Card principal */
+.contratacao-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contratacao-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Cabeçalho */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.status-tag {
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  color: #fff;
+}
+
+/* Status cores */
+.status-aguardando { background-color: #fffa5dd0; color: #dca305; margin: 0px 5px; }
+.status-aguardando-pag { background-color: #f0ac4eb0; color: #df6a0a;   margin: 0px 5px; }
+.status-andamento { background-color: #5fbfffca; color: #3498db; margin: 0px 5px; }
+.status-concluido { background-color: #7aff99d5; color: #1a9e39;  margin: 0px 5px; }
+
+/* Informações principais */
+.card-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.info-block strong {
+  display: block;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+
+.modal-info__info-block{
+      margin-bottom: 1rem;
+}
+
+.info-block p {
+  margin: 0;
+  font-weight: 600;
+  color: #555;
+}
+
+.info-block small {
+  color: #888;
+}
+
+/* Observações */
+.card-observacoes {
+  background-color: #f9f9f9;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.card-observacoes strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #333;
+}
+
+/* Botões */
+.card-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.card-buttons a,
+.card-buttons button {
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.acoes{
+    display: flex;
+    flex-direction: column;
+}
+
+.btn{
+    padding: 0.5rem 1rem;
+  border: none;
+  border-radius:6px;
+}
+.ver-detalhes {
+  background-color: #6c63ff;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius:6px;
+}
+
+.ver-detalhes:hover {
+  background-color: #5b52e6;
+}
+
+.aceitar {
+  background-color: #3ac47d;
+  color: #fff;
+}
+
+.aceitar:hover {
+  background-color: #32b768;
+}
+
+.recusar {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.recusar:hover {
+  background-color: #c0392b;
+}
+
+.btn-pagar {
+  background-color: #f0ad4e;
+  color: #fff;
+}
+
+.btn-pagar:hover {
+  background-color: #e89a1f;
+}
+
+/* Responsividade */
+@media(max-width: 768px){
+  .card-info {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media(max-width: 480px){
+  .card-info {
+    grid-template-columns: 1fr;
+  }
+  .card-buttons {
+    flex-direction: column;
+  }
+}
+
+
+
+
+
+
+/* ===============================
+   Tabela de Todos os Projetos
+================================= *//* ===============================
+   Tabela de Todos os Projetos
+================================= */
+table {
+  width: 80%;           /* ocupa no mínimo 80% da tela */
+  max-width: 100%;      /* nunca ultrapassa 100% */
+  margin: 0 auto 3rem auto; /* centraliza horizontalmente */
+  border-collapse: collapse;
+  font-family: 'Josefin Sans', sans-serif;
+  overflow-x: auto;     /* permite scroll horizontal se necessário */
+}
+
+table th, table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word; /* quebra texto longo */
+}
+
+table th {
+  background-color: var(--table);
+  color: var(--primary-color);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+}
+
+table tr:hover {
+  background-color: var(--table-1);
+}
+
+
+.table-container {
+  width: 100%;
+  min-width: 80%;
+  overflow-x: auto; /* permite scroll horizontal */
+  margin-bottom: 3rem;
+}
+
+/* ===============================
+   Responsividade
+================================= */
+@media (max-width: 1024px) {
+  table {
+    width: 90%;          /* ajusta largura em telas médias */
+    font-size: 0.95rem;
+  }
+}
+
+
+/* ===============================
+   Botões dentro da tabela
+================================= */
+
+
+table td .btn,
+table td button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  margin: 0.2rem 0;
+  display: inline-block;
+}
+
+table td .aceitar {
+  background-color: #3ac47d;
+  color: white;
+}
+
+table td .aceitar:hover {
+  background-color: #32b768;
+}
+
+table td .recusar {
+  background-color: #e74c3c;
+  color: white;
+}
+
+table td .recusar:hover {
+  background-color: #c0392b;
+}
+
+
+
+
+/* Modal detalhes */
+.modal-detalhes {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 1rem;
+  overflow-y: scroll;
+}
+
+
+.modal-detalhes h2 {
+    color: #333;
+}
+
+.modal-detalhes__content {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.modal-detalhes__close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-detalhes__title {
+  font-size: 1.6rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modal-detalhes__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.modal-detalhes__info-block {
+  flex: 1 1 45%;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.modal-detalhes__info-block--full {
+  flex: 1 1 100%;
+}
+
+.modal-detalhes__info-block strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--primary-color);
+}
+
+.modal-detalhes__info-block p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.modal-detalhes__info-block small {
+  color: #777;
+}
+
+.modal-detalhes__buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-detalhes__btn {
+  text-decoration: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.modal-detalhes__btn--pagar {
+  background-color: #3ac47d;
+  color: white;
+}
+
+.modal-detalhes__btn--pagar:hover {
+  background-color: #32b768;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .modal-detalhes__content {
+    padding: 1rem;
+  }
+
+  .modal-detalhes__info-block {
+    flex: 1 1 100%;
+  }
+}
+
+
+/* ===============================
+   Responsividade
+================================= */
+@media (max-width: 1024px) {
+  .cards {
+    flex-wrap: wrap;
+  }
+
+  
+}
+
+@media (max-width: 768px) {
+
+
+    
+.card{
+      flex: 1 1 180px;
+  aspect-ratio: 1;  
+  max-width: 60px;
+  flex-direction: column;
+}
+
+    .card p {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+  color: var(--text-color);
+  text-align: center ;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.cards .card ion-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0; 
+}
+
+.cards .card .card-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  justify-content: center;
+  text-align: center;
+}
+
+
+
+
+  .contratacoes-container {
+    grid-template-columns: 1fr;
+  }
+
+  .contratacao-card p, .contratacao-card h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .criar-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .contratacao-card {
+    padding: 1rem;
+  }
+}

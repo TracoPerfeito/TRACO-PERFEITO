@@ -130,29 +130,37 @@ const publicacoesController = {
 
 
     regrasValidacaoEditarPublicacao: [
-  body("titulo_publicacao")
-    .trim()
-    .isLength({ min: 1, max: 70 })
-    .withMessage("O título deve ter entre 1 e 70 caracteres."),
-  
-  
+      body("titulo_proposta")
+      .trim()
+      .isLength({ min: 2, max: 50 })
+      .withMessage("O título deve ter entre 2 e 50 caracteres."),
+    
+    body("categoria_proposta")
+      .trim()
+      .notEmpty()
+      .withMessage("A categoria é obrigatória."),
+    
+    // body("preferencia")
+    //   .optional({ checkFalsy: true })
+    //   .trim()
+    //   .isLength({ max: 30 })
+    //   .withMessage("A preferência deve ter no máximo 30 caracteres."),
 
-  body("descricao_publicacao")
-    .trim()
-    .isLength({ min: 1, max: 2000 })
-    .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
+    body("prazo_entrega")
+      .optional({ checkFalsy: true })
+      .isDate({ format: "YYYY-MM-DD" })
+      .withMessage("O prazo de entrega deve ser uma data válida."),
 
-  body("tags")
-    .custom((value) => {
-      try {
-        const tags = JSON.parse(value);
-        if (!Array.isArray(tags)) throw new Error();
-        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
-        return true;
-      } catch {
-        throw new Error("Tags inválidas, envie um array JSON.");
-      }
-    }),
+    body("orcamento")
+      .optional({ checkFalsy: true })
+      .isFloat({ min: 0 })
+      .withMessage("O orçamento deve ser um valor positivo."),
+
+       body("descricao_proposta")
+      .trim()
+      .isLength({ min: 2, max: 2000 })
+      .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+
 
 
 ],
@@ -171,18 +179,7 @@ const publicacoesController = {
     .isLength({ min: 1, max: 2000 })
     .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
 
-  body("tags")
-    .custom((value) => {
-      try {
-        const tags = JSON.parse(value);
-        if (!Array.isArray(tags)) throw new Error();
-        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
-        return true;
-      } catch {
-        throw new Error("Tags inválidas, envie um array JSON.");
-      }
-    }),
-
+  
 
 ],
 
@@ -431,7 +428,7 @@ return res.redirect("/publicacao/" + idPublicacao);
 
 editarProposta: async (req, res) => {
   console.log("Chegou no editarProposta");
-
+  const previousUrl = req.get("Referer") || "/";
   try {
     const { id_proposta, titulo_proposta, descricao_proposta, categoria_proposta, preferencia_proposta, prazo_entrega, orcamento } = req.body;
     const idUsuario = req.session.autenticado.id;
@@ -450,7 +447,7 @@ editarProposta: async (req, res) => {
         tipo: "error"
       };
 
-      return res.redirect("/proposta/" + id_proposta);
+      return res.redirect(previousUrl);
     }
 
     // Categoria (permite "outra categoria")
@@ -459,14 +456,16 @@ editarProposta: async (req, res) => {
       categoriaFinal = req.body.outraCategoria.trim();
     }
 
-    // Atualiza os dados da proposta
+    // Corrige o valor do prazo_entrega: se vazio, envia null para o banco
+    let prazoFinal = prazo_entrega && prazo_entrega.trim() !== '' ? prazo_entrega : null;
+
     await publicacoesModel.atualizarProposta({
       ID_PROPOSTA: id_proposta,
       TITULO_PROPOSTA: titulo_proposta,
       DESCRICAO_PROPOSTA: descricao_proposta,
       CATEGORIA_PROPOSTA: categoriaFinal,
       PREFERENCIA_PROPOSTA: preferencia_proposta,
-      PRAZO_ENTREGA: prazo_entrega,
+      PRAZO_ENTREGA: prazoFinal,
       ORCAMENTO: orcamento,
       ID_USUARIO: idUsuario
     });
@@ -480,7 +479,7 @@ editarProposta: async (req, res) => {
       tipo: "success"
     };
 
-    return res.redirect("/proposta/" + id_proposta);
+    return res.redirect(previousUrl);
 
   } catch (erro) {
     console.error("Erro ao editar proposta:", erro);
@@ -492,7 +491,7 @@ editarProposta: async (req, res) => {
       tipo: "error"
     };
 
-    return res.redirect("/proposta/" + idProposta);
+    return res.redirect(previousUrl);
   }
 },
 
@@ -805,11 +804,28 @@ adicionarPublicacoesAoPortfolio: async (req, res) => {
   try {
     
     if (!portfolioId) {
-      return res.status(400).json({ error: "ID do portfólio não fornecido." });
+
+      
+      
+    req.session.dadosNotificacao = {
+      titulo: "Ocorreu um erro.",
+      mensagem: "Tente novamente mais tarde.",
+      tipo: "error"
+    };
+
+
+    return  res.redirect("/");
+
     }
 
     if (!publicacoesSelecionadas || publicacoesSelecionadas.length === 0) {
-      return res.status(400).json({ error: "Nenhuma publicação selecionada." });
+      
+    req.session.dadosNotificacao = {
+      titulo: "Selecione publicações.",
+      mensagem: "Nenhuma publicação foi selecionada.",
+      tipo: "attention"
+    };
+
     }
 
     // Se veio como string separada por vírgula, transforma em array de números
@@ -864,11 +880,29 @@ removerPublicacoesDoPortfolio: async (req, res) => {
 
   try {
     if (!id_portfolio) {
-      return res.status(400).json({ error: "ID do portfólio não fornecido." });
+   
+          req.session.dadosNotificacao = {
+      titulo: "Ocorreu um erro.",
+      mensagem: "Tente novamente mais tarde.",
+      tipo: "error"
+    };
+
+    return res.redirect("/");
     }
 
     if (!publisParaRemocao || publisParaRemocao.length === 0) {
-      return res.status(400).json({ error: "Nenhuma publicação selecionada." });
+         req.session.dadosNotificacao = {
+      titulo: "Selecione publicações!",
+      mensagem: "Nenhuma publicação foi selecionada para remoção.",
+      tipo: "attention"
+    };
+
+
+    req.params.id = id_portfolio;
+
+   
+    await listagensController.exibirPortfolio(req, res);
+
     }
 
     // Converte string separada por vírgula em array de números
@@ -1255,39 +1289,41 @@ if (resultado.mudou && resultado.status === 1 && idUsuario != idDonoPublicacao) 
       }
     },
   
-    // Atualizar proposta
-    editarProposta: async (req, res) => {
-      try {
-        const { idProposta } = req.params;
-        const { titulo, descricao, categoria, preferencia, prazoEntrega, orcamento, status } = req.body;
-        const idUsuarioLogado = req.session.autenticado.id;
+    // // Atualizar proposta
+    // editarProposta: async (req, res) => {
+    //   try {
+    //     const { idProposta } = req.params;
+    //     const { titulo, descricao, categoria, preferencia, prazoEntrega, orcamento, status } = req.body;
+    //     const idUsuarioLogado = req.session.autenticado.id;
   
-        // Verifica se o usuário é dono da proposta
-        const [proposta] = await pool.query('SELECT ID_USUARIO FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
-        if (!proposta[0]) {
-          req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Proposta não encontrada', tipo: 'erro' };
-          return res.redirect('/projetos');
-        }
-        if (proposta[0].ID_USUARIO !== idUsuarioLogado) {
-          req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Você não pode editar esta proposta', tipo: 'erro' };
-          return res.redirect('/projetos');
-        }
+    //     const previousUrl = req.get("Referer") || "/";
+
+    //     // Verifica se o usuário é dono da proposta
+    //     const [proposta] = await pool.query('SELECT ID_USUARIO FROM PROPOSTA_PROJETO WHERE ID_PROPOSTA = ?', [idProposta]);
+    //     if (!proposta[0]) {
+    //       req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Proposta não encontrada', tipo: 'erro' };
+    //       return res.redirect(previousUrl);
+    //     }
+    //     if (proposta[0].ID_USUARIO !== idUsuarioLogado) {
+    //       req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Você não pode editar esta proposta', tipo: 'erro' };
+    //       return res.redirect(previousUrl);
+    //     }
   
-        // Atualiza os dados da proposta
-        await pool.query(
-          `UPDATE PROPOSTA_PROJETO 
-           SET TITULO_PROPOSTA=?, DESCRICAO_PROPOSTA=?, CATEGORIA_PROPOSTA=?, PREFERENCIA_PROPOSTA=?, PRAZO_ENTREGA=?, ORCAMENTO=?, STATUS_PROPOSTA=?
-           WHERE ID_PROPOSTA=?`,
-          [titulo, descricao, categoria, preferencia, prazoEntrega || null, orcamento || null, status, idProposta]
-        );
+    //     // Atualiza os dados da proposta
+    //     await pool.query(
+    //       `UPDATE PROPOSTA_PROJETO 
+    //        SET TITULO_PROPOSTA=?, DESCRICAO_PROPOSTA=?, CATEGORIA_PROPOSTA=?, PREFERENCIA_PROPOSTA=?, PRAZO_ENTREGA=?, ORCAMENTO=?, STATUS_PROPOSTA=?
+    //        WHERE ID_PROPOSTA=?`,
+    //       [titulo, descricao, categoria, preferencia, prazoEntrega || null, orcamento || null, status, idProposta]
+    //     );
   
-        req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Proposta atualizada!', tipo: 'sucesso' };
-        res.redirect(`/projetos/${idProposta}`);
-      } catch (error) {
-        console.error('Erro ao editar proposta:', error);
-        res.status(500).render('pages/erro-conexao', { mensagem: 'Não foi possível atualizar a proposta.' });
-      }
-    },
+    //     req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Proposta atualizada!', tipo: 'sucesso' };
+    //     res.redirect(`/projetos/${idProposta}`);
+    //   } catch (error) {
+    //     console.error('Erro ao editar proposta:', error);
+    //     res.status(500).render('pages/erro-conexao', { mensagem: 'Não foi possível atualizar a proposta.' });
+    //   }
+    // },
   
     // Denunciar proposta
     denunciarProposta: async (req, res) => {

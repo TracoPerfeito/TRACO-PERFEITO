@@ -14,7 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
-    <link rel="stylesheet" href="css/oportunidades.css">
+  <link rel="stylesheet" href="css/oportunidades.css">
+  <link rel="stylesheet" href="css/propostadeprojeto.css">
     <link rel="stylesheet" href="css/barrapesquisa.css">
 
        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
@@ -190,13 +191,12 @@
 
 <section class="grid">
   <% propostas.forEach(proposta => { %>
-    <section class="card" onclick="location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'" 
-     
-             data-dataproposta="<%= proposta.DATA_PROPOSTA %>"
-             data-prazoentrega="<%= proposta.PRAZO_ENTREGA %>"
-             data-orcamento="<%= proposta.ORCAMENTO %>"
-             data-titulo="<%= proposta.TITULO_PROPOSTA %>">
-      
+
+    <section class="card" 
+      data-dataproposta="<%= proposta.DATA_PROPOSTA %>"
+      data-prazoentrega="<%= proposta.PRAZO_ENTREGA %>"
+      data-orcamento="<%= proposta.ORCAMENTO %>"
+      data-titulo="<%= proposta.TITULO_PROPOSTA %>">
       <!-- Badges: status e categoria -->
       <section class="info-top">
         <section class="badges">
@@ -204,9 +204,41 @@
           <span class="badge categoria-<%= proposta.CATEGORIA_PROPOSTA.toLowerCase().replace('_','-') %>">
             <%= proposta.CATEGORIA_PROPOSTA %>
           </span>
-
-          
-        
+        </section>
+        <!-- Menu de opções estilo três pontinhos -->
+        <section class="menu-opcoes">
+          <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000">
+            <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
+          </svg>
+          <section class="opcoes-menu">
+            <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
+              <button 
+                class="btn-editar" 
+                title="Editar Proposta" 
+                data-id="<%= proposta.ID_PROPOSTA %>"
+                data-titulo="<%= proposta.TITULO_PROPOSTA %>"
+                data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>"
+                data-descricao="<%- proposta.DESCRICAO_PROPOSTA %>"
+                data-prazoentrega="<%= proposta.PRAZO_ENTREGA ? (proposta.PRAZO_ENTREGA.toISOString ? proposta.PRAZO_ENTREGA.toISOString().slice(0,10) : (proposta.PRAZO_ENTREGA + '').slice(0,10)) : '' %>"
+                data-orcamento="<%= proposta.ORCAMENTO %>"
+                data-dataproposta="<%= proposta.DATA_PROPOSTA %>"
+              >
+                <ion-icon name="create-outline"></ion-icon>
+                Editar
+              </button>
+              <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
+                <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+                <button type="submit" class="btn-excluir-proposta" title="Excluir proposta">
+                  <ion-icon name="trash-outline"></ion-icon>
+                  Excluir
+                </button>
+              </form>
+            <% } %>
+            <button class="btn-denunciar-proposta" title="Denunciar" data-id="<%= proposta.ID_PROPOSTA %>">
+              <ion-icon name="flag-outline"></ion-icon>
+              Denunciar
+            </button>
+          </section>
         </section>
       </section>
 
@@ -247,7 +279,7 @@
       <!-- Ações -->
       <section class="actions">
         <button class="btn primary">Conversar</button>
-        <button class="btn outline">Ver Detalhes</button>
+        <button class="btn outline" onclick="event.stopPropagation(); window.location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'">Ver Detalhes</button>
       </section>
     </section>
   <% }) %>
@@ -256,9 +288,41 @@
      
     </main>
 
+
+
+    <!-- Modal de denúncia (igual ao propostadeprojeto) -->
+    <section id="modalDenuncia" class="modal">
+      <section class="modal-content">
+        <h3>Qual o motivo da denúncia?</h3>
+        <form id="formDenuncia" action="/denunciar-proposta" method="post">
+          <input type="hidden" id="idPropostaInput" name="idProposta" value="">
+          <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
+          <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+          <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+          <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+          <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+          <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+          <button type="submit">Enviar denúncia</button>
+          <button type="button" id="fecharModal">Cancelar</button>
+        </form>
+      </section>
+    </section>
+
+    <!-- Modal de edição de proposta -->
+    <%- include('../partials/editar-proposta'); %>
+    
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
+
     <%- include('../partials/rodape'); %>
 
     <script src="js/filtro.js"></script>
+    <script src="js/oportunidades-menu.js"></script>
 
     
     

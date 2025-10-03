@@ -259,14 +259,29 @@ errosArray.forEach((itemErro) => {
              <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
           <!-- Carrossel de imagens -->
           <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
-            <div class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
-              <% pub.imagens.forEach((img, idx) => { %>
-                <img
-                  src="data:image/jpeg;base64,<%= img.toString('base64') %>"
-                  class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>"
-                  alt="Imagem da publicação"/>
-              <% }) %>
-            </div>
+        <div class="container-imgs" 
+    ontouchstart="startSwipe(event, this)" 
+    ontouchmove="swipeMove(event)" 
+    ontouchend="endSwipe(event, this)">
+
+    <% if (pub.imagens && pub.imagens.length > 0) { %>
+      <% pub.imagens.forEach((img, idx) => { %>
+        <img 
+          src="data:image/jpeg;base64,<%= img.toString('base64') %>" 
+          class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>" 
+          alt="Imagem da publicação"
+          onerror="this.src='/imagens/fallback.png';"
+        />
+      <% }) %>
+    <% } else { %>
+    
+      <img 
+        src="/imagens/img-quebrada.png" 
+        class="publicacao-img ativa" 
+        alt="Imagem padrão"
+      />
+    <% } %>
+  </div>
   
             <% if (pub.imagens.length > 1) { %>
               <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
@@ -288,16 +303,32 @@ errosArray.forEach((itemErro) => {
   
           <!-- Nome e botão de like -->
           <section class="nome-btn-like">
-            <span><%= pub.NOME_PUBLICACAO %></span>
+            <p><%= pub.NOME_PUBLICACAO %></p>
 
         
 
-         <button class="like-button">
-  <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>&idDono=<%= pub.ID_USUARIO %>&nomePub=<%= encodeURIComponent(pub.NOME_PUBLICACAO) %>"  
-     onclick="localStorage.setItem('scrollPos', window.scrollY)">
-    <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
-  </a>
-</button>
+            <section class="contagens-likes-visu">
+  
+              <section class="contagem">
+          
+                <ion-icon name="eye"></ion-icon>
+                <small><%= pub.N_VISUALIZACOES %></small>
+              </section>
+          
+          
+          
+                   <section class="contagem">
+          
+                    <button class="like-button">
+                      <a href="/favoritar?id=<%= pub.ID_PUBLICACAO %>&sit=<%= pub.FAVORITO %>&idDono=<%= pub.ID_USUARIO %>&nomePub=<%= encodeURIComponent(pub.NOME_PUBLICACAO) %>"  
+                         onclick="localStorage.setItem('scrollPos', window.scrollY)">
+                        <i class="<%= pub.FAVORITO === 'favorito' ? 'fas' : 'far' %> fa-heart <%= pub.FAVORITO %>"></i>
+                      </a>
+                    </button>
+                    
+          <small><%= pub.N_CURTIDAS %></small>
+          </section>
+        </section>
           </section>
   
         </section>
@@ -311,7 +342,6 @@ errosArray.forEach((itemErro) => {
     <% } %>
   </section>
 </section>
-
 
         
         </section>
@@ -368,6 +398,16 @@ errosArray.forEach((itemErro) => {
     </section>
     <% } %>
 
+
+
+    
+   <% if (tipo_usuario === 'profissional') { %>
+
+                 <%- include('../partials/fab-button') %>
+<% }   else if(tipo_usuario === 'comum') {   %>
+        <%- include('../partials/fab-button-comum') %>
+  <% } %>
+  
    
 
 
