@@ -4,6 +4,7 @@ const moment = require("moment");
 const bcrypt = require("bcryptjs");
 var salt = bcrypt.genSaltSync(10);
 var pool = require("../../config/pool_conexoes");
+const { listarUsuariosPaginados } = require("./admListagemController");
 
 const admController = {
     regrasLoginADM: [
@@ -39,26 +40,118 @@ mostrarhome: (req, res, dadosNotificacao) => {
     } });
 },
 
-listarDenunciasComentarios: async (req, res, dadosNotificacao) => {
-    console.log("Chegou no listar denúncias de comentários");
-    try {
-      let DenunciasComentarios = await admModel.listarDenunciasComentarios();
-      console.log({ DenunciasComentarios });
-      res.render("pages/adm-lista-denuncias-comentarios", {
-        autenticado: req.session.autenticado,
-        logado: req.session.logado,
-        denuncias: DenunciasComentarios || []
-      });
-    } catch (error) {
-      console.error("Erro ao listar denúncias de comentários:", error);
-      res.status(500).render("pages/erro-conexao", {
-        mensagem:
-          "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-      });
-    }
-}
+    listarDenunciasComentarios: async (req, res, dadosNotificacao) => {
+        console.log("Chegou no listar denúncias de comentários");
+        try {
+        let DenunciasComentarios = await admModel.listarDenunciasComentarios();
+        console.log({ DenunciasComentarios });
+        res.render("pages/adm-lista-denuncias-comentarios", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            denuncias: DenunciasComentarios || []
+        });
+        } catch (error) {
+        console.error("Erro ao listar denúncias de comentários:", error);
+        res.status(500).render("pages/erro-conexao", {
+            mensagem:
+            "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+        }
+    },
 
-//ORGANIZAR ISSO E O ROUTER
+    //ORGANIZAR ISSO E O ROUTER
+
+
+    //Listagem para apenas comuns
+    listarUsuariosPorTipo: async (req, res) => {
+        try {
+        const usuariosComuns = await admModel.listarUsuariosPorTipo('comum');
+        console.log({usuariosComuns});
+
+        res.render("pages/adm-listagem-comum", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            usuarios: usuariosComuns
+        });
+        } catch (error) {
+        console.error("Erro ao listar usuários comuns:", error);
+        res.status(500).render('pages/erro-conexao', {
+        mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+        }
+    },
+
+    //Listagem para apenas profissionais
+        listarUsuariosPorTipo: async (req, res) => {
+        try {
+          const usuariosProfissionais = await admModel.listarUsuariosPorTipo('profissional');
+          console.log({usuariosProfissionais});
+    
+          res.render("pages/adm-listagem-profissional", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            usuarios: usuariosProfissionais
+          });
+        } catch (error) {
+          console.error("Erro ao listar usuários profissionais:", error);
+          res.status(500).render('pages/erro-conexao', {
+          mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+        }
+      },
+
+        //Listagem paginação de usuários
+      listarUsuariosPaginados:async (req, res) => {
+        try {
+          const listarUsuarios = await admModel.listarUsuarios();
+          console.log({listarUsuarios});
+    
+          res.render("pages/adm-lista-usuarios", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            usuarios: listarUsuarios || []
+          });
+    
+        } catch (error) {
+          console.error("Erro ao listar usuários:", error);
+          res.status(500).render('pages/erro-conexao', {
+          mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+        }
+      },
+
+      //Contagem da quantidade de usuários no site
+      listarNumeroDePerfis:   async (req, res) => { // async é obrigatório aqui
+        try {
+          const dadosNotificacao = req.session.dadosNotificacao || null;
+          req.session.dadosNotificacao = null;
+    
+          // Chama funções do ADM MODEL, não usuariosModel
+          const totalUsuarios = await admModel.contarUsuarios();
+          const totalComuns = await admModel.contarUsuariosPorTipo('comum');
+          const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
+    
+          // DEBUG: verifica se os números chegaram
+          console.log({ totalUsuarios, totalComuns, totalProfissionais });
+    
+          res.render("pages/adm-home", { 
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            dadosNotificacao,
+            totalUsuarios,
+            totalComuns,
+            totalProfissionais
+          });
+    
+        } catch (error) {
+          console.error("Erro ao carregar dashboard:", error);
+          res.status(500).render('pages/erro-conexao', {
+          mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+        }
+      },
+    
+    
 
 
 
