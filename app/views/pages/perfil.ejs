@@ -178,33 +178,66 @@
       <section class="publi-perfil">
 
          <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
-        <!-- Carrossel de imagens -->
-        <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
-          <div class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
-            <% pub.imagens.forEach((img, idx) => { %>
-              <img 
-                src="data:image/jpeg;base64,<%= img.toString('base64') %>" 
-                class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>" 
-                alt="Imagem da publicação"/>
-            <% }) %>
-          </div>
+    
 
-          <% if (pub.imagens.length > 1) { %>
-            <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
-              <ion-icon name="chevron-back-outline"></ion-icon>
-            </button>
-            <button class="seta-carrossel direita" onclick="event.preventDefault();nextImg(this)">
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-            </button>
 
-            <div class="indicadores">
-              <% pub.imagens.forEach((_, idx) => { %>
-                <span class="indicador<%= idx === 0 ? ' ativo' : '' %>"></span>
-              <% }) %>
-            </div>
-          <% } %>
-          </a>
-        </section>
+
+
+
+
+        <section class="carrossel-imagens-explorar" 
+  onmouseenter="mostrarControles(this)" 
+  onmouseleave="esconderControles(this)">
+  
+  <div class="container-imgs" 
+    ontouchstart="startSwipe(event, this)" 
+    ontouchmove="swipeMove(event)" 
+    ontouchend="endSwipe(event, this)">
+
+    <% if (pub.imagens && pub.imagens.length > 0) { %>
+      <% pub.imagens.forEach((img, idx) => { %>
+        <img 
+          src="data:image/jpeg;base64,<%= img.toString('base64') %>" 
+          class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>" 
+          alt="Imagem da publicação"
+          onerror="this.src='/imagens/fallback.png';"
+        />
+      <% }) %>
+    <% } else { %>
+    
+      <img 
+        src="/imagens/img-quebrada.png" 
+        class="publicacao-img ativa" 
+        alt="Imagem padrão"
+      />
+    <% } %>
+  </div>
+
+  <% if (pub.imagens && pub.imagens.length > 1) { %>
+    <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+    <button class="seta-carrossel direita" onclick="event.preventDefault();nextImg(this)">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+
+    <div class="indicadores">
+      <% pub.imagens.forEach((_, idx) => { %>
+        <span class="indicador<%= idx === 0 ? ' ativo' : '' %>"></span>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+
+
+  </a>
+
+
+
+
+
+
 
     <section class="menu-opcoes"> <!-- Denunciar e compartilhar -->
 

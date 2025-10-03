@@ -804,11 +804,28 @@ adicionarPublicacoesAoPortfolio: async (req, res) => {
   try {
     
     if (!portfolioId) {
-      return res.status(400).json({ error: "ID do portfólio não fornecido." });
+
+      
+      
+    req.session.dadosNotificacao = {
+      titulo: "Ocorreu um erro.",
+      mensagem: "Tente novamente mais tarde.",
+      tipo: "error"
+    };
+
+
+    return  res.redirect("/");
+
     }
 
     if (!publicacoesSelecionadas || publicacoesSelecionadas.length === 0) {
-      return res.status(400).json({ error: "Nenhuma publicação selecionada." });
+      
+    req.session.dadosNotificacao = {
+      titulo: "Selecione publicações.",
+      mensagem: "Nenhuma publicação foi selecionada.",
+      tipo: "attention"
+    };
+
     }
 
     // Se veio como string separada por vírgula, transforma em array de números
@@ -863,11 +880,29 @@ removerPublicacoesDoPortfolio: async (req, res) => {
 
   try {
     if (!id_portfolio) {
-      return res.status(400).json({ error: "ID do portfólio não fornecido." });
+   
+          req.session.dadosNotificacao = {
+      titulo: "Ocorreu um erro.",
+      mensagem: "Tente novamente mais tarde.",
+      tipo: "error"
+    };
+
+    return res.redirect("/");
     }
 
     if (!publisParaRemocao || publisParaRemocao.length === 0) {
-      return res.status(400).json({ error: "Nenhuma publicação selecionada." });
+         req.session.dadosNotificacao = {
+      titulo: "Selecione publicações!",
+      mensagem: "Nenhuma publicação foi selecionada para remoção.",
+      tipo: "attention"
+    };
+
+
+    req.params.id = id_portfolio;
+
+   
+    await listagensController.exibirPortfolio(req, res);
+
     }
 
     // Converte string separada por vírgula em array de números

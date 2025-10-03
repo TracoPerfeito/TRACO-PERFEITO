@@ -396,7 +396,7 @@ cadastrarUsuario: async (req, res) => {
         let results = await usuariosModel.findId(req.session.autenticado.id);
         const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
 
-        const publicacoes = await listagensModel.listarPublicacoes(req.session.autenticado.id,  req.session.autenticado.id);
+        const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id,  req.session.autenticado.id);
 
         const publicacoesComContagem = await Promise.all(
           publicacoes.map(async (pub) => {

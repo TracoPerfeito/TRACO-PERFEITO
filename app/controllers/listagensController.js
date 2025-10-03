@@ -65,14 +65,14 @@ const listagensController = {
 
 
 
-    const publicacoes = await listagensModel.listarPublicacoes(id, req.session.autenticado.id);
+    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, req.session.autenticado.id);
 
     const publicacoesComContagem = await Promise.all(
       publicacoes.map(async (pub) => {
         const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
         const N_COMENTARIOS = await publicacoesModel.contarNumComentarios(pub.ID_PUBLICACAO);
         const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(pub.ID_PUBLICACAO);
-
+ 
         return { 
           ...pub, 
           N_CURTIDAS, 
