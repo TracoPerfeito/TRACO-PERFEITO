@@ -113,20 +113,19 @@
 
     <input onclick="window.location='/adicionar'" type="button" value="Novo">
 
-    <% if (paginador) { %>
-        <section class="notificador">
-            <ul>
-                <% for (var i = 1; i <= paginador.total_paginas; i++) { %>
-                    <% if (paginador.pagina_atual == i) { %>
-                        <li><a class="atual" href="?pagina=<%= i %>"><%= i %></a></li>
-                    <% } else { %>
-                        <li><a href="?pagina=<%= i %>"><%= i %></a></li>
-                    <% } %>
+   <% if (typeof paginador !== 'undefined' && paginador) { %>
+    <section class="notificador">
+        <ul>
+            <% for (var i = 1; i <= paginador.total_paginas; i++) { %>
+                <% if (paginador.pagina_atual == i) { %>
+                    <li><a class="atual" href="?pagina=<%= i %>"><%= i %></a></li>
+                <% } else { %>
+                    <li><a href="?pagina=<%= i %>"><%= i %></a></li>
                 <% } %>
-            </ul>
-        </section>
-    <% } %>
-
+            <% } %>
+        </ul>
+    </section>
+<% } %>
 
 
 

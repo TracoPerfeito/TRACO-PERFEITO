@@ -41,15 +41,23 @@ const listarUsuariosPaginados = async (req, res) => {
   })));
    // Renderizar a view com os dados
 
-        res.render("pages/adm-lista-usuarios", { usuarios: usuarios, paginador: paginador });
-    } catch (error) {
-        console.log(error);
-        res.json({ erro: "Falha ao acessar dados" });
-    }
-};
+        res.render("pages/adm-lista-usuarios", { 
+            usuarios: usuarios || [], 
+            paginador: paginador || null, 
+            autenticado: req.session?.autenticado || false, 
+            logado: req.session?.logado || null
+    })
+
+} catch (error) {
+        console.log("Erro ao listar usuários paginados:", error);
+        res.status(500).render("pages/erro-conexao", {
+            mensagem:
+                "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+    };
 
 
-
+}
 
 
 

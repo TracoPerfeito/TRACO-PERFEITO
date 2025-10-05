@@ -121,35 +121,36 @@ mostrarhome: (req, res, dadosNotificacao) => {
       },
 
       //Contagem da quantidade de usuários no site
-      listarNumeroDePerfis:   async (req, res) => { // async é obrigatório aqui
-        try {
-          const dadosNotificacao = req.session.dadosNotificacao || null;
-          req.session.dadosNotificacao = null;
-    
-          // Chama funções do ADM MODEL, não usuariosModel
-          const totalUsuarios = await admModel.contarUsuarios();
-          const totalComuns = await admModel.contarUsuariosPorTipo('comum');
-          const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
-    
-          // DEBUG: verifica se os números chegaram
-          console.log({ totalUsuarios, totalComuns, totalProfissionais });
-    
-          res.render("pages/adm-home", { 
-            autenticado: req.session.autenticado,
-            logado: req.session.logado,
-            dadosNotificacao,
-            totalUsuarios,
-            totalComuns,
-            totalProfissionais
-          });
-    
-        } catch (error) {
-          console.error("Erro ao carregar dashboard:", error);
-          res.status(500).render('pages/erro-conexao', {
-          mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-        });
-        }
-      },
+listarNumeroDePerfis: async (req, res) => {
+  try {
+    const dadosNotificacao = req.session ? req.session.dadosNotificacao || null : null;
+
+    if (req.session) {
+      req.session.dadosNotificacao = null;
+    }
+
+    const totalUsuarios = await admModel.contarUsuarios();
+    const totalComuns = await admModel.contarUsuariosPorTipo('comum');
+    const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
+
+    console.log({ totalUsuarios, totalComuns, totalProfissionais });
+
+    res.render("pages/adm-home", {
+      autenticado: req.session?.autenticado || false,
+      logado: req.session?.logado || null,
+      dadosNotificacao,
+      totalUsuarios,
+      totalComuns,
+      totalProfissionais
+    });
+
+  } catch (error) {
+    console.error("Erro ao carregar dashboard:", error);
+    res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
+  }
+},
     
     
 
