@@ -23,12 +23,6 @@
 <body>
 
 
-   <%  if (dadosNotificacao) { %>
-        <script>
-                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
-                                   
-        </script>
-    <% } %>
  
 
     
@@ -58,16 +52,36 @@
       <section class="form-grid">
         <section class="col">
           <!-- Coluna esquerda -->
-          <section class="mb-3">
-            <label for="id_cliente" class="form-label">ID Cliente</label>
-            <input type="number" class="form-control" id="id_cliente" name="ID_CLIENTE" required>
-          </section>
-    
-          <section class="mb-3">
-            <label for="id_profissional" class="form-label">ID Profissional</label>
-            <input type="number" class="form-control" id="id_profissional" name="ID_PROFISSIONAL" required>
-          </section>
-    
+       <section class="mb-3">
+  <label for="id_cliente" class="form-label">Contratante</label>
+  <% if (usuLogado.tipo === 'comum' && destinatario.tipo === 'profissional') { %>
+    <input type="text" class="form-control" value="<%= usuLogado.nome %>" disabled>
+    <input type="hidden" name="ID_CONTRATANTE" value="<%= usuLogado.id %>">
+  <% } else { %>
+ <select id="select-contratante" class="form-control" name="ID_CONTRATANTE" required>
+  <option value="<%= usuLogado.id %>"><%= usuLogado.nome %></option>
+  <% if (destinatario.id !== usuLogado.id) { %>
+    <option value="<%= destinatario.id %>"><%= destinatario.nome %></option>
+  <% } %>
+</select>
+  <% } %>
+</section>
+
+<section class="mb-3">
+  <label for="id_profissional" class="form-label">Contratado</label>
+  <% if (usuLogado.tipo === 'comum' && destinatario.tipo === 'profissional') { %>
+    <input type="text" class="form-control" value="<%= destinatario.nome %>" disabled>
+    <input type="hidden" name="ID_CONTRATADO" value="<%= destinatario.id %>">
+  <% } else { %>
+   <select id="select-contratado" class="form-control" name="ID_CONTRATADO" required>
+  <% if (destinatario.id !== usuLogado.id) { %>
+    <option value="<%= destinatario.id %>"><%= destinatario.nome %></option>
+  <% } %>
+  <option value="<%= usuLogado.id %>"><%= usuLogado.nome %></option>
+</select>
+  <% } %>
+</section>
+
           <section class="mb-3">
             <label for="nome_projeto" class="form-label">Nome do Projeto</label>
             <input type="text" class="form-control" id="nome_projeto" name="NOME_PROJETO" required>
@@ -129,6 +143,32 @@
 
            
 <script src="js/mobile-navbar.js"></script>
+
+<script>
+const selectContratante = document.getElementById('select-contratante');
+const selectContratado = document.getElementById('select-contratado');
+
+const usuLogadoId = "<%= usuLogado.id %>";
+const destinatarioId = "<%= destinatario.id %>";
+
+function sincronizarSelects(changedSelect) {
+  const outroSelect = changedSelect === selectContratante ? selectContratado : selectContratante;
+
+  // Se o valor do changedSelect for igual ao do outroSelect, troca automaticamente
+  if (changedSelect.value === outroSelect.value) {
+    outroSelect.value = (outroSelect.value === usuLogadoId) ? destinatarioId : usuLogadoId;
+  }
+}
+
+// Evento de mudança nos selects
+selectContratante.addEventListener('change', () => sincronizarSelects(selectContratante));
+selectContratado.addEventListener('change', () => sincronizarSelects(selectContratado));
+
+// Inicializa com valores corretos
+sincronizarSelects(selectContratante);
+</script>
+
+
 </body>
 </html>
 

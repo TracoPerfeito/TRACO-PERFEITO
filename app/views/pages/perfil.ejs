@@ -142,12 +142,15 @@
             </ul>
             <section class="button-holder">
           
-                
+          
+
+<button onclick="location.href='/chat?destinatarioId=<%= usuario.ID_USUARIO %>&nome=<%= encodeURIComponent(usuario.NOME_USUARIO) %>&username=<%= encodeURIComponent(usuario.USER_USUARIO) %>'">
+  <ion-icon name="chatbubbles-outline" style="font-size:15px; width:15px; height:15px;"></ion-icon>
+  Conversar
+</button>
 
 
-                <button id="irparachat" onclick="location.href='/chat-logado'">
-                 <ion-icon name="chatbubbles-outline" style="font-size:15px; width:15px; height:15px;"></ion-icon>  Conversar
-                </button>
+
 
                 <!-- <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">
                 <ion-icon name="flag-outline"></ion-icon> Denunciar usuário

@@ -3,99 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+      <script src="/socket.io/socket.io.js"></script>
+    <link rel="shortcut icon" href="/imagens/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/menu.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+</head>
+
+
+<% if (status_usuario === 'pendente') { %>
+    <%- include('../partials/aviso-pendente') %>
     
-   
-    <title>Teste</title>
+<% } %>
+  
+ 
 
 
-    <style>
+   <% if (tipo_usuario === 'profissional') { %>
+  <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
+<% } else if (tipo_usuario === 'comum') { %>
+  <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
+<% } %>
 
-        .cont{
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-        }
 
 
-        .quad p {
-            font-size: 15px;
-            width: 190px;
-            left: -50px;
-            padding: 0px;
-            margin: 15px 10px 15px 10px;
-        }
+<body>
+  <main>
+    <section class="chat-container-principal">
+      <section class="chat-list">
+        <section class="con-ant-h2-button">
+          <h2 class="h2-cont">Minhas Conversas</h2>
+          <button class="close-chat-list" onclick="toggleChatList()">✖</button>
+        </section>
 
-        .quad {
-            position: absolute;
-          
-            border-radius: 20px;
-            left: 20%;
-            background:  #ACDABF;
-          
-           
-        }
+        <ul class="lista-conversas-anteriores">
+          <% if (usuarios.length === 0) { %>
+            <li class="sem-conversas">Você ainda não conversou com ninguém.</li>
+          <% } else { %>
+            <% usuarios.forEach((u) => { %>
+              <% if (u.ID_USUARIO !== usuarioLogado.id) { %>
+                <%
+                  const dataUltima = u.DATA_ULTIMA_MENSAGEM ? new Date(u.DATA_ULTIMA_MENSAGEM) : null;
+                  let horaFormatada = "";
+                  if (dataUltima) {
+                    const h = dataUltima.getHours();
+                    const m = dataUltima.getMinutes().toString().padStart(2,'0');
+                    horaFormatada = h + ":" + m;
+                  }
 
-        .trian {
+                  let previewMsg = "";
+                  if (u.ULTIMA_MENSAGEM) {
+                    previewMsg = u.ULTIMA_MENSAGEM.length > 35 
+                      ? u.ULTIMA_MENSAGEM.substring(0, 35) + "..."
+                      : u.ULTIMA_MENSAGEM;
+                  }
+                %>
 
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-right: 60px solid #ACDABF;
-            border-top:60px solid transparent;
-            border-bottom: 60px solid transparent;
-            top: 50%;
-            left: 60%;
-            z-index: -1;
+                <li class="contato-item">
+                  <a href="#" class="user-link"  
+                    data-id="<%= u.OUTRO_USUARIO_ID %>"
+                    data-nome="<%= u.OUTRO_NOME %>"
+                    data-username="<%= u.OUTRO_USERNAME %>"
+                    data-foto="<%= u.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>">
 
-        }
+                    <img src="<%= u.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" 
+                         class="foto-perfil" 
+                         alt="Foto do usuário" 
+                         onerror="this.onerror=null; this.src='/imagens/img.png'">
 
-        .quadr {
-            position: absolute;
-          
-            border-radius: 20px;
-            left: 60%;
-            background:  #ACDABF;
-          
-           
-        }
+                    <div class="contato-info">
+                      <div class="contato-nome-hora">
+                        <span class="contato-nome"><%= u.OUTRO_NOME %></span>
+                        <% if (horaFormatada) { %>
+                          <span class="hora-ultima-msg"><%= horaFormatada %></span>
+                        <% } %>
+                      </div>
+                      <div class="ultima-msg-badge">
+                        <span class="ultima-mensagem"><%= previewMsg %></span>
+                        <% if (u.NAO_LIDAS > 0) { %>
+                          <span class="badge"><%= u.NAO_LIDAS %></span>
+                        <% } %>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              <% } %>
+            <% }) %>
+          <% } %>
+        </ul>
 
+
+                </section>
+        
+                <section class="chat-window" id="chat">
+        
+                    <section class="nome-chat-atual" id="topo-chat">
+                        <button class="abrir-con-ant"  onclick="toggleChatList()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill=" #103b2b"><path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/></svg></button>
+                        <section class="secao-cima" style="display:none;">
+                          <section class="foto-nome-user">
+                            <img src="" class="foto-perfil-con-ant" id="chat-foto">
+                             <section class="nome-user">
+                               <h2 id="chat-with"></h2>
+                               <small id="chat-username"></small>
+                             </section>
+                          </section>
+                          <button class="formalizar-contrato">Formalizar contrato</button>
+                        </section>
+                      </section>
+        
+                    <section class="msg-area" id="messages">
+                            
+                    <!--                   
+                                    
+                    as msgs vao aqui -->
+
+
+                    <div id="msg-placeholder" class="placeholder">
+  Selecione um contato para começar a conversar.
+</div>
+
+        
+                    </section>
+        
+                    <section class="area-digitar">
+        
+                        <form id="form">
+                            <input type="text" id="input"  placeholder="Digite sua mensagem aqui..." />
+                            <button type="submit"  id="sendBtn">
+                                <ion-icon name="paper-plane-outline" id="icone"></ion-icon>
+                            </button>
+                        </form>
+        
+                    </section>
+                </section>
+            </section>
+
+        </main>
 
 
         
-        .dif {
+  
 
-position: absolute;
-width: 0;
-height: 0;
-border-left: 60px solid #ACDABF;
-border-top:60px solid transparent;
-border-bottom: 60px solid transparent;
-top: -400%;
-left: 10%;
-z-index: -1;
+        <%- include('../partials/rodape'); %>
 
+
+        <script src="js/voltar.js"></script>
+        
+<script src="js/chat.js"></script>
+<script>
+const socket = io();
+const usuarioLogado = <%- JSON.stringify(usuarioLogado) %>;
+let destinatarioId = <%- JSON.stringify(destinatarioId) %> || null;
+
+// Set para evitar duplicação de mensagens
+let mensagensCarregadas = new Set();
+let lastMessageDay = null; 
+
+// Registrar login no socket
+socket.emit("login", usuarioLogado.id);
+
+// ========= Carregar mensagens =========
+async function carregarMensagens(destId) {
+    console.log("[FUNÇÃO] carregarMensagens chamada para:", destId);
+
+    const messagesDiv = document.getElementById("messages");
+
+    // Esconde placeholder
+    const placeholder = document.getElementById("msg-placeholder");
+    if (placeholder) placeholder.style.display = "none";
+
+    // Mostra a parte de cima com infos do contato
+    const secao = document.getElementById("secao-cima");
+    if (secao) secao.style.display = "flex";
+
+    // Desmarcar todos os contatos da lista
+    document.querySelectorAll("ul li").forEach(li => li.classList.remove("marcado"));
+
+    // Marcar contato atual
+    const el = document.querySelector(`.user-link[data-id='${destId}']`);
+    console.log("[MARCAR] Elemento encontrado:", el);
+    if (el) {
+        el.closest("li").classList.add("marcado");
+        document.getElementById("chat-with").innerText = el.dataset.nome || "";
+        document.getElementById("chat-username").innerText = el.dataset.username || "";
+        document.getElementById("chat-foto").src = el.dataset.foto || "/imagens/img.png";
+    }
+
+    // Resetar histórico se trocar de usuário
+    if (destinatarioId !== destId) {
+        console.log("[RESET] Trocando de usuário. Limpando mensagens antigas.");
+        mensagensCarregadas.clear();
+        messagesDiv.innerHTML = "";
+        lastMessageDay = null;
+    }
+
+    destinatarioId = destId;
+
+    // Buscar mensagens no backend
+    console.log("[FETCH] Buscando mensagens em /chat/mensagens/" + destId);
+    const res = await fetch(`/chat/mensagens/${destId}`, {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    });
+
+    const mensagens = await res.json();
+    console.log("[FETCH RESULT] Mensagens recebidas:", mensagens);
+
+    mensagens.forEach(m => {
+        addMessage(
+            m.conteudo,
+            m.remetente_id == usuarioLogado.id ? "me" : "other",
+            m.data_envio,
+            m.ID_MENSAGEM,
+            true,
+            m.status || "normal"
+        );
+    });
 }
 
+// ========= Clique na lista =========
+document.querySelectorAll(".user-link").forEach(el => {
+    el.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const destId = e.currentTarget.dataset.id; 
+        console.log("[CLICK] Contato clicado:", {
+            destId,
+            nome: e.currentTarget.dataset.nome,
+            username: e.currentTarget.dataset.username
+        });
+        await carregarMensagens(destId);
+    });
+});
 
-    </style>
+// ========= Se já veio destinatário da view =========
+if (destinatarioId) {
+    carregarMensagens(destinatarioId);
+}
+
+// ========= Adicionar mensagem =========
+function addMessage(text, type, data, idMensagem=null, forceScroll=false, status="normal") {
+    const messagesDiv = document.getElementById("messages");
+    if (idMensagem && mensagensCarregadas.has(idMensagem)) return;
+
+    // Separador de dia
+    const diaAtual = new Date(data).toLocaleDateString("pt-BR");
+    if (lastMessageDay !== diaAtual) {
+        const divDia = document.createElement("div");
+        divDia.className = "dia-separador";
+        divDia.innerText = diaAtual;
+        messagesDiv.appendChild(divDia);
+        lastMessageDay = diaAtual;
+    }
+
+    // Bloco da mensagem
+    const div = document.createElement("div");
+    div.className = "mensagem-bloco " + type;
+    div.dataset.id = idMensagem || "";
+    div.dataset.status = status;
+
+    div.innerHTML = `
+        <div class="conteudo-msg ${status === "apagada" ? "apagada" : ""}">
+            <div class="msg-texto">
+                <span>${status === "apagada" ? "Mensagem apagada" : text}</span>
+                <span class="hora-msg">${new Date(data).toLocaleTimeString("pt-BR")}</span>
+            </div>
+        </div>
+    `;
+
+    messagesDiv.appendChild(div);
+
+    if (idMensagem) mensagensCarregadas.add(idMensagem);
+
+    // Scroll automático
+    const isAtBottom = messagesDiv.scrollTop + messagesDiv.clientHeight >= messagesDiv.scrollHeight - 20;
+    if (isAtBottom || forceScroll) messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    // Clique direito (PC)
+    div.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        openModalExcluir(div);
+    });
+
+    // Toque longo (mobile)
+    let touchTimer;
+    div.addEventListener("touchstart", () => {
+        touchTimer = setTimeout(() => openModalExcluir(div), 600);
+    });
+    div.addEventListener("touchend", () => clearTimeout(touchTimer));
+}
+
+// ========= Modal de exclusão =========
+function openModalExcluir(div) {
+    const idMsg = div.dataset.id;
+    if (!idMsg) return;
+    if (confirm("Deseja apagar esta mensagem?")) {
+        div.dataset.status = "apagada";
+        div.querySelector(".conteudo-msg").classList.add("apagada");
+        div.querySelector(".conteudo-msg").innerHTML =
+            "Mensagem apagada <span class='hora-msg'>" +
+            div.querySelector(".hora-msg").innerText +
+            "</span>";
+        socket.emit("deleteMessage", { idMensagem: idMsg });
+    }
+}
+</script>
+
+
     
-</head>
-<body>
-
-   <%- include('menu.ejs') -%>
-  
-<main class="cont">
-
-<section class="quad">
-
-    <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius modi quia, cumque alias deserunt voluptate blanditiis omnis error iusto maiores eaque excepturi? Odit quae provident nesciunt iste magni, eveniet officiis?</p>
-    <section class="trian"></section>
-</section>
-
-
-<section class="quadr">
-    Lorem ipsum dolor sit ameeius ad. Id, ab est.
-    <section class="dif"> </section>
-</section>
-</main>
 </body>
 </html>

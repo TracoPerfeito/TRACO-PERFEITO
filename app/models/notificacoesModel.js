@@ -1,15 +1,4 @@
 const pool = require('../../config/pool_conexoes');
-const { getIo } = require('../../socket'); // sobe de models/ para raiz
-
-
-/**
- * Cria uma notificação no banco e dispara socket em tempo real
- * @param {Object} params
- * @param {number} params.idUsuario - ID do usuário que vai receber
- * @param {string} params.titulo - Título da notificação
- * @param {string} params.conteudo - Conteúdo textual ou HTML
- * @param {string} params.categoria - Categoria da notificação
- */
 
 
 const notificacoesModel = {
@@ -33,15 +22,7 @@ const notificacoesModel = {
 
     const idNotificacao = result.insertId;
 
-    const io = getIo();
-    io.to(idUsuario).emit('notificacao_nova', {
-      ID_NOTIFICACAO: idNotificacao,
-      TITULO: titulo,
-      CONTEUDO: conteudo,
-      CATEGORIA: categoria,
-      STATUS: 'NAO_LIDA',
-      PREVIEW: preview
-    });
+ 
 
     return idNotificacao;
 

@@ -217,9 +217,10 @@
            Ver Detalhes
         </a>
 
-        <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao') { %>
-          <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn btn-pagar">Pagar para iniciar projeto</a>
-        <% } %>
+      <% if (Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao' && c.STATUS === 'AGUARDANDO PAGAMENTO') { %>
+  <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn btn-pagar">Pagar para iniciar projeto</a>
+<% } %>
+
       </div>
     </div>
   <% }) %>

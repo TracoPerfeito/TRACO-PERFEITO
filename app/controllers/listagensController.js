@@ -55,6 +55,28 @@ const listagensController = {
 });
   }
 },
+
+
+procurarFoto: async (req, res) => {
+  const id = req.params.id;
+  try {
+    const usuario = await listagensModel.findIdusuario(id);
+
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    return res.json({
+      nome: usuario.NOME_USUARIO,
+      username: usuario.USER_USUARIO,
+      foto: usuario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/foto-perfil.png'
+    });
+  } catch (erro) {
+    console.log(erro);
+    res.status(500).json({ error: "Não foi possível acessar o banco" });
+  }
+},
+
  
  
   exibirPerfil: async (req, res) => {

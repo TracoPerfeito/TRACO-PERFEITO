@@ -6,27 +6,47 @@
  
 // module.exports = injetarLocais;
  
- 
 function injetarLocais(req, res, next) {
-  if (req.session.autenticado) {
-    res.locals.autenticado = req.session.autenticado || {};
- 
-    res.locals.tipo_usuario = req.session.autenticado.tipo;
-    res.locals.status_usuario = req.session.autenticado.status;
-    res.locals.cpf_usuario = req.session.autenticado.cpf;
-    res.locals.nome_usuario = req.session.autenticado.nome; 
-    res.locals.id_usuario = req.session.autenticado.id; 
-    res.locals.user_usuario = req.session.autenticado.user;
-    res.locals.email_usuario = req.session.autenticado.email;  
-    res.locals.celular_usuario = req.session.autenticado.celular;
-    res.locals.img_perfil_banco = req.session.autenticado?.img_perfil_banco || "/imagens/foto-perfil.png";
-    res.locals.img_capa_banco = req.session.autenticado?.img_capa_banco || "/imagens/bg.jpg";
-    res.locals.descricao_perfil = req.session.autenticado.descricao_perfil;
-    res.locals.linkedin = req.session.autenticado.linkedin;
-    res.locals.pinterest = req.session.autenticado.pinterest;
-    res.locals.instagram = req.session.autenticado.instagram;
-    res.locals.whatsapp = req.session.autenticado.whatsapp;
+  const user = req.session.autenticado;
+
+  if (user) {
+    // Só passa os dados simples do usuário para as views
+    res.locals.autenticado = {
+      id: user.id,
+      nome: user.nome,
+      user: user.user,
+      email: user.email,
+      celular: user.celular,
+      tipo: user.tipo,
+      status: user.status,
+      cpf: user.cpf,
+      img_perfil_banco: user.img_perfil_banco || "/imagens/foto-perfil.png",
+      img_capa_banco: user.img_capa_banco || "/imagens/bg.jpg",
+      descricao_perfil: user.descricao_perfil,
+      linkedin: user.linkedin,
+      pinterest: user.pinterest,
+      instagram: user.instagram,
+      whatsapp: user.whatsapp
+    };
+
+    // E também mantém os "atalhos" que você já usa
+    res.locals.tipo_usuario = user.tipo;
+    res.locals.status_usuario = user.status;
+    res.locals.cpf_usuario = user.cpf;
+    res.locals.nome_usuario = user.nome;
+    res.locals.id_usuario = user.id;
+    res.locals.user_usuario = user.user;
+    res.locals.email_usuario = user.email;
+    res.locals.celular_usuario = user.celular;
+    res.locals.img_perfil_banco = user.img_perfil_banco || "/imagens/foto-perfil.png";
+    res.locals.img_capa_banco = user.img_capa_banco || "/imagens/bg.jpg";
+    res.locals.descricao_perfil = user.descricao_perfil;
+    res.locals.linkedin = user.linkedin;
+    res.locals.pinterest = user.pinterest;
+    res.locals.instagram = user.instagram;
+    res.locals.whatsapp = user.whatsapp;
   } else {
+    res.locals.autenticado = null;
     res.locals.tipo_usuario = null;
     res.locals.status_usuario = null;
     res.locals.cpf_usuario = null;
@@ -39,14 +59,15 @@ function injetarLocais(req, res, next) {
     res.locals.img_capa_banco = null;
     res.locals.descricao_perfil = null;
     res.locals.linkedin = null;
-    res.locals.linkedin = null;
     res.locals.pinterest = null;
     res.locals.instagram = null;
     res.locals.whatsapp = null;
-
   }
+
   next();
 }
+
+
  
  
 module.exports = injetarLocais;

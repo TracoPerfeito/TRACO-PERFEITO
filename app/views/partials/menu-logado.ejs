@@ -60,8 +60,22 @@
   </a>
 </li>
 
-      <li><a href="/chat-logado"> <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/></svg>Minhas Conversas</a></li>
-    
+ 
+      <li>
+  <a href="/chat" style="display: flex; align-items: center; gap: 5px;">
+    <span style="position: relative; display: inline-block; margin-right: 4px;">
+      <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff">
+        <path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/>
+      </svg>
+      <span class="badge-notificacoes"  id="badge-mensagens-menu" ></span>
+    </span>
+     Minhas Conversas
+  </a>
+</li>
+
+
+
+ 
       <li class="config-dropdown" >
         <section id="configuracoes" >
           
@@ -141,68 +155,91 @@
   <%- include('../partials/modal-logout'); %>
 
  
-
 <script src="/js/menu.js"></script>
 <script src="/js/modos.js"></script>
+
+
+
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM carregado, iniciando script de notificações...");
-
-  const badgeLink = document.getElementById("badge-notificacoes");
-  const badgeAvatar = document.getElementById("badge-notificacoes-avatar");
-  const badgeMobile = document.getElementById("badge-menu-mobile");
+  const badgeNotif = document.getElementById("badge-notificacoes"); // Sininho no menu suspenso
+  const badgeMsgMenu = document.getElementById("badge-mensagens-menu"); // SVG Minhas Conversas
+  const badgeAvatar = document.getElementById("badge-notificacoes-avatar"); // badge na fotinha
+  const badgeMobile = document.getElementById("badge-menu-mobile"); // badge menu hamburger
   const menuBtn = document.getElementById("menu-btn");
 
-  // Atualiza o badge mobile ao abrir/fechar o menu
+  console.log("Badges selecionados:", { badgeNotif, badgeMsgMenu, badgeAvatar, badgeMobile });
+
+  // Atualizar badge do menu mobile quando abrir/fechar
   if (menuBtn) {
     menuBtn.addEventListener("change", function() {
-      const configSection = document.querySelector(".config-section");
-      if (configSection) configSection.classList.remove("open"); 
-
-      if (this.checked) {
-        if (badgeMobile) badgeMobile.style.display = "none";
-      } else {
-        const naoLidas = Number(badgeMobile?.textContent) || 0;
-        if (badgeMobile) badgeMobile.style.display = naoLidas > 0 ? "inline-block" : "none";
+      if (badgeMobile) {
+        badgeMobile.style.display = !this.checked && Number(badgeMobile.textContent) > 0 ? "inline-block" : "none";
+        console.log("Menu mobile toggle:", this.checked, "badgeMobile.textContent =", badgeMobile.textContent);
       }
     });
   }
 
-  async function atualizarBadgeNotificacoes() {
+  async function atualizarBadges() {
     try {
-      const resposta = await fetch("/notificacoes/count");
-      if (!resposta.ok) {
-        console.error("Erro na resposta do servidor:", resposta.status);
-        return;
+      console.log("Atualizando badges...");
+
+      // ---------------- Notificações ----------------
+      const notifRes = await fetch("/notificacoes/count");
+      const notifData = await notifRes.json();
+      const totalNotif = Number(notifData.naoLidas) || 0;
+      console.log("Notificações não lidas:", totalNotif, notifData);
+
+      if (badgeNotif) {
+        badgeNotif.textContent = totalNotif;
+        badgeNotif.style.display = totalNotif > 0 ? "inline-block" : "none";
       }
 
-      const dados = await resposta.json();
-      const naoLidas = Number(dados.naoLidas) || 0;
+      // ---------------- Mensagens ----------------
+      const msgRes = await fetch("/messagescount");
+      const msgData = await msgRes.json();
+      const totalMsgs = Number(msgData.totalGeral) || 0;
+      console.log("Mensagens não lidas:", totalMsgs, msgData);
 
-      if (badgeLink) {
-        badgeLink.textContent = naoLidas;
-        badgeLink.style.display = naoLidas > 0 ? "inline-block" : "none";
+      if (badgeMsgMenu) {
+        badgeMsgMenu.textContent = totalMsgs;
+        badgeMsgMenu.style.display = totalMsgs > 0 ? "inline-block" : "none";
       }
+
+      // ---------------- Total geral para avatar e menu mobile ----------------
+      const totalGeral = totalNotif + totalMsgs;
+      console.log("Total geral (avatar + menu mobile):", totalGeral);
 
       if (badgeAvatar) {
-        badgeAvatar.textContent = naoLidas;
-        badgeAvatar.style.display = naoLidas > 0 ? "inline-block" : "none";
+        badgeAvatar.textContent = totalGeral;
+        badgeAvatar.style.display = totalGeral > 0 ? "inline-block" : "none";
       }
 
       if (badgeMobile) {
-        badgeMobile.textContent = naoLidas;
-      
-        badgeMobile.style.display = (!menuBtn.checked && naoLidas > 0) ? "inline-block" : "none";
+        badgeMobile.textContent = totalGeral;
+        badgeMobile.style.display = !menuBtn.checked && totalGeral > 0 ? "inline-block" : "none";
       }
 
+
+        if (msgData.notificacoes && msgData.notificacoes.length > 0) {
+      msgData.notificacoes.forEach(notif => {
+        notify(
+          notif.titulo,
+          notif.mensagem,
+          "msg", 
+          "top right"
+        );
+      });
+    }
+
+
     } catch (err) {
-      console.error("Erro ao atualizar notificações:", err);
+      console.error("Erro ao atualizar badges:", err);
     }
   }
 
-  atualizarBadgeNotificacoes();
-
- 
-  setInterval(atualizarBadgeNotificacoes, 30000);
+  atualizarBadges();
+  setInterval(atualizarBadges, 30000);
 });
 </script>

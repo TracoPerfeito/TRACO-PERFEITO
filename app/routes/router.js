@@ -13,6 +13,7 @@ const pesquisasController = require('../controllers/pesquisasController');
 const pagamentoController = require("../controllers/pagamentoController");
 const notificacoesController = require("../controllers/notificacoesController");
 const contratacaoController = require("../controllers/contratacaoController");
+const {mensagemController} = require("../controllers/mensagemController");
 
 const db = require('../../config/pool_conexoes');
 
@@ -344,11 +345,42 @@ router.get("/feedback-contratacao", function (req, res) {
 });
 
 
-router.get("/chat", function (req, res) { //chat
-    res.render('pages/chat')
- 
-});
 
+
+router.get(
+  "/chat",
+  verificarUsuAutorizado(["profissional", "comum", "administrador"], "pages/acesso-negado"),
+  async function (req, res) {
+    mensagemController.mostrarChat(req, res);
+  }
+);
+
+
+router.get("/procurarFoto/:id", listagensController.procurarFoto);
+
+
+router.get("/atualizarbarralateral", mensagemController.atualizarbarralateral);
+
+router.post("/marcarcomolida", mensagemController.marcarcomolida);
+
+
+
+router.post("/chat",
+  mensagemController.regrasValidacaoMensagem,
+  verificarUsuAutorizado(["profissional", "comum", "administrador"], "pages/acesso-negado"),
+  async function (req, res) {
+    mensagemController.enviarMensagem(req, res);
+  }
+);
+
+
+router.get(
+  "/chat/mensagens/:id",
+  verificarUsuAutorizado(["profissional", "comum", "administrador"], "pages/acesso-negado"),
+  async function (req, res) {
+    mensagemController.mostrarConversas(req, res);
+  }
+);
 
 
 router.get("/teste", function (req, res) {
@@ -480,6 +512,8 @@ router.post("/excluir-notificacoes", function (req, res) {
 
 router.get("/notificacoes/count", notificacoesController.countNaoLidas);
 
+router.get("/messagescount", mensagemController.temNovasMsgs);
+
 
 
 
@@ -518,7 +552,10 @@ router.get("/criar-contratacao", function (req, res) {
     const dadosNotificacao = req.session.dadosNotificacao || null;
   req.session.dadosNotificacao = null;
 
-    res.render('pages/criar-contratacao', { dadosNotificacao });
+  
+    contratacaoController.mostrarPagina(req, res);
+  
+    
  
 });
 
@@ -628,12 +665,6 @@ router.post(
 
 
 
-
-
-router.get("/chat-logado", function (req, res) { //chat
-    res.render('pages/chat-logado')
- 
-});
 
 
 

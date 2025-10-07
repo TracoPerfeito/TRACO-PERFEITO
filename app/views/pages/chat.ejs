@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+      <script src="/socket.io/socket.io.js"></script>
+    <link rel="shortcut icon" href="/imagens/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/menu.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+</head>
+
+
+<% if (status_usuario === 'pendente') { %>
+    <%- include('../partials/aviso-pendente') %>
+    
+<% } %>
+  
+ 
+
+
+   <% if (tipo_usuario === 'profissional') { %>
+  <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
+<% } else if (tipo_usuario === 'comum') { %>
+  <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
+<% } %>
+
+
+
+
+<body>
+
+  
+
+    <main>
+
+
+
+    <section class="chat-container-principal">
+        
+                <section class="chat-list">
+                        <section class="con-ant-h2-button">
+            
+                            <h2 class="h2-cont">Minhas Conversas</h2>
+                            <button class="close-chat-list" onclick="toggleChatList()">✖</button>
+            
+                        </section>
+
+  <ul class="lista-conversas-anteriores" id="lista-usuarios">
+          <% if (usuarios.length === 0) { %>
+            <li class="sem-conversas">Você ainda não conversou com ninguém.</li>
+          <% } else { %>
+ <% usuarios.forEach((u) => { 
+     if (u.ID_USUARIO !== usuarioLogado.id) { 
+
+       const dataUltima = u.DATA_ULTIMA_MENSAGEM ? new Date(u.DATA_ULTIMA_MENSAGEM) : null;
+       let horaFormatada = "";
+       if (dataUltima) {
+           const h = dataUltima.getHours();
+           const m = dataUltima.getMinutes().toString().padStart(2,'0');
+           horaFormatada = h + ":" + m;
+       }
+
+       let previewMsg = "";
+       if (u.ULTIMA_MENSAGEM) {
+        let texto = u.ULTIMA_MENSAGEM.length > 35
+            ? u.ULTIMA_MENSAGEM.substring(0, 35) + "..." 
+            : u.ULTIMA_MENSAGEM;
+
+if (u.REMETENTE_ULTIMA === usuarioLogado.id) {
+    texto = "você: " + texto;
+}
+previewMsg = texto;
+
+       }
+%>
+
+                <li class="contato-item">
+                  <a href="#" class="user-link"  
+                    data-id="<%= u.OUTRO_USUARIO_ID %>"
+                    data-nome="<%= u.OUTRO_NOME %>"
+                     data-tipo="<%= u.OUTRO_TIPO %>"
+                    data-username="<%= u.OUTRO_USERNAME %>"
+                    data-foto="<%= u.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>">
+
+
+                    <img src="<%= u.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" 
+                         class="foto-perfil" 
+                         alt="Foto do usuário" 
+                         onerror="this.onerror=null; this.src='/imagens/img.png'">
+
+                    <div class="contato-info">
+                      <div class="contato-nome-hora">
+                        <span class="contato-nome"><%= u.OUTRO_NOME %></span>
+                        <% if (horaFormatada) { %>
+                          <span class="hora-ultima-msg"><%= horaFormatada %></span>
+                        <% } %>
+                      </div>
+                      <div class="ultima-msg-badge">
+                        <span class="ultima-mensagem"><%= previewMsg %></span>
+                        <% if (u.NAO_LIDAS > 0) { %>
+                          <span class="badge"><%= u.NAO_LIDAS %></span>
+                        <% } %>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              <% } %>
+            <% }) %>
+          <% } %>
+        </ul>
+
+                </section>
+        
+                <section class="chat-window" id="chat">
+        
+                   <section class="nome-chat-atual">
+                        <button class="abrir-con-ant"  onclick="toggleChatList()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill=" #103b2b"><path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/></svg></button>
+                        <section class="secao-cima" style="display:none;"  id="topo-chat">
+                          <section class="foto-nome-user">
+                            <img src="" class="foto-perfil-con-ant" id="chat-foto">
+                             <section class="nome-user">
+                               <h2 id="chat-with"></h2>
+                               <small id="chat-username"></small>
+                             </section>
+                          </section>
+                          <button class="formalizar-contrato">Formalizar contrato</button>
+                        </section>
+                      </section>
+        
+                    <section class="msg-area" id="messages">
+                            
+                    <!--                   
+                                    
+                    as msgs vao aqui -->
+
+
+                        <div id="msg-placeholder" class="placeholder">
+                          Selecione um contato para começar a conversar.
+                        </div>
+
+
+        
+                    </section>
+        
+                    <section class="area-digitar">
+        
+                        <form id="form">
+                            <input type="text" id="input"  placeholder="Digite sua mensagem aqui..." />
+                            <button type="submit"  id="sendBtn">
+                                <ion-icon name="paper-plane-outline" id="icone"></ion-icon>
+                            </button>
+                        </form>
+        
+                    </section>
+                </section>
+            </section>
+
+        </main>
+
+
+        
+  
+
+        <%- include('../partials/rodape'); %>
+
+
+        <script src="js/voltar.js"></script>
+        
+<script src="js/chat.js"></script>
+
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", () => {
+const socket = io();
+const usuarioLogado = <%- JSON.stringify(usuarioLogado) %>;
+let destinatarioId = <%- JSON.stringify(destinatarioId) %> || null;
+
+// Set para evitar duplicação de mensagens
+let mensagensCarregadas = new Set();
+let lastMessageDay = null; // último dia exibido
+
+// Enviar login para registrar o socket no servidor
+socket.emit("login", usuarioLogado.id);
+
+// Função para carregar mensagens de um destinatário
+async function carregarMensagens(destId) {
+    console.log("[FUNÇÃO] carregarMensagens chamada para:", destId);
+
+
+    const messagesDiv = document.getElementById('messages');
+
+      // Esconde placeholder
+    const placeholder = document.getElementById("msg-placeholder");
+    if (placeholder) placeholder.style.display = "none";
+
+    // Mostra a parte de cima com infos do contato
+    const secao = document.getElementById("topo-chat");
+    if (secao) secao.style.display = "flex";
+
+    // marcar usuário na lista lateral
+    document.querySelectorAll('ul li').forEach(li => li.classList.remove('marcado'));
+   
+     const el = document.querySelector(`.user-link[data-id='${destId}']`);
+    console.log("[MARCAR] Elemento encontrado:", el);
+  if (el) {
+    document.getElementById("chat-with").innerText = el.dataset.nome || "";
+    document.getElementById("chat-username").innerText = el.dataset.user || "";
+    document.getElementById("chat-foto").src = el.dataset.foto || "/imagens/img.png";
+    el.closest("li")?.classList.add("marcado");
+
+
+
+    // MARCAR COMO LIDA
+    await marcarComoLida(destId);
+
+    // Atualizar a barra lateral para remover badge
+    await atualizarBarraLateral();
+
+  const btnFormalizar = document.querySelector(".formalizar-contrato");
+if (btnFormalizar) {
+    const usuarioLogadoId = usuarioLogado.id;
+    const usuarioLogadoTipo = usuarioLogado.tipo;
+
+    const destinatarioId = el.dataset.id;
+    const destinatarioTipo = el.dataset.tipo;
+    const destinatarioNome = el.dataset.nome;
+
+    // 🔥 Se os dois forem comuns, esconde o botão
+    if (usuarioLogadoTipo === "comum" && destinatarioTipo === "comum") {
+        btnFormalizar.style.display = "none";
+    } else {
+        btnFormalizar.onclick = () => {
+            if (!destinatarioId || !destinatarioTipo || !destinatarioNome) {
+                return alert("Dados do usuário incompletos");
+            }
+
+            const url = `/criar-contratacao?destId=${destinatarioId}&destTipo=${destinatarioTipo}&destNome=${encodeURIComponent(destinatarioNome)}&userId=${usuarioLogadoId}&userTipo=${usuarioLogadoTipo}&userNome=${encodeURIComponent(usuarioLogado.nome)}`;
+            window.location.href = url;
+        };
+      }
+}
+
+
+
+} else {
+    // Se não existir na lista lateral, buscar no backend
+    await carregarInfoContato(destId);
+}
+
+
+async function carregarInfoContato(destId) {
+    try {
+        const res = await fetch(`/procurarFoto/${destId}`);
+        if (!res.ok) throw new Error("Erro ao buscar info do usuário");
+        
+        const data = await res.json();
+
+        const nome = data.nome || "";
+        const username = data.username || "";
+        const foto = data.foto && data.foto.trim() !== "" ? data.foto : "/imagens/foto-perfil.png";
+
+        document.getElementById("chat-with").innerText = nome;
+        document.getElementById("chat-username").innerText = username;
+        document.getElementById("chat-foto").src = foto;
+
+        return data;
+    } catch (err) {
+        console.error("Erro ao carregar informações do contato:", err);
+    }
+}
+
+
+
+    if (destinatarioId !== destId) {
+        mensagensCarregadas.clear();
+        messagesDiv.innerHTML = "";
+        lastMessageDay = null;
+    }
+
+        if (destinatarioId !== destId) {
+        console.log("[RESET] Trocando de usuário. Limpando mensagens antigas.");
+        mensagensCarregadas.clear();
+        messagesDiv.innerHTML = "";
+        lastMessageDay = null;
+    }
+
+
+    destinatarioId = destId;
+
+    // buscar todas as mensagens históricas
+    console.log("[FETCH] Buscando mensagens em /chat/mensagens/" + destId);
+    const res = await fetch(`/chat/mensagens/${destId}`, {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    });
+    const mensagens = await res.json();
+    console.log("[FETCH RESULT] Mensagens recebidas:", mensagens);
+
+
+    mensagens.forEach(m => {
+        addMessage(
+            m.conteudo,
+            m.remetente_id == usuarioLogado.id ? "me" : "other",
+            m.data_envio,
+            m.ID_MENSAGEM,
+            true,
+            m.status || "normal"
+        );
+    });
+}
+
+// Se já veio destinatarioId do backend, carregar automaticamente
+if (destinatarioId) {
+    carregarMensagens(destinatarioId);
+}
+
+// Quando clicar em um usuário da lista lateral
+document.querySelectorAll('.user-link').forEach(el => {
+    el.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await carregarMensagens(el.dataset.id);
+    });
+});
+
+// Enviar mensagem
+document.getElementById('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!destinatarioId) return alert("Escolha um usuário para conversar");
+
+    const input = document.getElementById('input');
+    const msg = input.value.trim();
+    if (msg === "") return;
+
+    const dataAgora = new Date();
+
+    socket.emit("privateMessage", {
+        remetenteId: usuarioLogado.id,
+        destinatarioId: destinatarioId,
+        conteudo: msg,
+        data_envio: dataAgora,
+        status: "normal"
+    });
+
+    addMessage(msg, "me", dataAgora, null, true);
+
+     atualizarBarraLateral();
+
+
+    input.value = "";
+});
+
+socket.on("privateMessage",  async (data) => {
+    
+ 
+   
+    if (destinatarioId && (data.remetenteId == destinatarioId || data.destinatarioId == destinatarioId)) {
+        addMessage(
+            data.conteudo,
+            data.remetenteId == usuarioLogado.id ? "me" : "other",
+            data.data_envio,
+            data.ID_MENSAGEM,
+            true,
+            data.status || "normal"
+        );
+    }
+
+
+       if (data.remetenteId === destinatarioId) {
+        await marcarComoLida(destinatarioId); // <- importante usar await
+    }
+
+    // Atualizar a barra lateral
+    await atualizarBarraLateral();
+
+});
+
+// Função para adicionar mensagem ao chat
+function addMessage(text, type, data, idMensagem=null, forceScroll=false, status="normal") {
+    const messagesDiv = document.getElementById("messages");
+    if (idMensagem && mensagensCarregadas.has(idMensagem)) return;
+
+    // --- Separador de dia ---
+    const diaAtual = new Date(data).toLocaleDateString('pt-BR');
+    if (lastMessageDay !== diaAtual) {
+        const divDia = document.createElement("div");
+        divDia.className = "dia-separador";
+        divDia.innerText = diaAtual;
+        messagesDiv.appendChild(divDia);
+        lastMessageDay = diaAtual;
+    }
+
+    // --- Mensagem ---
+    const div = document.createElement("div");
+    div.className = "mensagem-bloco " + type;
+    div.dataset.id = idMensagem || "";
+    div.dataset.status = status;
+
+  div.innerHTML = `
+    <div class="conteudo-msg ${status === "apagada" ? "apagada" : ""}">
+        <div class="msg-texto">
+            <span>${status === "apagada" ? "Mensagem apagada" : text}</span>
+            <span class="hora-msg">${new Date(data).toLocaleTimeString('pt-BR')}</span>
+        </div>
+    </div>
+`;
+
+    messagesDiv.appendChild(div);
+
+    if (idMensagem) mensagensCarregadas.add(idMensagem);
+
+    // scroll automático
+    const isAtBottom = messagesDiv.scrollTop + messagesDiv.clientHeight >= messagesDiv.scrollHeight - 20;
+    if (isAtBottom || forceScroll) messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+ // Clique direito (PC) para abrir modal de excluir
+div.addEventListener("contextmenu", (e) => {
+    e.preventDefault(); // só impede o menu do navegador na mensagem
+    openModalExcluir(div);
+});
+
+// Toque longo (mobile) para abrir modal de excluir
+let touchTimer;
+div.addEventListener("touchstart", (e) => {
+    touchTimer = setTimeout(() => openModalExcluir(div), 600);
+});
+div.addEventListener("touchend", (e) => {
+    clearTimeout(touchTimer); // limpa timer se soltar antes de 600ms
+});
+
+}
+
+// Função de exemplo para abrir modal de exclusão
+function openModalExcluir(div) {
+    const idMsg = div.dataset.id;
+    if (!idMsg) return;
+    if (confirm("Deseja apagar esta mensagem?")) {
+        // Aqui você pode fazer fetch/emit para atualizar status no backend
+        div.dataset.status = "apagada";
+        div.querySelector(".conteudo-msg").classList.add("apagada");
+        div.querySelector(".conteudo-msg").innerHTML = "Mensagem apagada <span class='hora-msg'>" + div.querySelector(".hora-msg").innerText + "</span>";
+        socket.emit("deleteMessage", { idMensagem: idMsg });
+    }
+}
+
+async function atualizarBarraLateral() {
+    try {
+        const res = await fetch("/atualizarbarralateral", { headers: { "Accept": "application/json" } });
+        if (!res.ok) throw new Error("Erro ao buscar lista de usuários");
+        const { usuarios, naoLidas } = await res.json();
+
+
+        const lista = document.getElementById("lista-usuarios"); 
+        lista.innerHTML = ""; // limpa lista
+
+        // Ordena por última mensagem (mais recente primeiro)
+        usuarios.sort((a, b) => new Date(b.DATA_ULTIMA_MENSAGEM) - new Date(a.DATA_ULTIMA_MENSAGEM));
+
+       usuarios.forEach(u => {
+    const li = document.createElement("li");
+    li.classList.add("contato-item");
+
+    // calcular hora formatada da última mensagem
+    let horaFormatada = "";
+    if (u.DATA_ULTIMA_MENSAGEM) {
+        const data = new Date(u.DATA_ULTIMA_MENSAGEM);
+        const h = data.getHours();
+        const m = data.getMinutes().toString().padStart(2,'0');
+        horaFormatada = `${h}:${m}`;
+    }
+
+  let previewMsg = "";
+    if (u.ULTIMA_MENSAGEM) {
+        let texto = u.ULTIMA_MENSAGEM.length > 35
+            ? u.ULTIMA_MENSAGEM.substring(0, 35) + "..."
+            : u.ULTIMA_MENSAGEM;
+
+        if (u.REMETENTE_ULTIMA === usuarioLogado.id) {
+            texto = "você: " + texto;
+        }
+
+        previewMsg = texto;
+    }
+
+    // **aqui declaramos mostrarBadge**
+    const mostrarBadge = u.NAO_LIDAS > 0 && u.OUTRO_USUARIO_ID != destinatarioId;
+
+    li.innerHTML = `
+        <a href="#" class="user-link"
+            data-id="${u.OUTRO_USUARIO_ID}"
+            data-nome="${u.OUTRO_NOME}"
+            data-username="${u.OUTRO_USERNAME}"
+            data-foto="${u.FOTO_PERFIL_BANCO_USUARIO && u.FOTO_PERFIL_BANCO_USUARIO.trim() !== "" 
+                        ? u.FOTO_PERFIL_BANCO_USUARIO 
+                        : "/imagens/foto-perfil.png"}">
+            <img src="${u.FOTO_PERFIL_BANCO_USUARIO && u.FOTO_PERFIL_BANCO_USUARIO.trim() !== "" 
+                        ? u.FOTO_PERFIL_BANCO_USUARIO 
+                        : "/imagens/foto-perfil.png"}" 
+                 class="foto-perfil" 
+                 style="width:40px; height:40px; object-fit:cover; border-radius:50%;" 
+                 alt="${u.OUTRO_NOME}" 
+                 onerror="this.onerror=null; this.src='/imagens/foto-perfil.png'">
+
+            <div class="contato-info">
+                <div class="contato-nome-hora">
+                    <span class="contato-nome">${u.OUTRO_NOME}</span>
+                    ${horaFormatada ? `<span class="hora-ultima-msg">${horaFormatada}</span>` : ""}
+                </div>
+                <div class="ultima-msg-badge">
+                    <span class="ultima-mensagem">${previewMsg}</span>
+                    ${mostrarBadge ? `<span class="badge">${u.NAO_LIDAS}</span>` : ""}
+                </div>
+            </div>
+        </a>
+    `;
+
+    if (u.OUTRO_USUARIO_ID == destinatarioId) li.classList.add("marcado");
+
+    li.querySelector(".user-link").addEventListener("click", async (e) => {
+        e.preventDefault();
+        await carregarMensagens(u.OUTRO_USUARIO_ID);
+    });
+
+    lista.appendChild(li);
+});
+
+
+    } catch (err) {
+        console.error("Erro ao atualizar barra lateral:", err);
+    }
+}
+
+
+async function marcarComoLida(destId) {
+    try {
+       await fetch("/marcarcomolida", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ destinatarioId: destId })
+});
+
+    } catch (err) {
+        console.error("Erro ao marcar como lida:", err);
+    }
+}
+
+
+
+});
+
+</script>
+
+    
+</body>
+</html>

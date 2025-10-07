@@ -2,9 +2,15 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const env = require("dotenv").config();
-const http = require("http");        // <- adicionado
-const server = http.createServer(app);  // <- adicionado
+const http = require("http");  
+const { Server } = require("socket.io");
+const server = http.createServer(app);
+const io = new Server(server);
 
+
+const { configurarSocketIo } = require("./app/util/socket");
+// Configura o Socket.IO com o servidor HTTP
+configurarSocketIo(io);
 
 const session = require("express-session");
 app.use(
@@ -14,6 +20,9 @@ app.use(
     saveUninitialized: true,
     cookie: { secure: false }
 }));
+
+
+
 
 const injetarLocais = require("./app/middlewares/injetarLocais");
 app.use(injetarLocais);
@@ -38,10 +47,7 @@ app.use("/", rotas);
 const rotaAdm = require("./app/routes/router-adm");
 app.use("/adm", rotaAdm);
 
-const { initSocket } = require("./socket"); // seu arquivo socket.js
-const io = initSocket(server);
 
-console.log(io);
 server.listen(process.env.APP_PORT, ()=>{
     console.log(`Servidor onLine!\nhttp://localhost:${process.env.APP_PORT}`);
 });

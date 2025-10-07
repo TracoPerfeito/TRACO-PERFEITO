@@ -1,5 +1,6 @@
 
 const notificacoesModel = require("../models/notificacoesModel");
+const usuariosModel = require("../models/usuariosModel");
 
 const contratacaoModel = require("../models/contratacaoModel");
 const listagensController = require("../controllers/listagensController");
@@ -14,13 +15,13 @@ const contratacoesController = {
 
   // Regras de validação para criação de contratação
   regrasValidacaoCriarContratacao: [
-    body("ID_CLIENTE")
-      .notEmpty()
-      .withMessage("ID do cliente é obrigatório."),
-    body("ID_PROFISSIONAL")
-      .notEmpty()
-      .withMessage("ID do profissional é obrigatório."),
-    body("NOME_PROJETO")
+   body("ID_CONTRATANTE")
+    .notEmpty()
+    .withMessage("ID do cliente é obrigatório."),
+  body("ID_CONTRATADO")
+    .notEmpty()
+    .withMessage("ID do profissional é obrigatório."),
+     body("NOME_PROJETO")
       .trim()
       .isLength({ min: 2, max: 100 })
       .withMessage("O nome do projeto deve ter entre 2 e 100 caracteres."),
@@ -62,10 +63,46 @@ const contratacoesController = {
       .withMessage("Observações podem ter no máximo 1000 caracteres.")
   ],
 
+
+  mostrarPagina: async (req, res) =>{
+
+    console.log("Chegou no mostrar pagina");
+
+
+    try{
+ const { destId, destTipo, destNome } = req.query;
+
+    // Usuário logado já está na sessão
+    const usuLogado = req.session.autenticado;
+
+    // Destinatário (vem do clique/seleção)
+    const destinatario = {
+      id: destId,
+      tipo: destTipo,
+      nome: destNome
+    };
+
+    // Passa para o EJS
+    res.render("pages/criar-contratacao", { usuLogado, destinatario });
+    }catch(error){
+console.log(error);
+ req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Tente novamente mais tarde.",
+        tipo: "error"
+      };
+      return res.redirect("/");
+    }
+  },
+
   // Criar contratação
   criarContratacao: async (req, res) => {
     console.log("Chegou no criar contratação!")
     try {
+
+      
+      console.log("Dados do formulário recebidos:", req.body);
+
       const erros = validationResult(req);
       if (!erros.isEmpty()) {
         req.session.dadosNotificacao = {
@@ -76,11 +113,11 @@ const contratacoesController = {
         return res.redirect("/criar-contratacao");
       }
 
-      const { ID_CLIENTE, ID_PROFISSIONAL, NOME_PROJETO, DESCRICAO, VALOR_TOTAL, DATA_ENTREGA, OBSERVACOES } = req.body;
+      const { ID_CONTRATANTE, ID_CONTRATADO, NOME_PROJETO, DESCRICAO, VALOR_TOTAL, DATA_ENTREGA, OBSERVACOES } = req.body;
 
       const novoRegistro = {
-        ID_CLIENTE,
-        ID_PROFISSIONAL,
+        ID_CLIENTE: ID_CONTRATANTE,       
+  ID_PROFISSIONAL: ID_CONTRATADO,  
         NOME_PROJETO,
         DESCRICAO,
         VALOR_TOTAL,
@@ -92,6 +129,7 @@ const contratacoesController = {
       };
 
       const resultado = await contratacaoModel.createContratacao(novoRegistro);
+      
 
       if (!resultado) {
         req.session.dadosNotificacao = {
@@ -100,6 +138,9 @@ const contratacoesController = {
           tipo: "error"
         };
         return res.redirect("/criar-contratacao");
+      } else{
+        console.log("Deu certo!")
+        console.log(resultado)
       }
 
       req.session.dadosNotificacao = {
@@ -130,7 +171,7 @@ const contratacoesController = {
 
       req.session.dadosNotificacao = {
         titulo: "Contratação aceita",
-        mensagem: "O projeto agora está em andamento.",
+        mensagem: "O projeto agora está aceito. Aguardando pagamento.",
         tipo: "success"
       };
         console.log("Contratação aceita");

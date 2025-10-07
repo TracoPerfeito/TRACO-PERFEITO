@@ -142,6 +142,8 @@ findIdusuario: async (idUsuarioPerfil, idUsuarioLogado = null) => {
 },
 
 
+
+
 contarSeguidores: async (id) => {
   try {
       const [quantseguidores] = await pool.query(
