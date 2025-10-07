@@ -17,14 +17,15 @@ const { verificarDuplicidade } = require("../models/usuariosModel");
 // Mostrar página de login do administrador
 router.get("/", function (req, res) { //login
   res.render('pages/adm-login',  {retorno: null, valores: {email: "", password: ""}, errosLogin: null});
-
+console.log("Chegou no get adm-login");
 });
 
 
 router.post( //validações login
     "/logar-como-adm",
    admController.regrasLoginADM, 
-   gravarUsuAutenticado, function (req, res) {
+   gravarUsuAutenticado, 
+   function (req, res) {
     admController.logar(req, res);
    }
 );

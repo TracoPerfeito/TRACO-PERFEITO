@@ -10,7 +10,7 @@ const listarUsuariosPaginados = async (req, res) => {
 
     try {
         let pagina = req.query.pagina == undefined ? 1 : parseInt(req.query.pagina);
-        let regPagina = 8;
+        let regPagina = 4;
         let inicio = (pagina - 1) * regPagina;
 
         // Obter o total de registros
