@@ -39,39 +39,62 @@
     color: var( --cor-btn-voltar-texto);
 }
 
-.foto-perfil{
+.foto-perfil {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-
+    margin-right: 10px; /* espaço entre foto e info */
+    flex-shrink: 0;     /* não deixa a foto encolher */
 }
 
-.contato-item{
-    padding: 10px 0px 10px 0px;
+.contato-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;             /* ocupa todo o espaço restante */
+    overflow: hidden;    /* evita que o texto quebre o layout */
 }
 
-.contato-nome{
+.contato-item {
+    list-style: none; /* remove bolinha da li */
+    padding: 0; /* tirar padding da li */
+    margin: 0; /* tirar margin da li */
+    width: 100%;
+}
+
+.contato-nome {
     font-family: "Montserrat", sans-serif;
-
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* corta o texto se for muito grande */
 }
 
-.contato-nome-hora{
+
+.contato-nome-hora {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+}
+.hora-ultima-msg {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 300; 
+    font-size: 12px;
+    flex-shrink: 0; /* não encolhe */
 }
 
-.hora-ultima-msg{
-   font-family: "Montserrat", sans-serif;
-   font-weight: 300; 
-   font-size: 12px;
-}
 
 .user-link {
-    display: inline-flex;
+    display: flex;       /* inline-flex pode dar problema no 100% */
     flex-direction: row;
-    width: 100%
+    align-items: center;
+    width: 100%;         /* ocupar toda a largura da li */
+   
+     padding: 16px 10px;
+    box-sizing: border-box; /* para padding não extrapolar */
+    text-decoration: none; /* remove underline do link */
+    color: inherit;       
+      border-bottom: 1px solid var( --verde2-chat);
 }
 .foto-perfil-con-ant {
     width: 30px;
@@ -93,6 +116,7 @@
     grid-area: aba-minhas-conversas;
     padding: 10px;
     background-color: var(--lado-chat);
+    color: var(--text-color) !important;
    
     border-right: 1px solid  var(--verde2-chat);
     z-index: 100;
@@ -131,12 +155,12 @@
 
     
 .lista-conversas-anteriores li {
-color: var(--text-color);
+color: var(--text-color) !important;
     display: flex;  
     align-items: center;
-    height: 50px;
+
     font-family: "Josefin Sans";
-    border-bottom: 1px solid var( --verde2-chat);
+  
 
 }
 
@@ -145,8 +169,8 @@ color: var(--text-color);
     cursor: pointer;
 }
 
-.lista-conversas-anteriores li span {
-   
+.lista-conversas-anteriores a{
+    color: var(--text-color);
 }
 
 .msg-area {
@@ -276,8 +300,7 @@ color: var(--text-color);
     padding-bottom: 0px; 
     height: 50px;
 }
-
-#chat-with, .h2-cont{
+ .h2-cont{
     color: var(--text-color);
 }
 
@@ -355,7 +378,7 @@ color: var(--text-color);
 
         display: flex;
         align-items: center;
-        height: 50px;
+     
         font-family: "Josefin Sans";
       
 
@@ -453,14 +476,14 @@ color: var(--text-color);
 
 /* Balão do outro usuário */
 .mensagem-bloco.other .conteudo-msg {
-    background-color: #e5e5ea;
-    color: #333;
+    background-color: var(--msg-outro);
+    color: var(--balao-msg-cor-text);
     border-radius: 8px 8px 8px 0;
 }
 
 /* Balão do usuário logado */
 .mensagem-bloco.me .conteudo-msg {
-    background-color: #0b8457;
+    background-color: var(--msg-eu);
     color: white;
     border-radius: 8px 8px 0 8px;
 }
@@ -485,9 +508,13 @@ color: var(--text-color);
 .hora-msg {
     flex-shrink: 0;
     font-size: 10px;
-    color: rgba(0,0,0,0.5);
+    color: rgba(155, 155, 155, 0.751);
     margin-left: 8px;
     align-self: flex-end;
+}
+
+.mensagem-bloco.me .hora-msg{
+    color: rgba(255, 255, 255, 0.715);
 }
 
 /* Mensagem apagada */
@@ -541,6 +568,7 @@ color: var(--text-color);
     display: flex;
     align-items: center;
     background-color: var(--verde-chat);
+    color: rgb(232, 232, 232);
     padding: 5px;
 }
 
@@ -580,4 +608,22 @@ color: var(--text-color);
     overflow: hidden;       
     text-overflow: ellipsis;  
     max-width: 130px;           
+}
+
+
+.formalizar-contrato{
+    padding: 7px 12px;
+    font-family: "Montserrat";
+    border: 1px solid #fff;
+    border-radius: 7px;
+    font-weight: 400;
+    background-color: #316886;
+    color: #ececec;
+}
+
+
+.formalizar-contrato:hover{
+    background-color: #1e465b;
+    cursor: pointer;
+   
 }

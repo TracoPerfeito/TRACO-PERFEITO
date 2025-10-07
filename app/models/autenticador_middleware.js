@@ -54,7 +54,7 @@ gravarUsuAutenticado = async (req, res, next) => {
     console.log("🧾 usuarioEncontrado:", usuarioEncontrado);
 
     if(!usuarioEncontrado){
-        console.error('Erro no banco de dados. Conexão interrompida:', error);
+        console.log('Erro no banco de dados. Conexão interrompida.');
         res.status(500).render('pages/erro-conexao', {
        mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
      });

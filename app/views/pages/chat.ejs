@@ -223,19 +223,42 @@ async function carregarMensagens(destId) {
     // Atualizar a barra lateral para remover badge
     await atualizarBarraLateral();
 
-  const btnFormalizar = document.querySelector(".formalizar-contrato");
-if (btnFormalizar) {
+     atualizarBotaoFormalizar({
+        id: el.dataset.id,
+        tipo: el.dataset.tipo,
+        nome: el.dataset.nome
+    });
+
+
+
+} else {
+    // Se não existir na lista lateral, buscar no backend
+    await carregarInfoContato(destId);
+     const data = await carregarInfoContato(destId);
+    atualizarBotaoFormalizar({
+        id: data.id,
+        tipo: data.tipo,
+        nome: data.nome
+    });
+}
+
+
+function atualizarBotaoFormalizar(dest) {
+    const btnFormalizar = document.querySelector(".formalizar-contrato");
+    if (!btnFormalizar) return;
+
     const usuarioLogadoId = usuarioLogado.id;
     const usuarioLogadoTipo = usuarioLogado.tipo;
 
-    const destinatarioId = el.dataset.id;
-    const destinatarioTipo = el.dataset.tipo;
-    const destinatarioNome = el.dataset.nome;
+    const destinatarioId = dest.id;
+    const destinatarioTipo = dest.tipo;
+    const destinatarioNome = dest.nome;
 
     // 🔥 Se os dois forem comuns, esconde o botão
     if (usuarioLogadoTipo === "comum" && destinatarioTipo === "comum") {
         btnFormalizar.style.display = "none";
     } else {
+        btnFormalizar.style.display = "block";
         btnFormalizar.onclick = () => {
             if (!destinatarioId || !destinatarioTipo || !destinatarioNome) {
                 return alert("Dados do usuário incompletos");
@@ -244,14 +267,7 @@ if (btnFormalizar) {
             const url = `/criar-contratacao?destId=${destinatarioId}&destTipo=${destinatarioTipo}&destNome=${encodeURIComponent(destinatarioNome)}&userId=${usuarioLogadoId}&userTipo=${usuarioLogadoTipo}&userNome=${encodeURIComponent(usuarioLogado.nome)}`;
             window.location.href = url;
         };
-      }
-}
-
-
-
-} else {
-    // Se não existir na lista lateral, buscar no backend
-    await carregarInfoContato(destId);
+    }
 }
 
 

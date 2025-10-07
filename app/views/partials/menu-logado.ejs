@@ -221,17 +221,26 @@ document.addEventListener("DOMContentLoaded", () => {
         badgeMobile.style.display = !menuBtn.checked && totalGeral > 0 ? "inline-block" : "none";
       }
 
+if (msgData.notificacoes && msgData.notificacoes.length > 0) {
+  msgData.notificacoes.forEach(notif => {
+    console.log("Notificação recebida:", notif);
 
-        if (msgData.notificacoes && msgData.notificacoes.length > 0) {
-      msgData.notificacoes.forEach(notif => {
-        notify(
-          notif.titulo,
-          notif.mensagem,
-          "msg", 
-          "top right"
-        );
-      });
-    }
+    const qtd = notif.qtdNaoLidas || 1;
+    const palavra = qtd === 1 ? "mensagem" : "mensagens";
+
+    const tituloNotif = `Você tem ${qtd} ${palavra} de ${notif.titulo.replace("Nova mensagem de ", "")}!`;
+    const textoNotif = notif.mensagem;
+
+    notify(
+      tituloNotif,
+      textoNotif,
+      "msg",
+      "top right"
+    );
+  });
+}
+
+
 
 
     } catch (err) {
