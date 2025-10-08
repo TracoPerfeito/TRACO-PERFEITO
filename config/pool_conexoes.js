@@ -29,7 +29,7 @@ module.exports = pool.promise();
 
 // VERSAO ANTERIOR DO POOL (Giovani no teams)
 
-/*
+/*[[]
 const mysql = require('mysql2')
 require('dotenv').config();
  try {

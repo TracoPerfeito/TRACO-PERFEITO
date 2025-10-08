@@ -340,18 +340,25 @@ exibirPagamento: async (req, res) => {
 
 
 
-
-
 confirmarEntrega: async (req, res) => {
-  console.log("Chegou no confirmar entrega");
+  console.log("🚀 Chegou no confirmar entrega");
+  console.log("req.params:", req.params);
+console.log("req.session.autenticado existe?", !!req.session.autenticado);
+
 
   try {
     const idContratacao = req.params.id;
     const idUsuario = req.session.autenticado.id;
 
+    console.log("idContratacao:", idContratacao);
+    console.log("idUsuario:", idUsuario);
+
     // 1️⃣ Buscar a contratação
-    const contratacao = await contratacaoModel.findById(idContratacao);
+    const contratacao = await contratacaoModel.findId(idContratacao);
+    console.log("Contratação encontrada:", contratacao);
+
     if (!contratacao) {
+      console.log("❌ Contratação não encontrada");
       req.session.dadosNotificacao = {
         titulo: "Erro",
         mensagem: "Contratação não encontrada.",
@@ -362,13 +369,16 @@ confirmarEntrega: async (req, res) => {
 
     // 2️⃣ Atualizar confirmação dependendo do tipo de usuário
     if (idUsuario === contratacao.ID_PROFISSIONAL && contratacao.CONFIRMACAO_PROFISSIONAL === 0) {
+      console.log("✅ Confirmando como profissional");
       await contratacaoModel.updateConfirmacaoProfissional(idContratacao);
     } else if (idUsuario === contratacao.ID_CLIENTE && contratacao.CONFIRMACAO_CLIENTE === 0) {
+      console.log("✅ Confirmando como cliente");
       await contratacaoModel.updateConfirmacaoCliente(idContratacao);
     } else if (
       (idUsuario !== contratacao.ID_PROFISSIONAL && idUsuario !== contratacao.ID_CLIENTE) ||
       (contratacao.CONFIRMACAO_PROFISSIONAL === 1 && contratacao.CONFIRMACAO_CLIENTE === 1)
     ) {
+      console.log("⚠️ Nenhuma alteração necessária");
       req.session.dadosNotificacao = {
         titulo: "Aviso",
         mensagem: "Nenhuma alteração foi realizada.",
@@ -378,13 +388,15 @@ confirmarEntrega: async (req, res) => {
     }
 
     // 3️⃣ Buscar novamente pra checar se os dois confirmaram
-    const atualizada = await contratacaoModel.findById(idContratacao);
+    const atualizada = await contratacaoModel.findId(idContratacao);
+    console.log("Contratação atualizada:", atualizada);
 
     if (
       atualizada.CONFIRMACAO_PROFISSIONAL === 1 &&
       atualizada.CONFIRMACAO_CLIENTE === 1 &&
       atualizada.STATUS !== "FINALIZADA"
     ) {
+      console.log("🎉 Ambos confirmaram! Finalizando contratação...");
       await contratacaoModel.updateContratacao({ STATUS: "FINALIZADA", DATA_FINALIZACAO: new Date() }, idContratacao);
 
       req.session.dadosNotificacao = {
@@ -392,11 +404,13 @@ confirmarEntrega: async (req, res) => {
         mensagem: "Contratação finalizada! Cliente já pode avaliar o profissional.",
         tipo: "success"
       };
+      console.log("✅ Contratação finalizada");
       return res.redirect("/contratacoes");
     }
 
     // 4️⃣ Se já estava finalizada
     if (atualizada.STATUS === "FINALIZADA") {
+      console.log("ℹ️ Contratação já finalizada anteriormente");
       req.session.dadosNotificacao = {
         titulo: "Aviso",
         mensagem: "Contratação já finalizada. Cliente pode avaliar o profissional.",
@@ -405,6 +419,7 @@ confirmarEntrega: async (req, res) => {
       return res.redirect("/contratacoes");
     }
 
+    console.log("✅ Confirmação registrada, mas a contratação ainda não finalizada");
     req.session.dadosNotificacao = {
       titulo: "Sucesso",
       mensagem: "Confirmação registrada!",
@@ -413,7 +428,7 @@ confirmarEntrega: async (req, res) => {
     return res.redirect("/contratacoes");
 
   } catch (erro) {
-    console.error("Erro ao confirmar entrega:", erro);
+    console.error("❌ Erro ao confirmar entrega:", erro);
     req.session.dadosNotificacao = {
       titulo: "Erro",
       mensagem: "Não foi possível confirmar a entrega.",

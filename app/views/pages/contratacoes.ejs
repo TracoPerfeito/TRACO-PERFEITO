@@ -341,7 +341,21 @@
           <form action="/contratacoes/recusar/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
             <button class="recusar">Recusar</button>
           </form>
+
+          
         <% } %>
+
+        <% if (c.STATUS === "INICIADO" && 
+       ((id_usuario === c.ID_PROFISSIONAL && c.CONFIRMACAO_PROFISSIONAL === 0) ||
+        (id_usuario === c.ID_CLIENTE && c.CONFIRMACAO_CLIENTE === 0))) { %>
+  
+  <form action="/contratacoes/confirmarFinalizacao/<%= c.ID_CONTRATACAO %>" method="POST" style="display:inline-block;">
+    <button class="aceitar">Marcar como finalizada</button>
+  </form>
+
+<% } %>
+
+
                 <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao' && c.STATUS === "AGUARDANDO PAGAMENTO") { %>
                   <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn-pagar btn">Pagar para iniciar projeto</a>
                 <% } %>

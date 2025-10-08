@@ -42,21 +42,24 @@ findByUsuarioDetalhado: async (usuarioId) => {
   try {
     const [resultados] = await pool.query(
       `SELECT 
-         c.*,
-         uCliente.NOME_USUARIO AS NOME_CLIENTE,
-         uCliente.EMAIL_USUARIO AS EMAIL_CLIENTE,
-         uCliente.USER_USUARIO AS USER_CLIENTE,
-         uProfissional.NOME_USUARIO AS NOME_PROFISSIONAL,
-         uProfissional.EMAIL_USUARIO AS EMAIL_PROFISSIONAL,
-         uProfissional.USER_USUARIO AS USER_PROFISSIONAL,
-         CASE 
-           WHEN c.ID_CLIENTE = ? THEN 'cliente'
-           ELSE 'profissional'
-         END AS tipoUsuario
-       FROM CONTRATACOES c
-       LEFT JOIN USUARIOS uCliente ON c.ID_CLIENTE = uCliente.ID_USUARIO
-       LEFT JOIN USUARIOS uProfissional ON c.ID_PROFISSIONAL = uProfissional.ID_USUARIO
-       WHERE c.ID_CLIENTE = ? OR c.ID_PROFISSIONAL = ?`,
+   c.*,
+   uCliente.NOME_USUARIO AS NOME_CLIENTE,
+   uCliente.EMAIL_USUARIO AS EMAIL_CLIENTE,
+   uCliente.USER_USUARIO AS USER_CLIENTE,
+   uProfissional.NOME_USUARIO AS NOME_PROFISSIONAL,
+   uProfissional.EMAIL_USUARIO AS EMAIL_PROFISSIONAL,
+   uProfissional.USER_USUARIO AS USER_PROFISSIONAL,
+   c.CONFIRMACAO_CLIENTE,
+   c.CONFIRMACAO_PROFISSIONAL,
+   CASE 
+     WHEN c.ID_CLIENTE = ? THEN 'cliente'
+     ELSE 'profissional'
+   END AS tipoUsuario
+FROM CONTRATACOES c
+LEFT JOIN USUARIOS uCliente ON c.ID_CLIENTE = uCliente.ID_USUARIO
+LEFT JOIN USUARIOS uProfissional ON c.ID_PROFISSIONAL = uProfissional.ID_USUARIO
+WHERE c.ID_CLIENTE = ? OR c.ID_PROFISSIONAL = ?
+`,
       [usuarioId, usuarioId, usuarioId]
     );
 
