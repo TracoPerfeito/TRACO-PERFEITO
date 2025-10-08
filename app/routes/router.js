@@ -264,7 +264,7 @@ router.get(
 
 router.post(
   "/contratacoes/aceitar/:id",function(req, res){
-  verificarUsuAutorizado(["profissional"]),
+  // verificarUsuAutorizado(["profissional"]),
  contratacaoController.aceitarContratacao(req, res);
   
 });
@@ -272,11 +272,19 @@ router.post(
 
 router.post(
   "/contratacoes/recusar/:id", function(req, res){
-  verificarUsuAutorizado(["profissional"]),
+  // verificarUsuAutorizado(["profissional"]),
  contratacaoController.recusarContratacao(req, res);
   
 });
 
+
+
+router.post(
+  "/contratacoes/confirmarFinalizacao/:id",function(req, res){
+  // verificarUsuAutorizado(["profissional"]),
+ contratacaoController.confirmarEntrega(req, res);
+  
+});
 
 
 

@@ -254,22 +254,36 @@ function atualizarBotaoFormalizar(dest) {
     const destinatarioTipo = dest.tipo;
     const destinatarioNome = dest.nome;
 
-    // 🔥 Se os dois forem comuns, esconde o botão
-    if (usuarioLogadoTipo === "comum" && destinatarioTipo === "comum") {
-        btnFormalizar.style.display = "none";
-    } else {
-        btnFormalizar.style.display = "block";
-        btnFormalizar.onclick = () => {
-            if (!destinatarioId || !destinatarioTipo || !destinatarioNome) {
-                return alert("Dados do usuário incompletos");
-            }
+  // 🔥 Se os dois forem comuns, esconde o botão
+console.log("usuarioLogadoTipo:", usuarioLogadoTipo);
+console.log("destinatarioTipo:", destinatarioTipo);
 
-            const url = `/criar-contratacao?destId=${destinatarioId}&destTipo=${destinatarioTipo}&destNome=${encodeURIComponent(destinatarioNome)}&userId=${usuarioLogadoId}&userTipo=${usuarioLogadoTipo}&userNome=${encodeURIComponent(usuarioLogado.nome)}`;
-            window.location.href = url;
-        };
-    }
+if (usuarioLogadoTipo === "comum" && destinatarioTipo === "comum") {
+    console.log("Ambos usuários são comuns, botão escondido");
+    btnFormalizar.style.display = "none";
+} else {
+    console.log("Mostrando botão para formalizar contratação");
+    btnFormalizar.style.display = "block";
+    btnFormalizar.onclick = () => {
+        console.log("Clicou no botão de formalizar");
+        console.log("destinatarioId:", destinatarioId);
+        console.log("destinatarioTipo:", destinatarioTipo);
+        console.log("destinatarioNome:", destinatarioNome);
+        console.log("usuarioLogadoId:", usuarioLogadoId);
+        console.log("usuarioLogadoTipo:", usuarioLogadoTipo);
+        console.log("usuarioLogado.nome:", usuarioLogado.nome);
+
+        if (!destinatarioId || !destinatarioTipo || !destinatarioNome) {
+            console.warn("Dados do usuário incompletos, alertando...");
+            return alert("Dados do usuário incompletos");
+        }
+
+        const url = `/criar-contratacao?destId=${destinatarioId}&destTipo=${destinatarioTipo}&destNome=${encodeURIComponent(destinatarioNome)}&userId=${usuarioLogadoId}&userTipo=${usuarioLogadoTipo}&userNome=${encodeURIComponent(usuarioLogado.nome)}`;
+        console.log("Redirecionando para:", url);
+        window.location.href = url;
+    };
 }
-
+}
 
 async function carregarInfoContato(destId) {
     try {

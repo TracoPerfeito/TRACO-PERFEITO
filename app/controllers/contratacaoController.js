@@ -334,7 +334,95 @@ exibirPagamento: async (req, res) => {
     console.error(erro);
     res.status(500).send("Erro ao carregar página de pagamento.");
   }
-}
+},
+
+
+
+
+
+
+
+confirmarEntrega: async (req, res) => {
+  console.log("Chegou no confirmar entrega");
+
+  try {
+    const idContratacao = req.params.id;
+    const idUsuario = req.session.autenticado.id;
+
+    // 1️⃣ Buscar a contratação
+    const contratacao = await contratacaoModel.findById(idContratacao);
+    if (!contratacao) {
+      req.session.dadosNotificacao = {
+        titulo: "Erro",
+        mensagem: "Contratação não encontrada.",
+        tipo: "error"
+      };
+      return res.redirect("/contratacoes");
+    }
+
+    // 2️⃣ Atualizar confirmação dependendo do tipo de usuário
+    if (idUsuario === contratacao.ID_PROFISSIONAL && contratacao.CONFIRMACAO_PROFISSIONAL === 0) {
+      await contratacaoModel.updateConfirmacaoProfissional(idContratacao);
+    } else if (idUsuario === contratacao.ID_CLIENTE && contratacao.CONFIRMACAO_CLIENTE === 0) {
+      await contratacaoModel.updateConfirmacaoCliente(idContratacao);
+    } else if (
+      (idUsuario !== contratacao.ID_PROFISSIONAL && idUsuario !== contratacao.ID_CLIENTE) ||
+      (contratacao.CONFIRMACAO_PROFISSIONAL === 1 && contratacao.CONFIRMACAO_CLIENTE === 1)
+    ) {
+      req.session.dadosNotificacao = {
+        titulo: "Aviso",
+        mensagem: "Nenhuma alteração foi realizada.",
+        tipo: "info"
+      };
+      return res.redirect("/contratacoes");
+    }
+
+    // 3️⃣ Buscar novamente pra checar se os dois confirmaram
+    const atualizada = await contratacaoModel.findById(idContratacao);
+
+    if (
+      atualizada.CONFIRMACAO_PROFISSIONAL === 1 &&
+      atualizada.CONFIRMACAO_CLIENTE === 1 &&
+      atualizada.STATUS !== "FINALIZADA"
+    ) {
+      await contratacaoModel.updateContratacao({ STATUS: "FINALIZADA", DATA_FINALIZACAO: new Date() }, idContratacao);
+
+      req.session.dadosNotificacao = {
+        titulo: "Sucesso",
+        mensagem: "Contratação finalizada! Cliente já pode avaliar o profissional.",
+        tipo: "success"
+      };
+      return res.redirect("/contratacoes");
+    }
+
+    // 4️⃣ Se já estava finalizada
+    if (atualizada.STATUS === "FINALIZADA") {
+      req.session.dadosNotificacao = {
+        titulo: "Aviso",
+        mensagem: "Contratação já finalizada. Cliente pode avaliar o profissional.",
+        tipo: "info"
+      };
+      return res.redirect("/contratacoes");
+    }
+
+    req.session.dadosNotificacao = {
+      titulo: "Sucesso",
+      mensagem: "Confirmação registrada!",
+      tipo: "success"
+    };
+    return res.redirect("/contratacoes");
+
+  } catch (erro) {
+    console.error("Erro ao confirmar entrega:", erro);
+    req.session.dadosNotificacao = {
+      titulo: "Erro",
+      mensagem: "Não foi possível confirmar a entrega.",
+      tipo: "error"
+    };
+    return res.redirect("/contratacoes");
+  }
+},
+
 
 };
 

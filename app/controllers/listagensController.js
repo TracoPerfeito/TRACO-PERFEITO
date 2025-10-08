@@ -67,8 +67,10 @@ procurarFoto: async (req, res) => {
     }
 
     return res.json({
+     id: usuario.ID_USUARIO,
       nome: usuario.NOME_USUARIO,
       username: usuario.USER_USUARIO,
+        tipo: usuario.TIPO_USUARIO,    
       foto: usuario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/foto-perfil.png'
     });
   } catch (erro) {
