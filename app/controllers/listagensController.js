@@ -198,19 +198,96 @@ procurarFoto: async (req, res) => {
  
 
 
+// exibirPerfil: async (req, res, dadosNotificacao) => {
+//   const id = req.params.id;
+//   const idContratacao = req.query.idContratacao || null; 
+
+//   try {
+//     const idLogado = req.session.autenticado?.id || null;
+//     const usuario = await listagensModel.findIdusuario(id, idLogado);
+
+//     if (!usuario) {
+//       return res.status(404).send('Usuário não encontrado');
+//     }
+
+//     // lógica de avaliação
+//     let podeAvaliar = false;
+//     if (idContratacao) {
+//       const contratacao = await contratacaoModel.findId(idContratacao);
+//       if (
+//         contratacao &&
+//         contratacao.ID_CLIENTE === idLogado &&
+//         contratacao.ID_PROFISSIONAL === Number(id) &&
+//         contratacao.STATUS === "FINALIZADA" &&
+//         !contratacao.AVALIACAO_NOTA // ou outro campo que indique se já avaliou
+//       ) {
+//         podeAvaliar = true;
+//       }
+//     }
+
+//     const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, idLogado);
+
+//     const publicacoesComContagem = await Promise.all(
+//       publicacoes.map(async (pub) => {
+//         const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
+//         const N_COMENTARIOS = await publicacoesModel.contarNumComentarios(pub.ID_PUBLICACAO);
+//         const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(pub.ID_PUBLICACAO);
+//         return { ...pub, N_CURTIDAS, N_COMENTARIOS, N_VISUALIZACOES };
+//       })
+//     );
+
+//     const qntPortfolios = await listagensModel.contarPortfoliosUsuario(id);
+//     const qntSeguidores = await listagensModel.contarSeguidores(id);
+
+//     const especializacao = await listagensModel.findEspecializacaoByUserId(id);
+
+//     console.log(dadosNotificacao);
+//     res.render('pages/perfil', {
+//       usuario,
+//       especializacao,
+//       publicacoes: publicacoesComContagem,
+//       qntPortfolios,
+//       qntSeguidores,
+//       podeAvaliar,     
+//       idContratacao,
+//       dadosNotificacao   
+//     });
+
+//   } catch (erro) {
+//     console.log(erro);
+//     res.status(500).render('pages/erro-conexao', {
+//       mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+//     });
+//   }
+// },
+
+
 exibirPerfil: async (req, res, dadosNotificacao) => {
   const id = req.params.id;
-  const idContratacao = req.query.idContratacao || null; // pega da query string, se existir
+  const idContratacao = req.query.idContratacao || null;
 
   try {
     const idLogado = req.session.autenticado?.id || null;
+
+    // busca usuário e dados agregados em uma query só
     const usuario = await listagensModel.findIdusuario(id, idLogado);
 
     if (!usuario) {
       return res.status(404).send('Usuário não encontrado');
     }
 
-    // lógica de avaliação
+
+    const usuarioLog = { ...usuario };
+
+usuarioLog.FOTO_PERFIL_BANCO_USUARIO = usuarioLog.FOTO_PERFIL_BANCO_USUARIO ? '(tem)' : '(não tem)';
+usuarioLog.IMG_BANNER_BANCO_USUARIO = usuarioLog.IMG_BANNER_BANCO_USUARIO ? '(tem)' : '(não tem)';
+
+console.log("Dados do perfil sendo exibido: ", usuarioLog);
+
+
+
+
+
     let podeAvaliar = false;
     if (idContratacao) {
       const contratacao = await contratacaoModel.findId(idContratacao);
@@ -219,14 +296,30 @@ exibirPerfil: async (req, res, dadosNotificacao) => {
         contratacao.ID_CLIENTE === idLogado &&
         contratacao.ID_PROFISSIONAL === Number(id) &&
         contratacao.STATUS === "FINALIZADA" &&
-        !contratacao.AVALIACAO_NOTA // ou outro campo que indique se já avaliou
+        !contratacao.AVALIACAO_NOTA
       ) {
         podeAvaliar = true;
       }
     }
 
-    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, idLogado);
+    const avaliacoes = await listagensModel.listarAvaliacoes(id);
+   
+    console.log("Avaliações do usuário:");
+      avaliacoes.forEach(av => {
+        console.log({
+          ID_AVALIACAO: av.ID_AVALIACAO,
+          ID_PROFISSIONAL: av.ID_PROFISSIONAL,
+          ID_AVALIADOR: av.ID_AVALIADOR,
+          COMENTARIO: av.COMENTARIO,
+          NOTA: av.NOTA,
+          DATA_CRIACAO: av.DATA_CRIACAO,
+          NOME_AVALIADOR: av.NOME_AVALIADOR,
+          FOTO_AVALIADOR: av.FOTO_AVALIADOR ? "(tem)" : "(não tem)"
+        });
+      });
 
+    // publicações do usuário (mantemos como estava)
+    const publicacoes = await listagensModel.listarPublicacoesPorUsuario(id, idLogado);
     const publicacoesComContagem = await Promise.all(
       publicacoes.map(async (pub) => {
         const N_CURTIDAS = await favoritoModel.countCurtidas(pub.ID_PUBLICACAO);
@@ -236,25 +329,18 @@ exibirPerfil: async (req, res, dadosNotificacao) => {
       })
     );
 
-    const qntPortfolios = await listagensModel.contarPortfoliosUsuario(id);
-    const qntSeguidores = await listagensModel.contarSeguidores(id);
-
-    const especializacao = await listagensModel.findEspecializacaoByUserId(id);
-
-    console.log(dadosNotificacao);
+    // renderiza passando o usuário já turbinado
     res.render('pages/perfil', {
       usuario,
-      especializacao,
       publicacoes: publicacoesComContagem,
-      qntPortfolios,
-      qntSeguidores,
-      podeAvaliar,     
+      avaliacoes,
+      podeAvaliar,
       idContratacao,
-      dadosNotificacao   
+      dadosNotificacao
     });
 
   } catch (erro) {
-    console.log(erro);
+    console.error(erro);
     res.status(500).render('pages/erro-conexao', {
       mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
     });

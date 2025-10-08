@@ -179,7 +179,20 @@ const admModel = {
 
 
 
-
+ salvarMsgQuemSomos: async (dados) => {
+        try{
+                const [result] = await pool.query(
+                "INSERT INTO MENSAGENS_QUEM_SOMOS SET ?",
+                [dados]
+            );
+             console.log("Mensagem salva:", result);
+            return result;
+        }catch (error){
+     
+            console.log("Ocorreu um erro no model:", error);
+            throw error;
+        }
+    },
 
 
 };

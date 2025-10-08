@@ -54,11 +54,14 @@ buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
           FROM PUBLICACOES_PROFISSIONAL
           GROUP BY ID_USUARIO
       ) p ON p.ID_USUARIO = u.ID_USUARIO
-      LEFT JOIN (
-          SELECT ID_PROFISSIONAL, AVG(NOTA) AS MEDIA_NOTA, COUNT(*) AS QTD_AVALIACOES
-          FROM AVALIACOES_PROFISSIONAL
-          GROUP BY ID_PROFISSIONAL
-      ) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
+    LEFT JOIN (
+    SELECT 
+        ID_PROFISSIONAL, 
+        ROUND(AVG(NOTA), 1) AS MEDIA_NOTA,  
+        COUNT(*) AS QTD_AVALIACOES
+    FROM AVALIACOES_PROFISSIONAL
+    GROUP BY ID_PROFISSIONAL
+) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
       LEFT JOIN (
           SELECT ID_PROFISSIONAL, COUNT(*) AS CONTRATOS_FINALIZADOS
           FROM CONTRATACOES
@@ -127,41 +130,117 @@ buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
 // },
 
 
-findIdusuario: async (idUsuarioPerfil, idUsuarioLogado = null) => {
+findIdusuario: async (idUsuarioPerfil, idLogado = null) => {
   try {
-    const [rows] = await pool.query(`
-      SELECT u.*,
-             IF(s.ID_SEGUIDO IS NOT NULL AND s.STATUS_SEGUINDO = 1, 1, 0) AS SEGUIDO
-      FROM USUARIOS u
-      LEFT JOIN SEGUINDO s
-        ON s.ID_SEGUIDO = u.ID_USUARIO
-        AND s.ID_USUARIO = ?
-      WHERE u.ID_USUARIO = ?
-    `, [idUsuarioLogado, idUsuarioPerfil]);
+      const [linhas] = await pool.query(`
+        SELECT 
+          u.ID_USUARIO,
+          u.NOME_USUARIO,
+          u.USER_USUARIO,
+          u.FOTO_PERFIL_BANCO_USUARIO,
+          u.IMG_BANNER_BANCO_USUARIO,
+          u.DESCRICAO_PERFIL_USUARIO,
+          u.DATA_CADASTRO,
+          up.ESPECIALIZACAO_DESIGNER,
+          IFNULL(s.QUANT_SEGUIDORES, 0) AS QTD_SEGUIDORES,
+          IFNULL(p.QUANT_PUBLICACOES, 0) AS QTD_PUBLICACOES,
+          IFNULL(port.QTD_PORTFOLIOS, 0) AS QTD_PORTFOLIOS,
+          IFNULL(a.MEDIA_NOTA, 0) AS MEDIA_NOTA,
+          IFNULL(a.QTD_AVALIACOES, 0) AS QTD_AVALIACOES,
+          IFNULL(c.CONTRATOS_FINALIZADOS, 0) AS CONTRATOS_FINALIZADOS,
+          IF(f.ID_SEGUIDO IS NOT NULL AND f.STATUS_SEGUINDO = 1, 'seguindo', 'seguir') AS SEGUIDO
+        FROM USUARIOS u
+        LEFT JOIN USUARIO_PROFISSIONAL up ON up.ID_USUARIO = u.ID_USUARIO
+        LEFT JOIN (
+            SELECT ID_SEGUIDO, COUNT(*) AS QUANT_SEGUIDORES
+            FROM SEGUINDO
+            WHERE STATUS_SEGUINDO = 1
+            GROUP BY ID_SEGUIDO
+        ) s ON s.ID_SEGUIDO = u.ID_USUARIO
+        LEFT JOIN (
+            SELECT ID_USUARIO, COUNT(*) AS QUANT_PUBLICACOES
+            FROM PUBLICACOES_PROFISSIONAL
+            GROUP BY ID_USUARIO
+        ) p ON p.ID_USUARIO = u.ID_USUARIO
+        LEFT JOIN (
+            SELECT ID_USUARIO, COUNT(*) AS QTD_PORTFOLIOS
+            FROM PORTFOLIOS
+            GROUP BY ID_USUARIO
+        ) port ON port.ID_USUARIO = u.ID_USUARIO
+        LEFT JOIN (
+            SELECT 
+                ID_PROFISSIONAL, 
+                ROUND(AVG(NOTA), 1) AS MEDIA_NOTA,  
+                COUNT(*) AS QTD_AVALIACOES
+            FROM AVALIACOES_PROFISSIONAL
+            GROUP BY ID_PROFISSIONAL
+        ) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
+        LEFT JOIN (
+            SELECT ID_PROFISSIONAL, COUNT(*) AS CONTRATOS_FINALIZADOS
+            FROM CONTRATACOES
+            WHERE STATUS = 'FINALIZADA'
+            GROUP BY ID_PROFISSIONAL
+        ) c ON c.ID_PROFISSIONAL = u.ID_USUARIO
+        LEFT JOIN SEGUINDO f 
+            ON f.ID_SEGUIDO = u.ID_USUARIO 
+            AND f.ID_USUARIO = ?
+        WHERE u.ID_USUARIO = ?
+      `, [idLogado, idUsuarioPerfil]);
 
-    if (rows.length === 0) return null;
+      if (linhas.length === 0) return null;
 
-    const usuario = rows[0];
+      const usuario = linhas[0];
 
-    if (usuario.FOTO_PERFIL_BANCO_USUARIO) {
-      usuario.FOTO_PERFIL_BANCO_USUARIO = `data:image/png;base64,${usuario.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`;
-    } else {
-      usuario.FOTO_PERFIL_BANCO_USUARIO = null; 
-    }
+      // imagens
+      usuario.FOTO_PERFIL_BANCO_USUARIO = usuario.FOTO_PERFIL_BANCO_USUARIO
+        ? `data:image/png;base64,${usuario.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+        : null;
+      usuario.IMG_BANNER_BANCO_USUARIO = usuario.IMG_BANNER_BANCO_USUARIO
+        ? `data:image/png;base64,${usuario.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
+        : null;
 
-    if (usuario.IMG_BANNER_BANCO_USUARIO) {
-      usuario.IMG_BANNER_BANCO_USUARIO = `data:image/png;base64,${usuario.IMG_BANNER_BANCO_USUARIO.toString('base64')}`;
-    } else {
-      usuario.IMG_BANNER_BANCO_USUARIO = null; 
-    }
+      return usuario;
 
-    return usuario;
   } catch (error) {
-    console.log(error);
-    throw error;
+      console.log(error);
+      throw error;
   }
 },
 
+listarAvaliacoes: async (idProfissional) => {
+  console.log("Chegou no listar avaliações");
+  try {
+    const [linhas] = await pool.query(`
+      SELECT 
+        a.ID_AVALIACAO,
+        a.ID_PROFISSIONAL,
+        a.ID_AVALIADOR,
+        a.COMENTARIO,
+        a.NOTA,
+        a.DATA_CRIACAO,
+        u.NOME_USUARIO AS NOME_AVALIADOR,
+        u.FOTO_PERFIL_BANCO_USUARIO AS FOTO_AVALIADOR
+      FROM AVALIACOES_PROFISSIONAL a
+      JOIN USUARIOS u ON u.ID_USUARIO = a.ID_AVALIADOR
+      WHERE a.ID_PROFISSIONAL = ?
+      ORDER BY a.DATA_CRIACAO DESC
+    `, [idProfissional]);
+
+  
+    const avaliacoes = linhas.map(av => ({
+      ...av,
+      FOTO_AVALIADOR: av.FOTO_AVALIADOR
+        ? `data:image/png;base64,${av.FOTO_AVALIADOR.toString('base64')}`
+        : null
+    }));
+
+    return avaliacoes;
+
+  } catch (error) {
+    console.error("Erro ao listar avaliações:", error);
+    throw error;
+  }
+},
 
 
 

@@ -207,9 +207,12 @@
         <p class="role"><%= profissional.ESPECIALIZACAO_DESIGNER || 'Profissional' %></p>
     </section>
     <section class="nota-prof">
-      <ion-icon name="star-outline" class="estrela-perfil"></ion-icon>
-      <span class="rating">5</span>
-    </section>
+  <ion-icon name="star-outline" class="estrela-perfil"></ion-icon>
+  <span class="rating">
+    <%= profissional.QTD_AVALIACOES > 0 ? profissional.MEDIA_NOTA: "-" %>
+  </span>
+</section>
+
   </section>
 </section>
             </section>
@@ -221,7 +224,7 @@
     <span>Seguidores</span>
   </section>
   <section>
-    <p>0</p>
+    <p><%= profissional.CONTRATOS_FINALIZADOS%></p>
     <span>Contratações</span>
   </section>
   <section>

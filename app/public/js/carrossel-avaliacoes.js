@@ -1,58 +1,96 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.querySelector('.carousel-container');
+  const track = container?.querySelector('.carousel-track');
+  const prevButton = container?.querySelector('.carousel-button.prev');
+  const nextButton = container?.querySelector('.carousel-button.next');
 
-document.addEventListener('DOMContentLoaded', function () {
-    const track = document.querySelector('.carousel-track');
-    const prevButton = document.querySelector('.carousel-button.prev');
-    const nextButton = document.querySelector('.carousel-button.next');
-    const slides = Array.from(track.children);
-    const slideWidth = slides[0].getBoundingClientRect().width;
+  if (!container || !track || !prevButton || !nextButton) return;
 
-    // Arrange slides next to each other
-    slides.forEach((slide, index) => {
-        slide.style.left = slideWidth * index + 'px';
-    });
+  const slides = Array.from(track.children);
+  if (slides.length === 0) return;
 
-    let currentSlideIndex = 0;
+  const slideWidth = slides[0].getBoundingClientRect().width;
+  slides.forEach((slide, index) => slide.style.left = `${slideWidth * index}px`);
+
+  // === Controle manual com botões ===
+  let currentIndex = 0;
+  function updateCarousel(index) {
+    track.style.transform = `translateX(-${slideWidth * index}px)`;
+    updateButtons();
+  }
+
+  function updateButtons() {
+    if (currentIndex > 0) prevButton.style.display = 'block';
+    else prevButton.style.display = 'none';
+
+    if (currentIndex < slides.length - Math.floor(container.clientWidth / slideWidth)) 
+      nextButton.style.display = 'block';
+    else nextButton.style.display = 'none';
+  }
+
+  const isScrollable = track.scrollWidth > container.clientWidth;
+  if (!isScrollable) {
+    prevButton.style.display = 'none';
+    nextButton.style.display = 'none';
+  } else {
+    const userInteracted = () => {
+      pauseAutoplay();
+      clearTimeout(resumeTimeout);
+      resumeTimeout = setTimeout(() => startAutoplay(), 60000); // 1 minuto sem interagir
+    };
 
     nextButton.addEventListener('click', () => {
-        if (currentSlideIndex < slides.length - 1) {
-            currentSlideIndex++;
-            track.style.transform = `translateX(-${slideWidth * currentSlideIndex}px)`;
-        }
+      if (currentIndex < slides.length - Math.floor(container.clientWidth / slideWidth)) {
+        currentIndex++;
+        updateCarousel(currentIndex);
+        userInteracted();
+      }
     });
 
     prevButton.addEventListener('click', () => {
-        if (currentSlideIndex > 0) {
-            currentSlideIndex--;
-            track.style.transform = `translateX(-${slideWidth * currentSlideIndex}px)`;
-        }
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel(currentIndex);
+        userInteracted();
+      }
     });
-});
+  }
 
-const carousel = document.querySelector('.carousel');
-const container = document.querySelector('.carousel-container');
-const prevButton = document.querySelector('.prev');
-const nextButton = document.querySelector('.next');
+  updateButtons();
 
-let currentScrollPosition = 0;
-const scrollAmount = container.clientWidth; // A largura do container visível
+  // === Autoplay contínuo e suave ===
+  let scrollX = 0;
+  let direction = 1; // 1 = direita, -1 = esquerda
+  const speed = 0.3; 
+  let autoplayId;
+  let resumeTimeout;
 
-// Calcula a largura total do conteúdo dentro do carrossel
-const maxScroll = carousel.scrollWidth - container.clientWidth;
+  function autoplay() {
+    const maxScroll = track.scrollWidth - container.clientWidth;
 
-// Botão "Próximo"
-nextButton.addEventListener('click', () => {
-    currentScrollPosition = Math.min(currentScrollPosition + scrollAmount, maxScroll);
-    carousel.scrollTo({
-        left: currentScrollPosition,
-        behavior: 'smooth'
-    });
-});
+    scrollX += direction * speed;
 
-// Botão "Anterior"
-prevButton.addEventListener('click', () => {
-    currentScrollPosition = Math.max(currentScrollPosition - scrollAmount, 0);
-    carousel.scrollTo({
-        left: currentScrollPosition,
-        behavior: 'smooth'
-    });
+    if (scrollX >= maxScroll) {
+      scrollX = maxScroll;
+      direction = -1;
+    } else if (scrollX <= 0) {
+      scrollX = 0;
+      direction = 1;
+    }
+
+    track.style.transform = `translateX(-${scrollX}px)`;
+    autoplayId = requestAnimationFrame(autoplay);
+  }
+
+  function startAutoplay() {
+    if (!autoplayId) autoplay();
+  }
+
+  function pauseAutoplay() {
+    cancelAnimationFrame(autoplayId);
+    autoplayId = null;
+  }
+
+  // Inicia autoplay
+  startAutoplay();
 });

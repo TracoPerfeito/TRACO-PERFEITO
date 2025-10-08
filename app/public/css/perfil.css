@@ -480,6 +480,9 @@ input[type='file'] {
 
 
 @media (min-width: 1030px) {
+
+  
+
   .base_cabecalho .coluna_contaneir {
     max-width: 1200px;
     margin: 0 auto;
@@ -651,10 +654,13 @@ button:hover {
 }
 
 .carousel-container {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    margin: 0 auto;
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 20px 40px 20px; 
+  overflow: hidden;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 
@@ -668,16 +674,19 @@ button:hover {
     display: flex;
     transition: transform 0.5s ease;
     will-change: transform;
+      gap: 20px; 
+
 }
 
 .avaliacao {
+  flex: 0 0 250px;
     min-width: 25%;
     box-sizing: border-box;
     background-color: var(--cor-fundo-comentario);
     color: var(--text-color);
     margin: 10px;
     border-radius: 5px;
-    padding: 10px;
+    padding: 15px;
     font-family: "Josefin Sans";
     height: fit-content;
 }
@@ -720,6 +729,7 @@ button:hover {
 
 .carousel-button:hover {
     background-color:  rgba(37, 39, 47, 0.697);
+     transform: translateY(-50%);
 }
 
 .carousel-container::after {
@@ -733,6 +743,18 @@ button:hover {
     pointer-events: none; 
 }
 
+
+.carousel-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 70px;
+  height: 100%;
+  background: var(--gradiente-carrossel-perfil);
+  transform: scaleX(-1); /* espelha horizontalmente */
+  pointer-events: none;
+}
 
 
 
@@ -939,5 +961,87 @@ overflow: hidden;
 text-overflow: ellipsis;
  flex-grow: 1;
  color: var(--text-color);
+
+}
+
+
+
+  #formAvaliacao{
+    padding: 25px 20px;
+    
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  #estrelas {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    padding: 10px 0px;
+    font-size: 30px;
+   
+  }
+
+
+  #formAvaliacao textarea {
+    width: 100%;
+    border-radius: 7px;
+    border: 1px solid var(--texto-barra-pesquisa);
+    color: var(--text-color) !important;
+    font-family: "Josefin Sans", sans-serif;
+    background-color: transparent;
+    resize: none;
+    height: 200px;
+    font-size: 18px;
+    padding: 10px;
+     box-sizing: border-box;
+  }
+
+
+  #formAvaliacao button {
+    background-color: var(--cor-btn-azul);
+    color: #fff;
+    padding: 10px;
+    border-radius: 7px;
+    border: none;
+    font-family: "Montserrat";
+    align-self: flex-end;
+    margin-top: 10px;
+  }
+
+ #qtd-ava{
+     color: var(--text-color);
+            margin: 0px 5% 15px 5%;
+        padding: 0px 0px 0px 10px;
+  }
+  
+  
+@media (min-width: 1030px) {
+
+
+  #qtd-ava{
+  margin: 0px;
+    padding: 0px 60px 15px 70px;
+  }
+
+ 
+
+  #formAvaliacao{
+    padding: 25px 10%;
+    
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+  }
+
+
+    #formAvaliacao textarea {
+   
+    height: 150px;
+   
+  }
 
 }

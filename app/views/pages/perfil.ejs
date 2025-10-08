@@ -90,20 +90,21 @@
 
         <section class="embaixo">
           <h2 id="dados-principais-perfil"> <%= usuario.NOME_USUARIO %> </h2>
-          <p><%= especializacao %></p>
+          <p><%= usuario.ESPECIALIZACAO_DESIGNER %></p>
+
           <p>@<%= usuario.USER_USUARIO %></p>
           <p><%= usuario.EMAIL_USUARIO %></p>
         </section>
         
             <ul class="quan-p-t-c">
               <li title="Quantidade de publicações feitas por <%= usuario.NOME_USUARIO %>"><span> <%=publicacoes.length %></span>Publicações</li>
-              <li title="Quantidade de portfólios criados por <%= usuario.NOME_USUARIO %>"><span><%= qntPortfolios %></span>Portfólios</li>
-              <li title="Quantidade de vezes que <%= usuario.NOME_USUARIO %> fechou negócios pela plataforma."><span>0</span>Contratações</li>
+              <li title="Quantidade de portfólios criados por <%= usuario.NOME_USUARIO %>"><span><%= usuario.QTD_PORTFOLIOS %></span>Portfólios</li>
+              <li title="Quantidade de vezes que <%= usuario.NOME_USUARIO %> fechou negócios pela plataforma."><span> <%= usuario.CONTRATOS_FINALIZADOS %></span>Contratações</li>
              
 <li id="btnAbrirModalSeguidores" 
     data-userid="<%= usuario.ID_USUARIO %>" 
     title="Quantidade de seguidores de <%= usuario.NOME_USUARIO %>">
-  <span><%= qntSeguidores %></span> Seguidores
+  <span><%= usuario.QTD_SEGUIDORES; %></span> Seguidores
 </li>
 
             </ul>
@@ -157,7 +158,7 @@
           
           
 
-<button onclick="location.href='/chat?destinatarioId=<%= usuario.ID_USUARIO %>&nome=<%= encodeURIComponent(usuario.NOME_USUARIO) %>&username=<%= encodeURIComponent(usuario.USER_USUARIO) %>'">
+<button id="irparachat" onclick="location.href='/chat?destinatarioId=<%= usuario.ID_USUARIO %>&nome=<%= encodeURIComponent(usuario.NOME_USUARIO) %>&username=<%= encodeURIComponent(usuario.USER_USUARIO) %>'">
   <ion-icon name="chatbubbles-outline" style="font-size:15px; width:15px; height:15px;"></ion-icon>
   Conversar
 </button>
@@ -400,217 +401,58 @@
 
 
 
-    <h2 id="secao-avaliacoes-h2">
-        Avaliações de quem contratou <%= usuario.NOME_USUARIO %>
-    </h2>
-    
+  <h2 id="secao-avaliacoes-h2">
+    Avaliações de quem contratou <%= usuario.NOME_USUARIO %>
+</h2>
+<% if (avaliacoes.length > 0) { %>
+    <small id="qtd-ava">
+  <%= avaliacoes.length %> 
+  <%= avaliacoes.length === 1 ? 'avaliação' : 'avaliações' %> 
+  - Média: <%= usuario.MEDIA_NOTA %>
+</small>
+
     <section class="carousel-container">
         <button class="carousel-button prev">&#10094;</button>
-        
         <section id="secao-avaliacoes" class="carousel-track">
+            <% avaliacoes.forEach(av => { %>
+                <section class="avaliacao">
+                    <section class="info-criador-ava">
+                     
+                        <img src="<%= av.FOTO_AVALIADOR || '/imagens/foto-perfil.png' %>" class="foto-de-perfil">
+                        <a href="/perfil/<%= av.ID_AVALIADOR %>">
+                            <p class="nome-criador-ava"><%= av.NOME_AVALIADOR %></p>
+                        </a>
+                    </section>
+                    
+                    <section class="estrelinhas-avaliacao">
+                    <% for(let i=1; i<=5; i++) { %>
+    <% if(i <= av.NOTA) { %>
+        <ion-icon name="star" class="estrela-preenchida"></ion-icon>
+    <% } else { %>
+        <ion-icon name="star-outline" class="estrela-vazia"></ion-icon>
+    <% } %>
+<% } %>
 
-
-            
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
+                    </section>
+                    
+                    <section class="conteudo-avaliacao">
+                        <p><%= av.COMENTARIO %></p>
+                    </section>
                 </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        icing elit. Amet earum nulla facilis, soluta ipsam do
-                        loremque corporis neque porro possimus quas assu
-                        menda dignissimos ea expedita commodi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
-                </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        icing elit. Amet earum nulla facilis, soluta ipsam do
-                        loremque corporis neque porro possimus quas assu
-                        menda dignissimos ea expedita commodi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
-                </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        icing elit. Amet earum nulla facilis, soluta ipsam do
-                        loremque corporis neque porro possimus quas assu
-                        menda dignissimos ea expedita commodi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
-                </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        ici labore!</p>
-                </section>
-            </section>
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
-                </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        is neque porro possimus quas assu
-                        menda dignissimos ea expedita commodi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
-                </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        icing elit. Amet earum nulla facilis, soluta ipsam do
-                        loremque corporis neque porro possimus quas assu
-                        menda dignissimos ea expedita commodi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
-                </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        icing elit. Amet earum nulla facilis, soluta ipsam do
-                        loremque corporis neque porro possimus quas assu
-                        menda dignissimos ea expedita commodi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
-                </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        is ea expedita modi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-           
+            <% }) %>
         </section>
-        
         <button class="carousel-button next">&#10095;</button>
     </section>
+<% } else { %>
+    <p>Este profissional ainda não tem avaliações.</p>
+<% } %>
 
+
+
+          
 <% if (podeAvaliar) { %>
   <form id="formAvaliacao" action="/enviar-avaliacao" method="POST">
-    <label>Deixe sua avaliação:</label>
+    <label>Deixe sua avaliação para <%= usuario.NOME_USUARIO %>:</label>
     <div id="estrelas">
       <% for(let i=1; i<=5; i++){ %>
         <ion-icon name="star-outline" class="estrela" data-valor="<%= i %>"></ion-icon>
@@ -618,20 +460,26 @@
     </div>
 
     <input type="hidden" name="nota" id="nota" value="0">
-       <input type="hidden" name="idProfissional" id="idProfissionalAvaliado" value="<%= usuario.ID_USUARIO %>">
+    <input type="hidden" name="idProfissional" id="idProfissionalAvaliado" value="<%= usuario.ID_USUARIO %>">
 
-    <textarea name="comentario" placeholder="Comentário"></textarea>
+    <textarea id="comentario" name="comentario" placeholder="Comentário" maxlength="500"></textarea>
+    <small id="contador">0/500 caracteres</small>
+
     <button type="submit">Enviar Avaliação</button>
   </form>
 
   <script>
     const estrelas = document.querySelectorAll('#estrelas .estrela');
     const inputNota = document.getElementById('nota');
+    const textarea = document.getElementById('comentario');
+    const contador = document.getElementById('contador');
+    const limite = 500; 
 
+    // ⭐ Atualizar nota
     estrelas.forEach(estrela => {
       estrela.addEventListener('click', () => {
         const valor = Number(estrela.dataset.valor);
-        inputNota.value = valor; // Atualiza o input hidden com a nota
+        inputNota.value = valor; 
         atualizarEstrelas(valor);
       });
     });
@@ -645,8 +493,19 @@
         }
       });
     }
+
+    // 📝 Contador de caracteres
+    textarea.addEventListener('input', () => {
+      let caracteres = textarea.value.length;
+      if (caracteres > limite) {
+        textarea.value = textarea.value.substring(0, limite); // impede ultrapassar
+        caracteres = limite;
+      }
+      contador.textContent = `${caracteres}/${limite} caracteres`;
+    });
   </script>
 <% } %>
+
 
     
    <% if (tipo_usuario === 'profissional') { %>

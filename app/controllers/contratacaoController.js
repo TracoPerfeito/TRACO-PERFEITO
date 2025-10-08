@@ -53,7 +53,7 @@ const contratacoesController = {
           throw new Error("A data de entrega não pode ser muito distante no futuro.");
         }
     
-        return true; // passou
+        return true; 
       }),
     
     body("OBSERVACOES")
@@ -66,7 +66,7 @@ const contratacoesController = {
     regrasValidacaoAvaliacao: [
   body("comentario")
     .notEmpty()
-     .isLength({ min: 10, max: 300 })
+     .isLength({ min: 10, max: 500 })
     .withMessage("O comentário sobre o profissional deve ter no mínimo 10 e no máximo 300 caracteres."),
    body("nota")
   .isInt({ min: 1, max: 5 })
@@ -456,6 +456,7 @@ confirmarEntrega: async (req, res) => {
           mensagem: "Verifique os campos e tente novamente.",
           tipo: "error"
         };
+
         return res.redirect(previousUrl || "/");
       }
 

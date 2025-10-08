@@ -14,6 +14,7 @@ const pagamentoController = require("../controllers/pagamentoController");
 const notificacoesController = require("../controllers/notificacoesController");
 const contratacaoController = require("../controllers/contratacaoController");
 const {mensagemController} = require("../controllers/mensagemController");
+const admController = require("../controllers/admController");
 
 const db = require('../../config/pool_conexoes');
 
@@ -88,6 +89,11 @@ router.get("/quemsomos", function (req, res) { //quemsomos
     res.render('pages/quemsomos')
  
 });
+
+router.post( "/entraremcontato", admController.regrasValidacaoContato, function (req, res) {
+    admController.enviarMensagemQuemSomos(req, res);
+}
+)
 
 router.get("/perfil/:id", function (req, res) { //perfil-alheio
   const dadosNotificacao = req.session.dadosNotificacao || null;

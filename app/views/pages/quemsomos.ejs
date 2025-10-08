@@ -265,26 +265,124 @@
     
     <!-- COMEÇO DO CONTATO -->
     
-   <section class="contact" id="contact">
+<section class="contact" id="contact">
   <h1 class="heading"><strong>Entre em </strong>Contato</h1>
   <section class="row">
     <section class="image">
       <img src="imagens/Contact us-amico.png" alt="Ilustração de contato">
     </section>
-    <form action="">
-      <input type="text" placeholder="Nome" class="box" required>
-      <input type="email" placeholder="E-mail" class="box" required>
-      <input type="tel" placeholder="Telefone" class="box">
-      <textarea class="box" placeholder="Mensagem" cols="30" rows="10" required></textarea>
-      <input type="submit" value="Enviar mensagem" class="btn">
+    <form method="post" action="/entraremcontato" novalidate>
+      <div class="form-group">
+        <input type="text" name="nome" placeholder="Nome" class="box" required>
+        <small class="error-msg"></small>
+      </div>
+      <div class="form-group">
+        <input type="email" name="email" placeholder="E-mail" class="box" required>
+        <small class="error-msg"></small>
+      </div>
+      <div class="form-group">
+        <input type="tel" name="celular" placeholder="Número de telefone" class="box" required>
+        <small class="error-msg"></small>
+      </div>
+      <div class="form-group">
+        <textarea class="box" name="mensagem" placeholder="Mensagem" cols="30" rows="10" required></textarea>
+        <div id="contador-mensagem">0/700 caracteres</div>
+        <small class="error-msg"></small>
+      </div>
+      <button type="submit" class="btn">Enviar Mensagem</button>
     </form>
   </section>
 </section>
 
-    
-    
-    
-    
+<style>
+  .error {
+    border-color: red;
+  }
+  .error-msg {
+    color: red;
+    font-size: 0.85rem;
+    margin-top: 3px;
+    display: block;
+    min-height: 18px;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form[action="/entraremcontato"]');
+  const campos = form.querySelectorAll('input, textarea');
+  const mensagem = form.mensagem;
+  const contador = document.getElementById('contador-mensagem');
+  const celular = form.celular;
+
+  // Contador de caracteres da mensagem
+  mensagem.addEventListener('input', () => {
+    if (mensagem.value.length > 700) mensagem.value = mensagem.value.slice(0,700);
+    contador.textContent = `${mensagem.value.length}/700 caracteres`;
+  });
+
+  // Máscara de celular: (xx)x xxxx-xxxx
+  celular.addEventListener('input', () => {
+    let val = celular.value.replace(/\D/g,'');
+    if(val.length>11) val = val.slice(0,11);
+    let formatted = val;
+    if(val.length>0) formatted = `(${val.slice(0,2)})`;
+    if(val.length>=3) formatted += `${val.slice(2,3)} `;
+    if(val.length>=4) formatted += `${val.slice(3,7)}`;
+    if(val.length>=8) formatted += `-${val.slice(7,11)}`;
+    celular.value = formatted;
+  });
+
+  // Validação visual
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let valido = true;
+
+    campos.forEach(campo => {
+      campo.classList.remove('error');
+      campo.nextElementSibling.textContent = '';
+    });
+
+    const nome = form.nome.value.trim();
+    const email = form.email.value.trim();
+    const msg = mensagem.value.trim();
+    const celularDigits = celular.value.replace(/\D/g,'');
+
+    // Nome: 3-50 letras e espaços
+    if(nome.length < 3 || nome.length > 50 || /[^A-Za-zÀ-ÖØ-öø-ÿ\s]/.test(nome)) {
+      form.nome.classList.add('error');
+      form.nome.nextElementSibling.textContent = 'Nome inválido (3-50 letras).';
+      valido = false;
+    }
+
+    // Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email)) {
+      form.email.classList.add('error');
+      form.email.nextElementSibling.textContent = 'E-mail inválido.';
+      valido = false;
+    }
+
+    // Celular obrigatório
+    if(celularDigits.length < 10 || celularDigits.length > 11) {
+      celular.classList.add('error');
+      celular.nextElementSibling.textContent = 'Número de celular inválido.';
+      valido = false;
+    }
+
+    // Mensagem
+    if(msg.length < 2 || msg.length > 700) {
+      mensagem.classList.add('error');
+      mensagem.nextElementSibling.textContent = 'Mensagem inválida (2-700 caracteres).';
+      valido = false;
+    }
+
+    if(valido) form.submit();
+  });
+});
+</script>
+
     
     
     

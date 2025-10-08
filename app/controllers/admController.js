@@ -6,12 +6,37 @@ var salt = bcrypt.genSaltSync(10);
 var pool = require("../../config/pool_conexoes");
 const { listarUsuariosPaginados } = require("./admListagemController");
 
+const { verificadorCelular, validarCPF } = require("../helpers/validacoes");
+
 const admController = {
     regrasLoginADM: [
         body("emailADM")
             .isEmail().withMessage("Insira um email válido."),
         body("senhaADM")
             .notEmpty().withMessage("Insira sua senha.")
+    ],
+
+
+
+    regrasValidacaoContato: [
+  
+body("nome").isLength({ min: 3, max: 50 }).withMessage('O nome deve ter de 3 a 50 caracteres.')
+      .custom(nome => {
+        if (/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/.test(nome)) {
+            throw new Error('O nome deve conter apenas letras.');
+        }
+        return true; 
+      }),
+    body("email")
+            .isEmail().withMessage("Insira um email válido."),
+         body('celular').isLength({ min: 10, max: 14 } ).withMessage('Número de celular inválido.')
+
+       .custom(celular => verificadorCelular(celular)).withMessage('Número de celular inválido.'),
+            body("mensagem")
+        .notEmpty()
+     .isLength({ min: 2, max: 700 })
+    .withMessage("O nome deve ter no mínimo 2 e no máximo 70 caracteres."),
+  
     ],
 
  logar: (req, res) => {
@@ -153,6 +178,78 @@ listarNumeroDePerfis: async (req, res) => {
 },
     
     
+
+
+
+
+ enviarMensagemQuemSomos: async (req, res) => {
+    console.log("Chegou no enviar msg quem somos");
+     
+    try {
+
+      
+      console.log("Dados do formulário recebidos:", req.body);
+      const erros = validationResult(req);
+      if (!erros.isEmpty()) {
+        console.log("Não passou pela validação!")
+        req.session.dadosNotificacao = {
+          titulo: "Erro ao enviar formulário!",
+          mensagem: "Verifique os campos e tente novamente.",
+          tipo: "error"
+        };
+
+        return res.redirect("/quemsomos");
+      }
+
+      const {nome, email, celular, mensagem} = req.body;
+      
+      const novoRegistro = {
+        NOME_PESSOA: nome,       
+        EMAIL_PESSOA: email,  
+        CELULAR_PESSOA: celular,
+        MENSAGEM: mensagem
+        
+      };
+
+      const resultado = await admModel.salvarMsgQuemSomos(novoRegistro);
+      
+
+      if (!resultado) {
+        req.session.dadosNotificacao = {
+          titulo: "Erro",
+          mensagem: "Não foi possível salvar sua mensagem. Tente novamente mais tarde.",
+          tipo: "error"
+        };
+       
+        return res.redirect("/quemsomos");
+      } else{
+        console.log("Deu certo!")
+        console.log(resultado)
+      
+
+      req.session.dadosNotificacao = {
+        titulo: "Mensagem salva!",
+        mensagem: "Nossa equipe de suporte entrará em contato para responder suas dúvidas! Aguarde...",
+        tipo: "success"
+      };
+
+     
+        return res.redirect("/quemsomos");
+    }
+
+    } catch (erro) {
+      console.error("Erro ao salvar mensagem: ", erro);
+      req.session.dadosNotificacao = {
+        titulo: "Erro interno!",
+        mensagem: "Ocorreu um erro ao enviar o formulário. Tente novamente mais tarde. ",
+        tipo: "error"
+      };
+      
+        return res.redirect("/quemsomos");
+    }
+  },
+
+
 
 
 
