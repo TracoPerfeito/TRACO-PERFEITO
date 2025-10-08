@@ -90,12 +90,21 @@ router.get("/quemsomos", function (req, res) { //quemsomos
 });
 
 router.get("/perfil/:id", function (req, res) { //perfil-alheio
-    
-    listagensController.exibirPerfil(req, res);
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+    listagensController.exibirPerfil(req, res, dadosNotificacao);
   
  
 });
 
+
+
+
+router.post( "/enviar-avaliacao", contratacaoController.regrasValidacaoAvaliacao, function (req, res) {
+    contratacaoController.avaliarUsuario(req, res);
+}
+)
 
 
 

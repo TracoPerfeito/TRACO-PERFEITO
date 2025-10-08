@@ -157,6 +157,23 @@ createPagamentoContratacao: async (camposPagamento) => {
 },
 
 
+
+criaAvaliacao: async (dados) => {
+    try{
+            const [result] = await pool.query(
+            "INSERT INTO AVALIACOES_PROFISSIONAL SET ?",
+            [dados]
+        );
+         console.log("Avaliação de profissional salva:", result);
+        return result;
+    }catch (error){
+ 
+        console.log("Ocorreu um erro no model:", error);
+        throw error;
+    }
+},
+
+
 };
 
 module.exports = contratacaoModel;

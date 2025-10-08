@@ -14,6 +14,11 @@
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+   
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="/js/simple-notify.js"></script>
   
 
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -21,6 +26,14 @@
     <title>Perfil de <%= usuario.NOME_USUARIO %></title>
 </head>
 <body>
+
+   
+ <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
 
     
 <% if (status_usuario === 'pendente') { %>
@@ -595,6 +608,45 @@
         <button class="carousel-button next">&#10095;</button>
     </section>
 
+<% if (podeAvaliar) { %>
+  <form id="formAvaliacao" action="/enviar-avaliacao" method="POST">
+    <label>Deixe sua avaliação:</label>
+    <div id="estrelas">
+      <% for(let i=1; i<=5; i++){ %>
+        <ion-icon name="star-outline" class="estrela" data-valor="<%= i %>"></ion-icon>
+      <% } %>
+    </div>
+
+    <input type="hidden" name="nota" id="nota" value="0">
+       <input type="hidden" name="idProfissional" id="idProfissionalAvaliado" value="<%= usuario.ID_USUARIO %>">
+
+    <textarea name="comentario" placeholder="Comentário"></textarea>
+    <button type="submit">Enviar Avaliação</button>
+  </form>
+
+  <script>
+    const estrelas = document.querySelectorAll('#estrelas .estrela');
+    const inputNota = document.getElementById('nota');
+
+    estrelas.forEach(estrela => {
+      estrela.addEventListener('click', () => {
+        const valor = Number(estrela.dataset.valor);
+        inputNota.value = valor; // Atualiza o input hidden com a nota
+        atualizarEstrelas(valor);
+      });
+    });
+
+    function atualizarEstrelas(nota) {
+      estrelas.forEach(estrela => {
+        if(Number(estrela.dataset.valor) <= nota) {
+          estrela.setAttribute('name', 'star'); // preenchida
+        } else {
+          estrela.setAttribute('name', 'star-outline'); // vazia
+        }
+      });
+    }
+  </script>
+<% } %>
 
     
    <% if (tipo_usuario === 'profissional') { %>

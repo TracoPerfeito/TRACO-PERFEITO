@@ -356,6 +356,16 @@
 <% } %>
 
 
+<% if (c.STATUS === "FINALIZADA" && id_usuario === c.ID_CLIENTE && !c.AVALIACAO_NOTA) { %>
+  <a href="/perfil/<%= c.ID_PROFISSIONAL %>?idContratacao=<%= c.ID_CONTRATACAO %>">
+    Avaliar Profissional
+  </a>
+<% } %>
+
+
+
+
+
                 <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao' && c.STATUS === "AGUARDANDO PAGAMENTO") { %>
                   <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn-pagar btn">Pagar para iniciar projeto</a>
                 <% } %>

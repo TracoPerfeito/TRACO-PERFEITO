@@ -63,6 +63,17 @@ const contratacoesController = {
       .withMessage("Observações podem ter no máximo 1000 caracteres.")
   ],
 
+    regrasValidacaoAvaliacao: [
+  body("comentario")
+    .notEmpty()
+     .isLength({ min: 10, max: 300 })
+    .withMessage("O comentário sobre o profissional deve ter no mínimo 10 e no máximo 300 caracteres."),
+   body("nota")
+  .isInt({ min: 1, max: 5 })
+  .withMessage("Selecione uma nota válida para o profissional (de 1 a 5).")
+
+  ],
+
 
   mostrarPagina: async (req, res) =>{
 
@@ -342,9 +353,6 @@ exibirPagamento: async (req, res) => {
 
 confirmarEntrega: async (req, res) => {
   console.log("🚀 Chegou no confirmar entrega");
-  console.log("req.params:", req.params);
-console.log("req.session.autenticado existe?", !!req.session.autenticado);
-
 
   try {
     const idContratacao = req.params.id;
@@ -358,7 +366,6 @@ console.log("req.session.autenticado existe?", !!req.session.autenticado);
     console.log("Contratação encontrada:", contratacao);
 
     if (!contratacao) {
-      console.log("❌ Contratação não encontrada");
       req.session.dadosNotificacao = {
         titulo: "Erro",
         mensagem: "Contratação não encontrada.",
@@ -367,18 +374,16 @@ console.log("req.session.autenticado existe?", !!req.session.autenticado);
       return res.redirect("/contratacoes");
     }
 
-    // 2️⃣ Atualizar confirmação dependendo do tipo de usuário
+    // 2️⃣ Preparar objeto de atualização
+    const updateData = {};
+
     if (idUsuario === contratacao.ID_PROFISSIONAL && contratacao.CONFIRMACAO_PROFISSIONAL === 0) {
       console.log("✅ Confirmando como profissional");
-      await contratacaoModel.updateConfirmacaoProfissional(idContratacao);
+      updateData.CONFIRMACAO_PROFISSIONAL = 1;
     } else if (idUsuario === contratacao.ID_CLIENTE && contratacao.CONFIRMACAO_CLIENTE === 0) {
       console.log("✅ Confirmando como cliente");
-      await contratacaoModel.updateConfirmacaoCliente(idContratacao);
-    } else if (
-      (idUsuario !== contratacao.ID_PROFISSIONAL && idUsuario !== contratacao.ID_CLIENTE) ||
-      (contratacao.CONFIRMACAO_PROFISSIONAL === 1 && contratacao.CONFIRMACAO_CLIENTE === 1)
-    ) {
-      console.log("⚠️ Nenhuma alteração necessária");
+      updateData.CONFIRMACAO_CLIENTE = 1;
+    } else {
       req.session.dadosNotificacao = {
         titulo: "Aviso",
         mensagem: "Nenhuma alteração foi realizada.",
@@ -387,7 +392,10 @@ console.log("req.session.autenticado existe?", !!req.session.autenticado);
       return res.redirect("/contratacoes");
     }
 
-    // 3️⃣ Buscar novamente pra checar se os dois confirmaram
+    // 3️⃣ Atualizar o registro
+    await contratacaoModel.updateContratacao(updateData, idContratacao);
+
+    // 4️⃣ Recarregar para checar se os dois confirmaram
     const atualizada = await contratacaoModel.findId(idContratacao);
     console.log("Contratação atualizada:", atualizada);
 
@@ -397,6 +405,8 @@ console.log("req.session.autenticado existe?", !!req.session.autenticado);
       atualizada.STATUS !== "FINALIZADA"
     ) {
       console.log("🎉 Ambos confirmaram! Finalizando contratação...");
+
+
       await contratacaoModel.updateContratacao({ STATUS: "FINALIZADA", DATA_FINALIZACAO: new Date() }, idContratacao);
 
       req.session.dadosNotificacao = {
@@ -404,22 +414,9 @@ console.log("req.session.autenticado existe?", !!req.session.autenticado);
         mensagem: "Contratação finalizada! Cliente já pode avaliar o profissional.",
         tipo: "success"
       };
-      console.log("✅ Contratação finalizada");
       return res.redirect("/contratacoes");
     }
 
-    // 4️⃣ Se já estava finalizada
-    if (atualizada.STATUS === "FINALIZADA") {
-      console.log("ℹ️ Contratação já finalizada anteriormente");
-      req.session.dadosNotificacao = {
-        titulo: "Aviso",
-        mensagem: "Contratação já finalizada. Cliente pode avaliar o profissional.",
-        tipo: "info"
-      };
-      return res.redirect("/contratacoes");
-    }
-
-    console.log("✅ Confirmação registrada, mas a contratação ainda não finalizada");
     req.session.dadosNotificacao = {
       titulo: "Sucesso",
       mensagem: "Confirmação registrada!",
@@ -437,6 +434,80 @@ console.log("req.session.autenticado existe?", !!req.session.autenticado);
     return res.redirect("/contratacoes");
   }
 },
+
+
+
+
+
+
+
+
+ avaliarUsuario: async (req, res) => {
+    console.log("Chegou no avaliar Profissional");
+     const previousUrl = req.get("Referer") || "/";
+    try {
+
+      
+      console.log("Dados do formulário recebidos:", req.body);
+      const erros = validationResult(req);
+      if (!erros.isEmpty()) {
+        req.session.dadosNotificacao = {
+          titulo: "Erro ao criar contratação",
+          mensagem: "Verifique os campos e tente novamente.",
+          tipo: "error"
+        };
+        return res.redirect(previousUrl || "/");
+      }
+
+      const {comentario, nota, idProfissional} = req.body;
+      const idAvaliador = req.session.autenticado.id;
+
+      const novoRegistro = {
+        ID_AVALIADOR: idAvaliador,       
+        ID_PROFISSIONAL: idProfissional,  
+        COMENTARIO: comentario,
+        NOTA: nota
+        
+      };
+
+      const resultado = await contratacaoModel.criaAvaliacao(novoRegistro);
+      
+
+      if (!resultado) {
+        req.session.dadosNotificacao = {
+          titulo: "Erro",
+          mensagem: "Não foi possível avaliar o profissional.",
+          tipo: "error"
+        };
+       
+        return res.redirect(previousUrl || "/");
+      } else{
+        console.log("Deu certo!")
+        console.log(resultado)
+      
+
+      req.session.dadosNotificacao = {
+        titulo: "Avaliação salva!",
+        mensagem: "O profissional foi avaliado com sucesso.",
+        tipo: "success"
+      };
+
+     
+        return res.redirect(previousUrl || "/");
+    }
+
+    } catch (erro) {
+      console.error("Erro ao criar contratação:", erro);
+      req.session.dadosNotificacao = {
+        titulo: "Erro interno",
+        mensagem: "Ocorreu um erro  ao avaliar o profissional. Tente novamente mais tarde.",
+        tipo: "error"
+      };
+      
+        return res.redirect(previousUrl || "/");
+    }
+  },
+
 
 
 };
