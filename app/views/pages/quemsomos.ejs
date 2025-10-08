@@ -354,9 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
       form.nome.classList.add('error');
       form.nome.nextElementSibling.textContent = 'Nome inválido (3-50 letras).';
       valido = false;
+    
+    
     }
 
-    // Email
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if(!emailRegex.test(email)) {
       form.email.classList.add('error');
