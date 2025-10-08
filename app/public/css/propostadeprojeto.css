@@ -148,7 +148,12 @@ body {
 .propostas h3 {
     font-size: 16px;
     margin-bottom: 10px;
-     color: var(--h2-proposta);
+    color: var(--h2-proposta);
+}
+
+.modal-content h3{
+    font-family: 'josefin sans';
+
 }
 
 .prop-rel-info {
@@ -272,6 +277,7 @@ body {
 .menu-opcoes {
     display: block;
     position: relative;
+   
 }
 
 .icone-menu {
@@ -426,9 +432,10 @@ body {
     border: none;
     padding: 10px 22px;
     border-radius: 6px;
-    font-size: 1em;
     cursor: pointer;
     transition: background 0.2s;
+    font-family: 'josefin sans';
+    margin-left: 25px;
 }
 .modal-content button[type="button"] {
     background: #6c757d;

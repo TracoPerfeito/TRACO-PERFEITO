@@ -1,3 +1,68 @@
+/* Menu de opções (três pontinhos) no topo direito do card */
+.info-top {
+  position: relative;
+}
+
+.menu-opcoes {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.icone-menu {
+  cursor: pointer;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2px;
+  margin: 0;
+  display: block;
+}
+
+.opcoes-menu {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.opcoes-menu button,
+.opcoes-menu .form-excluir button {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 14px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.opcoes-menu button ion-icon,
+.opcoes-menu .form-excluir button ion-icon {
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+.opcoes-menu button:hover,
+.opcoes-menu .form-excluir button:hover {
+  background-color: #eee;
+}
 @import url(cores.css);
 main {
     margin: 10px 80px;
@@ -534,6 +599,16 @@ p.desc {
   color: #7f8c8d;       /* cinza escuro */
 }
 
+.menu-opcoes {
+  position: absolute;
+  top: -40px; /* faz o menu subir acima do botão */
+  left: 30px; /* alinha à direita do botão */
+  display: none;
+  z-index: 999; /* garante que fique sobre outros elementos */
+  flex-direction: column;
+  align-items: flex-start;
+ 
+}
 
 
 
