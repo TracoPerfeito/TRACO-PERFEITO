@@ -51,7 +51,12 @@ listar: async (req, res, dadosNotificacao) => {
       return res.render("pages/notificacao", { idNotificacao, notificacoes });
     } catch (erro) {
       console.error("Erro ao exibir notificação:", erro);
-      throw erro;
+        req.session.dadosNotificacao = {
+        titulo: "Opps!",
+        mensagem: "Ocorreu um erro.",
+        tipo: "error"
+      };
+      return res.render("/")
     }
   },
 

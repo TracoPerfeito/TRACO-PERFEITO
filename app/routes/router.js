@@ -569,18 +569,29 @@ router.get("/contratacoes", function (req, res) {
 
 
 
-
-router.get("/criar-contratacao", function (req, res) { 
-
+router.get(
+  "/criar-contratacao",
+  (req, res, next) => {
+    // 👇 Checa se o usuário está logado
+    if (!req.session.autenticado || !req.session.autenticado.id) {
+      req.session.dadosNotificacao = {
+        titulo: "Acesso restrito",
+        mensagem: "Faça login para acessar esta página.",
+        tipo: "error"
+      };
+      return res.redirect("/login");
+    }
+    next(); // segue para os próximos middlewares
+  },
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["comum", "profissional"], "pages/acesso-negado"),
+  (req, res) => {
     const dadosNotificacao = req.session.dadosNotificacao || null;
-  req.session.dadosNotificacao = null;
+    req.session.dadosNotificacao = null;
 
-  
     contratacaoController.mostrarPagina(req, res);
-  
-    
- 
-});
+  }
+);
 
 
 

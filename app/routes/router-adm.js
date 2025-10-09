@@ -30,60 +30,53 @@ router.post( //validações login
    }
 );
 
-router.get( // listar numeros de Perfis
+router.get(
   "/adm-home",
-  verificarUsuAutenticado, function(req, res){
+  verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
-  admController.listarNumeroDePerfis(res, res)}
+  (req, res) => {
+    admController.listarNumeroDePerfis(req, res);
+  }
 );
-
 
 // Listagem dos usuários geral
 router.get(
   "/adm-lista-usuarios",
-  verificarUsuAutenticado, function(req, res, next) {
-  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
-  admListagemController.listarUsuariosPaginados,
-  admController.listarUsuariosPaginados(req, res)}
-
-);
-
-//Listagem para apenas profissionais
-router.get(
-  "/adm-listagem-profissional", function(req, res) {
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
-  admController.listarUsuariosPorTipo(req, res)}
+  (req, res) => {
+    admListagemController.listarUsuariosPaginados(req, res);
+  }
 );
 
-//Listagem para apenas comuns
+// Listagem para apenas profissionais
 router.get(
-  "/adm-listagem-comum", function(req, res){
+  "/adm-listagem-profissional",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
-  admController.listarUsuariosPorTipo(req, res)}
+  (req, res) => {
+    admController.listarUsuariosPorTipo(req, res);
+  }
 );
 
-
-//Listagem de denúncias de comentários
+// Listagem para apenas comuns
 router.get(
-  "/adm-lista-denuncias-comentarios",  function(req, res) {
+  "/adm-listagem-comum",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
-  admController.listarDenunciasComentarios(req, res)}
+  (req, res) => {
+    admController.listarUsuariosPorTipo(req, res);
+  }
 );
 
-
-
-
-
-
-
-
-
-
-
-
-
+// Listagem de denúncias de comentários
+router.get(
+  "/adm-lista-denuncias-comentarios",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.listarDenunciasComentarios(req, res);
+  }
+);
 
 module.exports = router;

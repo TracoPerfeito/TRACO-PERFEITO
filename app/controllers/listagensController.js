@@ -418,16 +418,14 @@ listarPublicacoes: async (req, res, dadosNotificacao) => {
 },
 
  
- exibirPublicacao: async (req, res, dadosNotificacao) => {
+exibirPublicacao: async (req, res, dadosNotificacao) => {
   const id = req.params.id;
 
   try {
-    const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado.id);
+    // Busca a publicação
+    const publicacao = await listagensModel.findIdPublicacao(id, req.session.autenticado?.id);
     const N_VISUALIZACOES = await publicacoesModel.contarNumVisualizacoes(id);
     const N_CURTIDAS = await favoritoModel.countCurtidas(id);
-
-
-
 
     if (!publicacao) {
       console.log("Publicação não encontrada para o ID:", id);
@@ -441,86 +439,47 @@ listarPublicacoes: async (req, res, dadosNotificacao) => {
       return res.redirect("/");
     }
 
+    // Recupera usuário logado sem redefinir a sessão
     let usuario = null;
     const sessao = req.session.autenticado;
 
     if (sessao && typeof sessao === "object") {
       const idUsuario = sessao.ID_USUARIO || sessao.id || sessao.ID;
-      if (idUsuario) {
-        usuario = await listagensModel.findIdusuario(idUsuario);
-      }
+      if (idUsuario) usuario = await listagensModel.findIdusuario(idUsuario);
     } else if (typeof sessao === "number" || typeof sessao === "string") {
       usuario = await listagensModel.findIdusuario(sessao);
     }
 
-   if (!req.session.visitas) req.session.visitas = {};
+    // Controle de visitas para contabilizar visualizações
+    if (!req.session.visitas) req.session.visitas = {};
+    const ultimaVisita = req.session.visitas[publicacao.ID_PUBLICACAO];
+    const agora = new Date();
+    const intervaloMinutos = 30; // tempo limite entre visualizações
 
-// pega o tempo da última visita para essa publicação
-const ultimaVisita = req.session.visitas[publicacao.ID_PUBLICACAO];
-const agora = new Date();
+    if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos * 60 * 1000) {
+      const idUsuario = usuario ? (usuario.ID_USUARIO || usuario.id) : null;
+      await publicacoesModel.registrarVisualizacao(publicacao.ID_PUBLICACAO, idUsuario, null);
+      req.session.visitas[publicacao.ID_PUBLICACAO] = agora;
+    }
 
-const intervaloMinutos = 30; // tempo limite entre visualizações
-
-if (!ultimaVisita || (agora - new Date(ultimaVisita)) > intervaloMinutos*60*1000) {
-  // registra visualização no banco
-  const idUsuario = usuario ? (usuario.ID_USUARIO || usuario.id) : null;
-  await publicacoesModel.registrarVisualizacao(publicacao.ID_PUBLICACAO, idUsuario, null);
-
-  // atualiza o tempo da última visita na sessão
-  req.session.visitas[publicacao.ID_PUBLICACAO] = agora;
-}
     const comentarios = await comentariosModel.listarComentarios(id);
 
-    console.log("Dados da publicação sendo exibida:", {
-      ID_PUBLICACAO: publicacao.ID_PUBLICACAO,
-      NOME_PUBLICACAO: publicacao.NOME_PUBLICACAO,
-      NOME_USUARIO: publicacao.NOME_USUARIO,
-      TAGS: publicacao.TAGS,
-      FAVORITO: publicacao.FAVORITO,
-      qtdImagens: publicacao.imagens.length,
-      qtdImagensUrls: publicacao.imagensUrls.length,
-      N_VISUALIZACOES,
-      N_CURTIDAS
-    });
-
-    console.log("Comentários da publicação sendo exibida:", comentarios.map(c => ({
-      ID_COMENTARIO: c.ID_COMENTARIO,
-      ID_USUARIO: c.ID_USUARIO,
-      ID_PUBLICACAO: c.ID_PUBLICACAO,
-      CONTEUDO_COMENTARIO: c.CONTEUDO_COMENTARIO,
-      DATA_COMENTARIO: c.DATA_COMENTARIO,
-      NOME_USUARIO: c.NOME_USUARIO,
-      FOTO_PERFIL_BANCO_USUARIO: c.FOTO_PERFIL_BANCO_USUARIO ? "sim" : "não"
-    })));
-
-    console.log("Usuário autenticado passado para a view:", usuario);
-
-
-    console.log(dadosNotificacao)
+    // Renderiza a página sem alterar req.session.autenticado
     res.render("pages/publicacao", {
       publicacao,
       comentarios,
       N_VISUALIZACOES,
       N_CURTIDAS,
       listaErros: null,
-      usuario: usuario ? {
-        id: usuario.ID_USUARIO || usuario.id,
-        nome: usuario.NOME_USUARIO || usuario.nome,
-        tipo: usuario.TIPO_USUARIO || usuario.tipo,
-      } : null,
-      autenticado: !!usuario,
-      id_usuario: usuario ? (usuario.ID_USUARIO || usuario.id) : null,
-      tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
-      dadosNotificacao
+      dadosNotificacao,
     });
   } catch (erro) {
     console.log(erro);
-    res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    res.status(500).render("pages/erro-conexao", {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde.",
     });
   }
 },
-
 
 
 

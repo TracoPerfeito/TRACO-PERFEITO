@@ -289,13 +289,14 @@ let msgErros = {conteudo: ""};
         <section class="comentario" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
           <section class="comentario-info-total">
             <section class="comentario-info">
-              <img src="<%= comentario.FOTO_PERFIL_BANCO_USUARIO || 'imagens/img.png' %>" class="foto-de-perfil">
+              <img src="<%= comentario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/default-profile.png' %>"  class="foto-de-perfil">
               <a href="<%= (autenticado && id_usuario === comentario.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + comentario.ID_USUARIO %>">
                 <p class="nome-comentario"><%= comentario.NOME_USUARIO %></p>
               </a>
+                 <small class="data-comentario" data-data="<%= comentario.DATA_COMENTARIO %>"></small>
             </section>
 
-            <small class="data-comentario" data-data="<%= comentario.DATA_COMENTARIO %>"></small>
+         
 
             <!-- Menu de opções do comentário -->
             <section class="menu-opcoes-coment">
@@ -547,8 +548,11 @@ let msgErros = {conteudo: ""};
   <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
       <label for="motivoDenuncia">Motivo:</label>
       <textarea id="motivoDenuncia" name="motivo" required></textarea>
-      <button type="submit">Enviar Denúncia</button>
-      <button type="button" class="btn-fechar-modal-coment">Cancelar</button>
+   <section class="btns-denuncia">
+     
+       <button type="button" class="btn-fechar-modal-coment">Cancelar</button>
+         <button type="submit">Enviar Denúncia</button>
+   </section>
     </form>
   </div>
 </div>

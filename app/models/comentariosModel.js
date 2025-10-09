@@ -41,7 +41,7 @@ const comentariosModel = {
           c.CONTEUDO_COMENTARIO,
           c.DATA_COMENTARIO,
           u.NOME_USUARIO,
-          u.FOTO_PERFIL_PASTA_USUARIO
+          u.FOTO_PERFIL_BANCO_USUARIO
         FROM COMENTARIOS c
         LEFT JOIN USUARIOS u ON c.ID_USUARIO = u.ID_USUARIO
         WHERE u.STATUS_USUARIO = 'ativo'
@@ -50,7 +50,14 @@ const comentariosModel = {
       `, [idPublicacao]);
 
       console.log('Comentários listados:', resultado);
-      return resultado;
+
+      return resultado.map(r => ({
+      ...r,
+      FOTO_PERFIL_BANCO_USUARIO: r.FOTO_PERFIL_BANCO_USUARIO
+        ? `data:image/png;base64,${r.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+        : null
+    }));
+     
 
     } catch (error) {
       console.error('Erro ao listar comentários:', error);
