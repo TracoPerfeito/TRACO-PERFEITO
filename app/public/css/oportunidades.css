@@ -5,9 +5,8 @@
 
 .menu-opcoes {
   position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10;
+  top: -30px;
+  right: -80px;
   margin: 0;
   padding: 0;
   background: none;
@@ -15,12 +14,12 @@
 
 .icone-menu {
   cursor: pointer;
-  background: #fff;
   border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   padding: 2px;
   margin: 0;
   display: block;
+  color: rgb(122, 119, 119);
 }
 
 .opcoes-menu {
@@ -34,7 +33,7 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: none;
   flex-direction: column;
-  z-index: 100;
+  z-index: 10001;
 }
 
 .opcoes-menu button,
@@ -599,16 +598,6 @@ p.desc {
   color: #7f8c8d;       /* cinza escuro */
 }
 
-.menu-opcoes {
-  position: absolute;
-  top: -40px; /* faz o menu subir acima do botão */
-  left: 30px; /* alinha à direita do botão */
-  display: none;
-  z-index: 999; /* garante que fique sobre outros elementos */
-  flex-direction: column;
-  align-items: flex-start;
- 
-}
 
 
 
