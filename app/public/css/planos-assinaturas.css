@@ -601,11 +601,10 @@ margin: 5px 0 10px 0;
     flex-direction: row;
     width: 60%;
       max-width: none;
+    
   
   }
   .card-info {
-    background: white;
-    
     flex: 1;
   }
   .card-img  {

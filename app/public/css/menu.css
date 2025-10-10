@@ -1084,3 +1084,20 @@ li a svg {
   justify-content: center;
 }
 
+/* --- Impede o rodapé de subir quando a página está vazia --- */
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* A área principal cresce para ocupar o espaço entre o header e o footer */
+main {
+  flex: 1;
+}
+
+/* Rodapé sempre no fim, sem ser fixo */
+.rodape {
+  margin-top: auto;
+}
