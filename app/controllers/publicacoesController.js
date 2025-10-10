@@ -284,14 +284,34 @@ const publicacoesController = {
   }
 }
 
+req.session.dadosNotificacao = {
+  titulo: "Publicação criada com sucesso!",
+  mensagem: "Sua publicação foi enviada corretamente.",
+  tipo: "success"
+};
 
-
-  return res.status(200).json({ sucesso: true, mensagem: "Publicação criada com sucesso!" });
+return res.status(200).json({ 
+  sucesso: true, 
+  mensagem: "Publicação criada com sucesso!", 
+  idPublicacao: idPublicacao 
+});
 
     } catch (erro) {
-      console.error("Erro ao criar publicação:", erro);
-      return res.status(500).json({ erro: "Erro interno ao criar publicação." });
-    }
+      
+              console.error("Erro ao criar publicação:", erro);
+              req.session.dadosNotificacao = {
+              titulo: "Ocorreu um erro.",
+              mensagem: "Não foi possível salvar sua publicação. Tente novamente mais tarde.",
+              tipo: "error"
+            };
+
+            return res.status(200).json({ 
+              sucesso: false, 
+              mensagem: "Não foi possível criar a publicação.", 
+              idPublicacao: null
+            });
+
+        }
   },
 
 
@@ -616,8 +636,18 @@ editarProposta: async (req, res) => {
       const erros = validationResult(req);
       if (!erros.isEmpty()) {
         console.log("Deu erro na validação af");
-        return res.status(400).json({ erros: erros.array() });
-      
+    req.session.dadosNotificacao = {
+               titulo: 'Campos inválidos.',
+               mensagem: 'Verifique os campos e tente novamente.',
+               tipo: 'error'
+             };
+       
+       
+       
+       
+       
+             return res.redirect("/novo-portfolio");
+
       }
 
       // titulo, descricao, categoria e tags são retirados do body.
@@ -637,8 +667,21 @@ editarProposta: async (req, res) => {
 
       // Se não houver resultado, ou seja, nada foi inserido, retorna um erro. 
       if (!resultado) {
-        return res.status(500).json({ erro: "Erro ao criar o portfolio." });
-      }
+
+         req.session.dadosNotificacao = {
+               titulo: 'Ocorreu um erro.',
+               mensagem: 'Não foi possível criar seu portfólio. Tente novamente mais tarde.',
+               tipo: 'error'
+             };
+       
+       
+       
+       
+       
+             return res.redirect("/");
+
+        }
+    
 
         
       const idPortfolio = resultado; // resultado já é o insertId
@@ -693,19 +736,18 @@ for (const idPub of idsPublis) {
   await publicacoesModel.inserirPublisPortfolio(idPub, idPortfolio);
 }
 
-   return res.render('pages/novo-portfolio', {
-      listaErros: null,
-      dadosNotificacao: {
-        titulo: 'Portfólio criado!',
+    console.log("Deu certo.");
+    req.session.dadosNotificacao = {
+             titulo: 'Portfólio criado!',
         mensagem: "Seu portfólio foi criado com sucesso.",
         tipo: "success"
-      },
-      publicacoes: [],
-
-      usuario: req.session.autenticado || null,
-      autenticado: !!req.session.autenticado,
-    });
-
+             };
+       
+       
+       
+       
+       
+             return res.redirect("/portfolio/" + idPortfolio );
     } catch (erro) {
       console.error("Erro ao criar portfólio:", erro);
      

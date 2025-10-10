@@ -637,7 +637,7 @@ const sessao = req.session.autenticado;
 
  
 
-  listarPublicacoesParaColocarNoPortfolio: async (req, res) => {
+  listarPublicacoesParaColocarNoPortfolio: async (req, res, dadosNotificacao) => {
   
   try {
  
@@ -648,7 +648,7 @@ const sessao = req.session.autenticado;
     console.log("Página Novo Portfólio carregada! Publicações: ", publicacoes);
     res.render('pages/novo-portfolio', {
       publicacoes,
-      dadosNotificacao: null
+      dadosNotificacao
     });
   } catch (erro) {
     console.log("Não foi possível listar suas publicações. ", erro);

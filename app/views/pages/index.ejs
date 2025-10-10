@@ -135,26 +135,24 @@
                     <!---------------------BARRA DE PESQUISA---------------->
                      
                      <section class="pesquisas">
-                       <form action="/pesquisar" id="form-pesquisa" method="get">
-                         <section class="search">
-                             <section class="icon" id="btn-pesquisa">
-                             <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
+                       <section class="barra-ordenar">
+                         <form action="/pesquisar" id="form-pesquisa" method="get">
+                           <section class="search">
+                               <section class="icon" id="btn-pesquisa">
+                               <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
+                               </section>
+                               <input
+                               name="q"
+                                 class="search-input"
+                                 type="search"
+                                 id="input-pesquisa"
+                                 placeholder="O que você está procurando hoje?"
+                                 value="<%= termoPesquisa %>"
+                               >
                              </section>
-                             <input 
-                             name="q"
-                               class="search-input" 
-                               type="search"  
-                               id="input-pesquisa"
-                               placeholder="O que você está procurando hoje?"
-                               value="<%= termoPesquisa %>"
-                             >
-
-
-                           </section>
-                       </form>
-
-
-                        <%- include('../partials/ordenar-publis') %>
+                         </form>
+                          <%- include('../partials/ordenar-publis') %>
+                       </section>
 
                           <%- include('../partials/filtro-avancado') %>
 

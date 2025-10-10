@@ -979,8 +979,13 @@ input[type='file'] {
   border-radius: 10px;
   border: none;
   padding: 10px;
+  transition: all 0.3s;
 }
 
+#editarperfilbotao:hover{
+  cursor: pointer;
+  transform: scale(1.05);
+}
 .btn-link{
   background-color: var(  --cor-btn-azul);
   color: #fff;

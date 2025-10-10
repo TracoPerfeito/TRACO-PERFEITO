@@ -1,3 +1,7 @@
+#form-pesquisa {
+  display: flex;
+  flex: 1;
+}
 
 .search {
  
@@ -9,11 +13,10 @@
     padding: var(--padding);
     border-radius: 10px;
     background: var(--verdinho-transparente-barra);
-    width: 70%;
-    min-width:  700px;
+    
     border: 2px solid var(--borda-barra-pesquisa);
    
-   
+    flex: 1; 
 
 }
 
@@ -49,7 +52,7 @@
  
 .search-input{
     font-size: 16px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Josefin Sans', sans-serif;
     color: var(--text-color);
     padding: var(--padding);
     outline: none;
@@ -153,8 +156,7 @@
 
     .search, .search1 {
 
-        width: 500px;
-        min-width: 100px;
+        
        
     
     }
@@ -166,8 +168,6 @@
 
     .search, .search1 {
 
-        width: 400px;
-        min-width: 100px;
        
     
     }
@@ -175,28 +175,6 @@
 }
 
  
-@media (max-width: 460px) {
-
-    .search, .search1{
-
-        max-width: 90%;
-        min-width: 100px;
-    
-    }
-
-        
-    .search-input {
-        font-size: 70%;
-    
-    }
-
-    #form-pesquisa {
-    
-        max-width: 80%;
-        min-width: 100px;
-}
-}
-
 
 #btn-pesquisa button{
     background-color: transparent;
@@ -231,3 +209,144 @@ text-align: center;
     color: var(--text-color-mais-claro);
 }
 
+
+
+.barra-ordenar {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  width: 80%;
+ 
+  margin: 0 auto;
+  flex-direction: row;
+  flex-wrap: wrap; /* impede estouro em telas pequenas */
+  box-sizing: border-box;
+}
+/* Garante que o botão ocupe toda a altura da barra */
+.barra-ordenar .btn-ordenar {
+  height: 100%;
+  box-sizing: border-box; /* mantém o tamanho certo mesmo com bordas */
+}
+
+
+/* ===== ORDENAR ===== */
+
+.filtro-ordenacao {
+  flex-shrink: 0;
+  position: relative; /* essencial para o dropdown ficar alinhado ao botão */
+}
+
+/* Botão */
+.btn-ordenar {
+      white-space: nowrap; 
+  font-size: 16px;
+  color: var(--text-color);
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Josefin Sans', sans-serif;
+  background: var(--verdinho-transparente-barra);
+  border: 2px solid var(--borda-barra-pesquisa);
+  transition: all 0.2s ease;
+}
+
+.btn-ordenar:hover {
+  border-color: var(--texto-barra-pesquisa);
+}
+
+#iconeSeta {
+  transition: transform 0.3s ease;
+}
+
+/* Dropdown */
+.opcoes-ordenacao {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  background-color: var(--cor-fundo);
+  color: var(--text-color);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  min-width: 100%;
+  width: max-content;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 10;
+  overflow: hidden;
+ font-family: 'Josefin Sans', sans-serif;
+}
+
+.opcoes-ordenacao section {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s;
+}
+
+.opcoes-ordenacao section:hover {
+   background-color: var(--selecionado);
+}
+
+.opcoes-ordenacao .selecionada {
+  font-weight: bold;
+  background-color: var(--selecionado);
+}
+
+.opcoes-ordenacao .check {
+  display: none;
+  color: green;
+}
+
+.opcoes-ordenacao section.selecionada .check {
+  display: inline;
+}
+
+/* Oculto */
+.oculto {
+  display: none;
+}
+
+/* 🔹 RESPONSIVIDADE: esconder texto no mobile */
+@media (max-width: 650px) {
+  #textoOrdenar {
+    display: none; /* some completamente */
+  }
+
+  .btn-ordenar {
+    padding: 8px 10px; /* reduz leve o espaço lateral */
+    gap: 4px; /* ícones mais próximos */
+  }
+}
+
+
+
+
+
+@media (max-width: 460px) {
+        
+    .search-input {
+        font-size: 70%;
+    
+    }
+
+  
+    
+.barra-ordenar {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+width: 95%;
+  margin: 0 auto;
+  flex-direction: row;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+}

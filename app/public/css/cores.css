@@ -57,6 +57,7 @@
 --cor-texto-dashboard:#3a435d;
 --msg-outro:   #e5e5ea;
 --msg-eu:  #7490C9;
+--selecionado:  #eee;
   }
 
 /* #264869 */ 
@@ -119,5 +120,6 @@
 --cor-texto-dashboard:rgb(224, 224, 224);
 --msg-outro: rgb(55, 58, 70);
 --msg-eu: rgb(90, 109, 186);
+--selecionado:  rgb(51, 52, 56);
       }
 

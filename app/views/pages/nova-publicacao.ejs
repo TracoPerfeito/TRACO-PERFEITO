@@ -12,6 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="js/simple-notify.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -34,6 +37,14 @@
 
      
 <body>
+
+  <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
+
 
   
 <% if (status_usuario === 'pendente') { %>
@@ -747,67 +758,98 @@ function validarImagens() {
     modalConfirm.style.display = 'none';
   });
 
-  // Enviar dados ao backend
-  btnSend.addEventListener('click', (event) => {
-    event.preventDefault();
+  btnSend.addEventListener('click', async (event) => {
+  event.preventDefault();
+  console.log("[DEBUG] btnSend clicado");
 
-      // Desabilita o botão para evitar múltiplos cliques
+  // Desabilita o botão para evitar múltiplos cliques
   btnSend.disabled = true;
 
   // Muda o texto do botão para indicar que está carregando
   const originalText = btnSend.textContent;
   btnSend.textContent = 'Enviando...';
+  console.log("[DEBUG] Botão desabilitado e texto alterado");
 
-    const formData = new FormData();
-    formData.append('titulo', inputTitulo.value.trim());
+  const formData = new FormData();
+  formData.append('titulo', inputTitulo.value.trim());
 
-    let categoria = selectCategoria.value.trim();
-    if (categoria === 'outro' && outraCategoriaInput.value.trim() !== '') {
-      categoria = outraCategoriaInput.value.trim();
-    }
-    formData.append('categoria', categoria);
-    formData.append('descricao', inputDescricao.value.trim());
+  let categoria = selectCategoria.value.trim();
+  if (categoria === 'outro' && outraCategoriaInput.value.trim() !== '') {
+    categoria = outraCategoriaInput.value.trim();
+  }
+  formData.append('categoria', categoria);
+  formData.append('descricao', inputDescricao.value.trim());
 
-    const tags = tagify.value.map(tag => tag.value);
-    formData.append('tags', JSON.stringify(tags));
+  const tags = tagify.value.map(tag => tag.value);
+  formData.append('tags', JSON.stringify(tags));
 
-    modalImageFiles.forEach((file) => {
-      formData.append('images', file, file.name);
-    });
-
-    fetch('/enviar-publicacao', {
-      method: 'POST',
-      body: formData,
-    })
-      .then(async response => {
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => null);
-          throw new Error(errorData?.message || 'Erro ao enviar publicação');
-        }
-        return response.json();
-      })
-      .then(data => {
-         alert('Publicação enviada com sucesso!');
-         modalConfirm.style.display = 'none';
-         formModal.reset();
-
-         modalImageFiles = [];
-         imageFiles = [];
-         previewSection.style.display = 'none';
-         mainImage.src = '';
-         thumbnailRow.innerHTML = '';
-         imageCount.textContent = 'Nenhuma imagem selecionada';
-         tagify.removeAllTags();
-      })
-      .catch(error => {
-        alert('Erro ao enviar publicação: ' + error.message);
-      })
-        .finally(() => {
-      // Reabilita o botão e volta o texto original
-      btnSend.disabled = false;
-      btnSend.textContent = originalText;
-    });
+  modalImageFiles.forEach((file) => {
+    formData.append('images', file, file.name);
   });
+  console.log("[DEBUG] FormData preparado:", formData);
+
+  try {
+    console.log("[DEBUG] Enviando fetch para /enviar-publicacao...");
+    const response = await fetch('/enviar-publicacao', {
+      method: 'POST',
+      body: formData
+    });
+    console.log("[DEBUG] Fetch completado, status:", response.status);
+
+    const data = await response.json(); 
+    if (data.sucesso) {
+      console.log("[DEBUG] Redirecionando para a publicação", data.idPublicacao);
+      window.location.href = `/publicacao/${data.idPublicacao}`;
+    } else {
+      console.error("[DEBUG] Falha ao criar publicação:", data.mensagem);
+     
+
+      
+      modalConfirm.style.display = 'none';
+
+  // Mostra notificação de erro
+  dadosNotificacao = {
+    titulo: "Ocorreu um erro.",
+    mensagem: "Não foi possível salvar sua publicação.",
+    tipo: "error"
+  };
+  
+  // Aqui você chamaria a função de mostrar notificação
+  notify(dadosNotificacao.titulo, dadosNotificacao.mensagem, dadosNotificacao.tipo, "top right", 4000);
+
+  // Reabilita o botão
+  btnSend.disabled = false;
+  btnSend.textContent = originalText;
+
+
+    }
+
+  } catch (erro) {
+    console.error("[DEBUG] Erro ao enviar publicação:", erro);
+   
+
+
+      modalConfirm.style.display = 'none';
+
+  // Mostra notificação de erro
+  dadosNotificacao = {
+    titulo: "Ocorreu um erro.",
+    mensagem: "Não foi possível enviar a publicação. Tente novamente.",
+    tipo: "error"
+  };
+  
+  // Aqui você chamaria a função de mostrar notificação
+  notify(dadosNotificacao.titulo, dadosNotificacao.mensagem, dadosNotificacao.tipo, "top right", 4000);
+
+  // Reabilita o botão
+  btnSend.disabled = false;
+  btnSend.textContent = originalText;
+
+
+  }
+});
+
+
 </script>
 
 
