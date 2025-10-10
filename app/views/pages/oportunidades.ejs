@@ -233,11 +233,12 @@
                   Excluir
                 </button>
               </form>
-            <% } %>
-            <button class="btn-denunciar-proposta" title="Denunciar" data-id="<%= proposta.ID_PROPOSTA %>">
-              <ion-icon name="flag-outline"></ion-icon>
-              Denunciar
-            </button>
+               <% } %>
+              <% if (!autenticado || id_usuario !== proposta.ID_USUARIO) { %>
+  <button class="btn-denunciar" data-id="<%= proposta.ID_PROPOSTA %>">
+    <ion-icon name="flag-outline"></ion-icon> Denunciar
+  </button>
+<% } %>
           </section>
         </section>
       </section>
