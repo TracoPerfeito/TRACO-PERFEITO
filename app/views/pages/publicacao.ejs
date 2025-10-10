@@ -134,9 +134,11 @@ let msgErros = {conteudo: ""};
         <ion-icon name="share-social-outline"></ion-icon>
         Compartilhar
       </button>
-     <button class="btn-denunciar" data-id="<%= publicacao.ID_PUBLICACAO %>">
-  <ion-icon name="flag-outline"></ion-icon> Denunciar
-</button>
+      <% if (!autenticado || id_usuario !== publicacao.ID_USUARIO) { %>
+  <button class="btn-denunciar" data-id="<%= publicacao.ID_PUBLICACAO %>">
+    <ion-icon name="flag-outline"></ion-icon> Denunciar
+  </button>
+<% } %>
 
     </section>
   </section>
