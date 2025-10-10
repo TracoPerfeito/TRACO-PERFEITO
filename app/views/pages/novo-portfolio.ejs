@@ -12,6 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="js/simple-notify.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -41,79 +44,65 @@
     
     <%- include('../partials/menu-logado'); %>
 
+     <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
+
 <main>
-    
-            <h1 class="novaPublicacao">Novo portfólio</h1>
-            <br>
-            <p class="instrucao-tipo-btn">Preencha as informações abaixo para criar um novo portfólio:</p>
-            <br>
+    <section class="titulo-subtitulo">
+      
+              <h1 class="novaPublicacao">Novo portfólio</h1>
+      
+              <p class="instrucao-tipo-btn">Preencha as informações abaixo para criar um novo portfólio:</p>
+      
+    </section>
             <form action="/criar-portfolio" method="post">
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" name="titulo" required>
+                <section class="area-form">
+                  <section class="campo-form">
+                    <label for="titulo">Título:</label>
+                    <input type="text" id="titulo" name="titulo" required maxlength="70">
+                  </section>
+                  <section class="campo-form">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao" required maxlength="2000"></textarea>
+                  </section>
+                  <section class="campo-form">
+                    <label for="descricao">Tags:</label>
+                    <input   id="tagInput"  name='input-custom-dropdown' class='tags-look tagify--custom-dropdown caixa-texto' placeholder='Adicione tags à sua publicação...' value='Design Gráfico, Arte Digital'>
+                    <input type="hidden" name="tags" id="tags-hidden">
+                    
+                    
+                    
+                  </section>
+                </section>
 
-                <label for="descricao">Descrição:</label>
-                <textarea id="descricao" name="descricao" required></textarea>
-
-                <label for="descricao">Tags:</label> <br>
-                <input   id="tagInput"  name='input-custom-dropdown' class='tags-look tagify--custom-dropdown caixa-texto' placeholder='Adicione tags à sua publicação...' value='Design Gráfico, Arte Digital'>
-                          
-
-                <input type="hidden" name="tags" id="tags-hidden">
-
-
-
-
-
-                <label for="selecionar-publicacoes">Selecione algumas publicações para seu portfólio:</label>
-              <section class="selecionar-publicacoes">
-  <% if (publicacoes.length === 0) { %>
-    <p>Você ainda não tem publicações.</p>
-  <% } else { %>
-    <% publicacoes.forEach(pub => { %>
-      <div class="publicacao-item" data-id="<%= pub.ID_PUBLICACAO %>">
-        <% if (pub.imagens && pub.imagens.length > 0) { %>
-          <!-- Mostra só a primeira imagem -->
-          <img 
-            src="data:image/jpeg;base64,<%= pub.imagens[0].toString('base64') %>" 
-            alt="Imagem da publicação <%= pub.ID_PUBLICACAO %>" />
-        <% } else { %>
-          <span style="display:flex;align-items:center;justify-content:center;color:#555;font-size:14px;">Sem imagem</span>
-        <% } %>
-      </div>
-    <% }) %>
-  <% } %>
+<section class="area-form">
+  
+                  <label id="selecionar-publi-label" for="selecionar-publicacoes">Selecione algumas publicações para seu portfólio:</label>
+                <section class="selecionar-publicacoes">
+    <% if (publicacoes.length === 0) { %>
+      <p>Você ainda não tem publicações.</p>
+    <% } else { %>
+      <% publicacoes.forEach(pub => { %>
+        <div class="publicacao-item" data-id="<%= pub.ID_PUBLICACAO %>">
+          <% if (pub.imagens && pub.imagens.length > 0) { %>
+            <!-- Mostra só a primeira imagem -->
+            <img
+              src="data:image/jpeg;base64,<%= pub.imagens[0].toString('base64') %>"
+              alt="Imagem da publicação <%= pub.ID_PUBLICACAO %>" />
+          <% } else { %>
+            <span style="display:flex;align-items:center;justify-content:center;color:#555;font-size:14px;">Sem imagem</span>
+          <% } %>
+        </div>
+      <% }) %>
+    <% } %>
+  </section>
 </section>
 
 
-<script>
-const selectedIds = new Set();
-
-document.querySelectorAll('.publicacao-item').forEach(div => {
-  div.addEventListener('click', () => {
-    const id = parseInt(div.dataset.id);
-    if(selectedIds.has(id)) {
-      selectedIds.delete(id);
-      div.classList.remove('selected');
-    } else {
-      selectedIds.add(id);
-      div.classList.add('selected');
-    }
-  });
-});
-
-document.querySelector('form').addEventListener('submit', e => {
-  // associa publicações selecionadas
-  const inputPublis = document.createElement('input');
-  inputPublis.type = 'hidden';
-  inputPublis.name = 'publicacoesSelecionadas';
-  inputPublis.value = Array.from(selectedIds).join(',');
-  e.target.appendChild(inputPublis);
-
-  // associa tags como JSON
-  const tagsHidden = document.getElementById('tags-hidden');
-  tagsHidden.value = JSON.stringify(tagify.value.map(t => t.value));
-});
-</script>
 
                 <button type="submit">Criar Portfólio</button>
 
@@ -130,126 +119,179 @@ document.querySelector('form').addEventListener('submit', e => {
 <%- include('../partials/rodape'); %>
 
 <script src="js/mobile-navbar.js"></script>
-
 <script>
-var input = document.querySelector('input[name="input-custom-dropdown"]');
+console.log("Script do portfólio iniciado");
 
-var colors = [
-  '#7490C9', 
-  '#969ED0',  
-  '#92C4E2', 
-  '#B8D9BD', 
-  '#9BB7CF', 
-  '#C3E3DF',
-  '#C2E5F0', 
-  '#ADBCE2', 
- 
-];
-
-function transformTag(tagData) {
-  // escolhe uma cor da lista, aleatoriamente
-  var color = colors[Math.floor(Math.random() * colors.length)];
-  tagData.color = color;
-  tagData.style = "--tag-bg:" + color;
+// ========================
+// Função de Notificação
+// ========================
+function mostrarNotificacao({ titulo, mensagem, tipo }) {
+    notify(titulo, mensagem, tipo || 'info', 'top right', 3000);
+    console.log("Notificação exibida:", titulo, mensagem, tipo);
 }
 
-
-
-
-var tagify = new Tagify(input, {
-  whitelist: [
-  // Design geral
-  "Design Gráfico",
-  "Design para Web",
-  "Arte Digital",
-  "UI/UX",
-  "Design de Embalagens",
-  "Design de Produto",
-  "Ilustração Digital",
-  "Tipografia",
-  "Identidade Visual",
-  "Branding",
-  "Design Editorial",
-  "Design de Interface",
-  "Design Responsivo",
-  
-  // Estilos de arte
-  "Arte Conceitual",
-  "Arte Vetorial",
-  "Arte Tradicional",
-  "Pintura Digital",
-  "Animação",
-  "Motion Graphics",
-  "Pixel Art",
-  "Ilustração Infantil",
-  "Quadrinhos",
-  "Arte Abstrata",
-  
-  // Técnicas/ferramentas
-  "Photoshop",
-  "Illustrator",
-  "Procreate",
-  "CorelDRAW",
-  "Sketch",
-  "Figma",
-  "Blender",
-  "Cinema 4D",
-  "After Effects",
-  "InDesign",
-  
-  // Cores (para inspiração, tema, etc)
-  "Cores Vibrantes",
-  "Tons Pastel",
-  "Monocromático",
-  "Cores Frias",
-  "Cores Quentes",
-  "Paleta Neutra",
-  "Contraste Alto",
-  "Preto e Branco",
-  
-  // Outros
-  "Tipografia Criativa",
-  "Prototipagem",
-  "Design de Aplicativos",
-  "Design de Jogos",
-  "Arte para Redes Sociais",
-  "Ilustração Editorial",
-  "Design Sustentável"
-],
-
-  maxTags: 10,
-  dropdown: {
-    maxItems: 20,
-    classname: 'tags-look',
-    enabled: 0,
-    closeOnSelect: false
-  },
-  transformTag: transformTag
+// ========================
+// Seleção de publicações
+// ========================
+const selectedIds = new Set();
+document.querySelectorAll('.publicacao-item').forEach(div => {
+    div.addEventListener('click', () => {
+        const id = parseInt(div.dataset.id);
+        if (selectedIds.has(id)) {
+            selectedIds.delete(id);
+            div.classList.remove('selected');
+            console.log(`Publicação removida: ${id}`);
+        } else {
+            selectedIds.add(id);
+            div.classList.add('selected');
+            console.log(`Publicação adicionada: ${id}`);
+        }
+        console.log("IDs selecionados atualmente:", Array.from(selectedIds));
+    });
 });
 
+// ========================
+// Tagify
+// ========================
+var input = document.querySelector('input[name="input-custom-dropdown"]');
+var colors = ['#7490C9','#969ED0','#92C4E2','#B8D9BD','#9BB7CF','#C3E3DF','#C2E5F0','#ADBCE2'];
 
+function transformTag(tagData) {
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    tagData.color = color;
+    tagData.style = "--tag-bg:" + color;
+}
 
+var tagify = new Tagify(input, {
+    whitelist: [
+        "Design Gráfico","Design para Web","Arte Digital","UI/UX","Design de Embalagens","Design de Produto",
+        "Ilustração Digital","Tipografia","Identidade Visual","Branding","Design Editorial","Design de Interface",
+        "Design Responsivo","Arte Conceitual","Arte Vetorial","Arte Tradicional","Pintura Digital","Animação",
+        "Motion Graphics","Pixel Art","Ilustração Infantil","Quadrinhos","Arte Abstrata",
+        "Photoshop","Illustrator","Procreate","CorelDRAW","Sketch","Figma","Blender","Cinema 4D","After Effects","InDesign",
+        "Cores Vibrantes","Tons Pastel","Monocromático","Cores Frias","Cores Quentes","Paleta Neutra","Contraste Alto","Preto e Branco",
+        "Tipografia Criativa","Prototipagem","Design de Aplicativos","Design de Jogos","Arte para Redes Sociais","Ilustração Editorial","Design Sustentável"
+    ],
+    maxTags: 10,
+    dropdown: { maxItems: 20, classname: 'tags-look', enabled: 0, closeOnSelect: false },
+    transformTag: transformTag
+});
 
+// ========================
+// Validação em tempo real
+// ========================
+const form = document.querySelector('form');
+const tituloInput = document.getElementById('titulo');
+const descricaoTextarea = document.getElementById('descricao');
+const tagsHidden = document.getElementById('tags-hidden');
 
+function criarMensagemErro(input) {
+    let span = document.createElement('span');
+    span.className = 'erro-msg';
+    span.style.color = 'red';
+    span.style.fontSize = '12px';
+    span.style.display = 'block';
+    span.style.marginTop = '4px';
+    input.parentNode.appendChild(span);
+    return span;
+}
+
+const tituloErro = criarMensagemErro(tituloInput);
+const descricaoErro = criarMensagemErro(descricaoTextarea);
+const tagsErro = criarMensagemErro(input);
+
+// Contador de caracteres
+const descricaoContador = document.createElement('span');
+descricaoContador.style.fontSize = '12px';
+descricaoContador.style.color = '#a3a3a3';
+descricaoContador.style.display = 'block';
+descricaoContador.style.marginTop = '4px';
+descricaoTextarea.parentNode.appendChild(descricaoContador);
+
+function validarTitulo() {
+    const val = tituloInput.value.trim();
+    if (val.length < 2 || val.length > 70) {
+        tituloErro.textContent = "O título deve ter entre 2 e 70 caracteres.";
+        console.log("Título inválido:", val);
+        return false;
+    } else {
+        tituloErro.textContent = "";
+        return true;
+    }
+}
+
+function validarDescricao() {
+    const val = descricaoTextarea.value.trim();
+    descricaoContador.textContent = `${val.length}/2000 caracteres`;
+    if (val.length < 2 || val.length > 2000) {
+        descricaoErro.textContent = "A descrição deve ter entre 2 e 2000 caracteres.";
+        console.log("Descrição inválida:", val);
+        return false;
+    } else {
+        descricaoErro.textContent = "";
+        return true;
+    }
+}
+
+function validarTags() {
+    const tags = tagify.value.map(t => t.value);
+    if (tags.length === 0) {
+        tagsErro.textContent = "Adicione pelo menos uma tag.";
+        console.log("Sem tags");
+        return false;
+    } else if (tags.length > 10) {
+        tagsErro.textContent = "Máximo 10 tags permitidas.";
+        console.log("Excesso de tags:", tags);
+        return false;
+    } else {
+        tagsErro.textContent = "";
+        return true;
+    }
+}
+
+// Validação enquanto digita
+tituloInput.addEventListener('input', validarTitulo);
+descricaoTextarea.addEventListener('input', validarDescricao);
+tagify.on('add', validarTags);
+tagify.on('remove', validarTags);
+
+// ========================
+// Submit
+// ========================
+form.addEventListener('submit', e => {
+    console.log("Tentativa de envio");
+    const valido = validarTitulo() & validarDescricao() & validarTags();
+    if (!valido) {
+        e.preventDefault();
+        console.log("Formulário inválido");
+         mostrarNotificacao({
+            titulo: "Não foi possível enviar o formulário.",
+            mensagem: "Preencha os campos corretamente.",
+            tipo: "error"
+        });
+    } else {
+        console.log("Formulário válido");
+
+        // Associa tags
+        tagsHidden.value = JSON.stringify(tagify.value.map(t => t.value));
+        console.log("Tags associadas:", tagsHidden.value);
+
+        // Associa publicações
+        const inputPublis = document.createElement('input');
+        inputPublis.type = 'hidden';
+        inputPublis.name = 'publicacoesSelecionadas';
+        inputPublis.value = Array.from(selectedIds).join(',');
+        form.appendChild(inputPublis);
+        console.log("Publicações associadas:", inputPublis.value);
+    }
+});
 </script>
-
-
-
-
-   <% if (tipo_usuario === 'profissional') { %>
-
-                 <%- include('../partials/fab-button') %>
-<% }   else if(tipo_usuario === 'comum') {   %>
-        <%- include('../partials/fab-button-comum') %>
-  <% } %>
-  
-
-
-
 
 
 
 </body>
 </html>
+
+
 
 

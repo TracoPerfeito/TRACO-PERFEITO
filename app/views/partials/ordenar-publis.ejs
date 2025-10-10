@@ -1,106 +1,68 @@
 <section class="filtro-ordenacao">
-  <button id="btnOrdenar" class="btn-ordenar">Ordenar</button>
+  <button id="btnOrdenar" class="btn-ordenar">
+   <ion-icon name="filter-outline"></ion-icon>
+    <span id="textoOrdenar">Mais Recentes</span>
+    <span id="iconeSeta"><ion-icon name="chevron-up"></ion-icon></span>
+  </button>
   <section id="opcoesOrdenacao" class="opcoes-ordenacao oculto">
-    <section data-ordem="recomendado">Recomendado</section>
-    <section data-ordem="mais-curtidos">Mais Curtidos</section>
-    <section data-ordem="mais-vistos">Mais Vistos</section>
-    <section data-ordem="mais-comentados">Mais Comentados</section>
-    <section data-ordem="mais-recentes">Mais Recentes</section>
-    <section data-ordem="mais-antigos">Mais Antigos</section>
+    <section data-ordem="recomendado">Recomendado <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="mais-curtidos">Mais Curtidos <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="mais-vistos">Mais Vistos <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="mais-comentados">Mais Comentados <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="mais-recentes" class="selecionada">Mais Recentes <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="mais-antigos">Mais Antigos <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
   </section>
 </section>
 
 
 
-<style>
-    .filtro-ordenacao {
-  position: relative;
-  display: inline-block;
-  margin-left: 20px;
-}
-
-.btn-ordenar {
-  background-color: #333;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.btn-ordenar:hover {
-  background-color: #555;
-}
-
-.opcoes-ordenacao {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: max-content;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  z-index: 10;
-}
-
-.opcoes-ordenacao section {
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-.opcoes-ordenacao section:hover {
-  background-color: #f0f0f0;
-}
-
-.opcoes-ordenacao .selecionada {
-  background-color: #333;
-  color: #fff;
-  font-weight: bold;
-}
-
-.oculto {
-  display: none;
-}
-
-</style>
-
-
-
-
-
-
-
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM carregado, script iniciado");
 
+
+
+  document.addEventListener("DOMContentLoaded", () => {
   const btnOrdenar = document.getElementById("btnOrdenar");
+  const textoOrdenar = document.getElementById("textoOrdenar");
+  const iconeSeta = document.getElementById("iconeSeta");
   const opcoesOrdenacao = document.getElementById("opcoesOrdenacao");
+  const opcoes = opcoesOrdenacao.querySelectorAll("section");
+
+  // Atualiza seleção
+  const atualizarSelecao = (selecionada) => {
+    opcoes.forEach(o => o.classList.remove("selecionada"));
+    selecionada.classList.add("selecionada");
+    textoOrdenar.textContent = selecionada.textContent.replace("✔", "").trim();
+  };
 
   // Toggle dropdown
   btnOrdenar.addEventListener("click", () => {
-    console.log("Botão Ordenar clicado");
-    opcoesOrdenacao.classList.toggle("oculto");
-    console.log("Dropdown agora está", opcoesOrdenacao.classList.contains("oculto") ? "oculto" : "visível");
+    const aberto = !opcoesOrdenacao.classList.toggle("oculto");
+    iconeSeta.style.transform = aberto ? "rotate(180deg)" : "rotate(0deg)";
   });
 
-  // Função que ordena as publicações
+  // Clique nas opções
+  opcoes.forEach(opcao => {
+    opcao.addEventListener("click", () => {
+      atualizarSelecao(opcao);
+      ordenarPublicacoes(opcao.dataset.ordem);
+      opcoesOrdenacao.classList.add("oculto");
+      iconeSeta.style.transform = "rotate(0deg)";
+    });
+  });
+
+  // Inicializa texto do botão com a opção selecionada
+  const inicial = opcoesOrdenacao.querySelector(".selecionada");
+  if (inicial) {
+    textoOrdenar.textContent = inicial.textContent.replace("✔", "").trim();
+  }
+
+  // Função de ordenação (igual antes)
   const ordenarPublicacoes = (tipo) => {
     const container = document.querySelector(".container-pag-explorar");
-    if (!container) return console.error("Erro: container-pag-explorar não encontrado!");
+    if (!container) return;
 
     const publicacoes = Array.from(container.querySelectorAll(".item-explorar"));
-
-    console.log("Ordenando publicações pelo tipo:", tipo);
-    console.log("Antes da ordenação:", publicacoes.map(p => ({
-      curtidas: p.dataset.curtida,
-      visualizacoes: p.dataset.visualizacoes,
-      comentarios: p.dataset.comentarios,
-      data: p.dataset.data_publicacao
-    })));
-
     publicacoes.sort((a, b) => {
       switch(tipo) {
         case "mais-curtidos":
@@ -114,43 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
         case "mais-antigos":
           return new Date(a.dataset.data_publicacao) - new Date(b.dataset.data_publicacao);
         case "recomendado":
-          return (parseInt(b.dataset.curtida) + parseInt(b.dataset.visualizacoes)) -
-                 (parseInt(a.dataset.curtida) + parseInt(a.dataset.visualizacoes));
+          return (parseInt(b.dataset.curtida)+parseInt(b.dataset.visualizacoes))-
+                 (parseInt(a.dataset.curtida)+parseInt(a.dataset.visualizacoes));
         default:
           return 0;
       }
     });
-
-    // Reinsere no container
     publicacoes.forEach(pub => container.appendChild(pub));
-
-    console.log("Depois da ordenação:", publicacoes.map(p => ({
-      curtidas: p.dataset.curtida,
-      visualizacoes: p.dataset.visualizacoes,
-      comentarios: p.dataset.comentarios,
-      data: p.dataset.data_publicacao
-    })));
   };
-
-  // Opções do dropdown
-  const opcoes = opcoesOrdenacao.querySelectorAll("section");
-  opcoes.forEach(opcao => {
-    opcao.addEventListener("click", () => {
-      console.log("Opção selecionada:", opcao.dataset.ordem);
-
-      // Remove seleção anterior
-      opcoes.forEach(o => o.classList.remove("selecionada"));
-
-      // Marca a opção atual
-      opcao.classList.add("selecionada");
-
-      // Ordena publicações
-      ordenarPublicacoes(opcao.dataset.ordem);
-
-      // Fecha dropdown
-      opcoesOrdenacao.classList.add("oculto");
-      console.log("Dropdown fechado após seleção");
-    });
-  });
 });
+
 </script>

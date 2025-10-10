@@ -40,7 +40,8 @@
 <section class="user-menu" id="userMenu" onclick="event.stopPropagation()">
     <ul>
       <li><a href="/meu-perfil-artista"> <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z"/></svg>Meu Perfil</a></li>
-   
+     <li><a href="/contratacoes"> <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M160-120q-33 0-56.5-23.5T80-200v-440q0-33 23.5-56.5T160-720h160v-80q0-33 23.5-56.5T400-880h160q33 0 56.5 23.5T640-800v80h160q33 0 56.5 23.5T880-640v440q0 33-23.5 56.5T800-120H160Zm240-600h160v-80H400v80Zm400 360H600v80H360v-80H160v160h640v-160Zm-360 0h80v-80h-80v80Zm-280-80h200v-80h240v80h200v-200H160v200Zm320 40Z"/></svg> Minhas Contratações</a></li>
+    
       <li>
   <a href="/notificacoes" style="display: flex; align-items: center; gap: 5px;">
     <span style="position: relative; display: inline-block;">
@@ -53,8 +54,17 @@
   </a>
 </li>
    
-      <li><a href="/chat-logado"> <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/></svg>Minhas Conversas</a></li>
-    
+      <li>
+  <a href="/chat" style="display: flex; align-items: center; gap: 5px;">
+    <span style="position: relative; display: inline-block; margin-right: 4px;">
+      <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#fff">
+        <path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/>
+      </svg>
+      <span class="badge-notificacoes"  id="badge-mensagens-menu" ></span>
+    </span>
+     Minhas Conversas
+  </a>
+</li>
       <li class="config-dropdown" >
         <section id="configuracoes" >
           
@@ -114,8 +124,6 @@
               </button>
 
 
-            <section id="tamanho-fonte">Tamanho da fonte</section>
-           
               </section>
           
             
@@ -136,92 +144,102 @@
  
 
  
-  
-  
+ 
 <script src="/js/menu.js"></script>
 <script src="/js/modos.js"></script>
+
+
+
+
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM carregado, iniciando script de notificações...");
-
-  const badgeLink = document.getElementById("badge-notificacoes");
-  const badgeAvatar = document.getElementById("badge-notificacoes-avatar");
-  const badgeMobile = document.getElementById("badge-menu-mobile");
+  const badgeNotif = document.getElementById("badge-notificacoes"); // Sininho no menu suspenso
+  const badgeMsgMenu = document.getElementById("badge-mensagens-menu"); // SVG Minhas Conversas
+  const badgeAvatar = document.getElementById("badge-notificacoes-avatar"); // badge na fotinha
+  const badgeMobile = document.getElementById("badge-menu-mobile"); // badge menu hamburger
   const menuBtn = document.getElementById("menu-btn");
 
-  console.log("Elementos encontrados:", {
-    badgeLink,
-    badgeAvatar,
-    badgeMobile,
-    menuBtn
-  });
+  console.log("Badges selecionados:", { badgeNotif, badgeMsgMenu, badgeAvatar, badgeMobile });
 
-  // Atualiza o badge mobile ao abrir/fechar o menu
+  // Atualizar badge do menu mobile quando abrir/fechar
   if (menuBtn) {
     menuBtn.addEventListener("change", function() {
-      console.log("Menu mobile alterado, checked:", this.checked);
-      const configSection = document.querySelector(".config-section");
-      if (configSection) configSection.classList.remove("open"); 
-
-      if (this.checked) {
-        if (badgeMobile) {
-          badgeMobile.style.display = "none";
-          console.log("Badge mobile escondido ao abrir menu");
-        }
-      } else {
-        const naoLidas = Number(badgeMobile?.textContent) || 0;
-        if (badgeMobile) {
-          badgeMobile.style.display = naoLidas > 0 ? "inline-block" : "none";
-          console.log("Badge mobile atualizado ao fechar menu:", naoLidas);
-        }
+      if (badgeMobile) {
+        badgeMobile.style.display = !this.checked && Number(badgeMobile.textContent) > 0 ? "inline-block" : "none";
+        console.log("Menu mobile toggle:", this.checked, "badgeMobile.textContent =", badgeMobile.textContent);
       }
     });
   }
 
-  async function atualizarBadgeNotificacoes() {
-    console.log("Atualizando badges de notificações...");
+  async function atualizarBadges() {
     try {
-      const resposta = await fetch("/notificacoes/count");
-      console.log("Resposta do fetch:", resposta);
+      console.log("Atualizando badges...");
 
-      if (!resposta.ok) {
-        console.error("Erro na resposta do servidor:", resposta.status);
-        return;
+      // ---------------- Notificações ----------------
+      const notifRes = await fetch("/notificacoes/count");
+      const notifData = await notifRes.json();
+      const totalNotif = Number(notifData.naoLidas) || 0;
+      console.log("Notificações não lidas:", totalNotif, notifData);
+
+      if (badgeNotif) {
+        badgeNotif.textContent = totalNotif;
+        badgeNotif.style.display = totalNotif > 0 ? "inline-block" : "none";
       }
 
-      const dados = await resposta.json();
-      console.log("Dados recebidos do servidor:", dados);
+      // ---------------- Mensagens ----------------
+      const msgRes = await fetch("/messagescount");
+      const msgData = await msgRes.json();
+      const totalMsgs = Number(msgData.totalGeral) || 0;
+      console.log("Mensagens não lidas:", totalMsgs, msgData);
 
-      const naoLidas = Number(dados.naoLidas) || 0;
-      console.log("Número de notificações não lidas:", naoLidas);
-
-      // Atualiza badge do link
-      if (badgeLink) {
-        badgeLink.textContent = naoLidas;
-        badgeLink.style.display = naoLidas > 0 ? "inline-block" : "none";
-        console.log("Badge do link atualizado:", badgeLink.textContent);
+      if (badgeMsgMenu) {
+        badgeMsgMenu.textContent = totalMsgs;
+        badgeMsgMenu.style.display = totalMsgs > 0 ? "inline-block" : "none";
       }
 
-      // Atualiza badge do avatar
+      // ---------------- Total geral para avatar e menu mobile ----------------
+      const totalGeral = totalNotif + totalMsgs;
+      console.log("Total geral (avatar + menu mobile):", totalGeral);
+
       if (badgeAvatar) {
-        badgeAvatar.textContent = naoLidas;
-        badgeAvatar.style.display = naoLidas > 0 ? "inline-block" : "none";
-        console.log("Badge do avatar atualizado:", badgeAvatar.textContent);
+        badgeAvatar.textContent = totalGeral;
+        badgeAvatar.style.display = totalGeral > 0 ? "inline-block" : "none";
       }
 
-      // Atualiza badge do menu mobile
       if (badgeMobile) {
-        badgeMobile.textContent = naoLidas;
-        badgeMobile.style.display = (!menuBtn.checked && naoLidas > 0) ? "inline-block" : "none";
-        console.log("Badge mobile atualizado:", badgeMobile.textContent, "Display:", badgeMobile.style.display);
+        badgeMobile.textContent = totalGeral;
+        badgeMobile.style.display = !menuBtn.checked && totalGeral > 0 ? "inline-block" : "none";
       }
+
+if (msgData.notificacoes && msgData.notificacoes.length > 0) {
+  msgData.notificacoes.forEach(notif => {
+    console.log("Notificação recebida:", notif);
+
+    const qtd = notif.qtdNaoLidas || 1;
+    const palavra = qtd === 1 ? "mensagem" : "mensagens";
+
+    const tituloNotif = `Você tem ${qtd} ${palavra} de ${notif.titulo.replace("Nova mensagem de ", "")}!`;
+    const textoNotif = notif.mensagem;
+
+    notify(
+      tituloNotif,
+      textoNotif,
+      "msg",
+      "top right"
+    );
+  });
+}
+
+
+
 
     } catch (err) {
-      console.error("Erro ao atualizar notificações:", err);
+      console.error("Erro ao atualizar badges:", err);
     }
   }
 
-  atualizarBadgeNotificacoes();
-  setInterval(atualizarBadgeNotificacoes, 30000);
+  atualizarBadges();
+  setInterval(atualizarBadges, 30000);
 });
 </script>

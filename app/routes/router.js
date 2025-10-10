@@ -616,10 +616,13 @@ router.post(
   }
 );
 
-router.get("/nova-publicacao", function (req, res) { //publicação logado
-    res.render('pages/nova-publicacao')
- 
+router.get("/nova-publicacao", function (req, res) {
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+   req.session.dadosNotificacao = null;
+
+   res.render('pages/nova-publicacao', { dadosNotificacao });
 });
+
 
 
 
@@ -662,14 +665,22 @@ router.post(
   }
 );
 
+router.get("/", verificarUsuAutenticado, function (req, res) {
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+  listagensController.listarPublicacoes(req, res, dadosNotificacao);
+});
 
 
-router.get(
-  "/novo-portfolio", //novo portfolio
-  async function (req, res) {
-    listagensController.listarPublicacoesParaColocarNoPortfolio(req, res);
-  }
-);
+
+router.get("/novo-portfolio", async function (req, res) {
+  const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+  listagensController.listarPublicacoesParaColocarNoPortfolio(req, res, dadosNotificacao);
+});
+
 
 router.post(
   "/criar-portfolio",

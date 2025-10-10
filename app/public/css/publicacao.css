@@ -241,6 +241,7 @@ body{
     max-height: 300px; 
     font-family: "Josefin Sans";
     margin-top: 10px;
+    color: var(--text-color);
 }
 
 #ad-comentario:focus {
