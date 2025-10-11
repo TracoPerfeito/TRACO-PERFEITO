@@ -277,6 +277,8 @@ color: var(--text-color) !important;
 
 }
 
+
+
 #sendBtn {
     background-color: var(--cor-fundo-comentario);
     border: none;
@@ -626,4 +628,8 @@ color: var(--text-color) !important;
     background-color: #1e465b;
     cursor: pointer;
    
+}
+
+.placeholder {
+    color: var(--text-color);
 }
