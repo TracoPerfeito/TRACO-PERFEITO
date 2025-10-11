@@ -49,7 +49,7 @@ router.get(
   }
 );
 
-// Listagem para apenas profissionais
+// Listagem para apenas usuários profissionais
 router.get(
   "/adm-listagem-profissional",
   verificarUsuAutenticado,
@@ -59,7 +59,7 @@ router.get(
   }
 );
 
-// Listagem para apenas comuns
+// Listagem para apenas usuários comuns
 router.get(
   "/adm-listagem-comum",
   verificarUsuAutenticado,
@@ -76,6 +76,35 @@ router.get(
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
     admController.listarDenunciasComentarios(req, res);
+  }
+);
+
+
+// Desativar usuário (inativar)
+router.put(
+  "/desativar-usuario/:id",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.desativarUsuario(req, res);
+  }
+);
+
+// Alterar status da denúncia (comentário)
+router.get(
+  "/adm/penalidades",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.getPenalidades(req, res);
+  }
+);
+router.post(
+  "/adm/alterar-status-denuncia",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.alterarStatusDenuncia(req, res);
   }
 );
 

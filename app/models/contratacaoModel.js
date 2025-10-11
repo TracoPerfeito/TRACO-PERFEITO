@@ -70,6 +70,7 @@ WHERE c.ID_CLIENTE = ? OR c.ID_PROFISSIONAL = ?
       const diffMs = dataEntrega - hoje;
       const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
+
       return {
         ...c,
         tipoUsuario: c.tipoUsuario,
@@ -77,6 +78,9 @@ WHERE c.ID_CLIENTE = ? OR c.ID_PROFISSIONAL = ?
         statusAmigavel: c.STATUS.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
       };
     });
+
+    
+console.log(" Resultado :", contratacoes);
 
     return contratacoes;
   } catch (error) {
