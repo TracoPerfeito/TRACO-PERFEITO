@@ -194,6 +194,53 @@ const admModel = {
         }
     },
 
+    // SOBRE A DENUNCIA DE COMENTARIO
+    listarPenalidades: async () => {
+        try {
+        const [rows] = await pool.query("SELECT * FROM TIPOS_PENALIDADES");
+        return rows;
+        } catch (err) {
+        console.error("Erro ao listar penalidades:", err);
+        return [];
+        }
+    },
+
+    aplicarPenalidade: async (idUsuario, idPenalidade, motivo, dataFim) => {
+        try {
+        const [result] = await pool.query(
+            `INSERT INTO PENALIDADES_USUARIOS 
+            (ID_USUARIO, ID_PENALIDADE, MOTIVO_PENALIDADE, DATA_FIM) 
+            VALUES (?, ?, ?, ?)`,
+            [idUsuario, idPenalidade, motivo, dataFim]
+        );
+
+        await pool.query(
+            `UPDATE USUARIOS SET STATUS_USUARIO = 'suspenso' WHERE ID_USUARIO = ?`,
+            [idUsuario]
+        );
+
+        return result.insertId;
+        } catch (err) {
+        console.error("Erro ao aplicar penalidade:", err);
+        throw err;
+        }
+    },
+
+    descartarDenuncia: async (idDenuncia, tabela) => {
+        try {
+        await pool.query(`DELETE FROM ${tabela} WHERE ID_DENUNCIA = ?`, [idDenuncia]);
+        return true;
+        } catch (err) {
+        console.error("Erro ao descartar denúncia:", err);
+        return false;
+        }
+    },
+
+
+
+
+
+
 
 };
 

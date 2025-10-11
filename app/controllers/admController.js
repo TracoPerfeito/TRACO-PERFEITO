@@ -84,8 +84,6 @@ mostrarhome: (req, res, dadosNotificacao) => {
         }
     },
 
-    //ORGANIZAR ISSO E O ROUTER
-
 
     //Listagem para apenas comuns
     listarUsuariosPorTipo: async (req, res) => {
@@ -146,36 +144,36 @@ mostrarhome: (req, res, dadosNotificacao) => {
       },
 
       //Contagem da quantidade de usuários no site
-listarNumeroDePerfis: async (req, res) => {
-  try {
-    const dadosNotificacao = req.session ? req.session.dadosNotificacao || null : null;
+      listarNumeroDePerfis: async (req, res) => {
+        try {
+          const dadosNotificacao = req.session ? req.session.dadosNotificacao || null : null;
 
-    if (req.session) {
-      req.session.dadosNotificacao = null;
-    }
+          if (req.session) {
+            req.session.dadosNotificacao = null;
+          }
 
-    const totalUsuarios = await admModel.contarUsuarios();
-    const totalComuns = await admModel.contarUsuariosPorTipo('comum');
-    const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
+          const totalUsuarios = await admModel.contarUsuarios();
+          const totalComuns = await admModel.contarUsuariosPorTipo('comum');
+          const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
 
-    console.log({ totalUsuarios, totalComuns, totalProfissionais });
+          console.log({ totalUsuarios, totalComuns, totalProfissionais });
 
-    res.render("pages/adm-home", {
-      autenticado: req.session?.autenticado || false,
-      logado: req.session?.logado || null,
-      dadosNotificacao,
-      totalUsuarios,
-      totalComuns,
-      totalProfissionais
-    });
+          res.render("pages/adm-home", {
+            autenticado: req.session?.autenticado || false,
+            logado: req.session?.logado || null,
+            dadosNotificacao,
+            totalUsuarios,
+            totalComuns,
+            totalProfissionais
+          });
 
-  } catch (error) {
-    console.error("Erro ao carregar dashboard:", error);
-    res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-},
+        } catch (error) {
+          console.error("Erro ao carregar dashboard:", error);
+          res.status(500).render('pages/erro-conexao', {
+            mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+          });
+        }
+      },
     
     
 
@@ -250,6 +248,54 @@ listarNumeroDePerfis: async (req, res) => {
   },
 
 
+  // Inativar (desativar) um usuário
+  desativarUsuario: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const [resultado] = await pool.query(
+        "UPDATE USUARIOS SET STATUS_USUARIO = 'inativo' WHERE ID_USUARIO = ?",
+        [id]
+      );
+
+      if (resultado.affectedRows === 0) {
+        console.log("Nenhum usuário encontrado com o ID informado.");
+        return res.status(404).send("Usuário não encontrado.");
+      }
+
+      console.log(`Usuário ${id} foi inativado com sucesso!`);
+      res.sendStatus(200); // Sucesso (sem conteúdo)
+
+    } catch (error) {
+      console.error("Erro ao inativar usuário:", error);
+      res.status(500).send("Erro interno ao inativar usuário.");
+    }
+  },
+
+
+  // Alterar status da denúncia de comentário
+  alterarStatusDenuncia: async (req, res) => {
+    const { idDenuncia, idUsuario, tipoPenalidade, dataFim, acao, tabela } = req.body;
+    console.log("Dados recebidos para alterar status da denúncia:", req.body);
+
+    try {
+      if (acao === "suspender") {
+        await admModel.aplicarPenalidade(idUsuario, tipoPenalidade, "Suspensão por denúncia de comentário", dataFim);
+        console.log(`Usuário ${idUsuario} suspenso até ${dataFim} por denúncia.`);
+      } else if (acao === "descartar") {
+        await admModel.descartarDenuncia(idDenuncia, tabela);
+        console.log(`Denúncia ${idDenuncia} descartada.`);
+      } else {
+        return res.status(400).send("Ação inválida.");
+      }
+      res.sendStatus(200); // Sucesso (sem conteúdo)
+
+    } catch (error) {
+      console.error("Erro ao alterar status da denúncia:", error);
+      res.status(500).send("Erro interno ao alterar status da denúncia.");
+    }
+  }
+  
 
 
 
