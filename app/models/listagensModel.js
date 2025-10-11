@@ -137,6 +137,7 @@ findIdusuario: async (idUsuarioPerfil, idLogado = null) => {
           u.ID_USUARIO,
           u.NOME_USUARIO,
           u.USER_USUARIO,
+               u.TIPO_USUARIO,
           u.FOTO_PERFIL_BANCO_USUARIO,
           u.IMG_BANNER_BANCO_USUARIO,
           u.DESCRICAO_PERFIL_USUARIO,
@@ -595,6 +596,7 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
           p.DATA_PROPOSTA,
             u.ID_USUARIO,
                u.USER_USUARIO,
+                    u.TIPO_USUARIO,
           u.NOME_USUARIO,
           u.FOTO_PERFIL_BANCO_USUARIO
         FROM PROPOSTA_PROJETO p
@@ -680,6 +682,7 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
         u.NOME_USUARIO, 
             u.ID_USUARIO,
                u.USER_USUARIO,
+                  u.TIPO_USUARIO,
         u.FOTO_PERFIL_BANCO_USUARIO
       FROM PROPOSTA_PROJETO p
       INNER JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
