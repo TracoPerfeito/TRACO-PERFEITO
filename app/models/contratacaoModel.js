@@ -70,6 +70,7 @@ WHERE c.ID_CLIENTE = ? OR c.ID_PROFISSIONAL = ?
       const diffMs = dataEntrega - hoje;
       const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
+      console.log(" Resultado :", contratacoes)
       return {
         ...c,
         tipoUsuario: c.tipoUsuario,
