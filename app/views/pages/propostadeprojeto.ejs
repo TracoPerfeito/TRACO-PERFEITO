@@ -120,7 +120,12 @@
                      <a href="/perfil/<%= proposta.ID_USUARIO %>"><%= proposta.NOME_USUARIO %></a>
                   </p>
                </section>
-               <button class="conversar" onclick="location.href='/chat-logado'">Conversar</button>
+              
+
+<button id="irparachat" class="conversar" onclick="location.href='/chat?destinatarioId=<%= proposta.ID_USUARIO %>&nome=<%= encodeURIComponent(proposta.NOME_USUARIO) %>&username=<%= encodeURIComponent(proposta.USER_USUARIO) %>'">
+  <ion-icon name="chatbubbles-outline" style="font-size:15px; width:15px; height:15px;"></ion-icon>
+  Conversar
+</button>
             </section>
 
             <!-- Informações gerais -->

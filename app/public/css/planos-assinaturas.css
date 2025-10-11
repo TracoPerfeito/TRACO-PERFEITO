@@ -586,6 +586,7 @@ margin: 5px 0 10px 0;
   width:40%;
   border: 1px solid #6b88d6;
   text-align: center;
+
 }
 
 .btn-dark {
@@ -593,6 +594,14 @@ margin: 5px 0 10px 0;
   color: white;
   text-transform: uppercase;
   width: 60%;
+}
+
+.btn-dark a {
+  width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  height: 100%;
 }
 
 /* --- Modo desktop --- */

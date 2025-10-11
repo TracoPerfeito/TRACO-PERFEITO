@@ -593,6 +593,8 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
           p.PRAZO_ENTREGA,
           p.ORCAMENTO,
           p.DATA_PROPOSTA,
+            u.ID_USUARIO,
+               u.USER_USUARIO,
           u.NOME_USUARIO,
           u.FOTO_PERFIL_BANCO_USUARIO
         FROM PROPOSTA_PROJETO p
@@ -676,6 +678,8 @@ findIdPublicacao: async (idPublicacao, idUsuario =  null) => {
       SELECT 
         p.*, 
         u.NOME_USUARIO, 
+            u.ID_USUARIO,
+               u.USER_USUARIO,
         u.FOTO_PERFIL_BANCO_USUARIO
       FROM PROPOSTA_PROJETO p
       INNER JOIN USUARIOS u ON p.ID_USUARIO = u.ID_USUARIO
