@@ -129,13 +129,13 @@ const publicacoesController = {
   ],
 
 
-    regrasValidacaoEditarPublicacao: [
-      body("titulo_proposta")
+    regrasValidacaoEditarProposta: [
+      body("titulo_publicacao")
       .trim()
       .isLength({ min: 2, max: 50 })
       .withMessage("O título deve ter entre 2 e 50 caracteres."),
     
-    body("categoria_proposta")
+    body("categoria")
       .trim()
       .notEmpty()
       .withMessage("A categoria é obrigatória."),
@@ -166,23 +166,36 @@ const publicacoesController = {
 ],
 
 
-    regrasValidacaoEditarProposta: [
-  body("titulo_proposta")
+    regrasValidacaoEditarPublicacao: [
+  body("titulo_publicacao")
     .trim()
     .isLength({ min: 1, max: 70 })
-    .withMessage("A Proposta deve ter entre 1 e 70 caracteres."),
+    .withMessage("O título deve ter entre 1 e 70 caracteres."),
+
+    body("categoria")
+    .trim()
+    .notEmpty()
+    .withMessage("Selecione uma categoria"),
   
   
 
-  body("descricao_proposta")
+  body("descricao_publicacao")
     .trim()
     .isLength({ min: 1, max: 2000 })
     .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
 
-  
-
-],
-
+  body("tags")
+    .custom((value) => {
+      try {
+        const tags = JSON.parse(value);
+        if (!Array.isArray(tags)) throw new Error();
+        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+        return true;
+      } catch {
+        throw new Error("Tags inválidas, envie um array JSON.");
+      }
+    }),
+  ],
 
 
 

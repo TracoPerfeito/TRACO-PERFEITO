@@ -1,0 +1,91 @@
+
+
+<!-- Modal Excluir Publicação -->
+<section id="modalExcluirPublicacao" class="modal-coment hidden">
+  <section class="modal-content-coment">
+    <h2>Excluir Publicação</h2>
+    <form id="formExcluirPublicacao" action="/excluir-publicacao" method="POST">
+      <input type="hidden" name="idPublicacao" id="excluirPublicacaoId" value="">
+      <p>Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.</p>
+      <section class="botoes-modal">
+        <button type="button" id="desistirdeexcluir" class="btn-fechar-modal-coment">Cancelar</button>
+        <button type="submit" id="excluir-publi-but" >Sim, excluir</button>
+      </section>
+    </form>
+  </section>
+</section>
+
+<style>
+
+    .modal-content-coment{
+    background-color: var(--cor-fundo);
+    padding: 20px;
+    border-radius: 8px;
+    width: 320px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    font-family: "Josefin sans";
+    color: var(--text-color);
+    }
+
+.modal-content-coment h2 {
+     color: var(--text-color);
+}
+   
+    .modal-content-coment p{
+        font-family: "Josefin Sans";
+    }
+
+    .botoes-modal{
+      display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+#desistirdeexcluir{
+background-color: transparent;
+color: var(--text-color);
+border: 1px solid var(--text-color);
+}
+
+#desistirdeexcluir:hover{
+        color: #fff;
+    background-color: #6e6e6e;
+}
+#excluir-publi-but{
+    color: white;
+    background-color:  #e74c3c;
+
+    
+}
+
+#excluir-publi-but:hover{
+        background-color: #be1502;
+}
+
+</style>
+<script>
+// Abre modal de exclusão
+document.querySelectorAll('.btn-excluir-publicacao').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const idPub = this.getAttribute('data-id'); // pega id direto do data-id
+
+    // Preenche o input escondido do form no modal
+    document.getElementById('excluirPublicacaoId').value = idPub;
+
+    // Mostra modal
+    document.getElementById('modalExcluirPublicacao').classList.remove('hidden');
+  });
+});
+
+// Botão cancelar fecha modal
+document.querySelector('#modalExcluirPublicacao .btn-fechar-modal-coment').addEventListener('click', function() {
+  document.getElementById('modalExcluirPublicacao').classList.add('hidden');
+});
+
+// Fecha modal se clicar fora do conteúdo
+document.getElementById('modalExcluirPublicacao').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.add('hidden');
+});
+</script>

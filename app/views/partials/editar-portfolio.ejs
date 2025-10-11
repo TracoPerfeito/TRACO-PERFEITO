@@ -44,7 +44,7 @@
   transition: 0.2s;
 }
 .fechar-edit-port:hover {
-  color: var(--cor-botao);
+  
   transform: scale(1.1);
 }
 
@@ -62,17 +62,19 @@
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  
 }
 
 .aba-btn {
   flex: 1;
   padding: 10px 15px;
   cursor: pointer;
-  border: none;
+  border: 1px solid var(--text-color);
   font-weight: 500;
   border-radius: 8px;
-  background: var(--cor-cinza-claro, #e0e0e0);
+  background: var(--cor-fundo);
   color: var(--text-color);
+  font-family: "Josefin Sans";
   transition: background 0.25s, transform 0.2s;
 }
 
@@ -81,9 +83,10 @@
 }
 
 .aba-btn.ativa {
-  background: var(--cor-botao);
+  background: var(--cor-btn-azul);
   color: #fff;
   font-weight: 600;
+  border: none;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
@@ -93,8 +96,14 @@
 }
 
 .conteudo-aba.ativa {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+    height: 100%;
+    position: relative; 
 }
+
+
 
 /* ===== Inputs & Textarea ===== */
 form label {
@@ -107,11 +116,12 @@ form input[type="text"],
 form textarea {
   width: 95%;
 padding: 10px;
+background-color: var(--cor-fundo);
    
   margin-top: 6px;
   border: 1px solid var(--cor-borda, #ccc);
   border-radius: 8px;
-  background: var(--cor-fundo-claro, #f8f8f8);
+  
   color: var(--text-color);
   font-size: 1rem;
   transition: border 0.2s, box-shadow 0.2s;
@@ -124,7 +134,7 @@ form textarea{
 
 form input:focus,
 form textarea:focus {
-  border: 1px solid var(--cor-botao);
+  border: 1px solid var(--cor-av-borda-n-pub);
   box-shadow: 0 0 5px var(--cor-botao);
   outline: none;
 }
@@ -135,7 +145,7 @@ form button {
   padding: 12px;
   border: none;
   border-radius: 8px;
-  background: var(--cor-botao);
+  background: var(--cor-btn-azul);
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
@@ -145,7 +155,7 @@ form button {
 }
 
 form button:hover {
-  background: var(--cor-botao-hover, #0e4177);
+
   transform: translateY(-2px);
 }
 
@@ -181,7 +191,8 @@ form button:hover {
 
 .item-publi.selecionado,
 .item-deletar.selecionado-remover {
-  border: 3px solid var(--cor-botao);
+  transform: scale(0.95);
+  border: 4px solid #93C4E3; 
   background: rgba(0, 123, 255, 0.1);
 }
 
@@ -199,11 +210,12 @@ form button:hover {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  background-color: var(--cor-fundo);
+   
 }
 
 .tags-section-modal label {
   display: block;
-  margin-bottom: 6px; 
 }
 
 /* Estilo da caixinha geral do Tagify */
@@ -212,11 +224,12 @@ form button:hover {
   padding: 10px;
   border-radius: 10px;
   border: 1px solid var(--cor-borda, #ccc);
-  background: var(--cor-fundo-claro, #f8f8f8);
+background-color: var(--cor-fundo);
+   
   font-size: 1rem;
   color: var(--text-color);
   transition: border 0.2s, box-shadow 0.2s;
-  transform: translateX(-5px);
+  transform: translate(-5px, -20px);
 }
 
 /* Quando está focado */
@@ -229,7 +242,12 @@ form button:hover {
   display: flex;
   justify-content: flex-end; /* joga para a direita */
   gap: 10px; /* espaço entre os botões */
-  margin-top: 20px;
+  margin-top: auto;
+   padding-top: 10px;
+     position: absolute;
+     bottom: 20px; 
+       right: 20px;
+       
 }
 
 .form-actions button {
@@ -239,6 +257,15 @@ form button:hover {
 
 /* ===== Responsivo ===== */
 @media (max-width: 700px){
+
+
+  
+.form-actions {
+ 
+       left: 20px;
+       right: auto; 
+}
+
   .modal-content-edit-port {
     width: 95%;
     height: 90vh;
