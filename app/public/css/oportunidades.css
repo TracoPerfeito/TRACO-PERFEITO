@@ -319,6 +319,22 @@ main {
 }
 
 
+.badge.expired {
+  background-color: #e74c3c; /* vermelho */
+  color: #fff;
+}
+.badge.urgent {
+  background-color: #f39c12;
+  color: #fff;
+}
+.badge.soon {
+  background-color: #f1c40f;
+  color: #000;
+}
+.badge.ok {
+  background-color: #2ecc71;
+  color: #fff;
+}
 
 
 
