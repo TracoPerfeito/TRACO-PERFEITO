@@ -1,14 +1,4 @@
-   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
-      <script>
-        alert('<%= dadosNotificacao.mensagem %>');
-      </script>
-   <% } %>
-   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
-      <section class="notificacao <%= dadosNotificacao.tipo %>">
-        <strong><%= dadosNotificacao.titulo %></strong><br>
-        <span><%= dadosNotificacao.mensagem %></span>
-      </section>
-   <% } %>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -53,60 +43,57 @@
    <section class="conteudo">
       <section class="containerp">
          <section class="projeto">
-          
-            <h1 class="titulo-maior">Proposta de projeto</h1>
-            <br>
-
-            <!-- Menu de opções -->
-            <section class="menu-opcoes"> 
-               <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" 
-                    viewBox="0 -960 960 960" width="24px" fill="#000">
-                  <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 
-                           23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 
-                           56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 
-                           23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 
-                           56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 
-                           23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 
-                           56.5T480-640Z"/>
-               </svg>
-
-               <section class="opcoes-menu">
-                  <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
-                     <!-- Editar proposta -->
-                        <button 
-                           class="btn-editar" 
-                           title="Editar proposta" 
-                           id="abrirModalEditar"
-                           data-id="<%= proposta.ID_PROPOSTA %>"
-                           data-titulo="<%= proposta.TITULO_PROPOSTA %>"
-                           data-orcamento="<%= proposta.ORCAMENTO %>"
-                           data-prazoentrega="<%= proposta.PRAZO_ENTREGA ? (new Date(proposta.PRAZO_ENTREGA).toISOString().slice(0,10)) : '' %>"
-                           data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
-                           data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
-                           <ion-icon name="create-outline"></ion-icon>
-                           Editar
-                        </button>
-
-                     <!-- Excluir proposta -->
-                     <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
-            <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
-            <button type="submit" class="btn-excluir-proposta" 
-                    title="Excluir proposta">
-               <ion-icon name="trash-outline"></ion-icon>
-               Excluir
-            </button>
-         </form>
-                  <% } %>
-
-
-                  <!-- Denunciar -->
-                  <% if (!autenticado || id_usuario !== proposta.ID_USUARIO) { %>
-  <button class="btn-denunciar" data-id="<%= proposta.ID_PROPOSTA %>">
-    <ion-icon name="flag-outline"></ion-icon> Denunciar
-  </button>
-<% } %>
-   </section>
-</section>
+          <section class="h1-btn-pontos">
+            
+              <h1 class="titulo-maior">Proposta de projeto</h1>
+            
+              <!-- Menu de opções -->
+              <section class="menu-opcoes">
+                 <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px"
+                      viewBox="0 -960 960 960" width="24px" fill="#000">
+                    <path d="M480-160q-33 0-56.5-23.5T400-240q0-33
+                             23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5
+                             56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33
+                             23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5
+                             56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33
+                             23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5
+                             56.5T480-640Z"/>
+                 </svg>
+                 <section class="opcoes-menu">
+                    <% if (autenticado && id_usuario === proposta.ID_USUARIO) { %>
+                       <!-- Editar proposta -->
+                          <button
+                             class="btn-editar"
+                             title="Editar proposta"
+                             id="abrirModalEditar"
+                             data-id="<%= proposta.ID_PROPOSTA %>"
+                             data-titulo="<%= proposta.TITULO_PROPOSTA %>"
+                             data-orcamento="<%= proposta.ORCAMENTO %>"
+                             data-prazoentrega="<%= proposta.PRAZO_ENTREGA ? (new Date(proposta.PRAZO_ENTREGA).toISOString().slice(0,10)) : '' %>"
+                             data-descricao="<%= proposta.DESCRICAO_PROPOSTA %>"
+                             data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
+                             <ion-icon name="create-outline"></ion-icon>
+                             Editar
+                          </button>
+                       <!-- Excluir proposta -->
+                       <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
+              <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
+              <button type="submit" class="btn-excluir-proposta"
+                      title="Excluir proposta">
+                 <ion-icon name="trash-outline"></ion-icon>
+                 Excluir
+              </button>
+                     </form>
+                    <% } %>
+                    <!-- Denunciar -->
+                    <% if (!autenticado || id_usuario !== proposta.ID_USUARIO) { %>
+              <button class="btn-denunciar" data-id="<%= proposta.ID_PROPOSTA %>">
+                <ion-icon name="flag-outline"></ion-icon> Denunciar
+              </button>
+            <% } %>
+               </section>
+            </section>
+          </section>
 
             <!-- Perfil do usuário -->
             <section class="perfil">
@@ -122,80 +109,130 @@
                </section>
               
 
-<button 
-  id="irparachat" 
-  class="conversar" 
-  onclick="location.href='/chat?destinatarioId=<%= proposta.ID_USUARIO %>&nome=<%= encodeURIComponent(proposta.NOME_USUARIO) %>&username=<%= encodeURIComponent(proposta.USER_USUARIO) %>&tipo=<%= encodeURIComponent(proposta.TIPO_USUARIO) %>'">
-  Conversar
-</button>
+<% if (id_usuario !== proposta.ID_USUARIO) { %>
+  <button 
+    id="irparachat" 
+    class="conversar" 
+    onclick="location.href='/chat?destinatarioId=<%= proposta.ID_USUARIO %>&nome=<%= encodeURIComponent(proposta.NOME_USUARIO) %>&username=<%= encodeURIComponent(proposta.USER_USUARIO) %>&tipo=<%= encodeURIComponent(proposta.TIPO_USUARIO) %>'">
+    
+    <ion-icon name="chatbubbles-outline" style="font-size:15px; width:15px; height:15px;"></ion-icon>
+    Conversar
+  </button>
+<% } %>
 
-  <ion-icon name="chatbubbles-outline" style="font-size:15px; width:15px; height:15px;"></ion-icon>
-  Conversar
-</button>
+
             </section>
 
-            <!-- Informações gerais -->
-            <section class="info-proposta">
-               <p><strong>Nome da proposta:</strong> <%= proposta.TITULO_PROPOSTA %></p>
-               <p><strong>Categoria:</strong> <%= proposta.CATEGORIA_PROPOSTA %></p>
-               <p><strong>Profissional requerido:</strong> <%= proposta.PROFISSIONAL_REQUERIDO %></p>
-               <p><strong>Prazo de entrega:</strong>
-                  <% if (proposta.PRAZO_ENTREGA) { %>
-                     <%= new Date(proposta.PRAZO_ENTREGA).toLocaleDateString() %>
-                  <% } else { %>
-                     Não definido
-                  <% } %>
-               </p>
-               <p><strong>Orçamento:</strong> R$ <%= proposta.ORCAMENTO %></p>
-               <p><strong>Status:</strong> <%= proposta.STATUS_PROPOSTA %></p>
-               <p><strong>Preferência:</strong> <%= proposta.PREFERENCIA_PROPOSTA %></p>
-               <p><strong>Data da proposta:</strong>
-                  <% if (proposta.DATA_PROPOSTA) { %>
-                     <%= new Date(proposta.DATA_PROPOSTA).toLocaleDateString() %>
-                  <% } else { %>
-                     Não definido
-                  <% } %>
-               </p>
-            </section>
-
+       
             <!-- Descrição -->
             <section class="pedidodescrito">
+<h2>
+  
+                <%= proposta.TITULO_PROPOSTA
+   %>
+</h2>
+
+<br>
                <%- proposta.DESCRICAO_PROPOSTA %>
             </section>
          </section>
       </section>
 
-      <!-- Outras propostas -->
-      <aside class="outras-propostas">
-         <h2 class="titulo-medio">Outras propostas</h2>
-         <section class="outras-p-container">
-            <section class="propostas">
-               <section class="prop-rel-info">
-                  <img src="imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                  <a href=/perfilalogado>
-                     <p class="nome-comentario"> Mariana Sanchez</p>
-                  </a>
-               </section>
-               <p>
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, dicta sunt explicabo.
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
-               </p>
-            </section>
 
-            <section class="propostas">
-               <section class="prop-rel-info">
-                  <img src="imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                  <a href=/perfilalogado>
-                     <p class="nome-comentario"> Mariana Sanchez</p>
-                  </a>
-               </section>
-               <p>
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, dicta sunt explicabo.
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
-               </p>
-            </section>
-         </section>
-      </aside>
+    <section class="info-proposta">
+
+  <h2>Detalhes da proposta</h2>
+
+  <section id="titulo" class="card-info">
+    <ion-icon name="document-text-outline"></ion-icon>
+    <section class="texto-det">
+      <p class="label">Título</p>
+      <p><%= proposta.TITULO_PROPOSTA
+ %></p>
+    </section>
+  </section>
+
+  <section class="det">
+    <section id="categoria" class="card-info">
+      <ion-icon name="pricetag-outline"></ion-icon>
+      <section class="texto-det">
+        <p class="label">Categoria</p>
+        <p><%= proposta.CATEGORIA_PROPOSTA %></p>
+      </section>
+    </section>
+
+    <section id="profissional" class="card-info">
+      <ion-icon name="briefcase-outline"></ion-icon>
+      <section class="texto-det">
+        <p class="label">Profissional requerido</p>
+        <p>
+          <% if (!proposta.PROFISSIONAL_REQUERIDO || proposta.PROFISSIONAL_REQUERIDO.trim() === '') { %>
+            <% 
+              let prof = 'Profissional Diverso';
+              const cat = proposta.CATEGORIA_PROPOSTA?.toLowerCase();
+              if (cat?.includes('gráfico') || cat?.includes('design')) prof = 'Designer Gráfico';
+              else if (cat?.includes('tipografia')) prof = 'Tipógrafo';
+              else if (cat?.includes('ilustração')) prof = 'Ilustrador';
+            %>
+            <%= prof %>
+          <% } else { %>
+            <%= proposta.PROFISSIONAL_REQUERIDO %>
+          <% } %>
+        </p>
+      </section>
+    </section>
+  </section>
+
+  <section id="estilo" class="card-info">
+    <ion-icon name="color-palette-outline"></ion-icon>
+    <section class="texto-det">
+      <p class="label">Preferência de estilo</p>
+      <p>
+        <%= proposta.PREFERENCIA_PROPOSTA && proposta.PREFERENCIA_PROPOSTA.trim() !== '' ? proposta.PREFERENCIA_PROPOSTA : 'Não informada' %>
+      </p>
+    </section>
+  </section>
+
+  <section class="det">
+    <section id="orcamento" class="card-info">
+      <ion-icon name="cash-outline"></ion-icon>
+      <section class="texto-det">
+        <p class="label">Orçamento</p>
+        <p>R$<%= proposta.ORCAMENTO %></p>
+      </section>
+    </section>
+
+    <section id="entrega" class="card-info">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <section class="texto-det">
+        <p class="label">Data de entrega</p>
+        <p>
+          <% 
+            const entrega = new Date(proposta.PRAZO_ENTREGA);
+            const hoje = new Date();
+            const diffTime = entrega - hoje;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          %>
+          <%= entrega.toLocaleDateString('pt-BR') %>
+          <% if (diffDays >= 0) { %>
+            <br><small><%= diffDays %> dias restantes</small>
+          <% } else { %>
+            <br><small>Prazo expirado</small>
+          <% } %>
+        </p>
+      </section>
+    </section>
+  </section>
+
+</section>
+
+
+
+</section>
+
+
+
+
    </section>
 
    
@@ -246,8 +283,8 @@
    <%- include('../partials/rodape'); %>
 
    <!-- Scripts -->
-   <script src="js/voltar.js"></script>
-   <script src="js/mobile-navbar.js"></script>
+   <script src="/js/voltar.js"></script>
+   <script src="/js/mobile-navbar.js"></script>
    <script>
       // Remover proposta da página após exclusão
       document.addEventListener('DOMContentLoaded', function() {

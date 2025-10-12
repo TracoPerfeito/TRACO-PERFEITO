@@ -14,13 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
-  <link rel="stylesheet" href="css/oportunidades.css">
-  <link rel="stylesheet" href="css/propostadeprojeto.css">
-    <link rel="stylesheet" href="css/barrapesquisa.css">
+  <link rel="stylesheet" href="/css/oportunidades.css">
+ <link rel="stylesheet" href="/css/barrapesquisa.css">
 
        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
-   <script src="js/simple-notify.js"></script>
+   <script src="/js/simple-notify.js"></script>
 
 
  
@@ -29,13 +28,14 @@
 <body>
 
 
-    <%  if (dadosNotificacao) { %>
+ 
+ 
+ <%  if (dadosNotificacao) { %>
         <script>
                 notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
                                    
         </script>
     <% } %>
-
 
     
 <% if (status_usuario === 'pendente') { %>
@@ -199,12 +199,23 @@
       data-titulo="<%= proposta.TITULO_PROPOSTA %>">
       <!-- Badges: status e categoria -->
       <section class="info-top">
-        <section class="badges">
-          <span class="badge open">Open</span>
-          <span class="badge categoria-<%= proposta.CATEGORIA_PROPOSTA.toLowerCase().replace('_','-') %>">
-            <%= proposta.CATEGORIA_PROPOSTA %>
-          </span>
-        </section>
+
+     <section class="badges" data-categoria="<%= proposta.CATEGORIA_PROPOSTA %>">
+  <span class="badge open">Open</span>
+  <span class="badge categoria"></span>
+</section>
+
+<script>
+document.querySelectorAll('.badges').forEach(badgeContainer => {
+  const cat = badgeContainer.dataset.categoria;
+  const slug = cat.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                .toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+  const badge = badgeContainer.querySelector('.badge.categoria');
+  badge.classList.add('categoria-' + slug);
+  badge.textContent = cat;
+});
+</script>
+
         <!-- Menu de opções estilo três pontinhos -->
         <section class="menu-opcoes">
           <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000">
@@ -226,16 +237,17 @@
                 <ion-icon name="create-outline"></ion-icon>
                 Editar
               </button>
-              <form action="/excluir-proposta" method="POST" class="form-excluir-proposta">
-                <input type="hidden" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
-                <button type="submit" class="btn-excluir-proposta" title="Excluir proposta">
-                  <ion-icon name="trash-outline"></ion-icon>
-                  Excluir
-                </button>
-              </form>
+             <button type="button" class="btn-excluir-proposta" data-id="<%= proposta.ID_PROPOSTA %>" title="Excluir proposta">
+  <ion-icon name="trash-outline"></ion-icon>
+  Excluir
+</button>
+
                <% } %>
-              <% if (!autenticado || id_usuario !== proposta.ID_USUARIO) { %>
-  <button class="btn-denunciar" data-id="<%= proposta.ID_PROPOSTA %>">
+
+
+ <% if (tipo_usuario && id_usuario !== proposta.ID_USUARIO) { %>
+<button class="btn-denunciar btn-denunciar-proposta" data-id="<%= proposta.ID_PROPOSTA %>">
+
     <ion-icon name="flag-outline"></ion-icon> Denunciar
   </button>
 <% } %>
@@ -247,7 +259,7 @@
       <h3><%= proposta.TITULO_PROPOSTA %></h3>
 
       <!-- Descrição -->
-      <p class="desc"><%- proposta.DESCRICAO_PROPOSTA %></p>
+      <section class="desc"><p><%- proposta.DESCRICAO_PROPOSTA %></p></section>
 
       <!-- Orçamento e Profissional requerido -->
       <section class="budget-prof">
@@ -271,18 +283,27 @@
             if (diffDays <= 2) { classe = 'urgent'; texto = `${diffDays} dias restantes`; }
             else if (diffDays <= 5) { classe = 'soon'; texto = `${diffDays} dias restantes`; }
         %>
-          <span class="<%= classe %>"><%= texto %></span>
+          <span class="<%= classe %> prazo-entrega" ><ion-icon name="time-outline"></ion-icon> <%= texto %></span>
         <% } else { %>
           <span class="ok">Prazo não definido</span>
         <% } %>
       </section>
 
       <!-- Ações -->
-      <section class="actions">
-        <button class="btn primary">Conversar</button>
-        <button class="btn outline" onclick="event.stopPropagation(); window.location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'">Ver Detalhes</button>
-      </section>
+    <section class="actions">
+  <% if (!autenticado || id_usuario !== proposta.ID_USUARIO) { %>
+    <button class="btn primary">Conversar</button>
+  <% } %>
+  
+  <button class="btn outline" onclick="event.stopPropagation(); window.location.href='/propostadeprojeto/<%= proposta.ID_PROPOSTA %>'">
+    Ver Detalhes
+  </button>
+</section>
+
     </section>
+
+
+
   <% }) %>
 </section>
 
@@ -290,24 +311,44 @@
     </main>
 
 
-
-    <!-- Modal de denúncia (igual ao propostadeprojeto) -->
-    <section id="modalDenuncia" class="modal">
-      <section class="modal-content">
-        <h3>Qual o motivo da denúncia?</h3>
-        <form id="formDenuncia" action="/denunciar-proposta" method="post">
-          <input type="hidden" id="idPropostaInput" name="idProposta" value="">
-          <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
-          <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
-          <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
-          <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
-          <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
-          <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
-          <button type="submit">Enviar denúncia</button>
-          <button type="button" id="fecharModal">Cancelar</button>
-        </form>
+    <section class="modal modal-denuncia">
+  <section class="modal-content">
+    <h3>Qual o motivo da denúncia?</h3>
+    <form class="form-denuncia" action="/denunciar-proposta" method="post">
+      <input type="hidden" id="id-proposta-denuncia" name="idProposta" value="">
+      <label><input type="radio" name="motivo" value="Conteúdo ofensivo" required> Conteúdo ofensivo</label><br>
+      <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+      <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+      <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+      <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+      <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+      <section class="btns-enviar-denuncia">
+        <button type="button" id="fechar-modal-denuncia">Cancelar</button>
+        <button type="submit">Enviar denúncia</button>
       </section>
-    </section>
+    </form>
+  </section>
+</section>
+
+
+
+<!-- Modal de confirmação de exclusão -->
+<section id="modal-excluir-proposta" class="modal">
+  <section class="modal-content">
+    <h3>Tem certeza que deseja excluir esta proposta?</h3>
+    <form id="formExcluirProposta" action="/excluir-proposta" method="POST">
+      <input type="hidden" name="idProposta" id="id-proposta-excluir" value="">
+      <section class="btns-enviar-denuncia">
+        <button type="button" id="fechar-modal-excluir">Cancelar</button>
+        <button type="submit">Excluir</button>
+      </section>
+    </form>
+  </section>
+</section>
+
+
+
+
 
     <!-- Modal de edição de proposta -->
     <%- include('../partials/editar-proposta'); %>
@@ -325,7 +366,79 @@
     <script src="js/filtro.js"></script>
     <script src="js/oportunidades-menu.js"></script>
 
-    
+     <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modalDenuncia = document.querySelector(".modal-denuncia");
+  const fecharModalBtn = document.getElementById("fechar-modal-denuncia");
+  const inputIdProposta = document.getElementById("id-proposta-denuncia");
+
+  document.querySelectorAll(".btn-denunciar-proposta").forEach(btn => {
+    btn.addEventListener("click", () => {
+      console.log("Clicou no denunciar");
+      if (inputIdProposta) inputIdProposta.value = btn.dataset.id;
+      if (modalDenuncia) {
+        modalDenuncia.style.display = "block";
+        document.body.style.overflow = "hidden";
+        console.log("Modal aberto");
+      }
+    });
+  });
+
+  if (fecharModalBtn) {
+    fecharModalBtn.addEventListener("click", () => {
+      modalDenuncia.style.display = "none";
+      document.body.style.overflow = "auto";
+      console.log("Modal fechado pelo botão");
+    });
+  }
+
+  window.addEventListener("click", (event) => {
+    if (event.target === modalDenuncia) {
+      modalDenuncia.style.display = "none";
+      document.body.style.overflow = "auto";
+      console.log("Modal fechado clicando fora");
+    }
+  });
+});
+
+
+    </script>
+
+
+<script>
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const modalExcluir = document.getElementById("modal-excluir-proposta");
+  const inputExcluir = document.getElementById("id-proposta-excluir");
+  const btnFecharExcluir = document.getElementById("fechar-modal-excluir");
+  const formExcluir = document.getElementById("formExcluirProposta");
+
+  // Botões de excluir em cada card
+  document.querySelectorAll(".btn-excluir-proposta").forEach(btn => {
+    btn.addEventListener("click", () => {
+      inputExcluir.value = btn.dataset.id; // seta o ID da proposta no form do modal
+      modalExcluir.style.display = "block";
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  // Fechar modal
+  btnFecharExcluir.addEventListener("click", () => {
+    modalExcluir.style.display = "none";
+    document.body.style.overflow = "auto";
+  });
+
+  // Fechar clicando fora
+  modalExcluir.addEventListener("click", (e) => {
+    if (e.target === modalExcluir) {
+      modalExcluir.style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+  });
+});
+
+</script>
     
 </body>
 </html>

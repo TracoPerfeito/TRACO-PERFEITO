@@ -58,6 +58,10 @@
 --msg-outro:   #e5e5ea;
 --msg-eu:  #7490C9;
 --selecionado:  #eee;
+--hover-btn: rgb(54, 117, 176);
+--cor-p:  #a7a7a7; 
+--cor-btn-azul2:  #124779;
+--cor-budget: #124779;
   }
 
 /* #264869 */ 
@@ -121,5 +125,9 @@
 --msg-outro: rgb(55, 58, 70);
 --msg-eu: rgb(90, 109, 186);
 --selecionado:  rgb(51, 52, 56);
+--hover-btn:  #50849f;
+--cor-p:  #818181; 
+--cor-btn-azul2:  #316886;
+--cor-budget: rgb(107, 128, 211);
       }
 

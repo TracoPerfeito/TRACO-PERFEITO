@@ -1156,6 +1156,10 @@ body{
     color: var(--text-color);
   }
 
+  .modal-content-coment form{
+    margin: 15px 0px;
+  }
+
   .btns-denuncia{
     display: flex;
     justify-content: space-between;

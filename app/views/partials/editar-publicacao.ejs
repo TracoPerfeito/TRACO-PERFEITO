@@ -275,3 +275,81 @@ window.addEventListener("resize", function() {
   if (modal && getComputedStyle(modal).display === "flex") ajustarModalMobile(modal);
 });
 </script>
+
+
+<script>
+console.log("🟣 Validação de front-end carregada.");
+
+// Função para mostrar mensagem de erro
+function mostrarErro(campoContainer, mensagem) {
+  let spanErro = campoContainer.querySelector(".erro-validacao");
+  if (!spanErro) {
+    spanErro = document.createElement("span");
+    spanErro.className = "erro-validacao";
+    spanErro.style.color = "red";
+    spanErro.style.fontSize = "0.9em";
+    campoContainer.appendChild(spanErro);
+  }
+  spanErro.textContent = mensagem;
+}
+
+// Função para limpar mensagens
+function limparErros() {
+  document.querySelectorAll(".erro-validacao").forEach(el => el.remove());
+}
+
+// Listener no submit do form
+const formEditar = document.querySelector("#modal-editar-publicacao form");
+if (formEditar) {
+  formEditar.addEventListener("submit", function(e) {
+    limparErros();
+    let valido = true;
+
+    // --- Título ---
+    const tituloContainer = document.getElementById("titulo-editar-publicacao-container");
+    const titulo = document.getElementById("titulo-editar-publicacao").value.trim();
+    if (titulo.length < 1 || titulo.length > 70) {
+      mostrarErro(tituloContainer, "O título deve ter entre 1 e 70 caracteres.");
+      valido = false;
+    }
+
+    // --- Categoria ---
+    const categoriaContainer = document.getElementById("categoria-editar-publicacao-container");
+    const categoria = document.getElementById("categoria-editar-publicacao").value;
+    const outraCategoria = document.getElementById("outraCategoria").value.trim();
+    if (!categoria || (categoria === "Outros" && outraCategoria.length === 0)) {
+      mostrarErro(categoriaContainer, "Selecione uma categoria ou informe a categoria personalizada.");
+      valido = false;
+    }
+
+    // --- Descrição ---
+    const descricaoContainer = document.getElementById("descricao-editar-publicacao-container");
+    const descricao = document.getElementById("descricao-editar-publicacao").value.trim();
+    if (descricao.length < 1 || descricao.length > 2000) {
+      mostrarErro(descricaoContainer, "A descrição deve ter entre 1 e 2000 caracteres.");
+      valido = false;
+    }
+
+    // --- Tags ---
+    const tagsContainer = document.getElementById("tags-editar-publicacao-container");
+    let tags = [];
+    if (tagifyEditar) {
+      tags = tagifyEditar.value.map(t => t.value);
+    }
+    
+if (!tags.length) {
+  mostrarErro(tagsContainer, "Adicione pelo menos uma tag.");
+  valido = false;
+} else if (tags.length > 10) {
+  mostrarErro(tagsContainer, "Máximo 10 tags permitidas.");
+  valido = false;
+}
+
+    // Se algum campo inválido, previne envio
+    if (!valido) {
+      e.preventDefault();
+      console.warn("⚠️ Formulário não enviado, campos inválidos.");
+    }
+  });
+}
+</script>

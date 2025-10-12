@@ -18,8 +18,6 @@ const admController = require("../controllers/admController");
 
 const db = require('../../config/pool_conexoes');
 
-// Denunciar proposta de projeto
-router.post('/denunciar-proposta', denunciasController.criarDenunciaProposta);
 
 // SDK do Mercado Pago
 const { MercadoPagoConfig, Preference } = require('mercadopago');
@@ -147,9 +145,12 @@ router.get("/publicacao/:id", function (req, res) { //publicacao
 });
 
 router.post(
-  "/denunciar-publicacao",
-  denunciasController.criarDenunciaPublicacao
+  "/denunciar-publicacao", function(req, res){
+  denunciasController.criarDenunciaPublicacao(req, res);
+  }
 );
+
+
 
 router.post(
   "/editar-publicacao", 
@@ -180,14 +181,21 @@ router.post(
 
 // Denunciar comentário
 router.post(
-  "/denunciar-comentario",
-  comentariosController.denunciarComentario
+  "/denunciar-comentario",  function(req, res){
+  comentariosController.denunciarComentario(req, res);
+  }
 );
 
 
-router.post("/denunciar-publicacao", denunciasController.criarDenunciaPublicacao);
+router.post("/denunciar-publicacao",  function(req, res){
+   denunciasController.criarDenunciaPublicacao(req, res);
+  
+  });
 
-router.post('/denunciar-usuario', denunciasController.criarDenunciaUsuario);
+router.post('/denunciar-usuario', function(req, res){
+   denunciasController.criarDenunciaUsuario(req, res);
+  
+  });
 
 
 
@@ -423,6 +431,11 @@ router.get("/pedido", function (req, res) { //pedido (publicacao do oportunidade
  
 });
 
+// Denunciar proposta de projeto
+router.post('/denunciar-proposta',  function(req, res){
+   denunciasController.criarDenunciaProposta(req, res);
+  
+  });
 
 
 
@@ -661,6 +674,9 @@ router.post(
   "/enviar-proposta-projeto",
  publicacoesController.regrasValidacaoCriarPropostaProjeto,
   async function (req, res) {
+     const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
     publicacoesController.criarPropostadeProjeto(req, res);
   }
 );
@@ -783,7 +799,10 @@ router.get("/escolher-assinatura", function (req, res) {
 
 
 router.get("/oportunidades", function (req, res) { //oportunidades logado
-   listagensController.listarPropostas(req, res);
+   const dadosNotificacao = req.session.dadosNotificacao || null;
+  req.session.dadosNotificacao = null;
+
+   listagensController.listarPropostas(req, res, dadosNotificacao);
  
 });
 

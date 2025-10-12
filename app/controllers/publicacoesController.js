@@ -130,12 +130,12 @@ const publicacoesController = {
 
 
     regrasValidacaoEditarProposta: [
-      body("titulo_publicacao")
+      body("titulo_proposta")
       .trim()
-      .isLength({ min: 2, max: 50 })
-      .withMessage("O título deve ter entre 2 e 50 caracteres."),
+      .isLength({ min: 2, max: 70 })
+      .withMessage("O título deve ter entre 2 e 70 caracteres."),
     
-    body("categoria")
+    body("categoria_proposta")
       .trim()
       .notEmpty()
       .withMessage("A categoria é obrigatória."),
@@ -158,7 +158,7 @@ const publicacoesController = {
 
        body("descricao_proposta")
       .trim()
-      .isLength({ min: 2, max: 2000 })
+      .isLength({ min: 2, max: 7000 })
       .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
 
 

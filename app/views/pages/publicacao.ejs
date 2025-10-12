@@ -129,11 +129,11 @@ let msgErros = {conteudo: ""};
 
       <% } %>
 
-      <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal()">
+      <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal('<%= publicacao.ID_PUBLICACAO %>')">
         <ion-icon name="share-social-outline"></ion-icon>
         Compartilhar
       </button>
-      <% if (!autenticado || id_usuario !== publicacao.ID_USUARIO) { %>
+     <% if (tipo_usuario && id_usuario !== publicacao.ID_USUARIO) { %>
   <button class="btn-denunciar" data-id="<%= publicacao.ID_PUBLICACAO %>">
     <ion-icon name="flag-outline"></ion-icon> Denunciar
   </button>
@@ -311,9 +311,11 @@ let msgErros = {conteudo: ""};
                     <ion-icon name="trash-outline"></ion-icon>Excluir
                   </button>
                 <% } %>
-                <button class="btn-denunciar-comentario" title="Denunciar">
-                  <ion-icon name="flag-outline"></ion-icon>Denunciar
-                </button>
+                 <% if (tipo_usuario && id_usuario !== comentario.ID_USUARIO) { %>
+  <button class="btn-denunciar-comentario" data-id="<%= comentario.ID_COMENTARIO %>">
+    <ion-icon name="flag-outline"></ion-icon> Denunciar
+  </button>
+<% } %>
               </section>
             </section>
 
@@ -441,7 +443,7 @@ let msgErros = {conteudo: ""};
     <form id="formDenuncia" action="/denunciar-publicacao" method="POST">
       <input type="hidden" name="idPublicacao" id="idPublicacaoInput" value=" <%= publicacao.ID_PUBLICACAO %>">
       
-      <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
+      <label><input type="radio" name="motivo" value="Conteúdo ofensivo" required> Conteúdo ofensivo</label><br>
       <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
       <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
       <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
@@ -465,7 +467,7 @@ let msgErros = {conteudo: ""};
  
                     <section class="link-container">
                     <section id="shareLink">
-                      https://tracoperfeito.onrender.com/publicacao/<%= publicacao.ID_PUBLICACAO %>
+                      https://tracoperfeito.onrender.com/publicacao/
                     </section>
  
                     <button class="copy-button" onclick="copyToClipboard()">
@@ -541,18 +543,26 @@ let msgErros = {conteudo: ""};
   <div class="modal-content-coment">
     <h2>Denunciar Comentário</h2>
     <form action="/denunciar-comentario" method="POST">
-  <input type="hidden" name="idComentario" id="denunciarComentarioId" value="">
-  <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
-      <label for="motivoDenuncia">Motivo:</label>
-      <textarea id="motivoDenuncia" name="motivo" required></textarea>
-   <section class="btns-denuncia">
-     
-       <button type="button" class="btn-fechar-modal-coment">Cancelar</button>
-         <button type="submit">Enviar Denúncia</button>
-   </section>
+      <input type="hidden" name="idComentario" id="denunciarComentarioId" value="">
+      <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
+
+      <p>Selecione o motivo da denúncia:</p>
+
+      <label><input type="radio" name="motivo" value="Conteúdo ofensivo" required> Conteúdo ofensivo</label><br>
+      <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+      <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+      <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+
+      <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+
+      <section class="btns-denuncia">
+        <button type="button" class="btn-fechar-modal-coment">Cancelar</button>
+        <button type="submit">Enviar Denúncia</button>
+      </section>
     </form>
   </div>
 </div>
+
  
  
     </main>
