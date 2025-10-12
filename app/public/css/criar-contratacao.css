@@ -85,17 +85,63 @@ form textarea::placeholder {
   opacity: 0.8;
   margin-bottom: 15px;
 }
-
-/* Checkbox */
-.form-check-input {
-  accent-color: var(--cor-av-borda-n-pub);
-  cursor: pointer;
-  margin-right: 8px;
+.form-check {
+  display: inline-flex; /* impede que ocupe a largura toda */
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
 }
+.form-check-input {
+  appearance: none; /* remove o estilo padrão do navegador */
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgb(107, 128, 211);
+  border-radius: 4px;
+  background-color: transparent;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* efeito ao passar o mouse */
+.form-check-input:hover {
+  border-color: rgb(90, 109, 186);
+}
+
+/* quando estiver marcado */
+.form-check-input:checked {
+  background-color: rgb(107, 128, 211);
+  border-color: rgb(107, 128, 211);
+}
+
+/* “check” branco centralizado */
+.form-check-input:checked::after {
+  content: "✔";
+  color: #ffffff;
+  font-size: 15px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -58%);
+}
+
 
 .form-check-label {
   font-size: 0.95rem;
+  color: var(--text-color);
 }
+
+.input-invalido {
+  border-color: rgb(219, 84, 97) !important;
+  background-color: rgba(219, 84, 97, 0.05);
+}
+
+.msg-erro {
+  font-size: 0.85rem;
+}
+
 
 /* Botão */
 form button[type="submit"] {
@@ -113,30 +159,16 @@ form button[type="submit"] {
 form button[type="submit"]:hover {
   cursor: pointer;
   transform: translateY(-3px);
-  background-color: var(--cor-borda-n-pub);
+  background-color: var(--hover-btn);
 }
 
-/* Responsividade */
-@media (max-width: 650px) {
-  main.container {
-    margin: 15px;
-  }
-
-  .criarContratacao {
-    text-align: center;
-    font-size: 1.5rem;
-  }
-
-  form button[type="submit"] {
-    width: 100%;
-  }
-}
 
 
 /* Grelha do formulário: mobile empilha; desktop mostra 2 colunas */
 .form-grid {
   display: block; /* mobile: empilha */
   gap: 20px;
+  box-sizing: border-box;
 }
 
 /* garante que cada coluna ocupe 100% no mobile */
@@ -146,12 +178,17 @@ form button[type="submit"]:hover {
 
 /* no desktop vira 2 colunas */
 @media (min-width: 768px) {
-  .form-grid {
+    .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; /* esquerda | direita */
     gap: 40px;
-    align-items: start; /* alinha topo das colunas */
+    align-items: start;
   }
+
+  .conteudo-principal {
+  padding: 10px 2rem !important;
+}
+
 }
 
 /* opcional: faz os textareas da coluna direita terem altura maior por padrão */
@@ -168,9 +205,59 @@ form button[type="submit"]:hover {
 
 #section-termos{
   width: 100%;
+  margin: 10px 0px;
+  padding: 10px;
 }
 
 
 .conteudo-principal {
-  padding: 10px 2rem;
+  padding: 10px 1rem;
+}
+
+
+
+
+/* Remove interferência do Bootstrap */
+.form-grid .col {
+  flex: none !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Garante que todos os inputs e textareas tenham mesma largura */
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Mantém labels no topo */
+.form-grid label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Garante alinhamento dos campos entre colunas */
+.form-grid .mb-3 {
+  margin-bottom: 20px;
+}
+
+
+
+
+@media (max-width: 650px) {
+  main.container {
+    margin: 15px;
+  }
+
+  .criarContratacao {
+    text-align: center;
+    font-size: 1.5rem;
+  }
+
+  form button[type="submit"] {
+    width: 100%;
+  }
 }

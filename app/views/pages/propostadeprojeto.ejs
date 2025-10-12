@@ -87,9 +87,10 @@
                     <% } %>
                     <!-- Denunciar -->
                     <% if (!autenticado || id_usuario !== proposta.ID_USUARIO) { %>
-              <button class="btn-denunciar" data-id="<%= proposta.ID_PROPOSTA %>">
-                <ion-icon name="flag-outline"></ion-icon> Denunciar
-              </button>
+             <button class="btn-denunciar-proposta" data-id="<%= proposta.ID_PROPOSTA %>">
+  <ion-icon name="flag-outline"></ion-icon> Denunciar
+</button>
+
             <% } %>
                </section>
             </section>
@@ -237,24 +238,55 @@
 
    
                                                 <!-- Modal de denúncia -->
-                        <section id="modalDenuncia" class="modal">
-                            <section class="modal-content">
-                            <h3>Qual o motivo da denúncia?</h3>
-                            <form id="formDenuncia" action="/denunciar-proposta" method="post">
-                               <input type="hidden" id="idPropostaInput" name="idProposta" value="<%= proposta.ID_PROPOSTA %>">
-                                <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
-                                <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
-                                <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
-                                <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
-                                <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
-                                <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
-                                
-                                <button type="submit">Enviar denúncia</button>
-                                <button type="button" id="fecharModal">Cancelar</button>
-                            </form>
-                            </section>
+                  
+    <section class="modal modal-denuncia">
+  <section class="modal-content">
+    <h3>Qual o motivo da denúncia?</h3>
+    <form class="form-denuncia" action="/denunciar-proposta" method="post">
+      <input type="hidden" id="id-proposta-denuncia" name="idProposta" value="">
+      <label><input type="radio" name="motivo" value="Conteúdo ofensivo" required> Conteúdo ofensivo</label><br>
+      <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+      <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+      <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+      <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+      <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+      <section class="btns-enviar-denuncia">
+        <button type="button" id="fechar-modal-denuncia">Cancelar</button>
+        <button type="submit">Enviar denúncia</button>
+      </section>
+    </form>
+  </section>
+</section>
 
-                        </section>
+     <script>document.addEventListener("DOMContentLoaded", () => {
+  const modalDenuncia = document.querySelector(".modal-denuncia");
+  const fecharModalBtn = document.getElementById("fechar-modal-denuncia");
+  const inputIdProposta = document.getElementById("id-proposta-denuncia");
+
+  document.querySelectorAll(".btn-denunciar-proposta").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idProposta = btn.dataset.id;
+      inputIdProposta.value = idProposta;
+      modalDenuncia.style.display = "block";
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  fecharModalBtn.addEventListener("click", () => {
+    modalDenuncia.style.display = "none";
+    document.body.style.overflow = "auto";
+  });
+
+  window.addEventListener("click", (event) => {
+    if (event.target === modalDenuncia) {
+      modalDenuncia.style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+  });
+});
+
+
+    </script>
 
 
    <!-- Tagify CDN para funcionamento do campo de tags do modal de edição -->

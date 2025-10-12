@@ -192,6 +192,7 @@ html, body {
 
   .containerp, .info-proposta {
     max-width: 100%;
+    min-width: 100%;
     flex: 1 1 100%;
   }
 

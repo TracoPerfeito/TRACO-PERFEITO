@@ -280,7 +280,10 @@ router.get(
   "/contratacoes",
   verificarUsuAutorizado(["profissional", "comum"], "pages/acesso-negado"),
   async function (req, res) {
-    contratacaoController.listarContratacoes(req, res);
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+     req.session.dadosNotificacao = null;
+
+    contratacaoController.listarContratacoes(req, res, dadosNotificacao);
   }
 );
 
@@ -585,7 +588,7 @@ router.get("/contratacoes", function (req, res) {
 router.get(
   "/criar-contratacao",
   (req, res, next) => {
-    // 👇 Checa se o usuário está logado
+  
     if (!req.session.autenticado || !req.session.autenticado.id) {
       req.session.dadosNotificacao = {
         titulo: "Acesso restrito",
@@ -602,7 +605,7 @@ router.get(
     const dadosNotificacao = req.session.dadosNotificacao || null;
     req.session.dadosNotificacao = null;
 
-    contratacaoController.mostrarPagina(req, res);
+    contratacaoController.mostrarPagina(req, res, dadosNotificacao);
   }
 );
 
