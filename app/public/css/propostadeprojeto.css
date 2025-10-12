@@ -55,7 +55,7 @@ body {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-        border-bottom: 2px solid hsl(248, 9%, 33%);
+        border-bottom: 2px solid var(--borda-inferior);
 }
 
 /* ===== Layout da proposta aberta ===== */
@@ -93,10 +93,12 @@ body {
 }
 
 .pedidodescrito{
-    color: var(--text-color);
+    color: var(--text-color) !important;
     font-size: 18px;
 }
-
+.pedidodescrito h2{
+ color: var(--text-color) !important;
+}
 .card-info p{
     text-transform: capitalize;
     font-size: 16px;
@@ -111,7 +113,7 @@ body {
   font-family: 'Josefin Sans';
   font-size: 15px;
   transition: transform 0.2s ease;
-  border: 1px solid  hsl(248, 9%, 33%);
+  border: 1px solid  var(--borda-card-proposta);
   display: flex;
   align-items: center;
   gap: 15px;
@@ -131,6 +133,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-size: 18px;
     font-weight: 700;
+    color: var(--text-color);
 }
 
 #titulo ion-icon {
@@ -252,7 +255,7 @@ html, body {
     font-size: 20px;
     color: var(--h2-proposta);
     font-family: "Montserrat";
-    color: var(--text-color);
+    color: var(--text-color) !important;
    
 }
  
@@ -290,8 +293,13 @@ html, body {
 
 .info-proposta p {
     padding-bottom: 10px;
-    color: var(--text-color);
+    color: var(--text-color-mais-claro1);
    
+}
+
+.info-proposta h2{
+   
+    color: var(--text-color);
 }
 
 

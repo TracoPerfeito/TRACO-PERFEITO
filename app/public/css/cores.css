@@ -62,6 +62,10 @@
 --cor-p:  #a7a7a7; 
 --cor-btn-azul2:  #124779;
 --cor-budget: #124779;
+--borda-card-proposta: #165040c6;
+--borda-inferior: hsl(0, 0%, 78%);
+  --text-color-mais-claro1: #6c776c;
+
   }
 
 /* #264869 */ 
@@ -129,5 +133,8 @@
 --cor-p:  #818181; 
 --cor-btn-azul2:  #316886;
 --cor-budget: rgb(107, 128, 211);
+--borda-card-proposta: hsl(248, 9%, 33%);
+--borda-inferior: hsl(248, 9%, 33%);
+  --text-color-mais-claro1:   #b7b7b7;
       }
 
