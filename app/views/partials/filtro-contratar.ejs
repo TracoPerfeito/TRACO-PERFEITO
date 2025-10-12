@@ -1,0 +1,177 @@
+<!-- FILTRO LATERAL -->
+<section id="filtro-lateral" class="filtro-lateral oculto">
+  <h3>Filtrar Profissionais</h3>
+
+  <!-- Categoria -->
+  <section class="filtro-secao">
+    <button type="button" class="filtro-toggle">
+      Categoria
+      <ion-icon name="chevron-down-outline" class="seta"></ion-icon>
+    </button>
+    <section class="filtro-opcoes oculto">
+      <label><input type="checkbox" name="categoria" value="designer"> Designer</label>
+      <label><input type="checkbox" name="categoria" value="ilustrador"> Ilustrador</label>
+      <label><input type="checkbox" name="categoria" value="fotografo"> Fotógrafo</label>
+    </section>
+  </section>
+
+  <!-- Usuário Pro -->
+  <section class="filtro-secao">
+    <button type="button" class="filtro-toggle">
+      Usuário Pro
+      <ion-icon name="chevron-down-outline" class="seta"></ion-icon>
+    </button>
+    <section class="filtro-opcoes oculto">
+      <label><input type="radio" name="usuario-pro" value="sim"> Sim</label>
+      <label><input type="radio" name="usuario-pro" value="nao"> Não</label>
+    </section>
+  </section>
+
+  <!-- Média -->
+  <section class="filtro-secao">
+    <button type="button" class="filtro-toggle">
+      Média de Avaliação
+      <ion-icon name="chevron-down-outline" class="seta"></ion-icon>
+    </button>
+    <section class="filtro-opcoes oculto">
+      <label><input type="checkbox" name="media" value="4-5"> 4 - 5</label>
+      <label><input type="checkbox" name="media" value="3-4"> 3 - 4</label>
+      <label><input type="checkbox" name="media" value="0-3"> 0 - 3</label>
+    </section>
+  </section>
+
+  <button id="btn-aplicar-filtro" class="btn-aplicar">Aplicar Filtro</button>
+</section>
+
+<style>
+/* ===== FILTRO LATERAL ===== */
+.filtro-lateral {
+  position: fixed;
+  top: 100px; /* logo abaixo da barra de pesquisa */
+  left: 0;
+  width: 250px;
+  max-height: calc(100vh - 120px);
+  background-color: #fff;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.15);
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 20;
+  transition: transform 0.3s ease;
+  position: fixed;
+top: 100px; /* abaixo da barra */
+left: 0;
+z-index: 999; /* acima de todo conteúdo */
+
+}
+
+.filtro-lateral.oculto {
+  transform: translateX(-100%);
+}
+
+.filtro-lateral h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.filtro-secao {
+  margin-bottom: 15px;
+}
+
+.filtro-toggle {
+  width: 100%;
+  background: #f5f5f5;
+  border: none;
+  padding: 10px;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.filtro-toggle .seta {
+  transition: transform 0.25s;
+}
+
+.filtro-toggle.active .seta {
+  transform: rotate(180deg);
+}
+
+.filtro-opcoes {
+  padding: 10px 5px;
+  margin-top: 5px;
+  border-left: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filtro-opcoes label {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-aplicar {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--cor-btn-azul, #5a6dba);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+  .filtro-lateral {
+    position: absolute;
+    top: 100px;
+    width: 80%;
+    max-width: 300px;
+    max-height: 70vh;
+    transform: translateX(-100%);
+  }
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("📦 DOM carregado"); // Verifica se o DOM está pronto
+
+  const btnFiltro = document.getElementById("botao-filtro");
+  const filtroLateral = document.getElementById("filtro-lateral");
+
+  console.log("btnFiltro:", btnFiltro); // Mostra se encontrou o botão
+  console.log("filtroLateral:", filtroLateral); // Mostra se encontrou o filtro lateral
+
+  if (btnFiltro && filtroLateral) {
+    btnFiltro.addEventListener("click", () => {
+      console.log("Clique no botão filtro"); // Mostra quando clica
+      filtroLateral.classList.toggle("oculto");
+      console.log("Classe atual do filtro:", filtroLateral.className);
+    });
+
+    const toggles = filtroLateral.querySelectorAll(".filtro-toggle");
+    console.log("toggles encontrados:", toggles.length); // Quantos toggles existem
+
+    toggles.forEach((toggle, index) => {
+      toggle.addEventListener("click", () => {
+        console.log("Clique toggle #" + index, toggle.innerText);
+        toggle.classList.toggle("active");
+        const opcoes = toggle.nextElementSibling;
+        if (opcoes) {
+          opcoes.classList.toggle("oculto");
+          console.log("Seção de opções agora:", opcoes.className);
+        } else {
+          console.warn("⚠️ Próximo irmão não encontrado para o toggle", toggle);
+        }
+      });
+    });
+  } else {
+    console.warn("⚠️ Botão ou filtro lateral não encontrados, filtro.js não ativado");
+  }
+});
+</script>

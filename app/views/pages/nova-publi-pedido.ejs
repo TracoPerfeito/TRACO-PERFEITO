@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova Publicação - Proposta de Projeto</title>
     <link rel="stylesheet" href="css/nova-publicacao.css">
+    <link rel="stylesheet" href="/css/nova-proposta.css">
     
     <link rel="shortcut icon" href="imagens/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,361 +20,125 @@
 </head>
 
     
-  
-<body>
+  <body>
 
-
-   <%  if (dadosNotificacao) { %>
-        <script>
-                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
-                                   
-        </script>
-    <% } %>
-
-
-    
-<% if (status_usuario === 'pendente') { %>
-    <%- include('../partials/aviso-pendente') %>
-    
+<% if (dadosNotificacao) { %>
+  <script>
+    notify("<%= dadosNotificacao.titulo %>", "<%= dadosNotificacao.mensagem %>", "<%= dadosNotificacao.tipo %>", "top right");
+  </script>
 <% } %>
-  
-    
-    <%- include('../partials/menu-logado'); %>
 
-<main>
-    
-            <h1 class="novaPublicacao">Nova Publicação</h1>
-            <br>
-            <br>
-            <p class="instrucao-tipo-btn">Selecione o tipo de publicação que você deseja fazer:</p>
-            <section class="button-group">
-    
-    
-                    <button class="nao-ativo" title="Crie uma nova publicação para seu portfólio."><a href=/nova-publicacao >Nova Publicação</a></button>
-                    <button class="ativo" title="SELECIONADO - Publique uma proposta de projeto para os profissionais da plataforma."><a href=/nova-publi-pedido >Proposta de projeto</a></button>
-    
-            </section>
-
-            <p class="p-explicativo-np"> Especifique o que você deseja para que os artistas em nosso site possam entrar em contato com você.</p>
-           
-           
-       <form id="multiStepForm" action="/enviar-proposta-projeto" method="POST" novalidate>
-  <ul class="progressbar">
-    <li class="active">Dados básicos</li>
-    <li>Prazo e orçamento</li>
-    <li>Descrição e imagens</li>
-  </ul>
-
-  <!-- Step 1 -->
-  <section class="step active" id="step1">
-    <label for="titulo">Título:</label>
-    <input type="text" id="titulo" name="titulo" required />
-    <div class="error-msg" id="errorTitulo"></div>
-
-    <label for="categoria">Categoria:</label>
-    <select id="categoria" name="categoria" required>
-      <option value="">-- Selecione a categoria --</option>
-      <option value="Design Gráfico">Design Gráfico</option>
-      <option value="Ilustração">Ilustração</option>
-      <option value="UI/UX">UI/UX</option>
-      <option value="Arte Digital">Arte Digital</option>
-      <option value="Arte 3D">Arte 3D</option>
-      <option value="Animação">Animação</option>
-      <option value="Branding">Branding</option>
-      <option value="Tipografia">Tipografia</option>
-      <option value="Modelagem 3D">Modelagem 3D</option>
-      <option value="Design de Produto">Design de Produto</option>
-      <option value="Design Editorial">Design Editorial</option>
-      <option value="Design de Jogos">Design de Jogos</option>
-      <option value="Fotografia">Fotografia</option>
-      <option value="Outros">Outros</option>
-
-    </select>
-    <div class="error-msg" id="errorCategoria"></div>
-
-    <label for="preferenciaEstilo">Preferência de estilo:</label>
-    <input type="text" id="preferenciaEstilo" name="preferencia" placeholder="Ex: Minimalista, colorido..." />
-  </section>
-
-  <!-- Step 2 -->
-  <section class="step" id="step2">
-    <label for="prazoEntrega">Prazo de entrega (data):</label>
-    <input type="date" id="prazoEntrega" name="prazoEntrega" required />
-    <div class="error-msg" id="errorPrazo"></div>
-
-    <label for="orcamento">Orçamento (R$):</label>
-    <input type="number" id="orcamento" name="orcamento" min="0" step="0.01" required />
-    <div class="error-msg" id="errorOrcamento"></div>
-  </section>
-
-  <!-- Step 3 -->
-  <section class="step" id="step3">
-    <label for="descricao">Descrição detalhada:</label>
-    <div id="editor"></div>
-    <input type="hidden" id="descricao" name="descricao" />
-
-    <!-- <label for="uploadImages">Imagens (opcional):</label>
-    <input type="file" id="uploadImages" name="uploadImages" multiple accept="image/*" />
-    <div id="imagePreview"></div> -->
-  </section>
-
-  <div class="buttons">
-    <button type="button" id="prevBtn" disabled>Voltar</button>
-    <button type="button" id="nextBtn">Próximo</button>
-  </div>
-</form>
-
-<!-- Quill JS -->
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-<script>
-  const form = document.getElementById('multiStepForm');
-  const steps = Array.from(document.querySelectorAll('.step'));
-  const progressItems = Array.from(document.querySelectorAll('.progressbar li'));
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
- 
-  let currentStep = 0;
-
-  // Initialize Quill editor
-  const quill = new Quill('#editor', {
-    theme: 'snow',
-    placeholder: 'Descreva detalhadamente o que você procura...',
-  });
-
-  // Show current step
-  function showStep(n) {
-    steps.forEach((step, i) => {
-      step.classList.toggle('active', i === n);
-      progressItems[i].classList.toggle('active', i <= n);
-    });
-    prevBtn.disabled = n === 0;
-    nextBtn.textContent = n === steps.length - 1 ? 'Enviar' : 'Próximo';
-  }
-
-  function validateStep(n) {
-    let valid = true;
-
-    // Clear previous errors
-    document.querySelectorAll('.error-msg').forEach(e => e.textContent = '');
-
-    if (n === 0) {
-      const titulo = form.titulo.value.trim();
-      const categoria = form.categoria.value;
-
-      if (!titulo) {
-        document.getElementById('errorTitulo').textContent = 'Por favor, informe o título.';
-        valid = false;
-      }
-      if (!categoria) {
-        document.getElementById('errorCategoria').textContent = 'Por favor, selecione a categoria.';
-        valid = false;
-      }
-    } else if (n === 1) {
-      const prazo = form.prazoEntrega.value;
-      const orcamento = form.orcamento.value;
-
-      if (!prazo) {
-        document.getElementById('errorPrazo').textContent = 'Por favor, informe o prazo de entrega.';
-        valid = false;
-      } else {
-        const hoje = new Date();
-        const prazoDate = new Date(prazo);
-        if (prazoDate < hoje.setHours(0,0,0,0)) {
-          document.getElementById('errorPrazo').textContent = 'A data de entrega deve ser futura.';
-          valid = false;
-        }
-      }
-
-      if (!orcamento) {
-        document.getElementById('errorOrcamento').textContent = 'Por favor, informe o orçamento.';
-        valid = false;
-      } else if (orcamento < 0) {
-        document.getElementById('errorOrcamento').textContent = 'Orçamento inválido.';
-        valid = false;
-      }
-    } 
-    return valid;
-  }
-
-  prevBtn.addEventListener('click', () => {
-    if (currentStep > 0) {
-      currentStep--;
-      showStep(currentStep);
-    }
-  });
-
-  nextBtn.addEventListener('click', () => {
-    if (validateStep(currentStep)) {
-       if (currentStep === steps.length -1) {
-    form.descricao.value = quill.root.innerHTML;
-    form.submit(); // vai mandar o POST para /criar-proposta
-}
-else {
-        currentStep++;
-        showStep(currentStep);
-      }
-    }
-  });
-
-
-
-  
-  // Image preview
-  const uploadInput = document.getElementById('uploadImages');
-  const preview = document.getElementById('imagePreview');
-
-  uploadInput.addEventListener('change', () => {
-    preview.innerHTML = '';
-    Array.from(uploadInput.files).forEach(file => {
-      if (!file.type.startsWith('image/')) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        preview.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
-  });
-
-  showStep(currentStep);
-</script>
-
-<style>
-    form {
-    max-width: 900px;
-    margin: auto;
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 8px;
-  }
-  .step {
-    display: none;
-    animation: fadeIn 0.5s ease;
-  }
-  .step.active {
-    display: block;
-  }
-  @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
-  }
-  .progressbar {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    counter-reset: step;
-  }
-  .progressbar li {
-    list-style: none;
-    width: 33%;
-    text-align: center;
-    position: relative;
-    color: #ccc;
-    cursor: default;
-  }
-  .progressbar li:before {
-    content: counter(step);
-    counter-increment: step;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    border: 2px solid #ccc;
-    display: block;
-    margin: 0 auto 10px;
-    border-radius: 50%;
-    background-color: white;
-  }
-  .progressbar li.active {
-    color: #007bff;
-    font-weight: bold;
-  }
-  .progressbar li.active:before {
-    border-color: #007bff;
-    background-color: #007bff;
-    color: white;
-  }
-  .progressbar li:not(:last-child):after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background-color: #ccc;
-    top: 15px;
-    left: 50%;
-    z-index: -1;
-  }
-  .progressbar li.active + li:after {
-    background-color: #007bff;
-  }
-  label {
-    font-weight: bold;
-  }
-  input[type=text], select, input[type=number], input[type=date] {
-    width: 100%;
-    padding: 8px;
-    margin-top: 6px;
-    margin-bottom: 15px;
-    box-sizing: border-box;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
-  .buttons {
-    display: flex;
-    justify-content: space-between;
-  }
-  button {
-    padding: 10px 18px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  button[disabled] {
-    background-color: #aaa;
-    cursor: not-allowed;
-  }
-  .error-msg {
-    color: red;
-    font-size: 0.9em;
-    margin-top: -12px;
-    margin-bottom: 12px;
-  }
-  /* Quill editor height */
-  #editor {
-    height: 150px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  /* Image previews */
-  #imagePreview {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-  }
-  #imagePreview img {
-    width: 100px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 4px;
-  }
-</style>
-<script src="js/mobile-navbar.js"></script>
+<% if (status_usuario === 'pendente') { %>
+  <%- include('../partials/aviso-pendente') %>
+<% } %>
 
 
 
    <% if (tipo_usuario === 'profissional') { %>
+  <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
+<% } else if (tipo_usuario === 'comum') { %>
+  <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
+<% } else { %>
+  <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
+<% } %>
 
-                 <%- include('../partials/fab-button') %>
-<% }   else if(tipo_usuario === 'comum') {   %>
-        <%- include('../partials/fab-button-comum') %>
-  <% } %>
-  
+<main>
+  <h1 class="novaPublicacao">Nova Publicação</h1>
+  <br><br>
+  <p class="instrucao-tipo-btn">Selecione o tipo de publicação que você deseja fazer:</p>
+  <section class="button-group">
+    <button class="nao-ativo" title="Crie uma nova publicação para seu portfólio."><a href="/nova-publicacao">Nova Publicação</a></button>
+    <button class="ativo" title="Publique uma proposta de projeto para os profissionais da plataforma."><a href="/nova-publi-pedido">Proposta de projeto</a></button>
+  </section>
+
+  <p class="p-explicativo-np">Especifique o que você deseja para que os artistas em nosso site possam entrar em contato com você.</p>
+
+  <form id="propostaForm" action="/enviar-proposta-projeto" method="POST" novalidate class="form-duas-colunas">
+
+    <section class="conteudo-form">
+      <!-- Coluna esquerda: campos -->
+      <section class="form-campos">
+        <section class="campo-form">
+          <label for="titulo">Título:</label>
+          <input type="text" id="titulo" name="titulo" required />
+          <div class="error-msg" id="errorTitulo"></div>
+        </section>
+
+        <section class="campo-form">
+          
+          <label for="categoria">Categoria:</label>
+          <select id="categoria" name="categoria" required>
+            <option value="">-- Selecione a categoria --</option>
+            <option value="Design Gráfico">Design Gráfico</option>
+            <option value="Ilustração">Ilustração</option>
+            <option value="UI/UX">UI/UX</option>
+            <option value="Arte Digital">Arte Digital</option>
+            <option value="Arte 3D">Arte 3D</option>
+            <option value="Animação">Animação</option>
+            <option value="Branding">Branding</option>
+            <option value="Tipografia">Tipografia</option>
+            <option value="Modelagem 3D">Modelagem 3D</option>
+            <option value="Design de Produto">Design de Produto</option>
+            <option value="Design Editorial">Design Editorial</option>
+            <option value="Design de Jogos">Design de Jogos</option>
+            <option value="Fotografia">Fotografia</option>
+            <option value="Outros">Outros</option>
+          </select>
+          <div class="error-msg" id="errorCategoria"></div>
+        </section>
+        <section class="campo-form">
+          
+          <label for="preferenciaEstilo">Preferência de estilo:</label>
+          <input type="text" id="preferenciaEstilo" name="preferencia" placeholder="Ex: Minimalista, colorido..." />
+        </section>
+        <section class="campo-form">
+          <label for="prazoEntrega">Prazo de entrega (data):</label>
+          <input type="date" id="prazoEntrega" name="prazoEntrega" required />
+          <div class="error-msg" id="errorPrazo"></div>
+        </section>
+        <section class="campo-form">
+          <label for="orcamento">Orçamento (R$):</label>
+          <input type="number" id="orcamento" name="orcamento" min="0" step="0.01" required />
+          <div class="error-msg" id="errorOrcamento"></div>
+        </section>
+      </section>
+      <!-- Coluna direita: Quill -->
+      <section class="form-quill">
+        <label for="descricao">Descrição detalhada:</label>
+        <div id="editor"></div>
+        <input type="hidden" id="descricao" name="descricao" />
+      </section>
+    </section>
+
+    <section class="btn-wrapper"><button type="submit" class="btn-enviar-proposta">Enviar Proposta</button></section>
+  </form>
+
+</main>
+
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+  const quill = new Quill('#editor', {
+    theme: 'snow',
+    placeholder: 'Descreva detalhadamente o que você procura...'
+  });
+
+  const form = document.getElementById('propostaForm');
+
+  form.addEventListener('submit', (e) => {
+    form.descricao.value = quill.root.innerHTML;
+  });
+</script>
+
+<script src="js/mobile-navbar.js"></script>
+
+<% if (tipo_usuario === 'profissional') { %>
+  <%- include('../partials/fab-button') %>
+<% } else if (tipo_usuario === 'comum') { %>
+  <%- include('../partials/fab-button-comum') %>
+<% } %>
+
+<%- include('../partials/rodape'); %>
 </body>
 </html>
-
-

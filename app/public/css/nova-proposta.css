@@ -1,0 +1,215 @@
+ @import url(cores.css);
+
+.conteudo-form{
+    display:flex;
+    flex-direction: row;
+    gap: 70px;
+
+}
+.form-campos {
+  flex: 1;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-campos input, .form-campos select {
+    background-color: var(--cor-fundo);
+    border: 1px solid var(--text-color);
+    border-radius: 5px;
+    font-family: "Josefin Sans";
+    color: var(--text-color);
+    padding: 5px;
+    box-sizing: border-box;
+    height: 40px;
+      font-size: 16px;
+}
+
+
+.form-campos input:hover,
+.form-campos input:focus,
+.form-campos select:hover,
+.form-campos select:focus {
+    border: 1px solid var(--cor-av-borda-n-pub);
+}
+
+/* ===== Destaque na borda quando o Quill está focado ===== */
+.ql-container.ql-snow:focus-within {
+  border: 1px solid var(--cor-av-borda-n-pub) !important;
+  box-shadow: 0 0 4px var(--cor-av-borda-n-pub);
+  border-radius: 5px;
+}
+.ql-container {
+  flex: 1;
+  height: 100% !important;
+}
+.form-quill {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  
+  overflow: visible !important;
+  flex-direction: column;
+  border-radius: 7px;
+  font-family: "Josefin Sans";
+}
+.form-quill .ql-toolbar {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+.form-quill .ql-container {
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+   overflow: visible !important;
+  font-family: "Josefin Sans";
+  font-size: 16px;
+}
+
+/* Placeholder do Quill */
+.ql-editor.ql-blank::before {
+  color: var(--text-color) !important;
+  opacity: 0.6 !important;
+}
+
+#editor {
+  flex: 1;
+  height: 100%;
+  background: var(--cor-fundo);
+  color: var(--text-color);
+}
+
+
+
+.ql-toolbar.ql-snow {
+  position: relative;
+  z-index: 2;
+}
+
+.ql-container.ql-snow {
+  position: relative;
+  z-index: 1;
+  overflow: visible !important;
+}
+
+.ql-picker-options {
+  z-index: 10 !important;
+}
+
+.ql-toolbar.ql-snow svg{
+fill: var(--text-color) !important;
+color: var(--text-color) !important;
+}
+/* Ícones da toolbar do Quill */
+.ql-snow .ql-stroke {
+  stroke: var(--text-color) !important;
+}
+
+.ql-snow .ql-fill {
+  fill: var(--text-color) !important;
+}
+
+.ql-snow .ql-picker-label,
+.ql-snow .ql-picker-item {
+  color: var(--text-color) !important;
+}
+
+.ql-toolbar .ql-picker-label svg,
+.ql-toolbar button svg {
+  stroke: var(--text-color) !important;
+  fill: var(--text-color) !important;
+}
+
+.ql-toolbar .ql-active .ql-stroke,
+.ql-toolbar .ql-active .ql-fill {
+  stroke: var(--text-color) !important;
+  fill: var(--text-color) !important;
+}
+
+
+#editor {
+  height: 300px;
+  background: var(--cor-fundo);
+  color: var(--text-color);
+}
+
+.error-msg {
+  color: red;
+  font-size: 0.9rem;
+}
+
+.campo-form{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ql-snow.ql-toolbar button svg, .ql-snow .ql-toolbar button svg {
+    float: left;
+    height: 100%;
+    fill: var(--text-color);
+}
+
+.ql-clean svg {
+     color: var(--text-color) !important;
+  fill: var(--text-color) !important; /* Para ícones SVG */
+}
+
+.btn-enviar-proposta{
+    padding: 12px;
+    font-family: "Montserrat";
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    background-color: var( --cor-btn-azul);
+        transition: all 0.3s;
+        
+        margin-top: 20px;
+        min-width: 200px;
+
+}
+
+.btn-enviar-proposta:hover{
+    background-color: #556e93;
+    transform: translateY(-5px);
+
+
+}
+
+.btn-wrapper {
+  display: flex;
+  justify-content: flex-end; /* alinha o botão à direita */
+  margin-top: 20px;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .conteudo-form {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .form-campos {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  }
+
+  
+.btn-enviar-proposta{
+    
+        width: 100%;
+        margin-top: 20px;
+
+}
+
+
+
+.form-quill {
+  min-height: 300px;
+}
+
+  }

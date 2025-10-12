@@ -156,6 +156,9 @@ main{
     height: 45px !important;
     margin-bottom: 20px !important;
     color: var(--text-color);
+    padding: 5px;
+    box-sizing: border-box;
+    font-family: "Josefin Sans"
 }
 
 
@@ -166,6 +169,59 @@ select option {
 
 
 
+/* ====== Estilo das tags ====== */
+.tagify {
+  --tags-border-color: var(--text-color);
+  --tag-bg: var(--cor-fundo);
+  --tag-hover: var(--cor-fundo);
+  --tag-text-color: var(--text-color);
+  --placeholder-color: var(--text-color);
+  --placeholder-opacity: 0.6;
+  font-family: "Josefin Sans", sans-serif;
+  color: var(--text-color);
+  background-color: var(--cor-fundo);
+  border: 1px solid var(--text-color);
+  border-radius: 7px;
+  padding: 5px;
+  transition: border 0.3s;
+}
+
+/* Borda quando o campo está focado */
+.tagify:focus-within {
+  border: 1px solid var(--cor-av-borda-n-pub);
+}
+
+/* Cada tag individual */
+.tagify__tag {
+  background-color: var(--cor-fundo);
+  color: var(--text-color);
+
+  border-radius: 5px;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.tagify__tag:hover {
+  background-color: var(--cor-av-borda-n-pub);
+  color: #fff;
+}
+
+
+/* Itens dentro do dropdown */
+.tagify__dropdown__item {
+  color: var(--text-color);
+  font-family: "Josefin Sans", sans-serif;
+  background-color: var(--cor-fundo);
+  padding: 6px 10px;
+  border-radius: 5px;
+  transition: background 0.2s;
+}
+
+/* Hover no item do dropdown */
+.tagify__dropdown__item:hover {
+  background-color: #568ba8 !important;
+  color: #fff !important;
+  border: none !important;
+}
 
 
 
@@ -209,6 +265,9 @@ select option {
     height: fit-content;
     overflow-y: auto;
     margin-bottom: 10px;
+    padding: 5px;
+    box-sizing: border-box;
+    font-family: "Josefin Sans"
 }
 
 .form-grupo-1 textarea:hover {
