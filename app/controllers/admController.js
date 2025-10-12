@@ -273,32 +273,125 @@ mostrarhome: (req, res, dadosNotificacao) => {
   },
 
 
-  // Alterar status da denúncia de comentário
-  alterarStatusDenuncia: async (req, res) => {
-    const { idDenuncia, idUsuario, tipoPenalidade, dataFim, acao, tabela } = req.body;
-    console.log("Dados recebidos para alterar status da denúncia:", req.body);
-
-    try {
-      if (acao === "suspender") {
-        await admModel.aplicarPenalidade(idUsuario, tipoPenalidade, "Suspensão por denúncia de comentário", dataFim);
-        console.log(`Usuário ${idUsuario} suspenso até ${dataFim} por denúncia.`);
-      } else if (acao === "descartar") {
-        await admModel.descartarDenuncia(idDenuncia, tabela);
-        console.log(`Denúncia ${idDenuncia} descartada.`);
-      } else {
-        return res.status(400).send("Ação inválida.");
+    // Listar usuários por tipo (usa rota para decidir tipo)
+    listarUsuariosPorTipo: async (req, res) => {
+      try {
+        const tipo = req.path.includes("profissional") ? "profissional" : "comum";
+        const usuarios = await admModel.listarUsuariosPorTipo(tipo);
+        if (tipo === "profissional") {
+          return res.render("pages/adm-listagem-profissional", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            usuarios: usuarios || []
+          });
+        } else {
+          return res.render("pages/adm-listagem-comum", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            usuarios: usuarios || []
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao listar usuários por tipo:", error);
+        return res.status(500).render('pages/erro-conexao', {
+          mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
       }
-      res.sendStatus(200); // Sucesso (sem conteúdo)
+    },
 
-    } catch (error) {
-      console.error("Erro ao alterar status da denúncia:", error);
-      res.status(500).send("Erro interno ao alterar status da denúncia.");
+    // Substitui as implementações duplicadas por UMA única função consistente e que retorna JSON
+    alterarStatusDenuncia: async (req, res) => {
+      const { idDenuncia, idUsuario, tipoPenalidade, dataFim, acao, tabela } = req.body;
+      console.log("Dados recebidos para alterar status da denúncia:", req.body);
+
+      try {
+        if (!acao || !idDenuncia || !tabela) {
+          return res.status(400).json({ erro: "Parâmetros incompletos" });
+        }
+
+        // permitir apenas tabelas de denúncias conhecidas
+        const allowed = ["DENUNCIAS_COMENTARIOS","DENUNCIAS_PUBLICACOES","DENUNCIAS_USUARIOS","DENUNCIAS_PROJETOS"];
+        if (!allowed.includes(tabela)) {
+          return res.status(400).json({ erro: "Tabela inválida" });
+        }
+
+        if (acao === "descartar") {
+          // opcional: atualizar status em vez de deletar. Aqui mantemos descartar via model (que usa DELETE).
+          await admModel.descartarDenuncia(idDenuncia, tabela);
+          return res.json({ sucesso: true });
+        }
+
+        if (acao === "suspender") {
+          if (!idUsuario || !tipoPenalidade) {
+            return res.status(400).json({ erro: "Dados de suspensão incompletos" });
+          }
+
+          // aplicar penalidade (model calcula periodo se dataFim informada)
+          await admModel.aplicarPenalidade(idUsuario, tipoPenalidade, "Suspensão por denúncia", dataFim || null);
+
+          // marcar denúncia como resolvida (enum em DENUNCIAS_COMENTARIOS é 'resolvido')
+          await pool.query(`UPDATE ${tabela} SET STATUS = 'resolvido' WHERE ID_DENUNCIA = ?`, [idDenuncia]);
+
+          return res.json({ sucesso: true });
+        }
+
+        return res.status(400).json({ erro: "Ação inválida" });
+
+      } catch (err) {
+        console.error("Erro ao alterar status da denúncia:", err);
+        return res.status(500).json({ erro: "Erro interno" });
+      }
+    },
+
+  // Retorna tipos de penalidade como JSON
+  listarPenalidades: async (req, res) => {
+    try {
+      const tipos = await admModel.listarPenalidades();
+      return res.json(tipos);
+    } catch (err) {
+      console.error("Erro ao listar penalidades:", err);
+      return res.status(500).json({ erro: "Erro ao carregar penalidades" });
     }
-  }
-  
+  },
 
+// middleware que verifica bloqueio por penalidade na sessão (não altera a função logar existente)
+verificarBloqueioSessaoMiddleware: async (req, res, next) => {
+    try {
+        const autenticado = req.session && req.session.autenticado;
+        if (!autenticado) return next();
 
+        // tenta extrair id do usuário de várias chaves possíveis na sessão
+        const userId = autenticado.id || autenticado.ID_USUARIO || autenticado.id_usuario || autenticado.usuarioId || null;
+        if (!userId) return next();
 
+        const bloqueio = await admModel.verificarBloqueioUsuario(userId);
+        if (bloqueio && bloqueio.bloqueado) {
+            console.warn(JSON.stringify({
+                event: "login_bloqueado_por_penalidade_middleware",
+                id_usuario: userId,
+                data_fim: bloqueio.data_fim || null,
+                tipo_penalidade: bloqueio.tipo || null,
+                timestamp: new Date().toISOString()
+            }));
+            try { if (req.session.destroy) req.session.destroy(() => {}); } catch(e){/* ignore */ }
+            return res.render("pages/login", {
+                valores: {},
+                errosLogin: [],
+                retorno: "Conta suspensa até " + (bloqueio.data_fim ? bloqueio.data_fim : "data indefinida"),
+                dadosNotificacao: null // <- adicionado para evitar ReferenceError no EJS
+            });
+        }
+
+        return next();
+    } catch (err) {
+        console.error(JSON.stringify({
+            event: "erro_verificar_bloqueio_middleware",
+            error: err.message || err,
+            timestamp: new Date().toISOString()
+        }));
+        return next();
+    }
+},
 
 };
 

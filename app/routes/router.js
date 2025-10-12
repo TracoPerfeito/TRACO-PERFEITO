@@ -899,6 +899,7 @@ router.post( //validações login
 
    usuariosController.regrasValidacaoLogin, 
    gravarUsuAutenticado,
+   admController.verificarBloqueioSessaoMiddleware,
    function (req, res) {
      usuariosController.logar(req, res);
    }

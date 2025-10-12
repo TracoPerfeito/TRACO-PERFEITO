@@ -465,7 +465,7 @@ section.lista table tbody td {
 
 /* ///////////////////////////////////////////////////////////////////////////////// */
 
-/* ESTILO DO MODAL INATIVAR CONTA */
+/* ESTILO DO MODAL INATIVAR CONTA
 
 /* Overlay (fundo escuro) */
 .overlay {
@@ -648,4 +648,4 @@ section.lista {
 
 .topo_pagina_adm h1 {
   font-size: x-large;
-}
+} 

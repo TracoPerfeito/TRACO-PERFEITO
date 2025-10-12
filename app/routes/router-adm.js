@@ -91,21 +91,31 @@ router.put(
 );
 
 // Alterar status da denúncia (comentário)
+// Penalidades - aplicar penalidade
 router.get(
-  "/adm/penalidades",
+  "/penalidades",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
-    admController.getPenalidades(req, res);
+    admController.listarPenalidades(req, res);
   }
 );
 router.post(
-  "/adm/alterar-status-denuncia",
+  "/alterar-status-denuncia",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
     admController.alterarStatusDenuncia(req, res);
   }
 );
+
+// Logout do administrador
+router.get("/logout", limparSessao, function (req, res) {
+  res.redirect("/");
+});
+
+
+
+
 
 module.exports = router;
