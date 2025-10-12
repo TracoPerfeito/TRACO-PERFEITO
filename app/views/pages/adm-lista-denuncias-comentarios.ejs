@@ -11,6 +11,10 @@
   <!-- <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css"> -->
 
   <link rel="stylesheet" href="/css/adm-lista-denuncias-comentario.css">
+
+    <!-- Ícones Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
  
  
 
@@ -44,15 +48,28 @@
               <%= denuncia.STATUS %>
             </span>
           </section>
+
           <section class="card-body">
             <p><span class="label">Usuário Denunciante:</span> <%= denuncia.ID_USUARIO_DENUNCIANTE || 'Anônimo' %></p>
-            <p><span class="label">Comentário:</span> #<%= denuncia.CONTEUDO_COMENTARIO %></p>
+            <p><span class="label">Usuário Denunciado:</span> <%= denuncia.ID_USUARIO_DENUNCIADO || 'Desconhecido' %></p>
+            <p><span class="label">Comentário:</span> <%= denuncia.CONTEUDO_COMENTARIO %></p>
             <p><span class="label">Motivo:</span> <%= denuncia.MOTIVO %></p>
-            <p><span class="label">Data da denúncia:</span> <%= new Date(denuncia.DATA_DENUNCIA).toLocaleString('pt-BR') %></p>
+            <p><span class="label">Data da denúncia:</span> 
+              <%= new Date(denuncia.DATA_DENUNCIA).toLocaleString('pt-BR') %>
+            </p>
           </section>
+
           <section class="card-footer">
             <button class="btn-btn-detalhes">🔎 Detalhes</button>
-            <button class="btn-btn-status">✔️ Alterar Status</button>
+
+            <!-- Botão que abre o modal -->
+            <button 
+              class="btn-btn-status" 
+              data-id="<%= denuncia.ID_DENUNCIA %>" 
+              data-usuario="<%= denuncia.ID_USUARIO_DENUNCIADO %>"
+            >
+              <div class="icon-pencil-line"></div>
+            </button>
           </section>
         </section>
       <% }) %>
@@ -62,32 +79,42 @@
 
 
       <!-- MODAL DE ALTERAR STATUS -->
-       <div id="modalStatus" class="modal">
-          <div class="modal-content">
-            <h2>Alterar Status da Denúncia</h2>
+      <div id="modalStatus" class="modal" data-user-id="">
+        <div class="modal-content">
+          <h2>Alterar Status da Denúncia</h2>
 
-            <label for="acao">Ação:</label>
-            <select id="acao">
-              <option value="suspender">Suspender Usuário</option>
-              <option value="descartar">Descartar Denúncia</option>
+          <label for="acao">Ação:</label>
+          <select id="acao">
+            <option value="">Selecione...</option>
+            <option value="suspender">Suspender Usuário</option>
+            <option value="descartar">Descartar Denúncia</option>
+          </select>
+
+          <div id="opcoesSuspensao" style="display:none;">
+            <label for="penalidade">Tipo de Penalidade:</label>
+            <select id="penalidade">
+              <option value="">Selecione...</option>
+              <!-- options serão preenchidas por JS -->
             </select>
 
-            <div id="opcoesSuspensao" style="display:none;">
-              <label for="penalidade">Tipo de Penalidade:</label>
-              <select id="penalidade"></select>
+            <p id="descricaoPenalidade" class="descricao"></p>
 
-              <label for="dataFim">Data de Término:</label>
-              <input type="date" id="dataFim" />
-            </div>
-
-            <button id="confirmarStatus">Confirmar</button>
-            <button onclick="fecharModal()">Cancelar</button>
+            <label for="dataFim">Data de Término:</label>
+            <input type="date" id="dataFim" />
           </div>
+
+          <button id="confirmarStatus">Confirmar</button>
+          <button onclick="fecharModal()">Cancelar</button>
         </div>
+      </div>
 
 
   </section>
 
+
+    <script>
+    lucide.createIcons();
+  </script>
 
   <script src="/js/adm-alterarstatus_denuncia.js"></script>
 

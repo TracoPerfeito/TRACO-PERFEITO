@@ -52,3 +52,7 @@ server.listen(process.env.APP_PORT, ()=>{
     console.log(`Servidor onLine!\nhttp://localhost:${process.env.APP_PORT}`);
 });
 
+// depois de configurar app e antes/depois do app.listen(...)
+const { startPenaltyScheduler } = require("./app/helpers/penaltyScheduler");
+startPenaltyScheduler({ intervalMs: 60 * 1000 });
+

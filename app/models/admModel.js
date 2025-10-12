@@ -141,39 +141,37 @@ const admModel = {
     //LISTAGEM DAS DENÚNCIAS 
 
     listarDenunciasComentarios: async () => {
-        try {
-            const [denuncias_comentarios] = await pool.query(
-                `SELECT 
-                    dc.ID_DENUNCIA, 
-                    dc.ID_USUARIO_DENUNCIANTE, 
-                    dc.ID_COMENTARIO, 
-                    dc.MOTIVO, 
-                    dc.STATUS, 
-                    dc.DATA_DENUNCIA,
-                    c.ID_USUARIO AS ID_USUARIO_COMENTARIO,
-                    c.CONTEUDO_COMENTARIO,
-                    c.DATA_COMENTARIO
-                FROM DENUNCIAS_COMENTARIOS dc
-                INNER JOIN COMENTARIOS c ON dc.ID_COMENTARIO = c.ID_COMENTARIO`
-            );
-            return denuncias_comentarios;
-    
-        } catch (error) {
-            console.log(error);
-            return []; // ou retorna error
-        }
-    },
+    try {
+        const [denuncias_comentarios] = await pool.query(
+            `SELECT 
+                dc.ID_DENUNCIA, 
+                dc.ID_USUARIO_DENUNCIANTE, 
+                dc.ID_COMENTARIO, 
+                dc.MOTIVO, 
+                dc.STATUS, 
+                dc.DATA_DENUNCIA,
+                c.ID_USUARIO AS ID_USUARIO_DENUNCIADO,
+                c.CONTEUDO_COMENTARIO,
+                c.DATA_COMENTARIO
+            FROM DENUNCIAS_COMENTARIOS dc
+            INNER JOIN COMENTARIOS c ON dc.ID_COMENTARIO = c.ID_COMENTARIO`
+        );
+        return denuncias_comentarios;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+},
     
     listarDenunciasUsuarios: async () => {
         try{
-            const[denuncias_usuarios] = await pool.query(
-                "SELECT ID_DENUNCIA, ID_USUARIO_DENUNCIANTE, ID_USUARIO_DENUNCIADO, MOTIVO, STATUS, DATA_DENUNCIA"
+            const [denuncias_usuarios] = await pool.query(
+                "SELECT ID_DENUNCIA, ID_USUARIO_DENUNCIANTE, ID_USUARIO_DENUNCIADO, MOTIVO, STATUS, DATA_DENUNCIA FROM DENUNCIAS_USUARIOS ORDER BY DATA_DENUNCIA DESC"
             );
             return denuncias_usuarios;
-            
         } catch (error) {
             console.log(error);
-            return[];
+            return [];
         }
     },
 
@@ -197,44 +195,153 @@ const admModel = {
     // SOBRE A DENUNCIA DE COMENTARIO
     listarPenalidades: async () => {
         try {
-        const [rows] = await pool.query("SELECT * FROM TIPOS_PENALIDADES");
-        return rows;
+            const [rows] = await pool.query(
+                "SELECT ID_PENALIDADE, NOME_PENALIDADE FROM TIPOS_PENALIDADES ORDER BY NOME_PENALIDADE"
+            );
+            return rows;
         } catch (err) {
-        console.error("Erro ao listar penalidades:", err);
-        return [];
+            console.error("Erro listarPenalidades:", err);
+            return [];
         }
     },
 
-    aplicarPenalidade: async (idUsuario, idPenalidade, motivo, dataFim) => {
+    // cria penalidade, notifica usuário e loga resultado em JSON
+    aplicarPenalidade: async (idUsuario, idTipoPenalidade, motivo, dataFim) => {
         try {
-        const [result] = await pool.query(
-            `INSERT INTO PENALIDADES_USUARIOS 
-            (ID_USUARIO, ID_PENALIDADE, MOTIVO_PENALIDADE, DATA_FIM) 
-            VALUES (?, ?, ?, ?)`,
-            [idUsuario, idPenalidade, motivo, dataFim]
-        );
+            // normaliza dataFim para MySQL DATETIME ou null
+            let dataFimValue = null;
+            let status = 'ativa';
+            if (dataFim) {
+                const fimDate = new Date(dataFim);
+                if (!isNaN(fimDate.getTime())) {
+                    const yyyy = fimDate.getFullYear();
+                    const mm = String(fimDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(fimDate.getDate()).padStart(2, '0');
+                    const hh = String(fimDate.getHours()).padStart(2, '0');
+                    const mi = String(fimDate.getMinutes()).padStart(2, '0');
+                    const ss = String(fimDate.getSeconds()).padStart(2, '0');
+                    dataFimValue = `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+                    if (new Date(dataFim) < new Date()) status = 'expirada';
+                }
+            }
 
-        await pool.query(
-            `UPDATE USUARIOS SET STATUS_USUARIO = 'suspenso' WHERE ID_USUARIO = ?`,
-            [idUsuario]
-        );
+            const [insertResult] = await pool.query(
+                `INSERT INTO PENALIDADES_USUARIOS (ID_USUARIO, ID_PENALIDADE, MOTIVO_PENALIDADE, DATA_INICIO, DATA_FIM, STATUS)
+                 VALUES (?, ?, ?, NOW(), ?, ?)`,
+                [idUsuario, idTipoPenalidade, motivo, dataFimValue, status]
+            );
 
-        return result.insertId;
+            // pega nome do tipo para decidir comportamento
+            const [tipoRows] = await pool.query(
+                `SELECT NOME_PENALIDADE FROM TIPOS_PENALIDADES WHERE ID_PENALIDADE = ?`,
+                [idTipoPenalidade]
+            );
+            const nomeTipo = (tipoRows[0] && tipoRows[0].NOME_PENALIDADE || '').toUpperCase();
+
+            // se for SUSPENSÃO, bloqueia o usuário
+            if (nomeTipo === 'SUSPENSÃO') {
+                await pool.query(
+                    `UPDATE USUARIOS SET STATUS_USUARIO = 'suspenso' WHERE ID_USUARIO = ?`,
+                    [idUsuario]
+                );
+            }
+
+            // tenta criar notificação (se tabela existir)
+            try {
+                const titulo = nomeTipo === 'SUSPENSÃO' ? 'Você foi suspenso' : 'Advertência aplicada';
+                const mensagem = nomeTipo === 'SUSPENSÃO'
+                    ? `Você foi suspenso até ${dataFimValue || 'indefinidamente'}. Motivo: ${motivo}`
+                    : `Advertência: ${motivo}`;
+                await pool.query(
+                    `INSERT INTO NOTIFICACOES (ID_USUARIO, TITULO, MENSAGEM, DATA_CRIACAO)
+                     VALUES (?, ?, ?, NOW())`,
+                    [idUsuario, titulo, mensagem]
+                );
+            } catch (nErr) {
+                // notificação é opcional — loga aviso em JSON
+                console.warn(JSON.stringify({
+                    event: 'notificacao_nao_criada',
+                    user: idUsuario,
+                    reason: nErr.message || nErr
+                }));
+            }
+
+            console.log(JSON.stringify({
+                event: 'penalidade_aplicada',
+                sucesso: true,
+                id_penalidade_usuario: insertResult.insertId,
+                id_usuario: idUsuario,
+                tipo: nomeTipo,
+                data_fim: dataFimValue,
+                timestamp: new Date().toISOString()
+            }));
+
+            return insertResult.insertId;
         } catch (err) {
-        console.error("Erro ao aplicar penalidade:", err);
-        throw err;
+            console.error(JSON.stringify({
+                event: 'erro_aplicar_penalidade',
+                sucesso: false,
+                id_usuario: idUsuario,
+                error: err.message || err,
+                timestamp: new Date().toISOString()
+            }));
+            throw err;
+        }
+    },
+
+    // checa se usuário está suspenso por penalidade ativa do tipo SUSPENSÃO
+    verificarBloqueioUsuario: async (idUsuario) => {
+        try {
+            const [rows] = await pool.query(
+                `SELECT pu.ID_PENALIDADE_USUARIO, pu.DATA_FIM, tp.NOME_PENALIDADE
+                 FROM PENALIDADES_USUARIOS pu
+                 JOIN TIPOS_PENALIDADES tp ON pu.ID_PENALIDADE = tp.ID_PENALIDADE
+                 WHERE pu.ID_USUARIO = ? AND pu.STATUS = 'ativa' AND UPPER(tp.NOME_PENALIDADE) = 'SUSPENSÃO'
+                 ORDER BY pu.DATA_INICIO DESC
+                 LIMIT 1`,
+                [idUsuario]
+            );
+
+            if (!rows || !rows.length) return { bloqueado: false };
+
+            const r = rows[0];
+            return {
+                bloqueado: true,
+                id_penalidade_usuario: r.ID_PENALIDADE_USUARIO,
+                data_fim: r.DATA_FIM,
+                tipo: r.NOME_PENALIDADE
+            };
+        } catch (err) {
+            console.error(JSON.stringify({
+                event: 'erro_verificar_bloqueio',
+                id_usuario: idUsuario,
+                error: err.message || err,
+                timestamp: new Date().toISOString()
+            }));
+            // Em caso de erro, não bloqueia por segurança (mas loga)
+            return { bloqueado: false, error: err.message || err };
         }
     },
 
     descartarDenuncia: async (idDenuncia, tabela) => {
         try {
-        await pool.query(`DELETE FROM ${tabela} WHERE ID_DENUNCIA = ?`, [idDenuncia]);
-        return true;
+            // Mapeamento simples de status aceitáveis por tabela
+            const mapping = {
+                DENUNCIAS_COMENTARIOS: 'resolvido',
+                DENUNCIAS_PUBLICACOES: 'resolvido',
+                DENUNCIAS_USUARIOS: 'resolvido',
+                DENUNCIAS_PROJETOS: 'rejeitada'
+            };
+            const status = mapping[tabela] || 'resolvido';
+            const sql = `UPDATE ${tabela} SET STATUS = ? WHERE ID_DENUNCIA = ?`;
+            const [result] = await pool.query(sql, [status, idDenuncia]);
+            return result.affectedRows;
         } catch (err) {
-        console.error("Erro ao descartar denúncia:", err);
-        return false;
+            console.error("Erro descartarDenuncia:", err);
+            throw err;
         }
     },
+
 
 
 

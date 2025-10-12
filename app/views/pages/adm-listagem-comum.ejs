@@ -57,49 +57,49 @@
   </section>
 
   <section class="resumo">
-    <sectionclass="card">
-      <sectionclass="card-icon azul"><i data-lucide="users"></i></sectionclass=>
-      <sectionclass="card-content">
+    <section class="card">
+      <section class="card-icon azul"><i data-lucide="users"></i></section class=>
+      <section class="card-content">
         <p>Total de Usuários</p>
         <h2><%= usuarios.length %></h2> <!-- Total de usuários -->
-      </sectionclass=>
-    </div>
-    <sectionclass="card">
-      <sectionclass="card-icon verde"><i data-lucide="user-check"></i></sectionclass=>
-      <sectionclass="card-content">
+      </section class=>
+    </section >
+    <section class="card">
+      <section class="card-icon verde"><i data-lucide="user-check"></i></section class=>
+      <section class="card-content">
         <p>Usuários Ativos</p>
         <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'ativo').length %></h2> <!-- Usuários Ativos -->
-      </sectionclass=>
-    </div>
-   <sectionclass="card">
-      <sectionclass="card-icon amarelo"><i data-lucide="alert-triangle"></i></sectionclass=>
-      <sectionclass="card-content">
+      </section class=>
+    </section >
+   <section class="card">
+      <section class="card-icon amarelo"><i data-lucide="alert-triangle"></i></section class=>
+      <section class="card-content">
         <p>Usuários Pendentes</p>
         <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'pendente').length %></h2>
-      </sectionclass=>
-   </div>
-    <sectionclass="card">
-      <sectionclass="card-icon vermelho"><i data-lucide="user-x"></i></sectionclass=>
-      <sectionclass="card-content">
+      </section class=>
+   </section >
+    <section class="card">
+      <section class="card-icon vermelho"><i data-lucide="user-x"></i></section class=>
+      <section class="card-content">
         <p>Usuários Inativos</p>
         <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'inativo').length %></h2> <!-- Usuários Inativos -->
-      </sectionclass=>
-    </div>
+      </section class=>
+    </section >
   </section>
 
   <section class="lista">
     <h2>Lista de Usuários</h2>
   
-    <sectionclass="lista-usuarios">
+    <section class="lista-usuarios">
 
       <% usuarios.filter(u => u.TIPO_USUARIO === 'comum').forEach(usuario => { %>
         <section class="usuario">
-  <sectionclass="user-info">
+  <section class="user-info">
     <img src="/<%= usuario.FOTO_PERFIL_PASTA_USUARIO || 'imagens/foto-perfil.png' %>" alt="<%= usuario.NOME_USUARIO %>" />
-    <div>
+    <section >
       <%= usuario.NOME_USUARIO %><br><small><%= usuario.EMAIL_USUARIO %></small>
-    </div>
-  </sectionclass=>
+    </section >
+  </section class=>
   <p class="status <%= usuario.STATUS_USUARIO %>">
     <%= usuario.STATUS_USUARIO.charAt(0).toUpperCase() + usuario.STATUS_USUARIO.slice(1) %>
   </p>
@@ -114,7 +114,7 @@
     <%= usuario.USER_USUARIO %>
   </p>
 
- <sectionclass="acoes">
+ <section class="acoes">
   <button class="btn-acao editar"><i data-lucide="icon-fullscreen"></i></button>
   <% if (usuario.STATUS_USUARIO !== 'ativo') { %>
     <button class="btn-acao ativar" data-id="<%= usuario.ID_USUARIO %>">
@@ -124,13 +124,13 @@
   <button class="btn-acao deletar" data-id="<%= usuario.ID_USUARIO %>"> <!--Desativar usuário-->
     <i data-lucide="icon-shield-off"></i>
   </button>
-</div>
+</section >
 
 </section>
 
       <% }) %>
 
-    </div>
+    </section >
   </section>
 
   <!-- MODAIS -->
@@ -145,18 +145,18 @@
       </header>
 
       <!-- Corpo -->
-      <sectionclass="modal-body">
-        <sectionclass="alerta">
-          <sectionclass="alerta-icone">
+      <section class="modal-body">
+        <section class="alerta">
+          <section class="alerta-icone">
             <i data-lucide="alert-triangle"></i>
-          </sectionclass=>
-          <div>
+          </section class=>
+          <section >
             <p><strong>Tem certeza que deseja inativar este usuário?</strong></p>
             <p class="detalhe">
               O usuário não poderá mais acessar o sistema até ser reativado.
             </p>
-          </div>
-        </div>
+          </section >
+        </section >
 
         <h4>Consequências da inativação:</h4>
         <ul>
@@ -164,7 +164,7 @@
           <li>Dados preservados para reativação</li>
           <li>Notificação automática por email</li>
         </ul>
-      </div>
+      </section >
 
       <!-- Rodapé -->
       <footer class="modal-footer">
