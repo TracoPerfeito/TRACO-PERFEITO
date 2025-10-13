@@ -766,7 +766,11 @@ button:hover {
   height: 37px;
 }
 
-
+.nao-tem{
+  padding: 30px 70px;
+  color: var(--text-color);
+  font-size: 18px;
+}
 
 @media (max-width: 800px) {
 
@@ -869,7 +873,7 @@ button:hover {
 #banner-perfil {
   position: relative;
   width: 100%;
-  height: auto;
+
 }
 
 #banner-img {

@@ -112,8 +112,8 @@ form textarea::placeholder {
 
 /* quando estiver marcado */
 .form-check-input:checked {
-  background-color: rgb(107, 128, 211);
-  border-color: rgb(107, 128, 211);
+  background-color: rgb(107, 128, 211) !important;
+  border-color: rgb(107, 128, 211) !important;
 }
 
 /* “check” branco centralizado */
