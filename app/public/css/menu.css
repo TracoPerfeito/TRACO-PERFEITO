@@ -389,10 +389,17 @@ a {
   width: 100%;
 }
 
+.config-toggle:hover{
+   transform: none !important;
+  box-shadow: none !important;
+}
+
 
 .user-menu li a:hover, .config-dropdown:hover {
   transform: translateY(-3px); 
   cursor: pointer; 
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .nome-img{

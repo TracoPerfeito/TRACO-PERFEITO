@@ -118,12 +118,13 @@
           e só será liberado ao profissional após a confirmação do cliente.
           A plataforma poderá reter taxas administrativas e intermediar disputas quando necessário.
         </p>
-        <section class="form-check">
-          <input class="form-check-input" type="checkbox" id="aceitar_termos" name="ACEITAR_TERMOS" required>
-          <label class="form-check-label" for="aceitar_termos">
-            Li e aceito os termos e condições
-          </label>
-        </section>
+      <section class="form-check">
+  <input class="form-check-input" type="checkbox" id="aceitar_termos" name="ACEITAR_TERMOS" required>
+  <label class="form-check-label" for="aceitar_termos">
+    Li e aceito os termos e condições
+  </label>
+</section>
+
       </section>
       <!-- Botão -->
       <button type="submit" class="btn btn-primary">Criar Contratação</button>
@@ -166,6 +167,129 @@ selectContratado.addEventListener('change', () => sincronizarSelects(selectContr
 
 // Inicializa com valores corretos
 sincronizarSelects(selectContratante);
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("form");
+
+  const campos = {
+    nomeProjeto: document.getElementById("nome_projeto"),
+    descricao: document.getElementById("finalidade"),
+    valorTotal: document.getElementById("valor_total"),
+    dataEntrega: document.getElementById("data_entrega"),
+    observacoes: document.getElementById("observacoes"),
+    termos: document.getElementById("aceitar_termos"),
+  };
+
+  const limites = {
+    nomeProjeto: { min: 2, max: 100 },
+    descricao: { min: 2, max: 7000 },
+    observacoes: { max: 1000 },
+  };
+
+  // --- Cria contadores de caracteres ---
+  function criarContador(campo, limite) {
+    if (!campo) return;
+    const contador = document.createElement("small");
+    contador.classList.add("contador");
+    contador.style.display = "block";
+    contador.style.textAlign = "right";
+    contador.style.opacity = "0.7";
+    contador.textContent = `0 / ${limite}`;
+    campo.insertAdjacentElement("afterend", contador);
+
+    campo.addEventListener("input", () => {
+      const len = campo.value.length;
+      contador.textContent = `${len} / ${limite}`;
+      contador.style.color = len > limite ? "rgb(219, 84, 97)" : "var(--text-color)";
+    });
+  }
+
+  criarContador(campos.nomeProjeto, limites.nomeProjeto.max);
+  criarContador(campos.descricao, limites.descricao.max);
+  criarContador(campos.observacoes, limites.observacoes.max);
+
+  // --- Função de exibição de erro ---
+  function mostrarErro(campo, mensagem) {
+    let msg = campo.parentElement.querySelector(".msg-erro");
+    if (!msg) {
+      msg = document.createElement("small");
+      msg.classList.add("msg-erro");
+      msg.style.color = "rgb(219, 84, 97)";
+      msg.style.display = "block";
+      msg.style.marginTop = "-8px";
+      msg.style.marginBottom = "10px";
+      campo.insertAdjacentElement("afterend", msg);
+    }
+    msg.textContent = mensagem;
+    campo.classList.add("input-invalido");
+  }
+
+  function limparErro(campo) {
+    campo.classList.remove("input-invalido");
+    const msg = campo.parentElement.querySelector(".msg-erro");
+    if (msg) msg.remove();
+  }
+
+  // --- Validação ao enviar ---
+  form.addEventListener("submit", (e) => {
+    let valido = true;
+    document.querySelectorAll(".msg-erro").forEach((m) => m.remove());
+
+    // Nome do projeto
+    const nome = campos.nomeProjeto.value.trim();
+    if (nome.length < limites.nomeProjeto.min || nome.length > limites.nomeProjeto.max) {
+      mostrarErro(campos.nomeProjeto, "O nome do projeto deve ter entre 2 e 100 caracteres.");
+      valido = false;
+    } else limparErro(campos.nomeProjeto);
+
+    // Descrição
+    const desc = campos.descricao.value.trim();
+    if (desc.length < limites.descricao.min || desc.length > limites.descricao.max) {
+      mostrarErro(campos.descricao, "A descrição deve ter entre 2 e 7000 caracteres.");
+      valido = false;
+    } else limparErro(campos.descricao);
+
+    // Valor total
+    const valor = parseFloat(campos.valorTotal.value);
+    if (isNaN(valor) || valor < 0) {
+      mostrarErro(campos.valorTotal, "O valor total deve ser um número positivo.");
+      valido = false;
+    } else limparErro(campos.valorTotal);
+
+    // Data de entrega
+    const dataEntrega = new Date(campos.dataEntrega.value);
+    const hoje = new Date();
+    const limite = new Date("2030-12-31");
+    if (!campos.dataEntrega.value) {
+      mostrarErro(campos.dataEntrega, "A data de entrega é obrigatória.");
+      valido = false;
+    } else if (dataEntrega < hoje) {
+      mostrarErro(campos.dataEntrega, "A data de entrega não pode ser no passado.");
+      valido = false;
+    } else if (dataEntrega > limite) {
+      mostrarErro(campos.dataEntrega, "A data de entrega deve ser até 31/12/2030");
+      valido = false;
+    } else limparErro(campos.dataEntrega);
+
+    // Observações (opcional, mas com limite)
+    const obs = campos.observacoes.value.trim();
+    if (obs.length > limites.observacoes.max) {
+      mostrarErro(campos.observacoes, "Observações podem ter no máximo 1000 caracteres.");
+      valido = false;
+    } else limparErro(campos.observacoes);
+
+    // Termos
+    if (!campos.termos.checked) {
+      alert("Você deve aceitar os termos e condições para continuar.");
+      valido = false;
+    }
+
+    if (!valido) e.preventDefault();
+  });
+});
 </script>
 
 

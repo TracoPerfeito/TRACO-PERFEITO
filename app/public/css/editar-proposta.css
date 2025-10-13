@@ -30,6 +30,8 @@
   overflow: hidden; /* sem rolagem no desktop */
   position: relative;
   margin: auto;
+  max-height: 80vh; /* Limita o modal */
+  overflow: hidden;
 }
 
 /* Botão fechar (ambos nomes) */
@@ -50,6 +52,52 @@
   color: var(--text-color);
   transform: translateY(-20px);
 }
+
+/* Coluna de inputs e Quill lado a lado */
+.conteudo-editar-publicacao {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  
+    overflow: hidden; 
+}
+
+/* Coluna de inputs */
+.dados {
+  flex: 1;
+  display: flex;
+
+  gap: 15px;
+  max-height: 100%;
+  overflow: hidden; 
+
+}
+
+/* Form do Quill */
+.form-quill {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  max-width: 400px;
+   min-height: 0; 
+}
+
+/* Container do editor Quill */
+#editor-descricao {
+  flex: 1;
+  max-width: 400px;
+  min-height: 0;      /* importante para flex */
+  overflow-y: auto;   /* rolagem interna */
+}
+
+/* Área de edição do Quill */
+#editor-descricao .ql-editor {
+  min-height: 0;
+   max-height: 320px;
+  overflow-y: auto;
+}
+
 
 /* Layout principal (aceita ambos) */
 .conteudo-editar-publicacao,
@@ -134,9 +182,17 @@
 .dados{
   font-family: "Josefin Sans";
     display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 
+}
+
+.inputs-1{
+ flex: 1;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .form-grupo-1{
@@ -144,10 +200,12 @@
   flex-direction: column;
   gap: 5px;
 }
-#titulo-editar-publicacao,
-#categoria-editar-publicacao,
-#descricao-editar-publicacao,
-#outraCategoria,
+#titulo-editar-proposta,
+#categoria-editar-proposta,
+#descricao-editar-proposta,
+#outraCategoriaProposta,
+#orcamento-editar-proposta,
+#prazo-editar-proposta,
 #tagInput-editar {
   background: var(--cor-fundo);
   color: var(--text-color);
@@ -161,78 +219,146 @@
   resize: none;
 }
 
-/* BOTÕES */
 .secao-btns-modal {
   display: flex;
-  justify-content: flex-end; /* alinhados à direita */
-  align-items: center;       /* alinhamento vertical */
-  gap: 12px;                 /* espaço entre eles */
-  margin-top: 30px;
+  justify-content: flex-end; /* botão fica à direita */
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.btn-excluir-editar-publicacao {
-  padding: 8px 16px;
-  border-radius: 6px;
-  background-color: rgb(200, 50, 50);
-  color: #fff;
-  border: none;
-  font-family: "Montserrat", sans-serif;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.3s;
+
+.secao-btns-modal button{
+padding: 10px;
+font-family: "Montserrat";
+border-radius: 7px;
+border: none;
+background-color: var(--cor-btn-azul);
+color: #fff;
 }
 
-.btn-excluir-editar-publicacao:hover {
-  background-color: rgb(150, 20, 20);
+
+
+
+/* ===== Destaque na borda quando o Quill está focado ===== */
+.ql-container.ql-snow:focus-within {
+  border: 1px solid var(--cor-av-borda-n-pub) !important;
+  box-shadow: 0 0 4px var(--cor-av-borda-n-pub);
+  border-radius: 5px;
+}
+.ql-container {
+  flex: 1;
+  height: 100% !important;
+}
+.form-quill {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+    height: 100%;
+  
+  overflow: visible !important;
+  flex-direction: column;
+  border-radius: 7px;
+  font-family: "Josefin Sans";
+}
+.form-quill .ql-toolbar {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+.form-quill .ql-container {
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+   overflow: visible !important;
+  font-family: "Josefin Sans";
+  font-size: 16px;
 }
 
-.btn-salvar-editar-publicacao {
-  padding: 8px 16px;
-  border-radius: 6px;
-  background-color: var(--cor-botao);
-  color: #fff;
-  border: 1px solid var(--cor-borda-btn-1);
-  font-family: "Montserrat", sans-serif;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.3s;
+/* Placeholder do Quill */
+.ql-editor.ql-blank::before {
+  color: var(--text-color) !important;
+  opacity: 0.6 !important;
 }
 
-.btn-salvar-editar-publicacao:hover {
-  background-color: var(--cor-botao-hover, #1358b1);
+
+
+
+.ql-snow.ql-toolbar button svg, .ql-snow .ql-toolbar button svg {
+    float: left;
+    height: 100%;
+    fill: var(--text-color);
 }
 
-/* Ícone do botão excluir */
-#ion-trash {
-  color: white;
+.ql-clean svg {
+     color: var(--text-color) !important;
+  fill: var(--text-color) !important; /* Para ícones SVG */
 }
 
-/* MODAL */
-.modal-editar-publicacao {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 1000;
+
+
+.ql-toolbar.ql-snow {
+  position: relative;
+  z-index: 2;
 }
 
-.modal-content-editar-publicacao {
-  background: var(--cor-fundo);
+.ql-container.ql-snow {
+  position: relative;
+  z-index: 1;
+  overflow: visible !important;
+}
+
+.ql-picker-options {
+  z-index: 10 !important;
+}
+
+.ql-toolbar.ql-snow svg{
+fill: var(--text-color) !important;
+color: var(--text-color) !important;
+}
+/* Ícones da toolbar do Quill */
+.ql-snow .ql-stroke {
+  stroke: var(--text-color) !important;
+}
+
+.ql-snow .ql-fill {
+  fill: var(--text-color) !important;
+}
+
+.ql-snow .ql-picker-label,
+.ql-snow .ql-picker-item {
+  color: var(--text-color) !important;
+}
+
+.ql-toolbar .ql-picker-label svg,
+.ql-toolbar button svg {
+  stroke: var(--text-color) !important;
+  fill: var(--text-color) !important;
+}
+
+.ql-toolbar .ql-active .ql-stroke,
+.ql-toolbar .ql-active .ql-fill {
+  stroke: var(--text-color) !important;
+  fill: var(--text-color) !important;
+}
+
+
+/* Container do Quill */
+#editor-descricao {
+  flex: 1;
+    height: auto; 
+      overflow-y: auto;  
+
+  background: var(--cor-fundo); /* fundo do container */
   color: var(--text-color);
-  border: 1px solid var(--text-color);
-  border-radius: 5px !important;
-  font-family: "Josefin Sans", sans-serif;
-  padding: 6px;
-  box-sizing: border-box;
 }
 
-/* Se quiser, ajusta o tamanho do input Tagify para 100% */
-.tagify--custom-dropdown {
-  width: 100%;
+/* Área de edição (onde o texto aparece) */
+#editor-descricao .ql-editor {
+  background: var(--cor-fundo); /* fundo real visível */
+  color: var(--text-color);
+  font-family: "Josefin Sans";
+  min-height: 0;  
+    overflow-y: auto;
 }
+
 
 /* ===========================
    RESPONSIVIDADE
@@ -280,6 +406,27 @@
     align-items: flex-start;
   }
 
+
+  
+.inputs-1{
+ flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+  /* Coluna de inputs */
+.dados {
+  flex: 1;
+  display: flex;
+  flex-direction: column !important;
+  gap: 15px;
+  max-height: 100%;
+  overflow: hidden; 
+
+}
+
   .modal-content-editar-publicacao,
   .editar-publicacao-modal-content {
     width: 100%;
@@ -304,24 +451,7 @@
   .editar-publicacao-titulo-modal {
     margin-top: 44px;
   }
- .editar-publicacao-carrossel,
-  .carrossel-editar-publicacao {
-    width: 100% !important;      /* container ocupa toda largura */
-    max-width: 100% !important;  /* remove limite do container */
-  }
 
-  .editar-publicacao-imagens-carrossel,
-  .imagens-carrossel {
-    width: 100% !important;      /* container interno do carrossel */
-  }
-
-  .editar-publicacao-imagens-carrossel img,
-  .imagens-carrossel img {
-    width: 100% !important;      /* imagem ocupa 100% do container */
-    max-width: 100% !important;  /* remove qualquer limite */
-    height: auto;
-    
-  }
 }
 
 /* Força visual em último recurso para debug (remova depois) */
@@ -330,3 +460,4 @@
   display: flex !important;
   z-index: 999999 !important;
 }
+

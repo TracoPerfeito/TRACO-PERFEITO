@@ -3,7 +3,7 @@
 .modal-excluir-comentario .botoes-modal,
 .modal-excluir-comentario .botoes-modal-excluir {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 12px;
     
@@ -15,7 +15,6 @@
     margin-top: 20px;
     margin-left: 60px;
 }
-
 /* Botão de excluir comentário */
 .btn-excluir-comentario {
     display: flex;
@@ -26,7 +25,7 @@
     border: none;
     border-radius: 4px;
     padding: 4px 10px;
-    font-family: 'josefin sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     cursor: pointer;
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
@@ -39,13 +38,9 @@
 }
 
 .btn-excluir-comentario:hover {
-    background:  #fff;
-    color: #e74c3c;
+    background: #e74c3c;
+    color: #fff;
     box-shadow: 0 2px 8px rgba(231,76,60,0.12);
-}
-
-.btn-compartilhar{
-    font-family: "Josefin Sans", sans-serif;
 }
 * {
     margin: 0;
@@ -1113,7 +1108,7 @@ body{
     cursor: pointer;
   }
   .icone-menu-coment {
-    fill: #333;
+    fill: var(--text-color);
     transform: translateX(10px);
     cursor: pointer;
   }
@@ -1165,6 +1160,10 @@ body{
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     font-family: josefin sans;
     color: var(--text-color);
+  }
+
+  .modal-content-coment form{
+    margin: 15px 0px;
   }
 
   .btns-denuncia{

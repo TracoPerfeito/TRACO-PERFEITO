@@ -27,8 +27,8 @@ const contratacoesController = {
       .withMessage("O nome do projeto deve ter entre 2 e 100 caracteres."),
     body("DESCRICAO")
       .trim()
-      .isLength({ min: 2, max: 2000 })
-      .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+      .isLength({ min: 2, max: 7000 })
+      .withMessage("A descrição deve ter entre 2 e 7000 caracteres."),
     body("VALOR_TOTAL")
       .notEmpty()
       .isFloat({ min: 0 })
@@ -75,7 +75,7 @@ const contratacoesController = {
   ],
 
 
-  mostrarPagina: async (req, res) =>{
+  mostrarPagina: async (req, res, dadosNotificacao) =>{
 
     console.log("Chegou no mostrar pagina");
 
@@ -94,7 +94,7 @@ const contratacoesController = {
     };
 
     // Passa para o EJS
-    res.render("pages/criar-contratacao", { usuLogado, destinatario });
+    res.render("pages/criar-contratacao", { usuLogado, destinatario, dadosNotificacao });
     }catch(error){
 console.log(error);
  req.session.dadosNotificacao = {
@@ -116,6 +116,7 @@ console.log(error);
 
       const erros = validationResult(req);
       if (!erros.isEmpty()) {
+        console.log("Deu erro na validação")
         req.session.dadosNotificacao = {
           titulo: "Erro ao criar contratação",
           mensagem: "Verifique os campos e tente novamente.",
@@ -141,8 +142,10 @@ console.log(error);
 
       const resultado = await contratacaoModel.createContratacao(novoRegistro);
       
+      
 
       if (!resultado) {
+        console.log("Deu erro. Nao tem resultado")
         req.session.dadosNotificacao = {
           titulo: "Erro",
           mensagem: "Não foi possível criar a contratação.",
@@ -160,7 +163,7 @@ console.log(error);
         tipo: "success"
       };
 
-      return res.redirect("/");
+      return res.redirect("/contratacoes");
 
     } catch (erro) {
       console.error("Erro ao criar contratação:", erro);
@@ -228,7 +231,7 @@ console.log(error);
 
 
 
-listarContratacoes: async (req, res) => {
+listarContratacoes: async (req, res, dadosNotificacao) => {
   try {
     const usuarioId = req.session.autenticado.id;
     const contratacoes = await contratacaoModel.findByUsuarioDetalhado(usuarioId);
@@ -255,6 +258,7 @@ listarContratacoes: async (req, res) => {
       emAndamento,
       concluidas,
       canceladas,
+      dadosNotificacao,
       todas: contratacoesConvertidas
     });
 

@@ -487,7 +487,7 @@ exibirPublicacao: async (req, res, dadosNotificacao) => {
 
 
 
-listarPropostas: async (req, res) => {
+listarPropostas: async  (req, res, dadosNotificacao) => {
   try {
     const propostas = await listagensModel.listarPropostas();
 
@@ -510,7 +510,7 @@ listarPropostas: async (req, res) => {
       autenticado: !!req.session.autenticado,
       logado: req.session.logado,
       listaErros: null,
-      dadosNotificacao: null
+      dadosNotificacao
         ,
         id_usuario: req.session.autenticado ? (req.session.autenticado.ID_USUARIO || req.session.autenticado.id || req.session.autenticado.ID) : null
         ,

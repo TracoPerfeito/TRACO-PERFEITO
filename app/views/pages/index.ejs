@@ -155,8 +155,7 @@
                           <%- include('../partials/ordenar-publis') %>
                        </section>
 
-                          <%- include('../partials/filtro-avancado') %>
-
+                      
 
 
    
@@ -358,24 +357,25 @@
                                   <ion-icon name="create-outline"></ion-icon>
                                   Editar
                                 </button>
-                                <form action="/excluir-publicacao" method="POST" style="display:inline;">
-                                  <input type="hidden" name="idPublicacao" value="<%= pub.ID_PUBLICACAO %>">
-                                  <button type="submit" class="btn-excluir-publicacao" title="Excluir publicação" onclick="return confirm('Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.');">
-                                    <ion-icon name="trash-outline"></ion-icon>
-                                    Excluir
-                                  </button>
-                                </form>
+                             
+
+                                
+                                  <button class="btn-excluir-publicacao" data-id="<%= pub.ID_PUBLICACAO %>" title="Excluir publicação">
+                            <ion-icon name="trash-outline"></ion-icon>Excluir
+                          </button>
                               <% } %>
                       
                               <button class="btn-compartilhar" title="Compartilhar" id="openShareModal" onclick="openModal('<%= pub.ID_PUBLICACAO %>')">
                                 <ion-icon name="share-social-outline"></ion-icon>
                                 Compartilhar
                               </button>
-                               <% if (!autenticado || id_usuario !== pub.ID_USUARIO) { %>
-                        <button class="btn-denunciar" data-id="<%= pub.ID_PUBLICACAO %>">
-                          <ion-icon name="flag-outline"></ion-icon> Denunciar
-                        </button>
-                      <% } %>
+                         <% if (tipo_usuario && id_usuario !== pub.ID_USUARIO) { %>
+  <button class="btn-denunciar" data-id="<%= pub.ID_PUBLICACAO %>">
+    <ion-icon name="flag-outline"></ion-icon> Denunciar
+  </button>
+<% } %>
+
+
                             </section>
                           </section>
                       
@@ -434,18 +434,20 @@
                           <section id="modalDenuncia" class="modal">
                               <section class="modal-content">
                               <h3>Qual o motivo da denúncia?</h3>
-                              <form id="formDenuncia" action="/denunciar-publicacao" method="post">
-                                <input type="hidden" id="idPublicacaoInput" name="idPublicacao" value="<%= pub.ID_PUBLICACAO %>">
-                                  <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label><br>
-                                  <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
-                                  <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
-                                  <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
-                                  <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
-                                  <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
-                      
-                                  <button type="submit">Enviar denúncia</button>
-                                  <button type="button" id="fecharModal">Cancelar</button>
-                              </form>
+                             <form id="formDenuncia" action="/denunciar-publicacao" method="post">
+  <input type="hidden" id="idPublicacaoInput" name="idPublicacao" value="<%= pub.ID_PUBLICACAO %>">
+
+  <label><input type="radio" name="motivo" value="Conteúdo ofensivo" required> Conteúdo ofensivo</label><br>
+  <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>
+  <label><input type="radio" name="motivo" value="Informação falsa ou enganosa"> Informação falsa ou enganosa</label><br>
+  <label><input type="radio" name="motivo" value="Nudez ou conteúdo sexual"> Nudez ou conteúdo sexual</label><br>
+  <label><input type="radio" name="motivo" value="Plágio ou cópia não autorizada"> Plágio ou cópia não autorizada</label><br>
+  <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+
+  <button type="submit">Enviar denúncia</button>
+  <button type="button" id="fecharModal">Cancelar</button>
+</form>
+
                               </section>
                           </section>
                       
@@ -480,6 +482,7 @@
                       
                       
                                  
+                          <%- include('../partials/excluir-publi') %>
                       
                       
                       

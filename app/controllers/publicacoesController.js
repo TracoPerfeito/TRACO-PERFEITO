@@ -46,8 +46,8 @@ const publicacoesController = {
   regrasValidacaoCriarPropostaProjeto: [
     body("titulo")
       .trim()
-      .isLength({ min: 2, max: 50 })
-      .withMessage("O título deve ter entre 2 e 50 caracteres."),
+      .isLength({ min: 2, max: 70 })
+      .withMessage("O título deve ter entre 2 e 70 caracteres."),
     
     body("categoria")
       .trim()
@@ -57,8 +57,8 @@ const publicacoesController = {
     body("preferencia")
       .optional({ checkFalsy: true })
       .trim()
-      .isLength({ max: 30 })
-      .withMessage("A preferência deve ter no máximo 30 caracteres."),
+      .isLength({ max: 50 })
+      .withMessage("A preferência deve ter no máximo 50 caracteres."),
 
     body("prazoEntrega")
       .optional({ checkFalsy: true })
@@ -72,8 +72,8 @@ const publicacoesController = {
 
        body("descricao")
       .trim()
-      .isLength({ min: 2, max: 2000 })
-      .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
+      .isLength({ min: 2, max: 7000 })
+      .withMessage("A descrição deve ter entre 2 e 7000 caracteres."),
 
   ],
 
@@ -129,11 +129,11 @@ const publicacoesController = {
   ],
 
 
-    regrasValidacaoEditarPublicacao: [
+    regrasValidacaoEditarProposta: [
       body("titulo_proposta")
       .trim()
-      .isLength({ min: 2, max: 50 })
-      .withMessage("O título deve ter entre 2 e 50 caracteres."),
+      .isLength({ min: 2, max: 70 })
+      .withMessage("O título deve ter entre 2 e 70 caracteres."),
     
     body("categoria_proposta")
       .trim()
@@ -158,7 +158,7 @@ const publicacoesController = {
 
        body("descricao_proposta")
       .trim()
-      .isLength({ min: 2, max: 2000 })
+      .isLength({ min: 2, max: 7000 })
       .withMessage("A descrição deve ter entre 2 e 2000 caracteres."),
 
 
@@ -166,23 +166,36 @@ const publicacoesController = {
 ],
 
 
-    regrasValidacaoEditarProposta: [
-  body("titulo_proposta")
+    regrasValidacaoEditarPublicacao: [
+  body("titulo_publicacao")
     .trim()
     .isLength({ min: 1, max: 70 })
-    .withMessage("A Proposta deve ter entre 1 e 70 caracteres."),
+    .withMessage("O título deve ter entre 1 e 70 caracteres."),
+
+    body("categoria")
+    .trim()
+    .notEmpty()
+    .withMessage("Selecione uma categoria"),
   
   
 
-  body("descricao_proposta")
+  body("descricao_publicacao")
     .trim()
     .isLength({ min: 1, max: 2000 })
     .withMessage("A descrição deve ter entre 1 e 2000 caracteres."),
 
-  
-
-],
-
+  body("tags")
+    .custom((value) => {
+      try {
+        const tags = JSON.parse(value);
+        if (!Array.isArray(tags)) throw new Error();
+        if (tags.length > 10) throw new Error("Máximo 10 tags permitidas.");
+        return true;
+      } catch {
+        throw new Error("Tags inválidas, envie um array JSON.");
+      }
+    }),
+  ],
 
 
 
@@ -576,39 +589,32 @@ editarProposta: async (req, res) => {
       // Se não houver resultado, ou seja, nada foi inserido, retorna um erro. 
   if (!resultado) {
       console.log("Deu erro ao salvar Proposta de Projeto!");
-
+  }
+  
     
-      return res.render('pages/nova-publi-pedido', {
-        listaErros: null,
-        dadosNotificacao: {
-          titulo: 'Erro ao enviar Proposta de Projeto.',
-          mensagem: 'Não foi possível salvar sua proposta.',
-          tipo: 'error'
-        },
-        usuario: req.session.autenticado || null,
-        autenticado: !!req.session.autenticado,
-      });
-    }
 
-   
-    return res.render('pages/nova-publi-pedido', {
-      listaErros: null,
-      dadosNotificacao: {
-        titulo: 'Proposta de Projeto enviada!',
+req.session.dadosNotificacao = {
+   titulo: 'Proposta de Projeto enviada!',
         mensagem: "Sua Proposta de Projeto foi salva com sucesso.",
         tipo: "success"
-      },
-    
-      usuario: req.session.autenticado ? {
-        id: req.session.autenticado.id,
-        nome: req.session.autenticado.nome,
-        tipo: req.session.autenticado.tipo
-      } : null,
-      autenticado: !!req.session.autenticado,
-    });
+};
+
+return res.redirect("/propostadeprojeto/" + resultado)
+
+   
+  
     } catch (erro) {
       console.error("Erro ao criar proposta de projeto:", erro);
-      return res.status(500).json({ erro: "Erro interno ao criar proposta de projeto." });
+
+      
+
+req.session.dadosNotificacao = {
+   titulo: 'Ocorreu um erro.',
+        mensagem: "Não foi possível salvar sua proposta de projeto. Tente novamente mais tarde.",
+        tipo: "error"
+};
+
+return res.redirect("/");
     }
   },
 
