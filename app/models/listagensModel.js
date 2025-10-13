@@ -2,29 +2,8 @@ var pool = require("../../config/pool_conexoes");
 
 const listagensModel = {
 
-  // buscarProfissionaisComEspecializacao: async () => {
-  //   try {
-  //     const [linhas] = await pool.query(`
-  //       SELECT 
-  //         u.ID_USUARIO, 
-  //         u.NOME_USUARIO, 
-  //         u.FOTO_PERFIL_BANCO_USUARIO,
-  //         u.IMG_BANNER_BANCO_USUARIO,
-  //         u.DESCRICAO_PERFIL_USUARIO,
-  //         up.ESPECIALIZACAO_DESIGNER
-  //       FROM USUARIOS u
-  //       LEFT JOIN USUARIO_PROFISSIONAL up ON u.ID_USUARIO = up.ID_USUARIO
-  //       WHERE u.TIPO_USUARIO = 'profissional' 
-  //         AND u.STATUS_USUARIO = 'ativo'
-  //     `);
-  //     return linhas;
-  //   } catch (error) {
-  //     console.error("Erro ao buscar profissionais:", error);
-  //     return [];
-  //   }
-  // },
 
-buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
+  buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
   try {
     const [linhas] = await pool.query(`
       SELECT 
@@ -40,6 +19,7 @@ buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
         IFNULL(a.MEDIA_NOTA, 0) AS MEDIA_NOTA,
         IFNULL(a.QTD_AVALIACOES, 0) AS QTD_AVALIACOES,
         IFNULL(c.CONTRATOS_FINALIZADOS, 0) AS CONTRATOS_FINALIZADOS,
+        IFNULL(v.MEDIA_PRECO, 0) AS MEDIA_PRECO,   -- média de preço
         IF(f.ID_SEGUIDO IS NOT NULL AND f.STATUS_SEGUINDO = 1, 'seguindo', 'seguir') AS SEGUIDO
       FROM USUARIOS u
       LEFT JOIN USUARIO_PROFISSIONAL up ON up.ID_USUARIO = u.ID_USUARIO
@@ -54,20 +34,26 @@ buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
           FROM PUBLICACOES_PROFISSIONAL
           GROUP BY ID_USUARIO
       ) p ON p.ID_USUARIO = u.ID_USUARIO
-    LEFT JOIN (
-    SELECT 
-        ID_PROFISSIONAL, 
-        ROUND(AVG(NOTA), 1) AS MEDIA_NOTA,  
-        COUNT(*) AS QTD_AVALIACOES
-    FROM AVALIACOES_PROFISSIONAL
-    GROUP BY ID_PROFISSIONAL
-) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
+      LEFT JOIN (
+          SELECT 
+              ID_PROFISSIONAL, 
+              ROUND(AVG(NOTA), 1) AS MEDIA_NOTA,  
+              COUNT(*) AS QTD_AVALIACOES
+          FROM AVALIACOES_PROFISSIONAL
+          GROUP BY ID_PROFISSIONAL
+      ) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
       LEFT JOIN (
           SELECT ID_PROFISSIONAL, COUNT(*) AS CONTRATOS_FINALIZADOS
           FROM CONTRATACOES
           WHERE STATUS = 'FINALIZADA'
           GROUP BY ID_PROFISSIONAL
       ) c ON c.ID_PROFISSIONAL = u.ID_USUARIO
+      LEFT JOIN (
+          SELECT ID_PROFISSIONAL, ROUND(AVG(VALOR_TOTAL), 2) AS MEDIA_PRECO
+          FROM CONTRATACOES
+          WHERE STATUS = 'FINALIZADA'
+          GROUP BY ID_PROFISSIONAL
+      ) v ON v.ID_PROFISSIONAL = u.ID_USUARIO
       LEFT JOIN SEGUINDO f 
           ON f.ID_SEGUIDO = u.ID_USUARIO 
           AND f.ID_USUARIO = ?
@@ -75,21 +61,118 @@ buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
         AND u.STATUS_USUARIO = 'ativo';
     `, [idUsuarioLogado]);
 
-    return linhas.map(p => ({
-      ...p,
-      FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+    // agora vamos mapear e adicionar se é PRO consultando ASSINATURAS
+    const resultados = [];
+    for (const p of linhas) {
+      // transforma imagens em base64
+      const foto = p.FOTO_PERFIL_BANCO_USUARIO
         ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
-        : null,
-      IMG_BANNER_BANCO_USUARIO: p.IMG_BANNER_BANCO_USUARIO
+        : null;
+      const banner = p.IMG_BANNER_BANCO_USUARIO
         ? `data:image/png;base64,${p.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
-        : null
-    }));
+        : null;
+
+      // verifica se é PRO
+      let isPro = false;
+      try {
+        const [assinatura] = await pool.query(`
+          SELECT 1 
+          FROM ASSINATURAS 
+          WHERE ID_USUARIO = ? 
+            AND STATUS_PAGAMENTO = 'approved'
+            AND NOW() BETWEEN DATA_INICIO AND DATA_FIM
+          LIMIT 1
+        `, [p.ID_USUARIO]);
+        isPro = assinatura.length > 0;
+      } catch (err) {
+        console.error('Erro verificando assinatura PRO:', err);
+        isPro = false;
+      }
+
+      resultados.push({
+        ...p,
+        FOTO_PERFIL_BANCO_USUARIO: foto,
+        IMG_BANNER_BANCO_USUARIO: banner,
+        isPro
+      });
+    }
+
+    return resultados;
 
   } catch (error) {
     console.error("Erro ao buscar profissionais com contagem:", error);
     return [];
   }
 },
+
+
+
+// buscarProfissionaisComContagem: async (idUsuarioLogado = null) => {
+//   try {
+//     const [linhas] = await pool.query(`
+//       SELECT 
+//         u.ID_USUARIO,
+//         u.NOME_USUARIO,
+//         u.FOTO_PERFIL_BANCO_USUARIO,
+//         u.IMG_BANNER_BANCO_USUARIO,
+//         u.DESCRICAO_PERFIL_USUARIO,
+//         u.DATA_CADASTRO,
+//         up.ESPECIALIZACAO_DESIGNER,
+//         IFNULL(s.QUANT_SEGUIDORES, 0) AS QUANT_SEGUIDORES,
+//         IFNULL(p.QUANT_PUBLICACOES, 0) AS QUANT_PUBLICACOES,
+//         IFNULL(a.MEDIA_NOTA, 0) AS MEDIA_NOTA,
+//         IFNULL(a.QTD_AVALIACOES, 0) AS QTD_AVALIACOES,
+//         IFNULL(c.CONTRATOS_FINALIZADOS, 0) AS CONTRATOS_FINALIZADOS,
+//         IF(f.ID_SEGUIDO IS NOT NULL AND f.STATUS_SEGUINDO = 1, 'seguindo', 'seguir') AS SEGUIDO
+//       FROM USUARIOS u
+//       LEFT JOIN USUARIO_PROFISSIONAL up ON up.ID_USUARIO = u.ID_USUARIO
+//       LEFT JOIN (
+//           SELECT ID_SEGUIDO, COUNT(*) AS QUANT_SEGUIDORES
+//           FROM SEGUINDO
+//           WHERE STATUS_SEGUINDO = 1
+//           GROUP BY ID_SEGUIDO
+//       ) s ON s.ID_SEGUIDO = u.ID_USUARIO
+//       LEFT JOIN (
+//           SELECT ID_USUARIO, COUNT(*) AS QUANT_PUBLICACOES
+//           FROM PUBLICACOES_PROFISSIONAL
+//           GROUP BY ID_USUARIO
+//       ) p ON p.ID_USUARIO = u.ID_USUARIO
+//     LEFT JOIN (
+//     SELECT 
+//         ID_PROFISSIONAL, 
+//         ROUND(AVG(NOTA), 1) AS MEDIA_NOTA,  
+//         COUNT(*) AS QTD_AVALIACOES
+//     FROM AVALIACOES_PROFISSIONAL
+//     GROUP BY ID_PROFISSIONAL
+// ) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
+//       LEFT JOIN (
+//           SELECT ID_PROFISSIONAL, COUNT(*) AS CONTRATOS_FINALIZADOS
+//           FROM CONTRATACOES
+//           WHERE STATUS = 'FINALIZADA'
+//           GROUP BY ID_PROFISSIONAL
+//       ) c ON c.ID_PROFISSIONAL = u.ID_USUARIO
+//       LEFT JOIN SEGUINDO f 
+//           ON f.ID_SEGUIDO = u.ID_USUARIO 
+//           AND f.ID_USUARIO = ?
+//       WHERE u.TIPO_USUARIO = 'profissional'
+//         AND u.STATUS_USUARIO = 'ativo';
+//     `, [idUsuarioLogado]);
+
+//     return linhas.map(p => ({
+//       ...p,
+//       FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+//         ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+//         : null,
+//       IMG_BANNER_BANCO_USUARIO: p.IMG_BANNER_BANCO_USUARIO
+//         ? `data:image/png;base64,${p.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
+//         : null
+//     }));
+
+//   } catch (error) {
+//     console.error("Erro ao buscar profissionais com contagem:", error);
+//     return [];
+//   }
+// },
 
 
   // findIdusuario: async (id) => {

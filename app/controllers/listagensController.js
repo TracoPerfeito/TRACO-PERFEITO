@@ -63,21 +63,26 @@ listarProfissionais: async (req, res) => {
   try {
     const profissionais = await listagensModel.buscarProfissionaisComContagem(req.session.autenticado?.id);
 
-    console.log("Profissionais encontrados:", profissionais.map(p => ({
-      ID_USUARIO: p.ID_USUARIO,
-      NOME_USUARIO: p.NOME_USUARIO,
-      FOTO_PERFIL: p.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
-      IMG_BANNER: p.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
-      DESCRICAO_PERFIL_USUARIO: p.DESCRICAO_PERFIL_USUARIO,
-      DATA_CADASTRO: p.DATA_CADASTRO,
-      ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER,
-      QUANT_SEGUIDORES: p.QUANT_SEGUIDORES,
-      QUANT_PUBLICACOES: p.QUANT_PUBLICACOES,
-      MEDIA_NOTA: p.MEDIA_NOTA,
-      QTD_AVALIACOES: p.QTD_AVALIACOES,
-      CONTRATOS_FINALIZADOS: p.CONTRATOS_FINALIZADOS,
-      SEGUIDO: p.SEGUIDO
-    })));
+   console.log("Profissionais encontrados:", profissionais.map(p => ({
+  ID_USUARIO: p.ID_USUARIO,
+  NOME_USUARIO: p.NOME_USUARIO,
+  FOTO_PERFIL: p.FOTO_PERFIL_BANCO_USUARIO ? 'sim' : 'não',
+  IMG_BANNER: p.IMG_BANNER_BANCO_USUARIO ? 'sim' : 'não',
+  DESCRICAO_PERFIL_USUARIO: p.DESCRICAO_PERFIL_USUARIO,
+  DATA_CADASTRO: p.DATA_CADASTRO,
+  ESPECIALIZACAO_DESIGNER: p.ESPECIALIZACAO_DESIGNER,
+  QUANT_SEGUIDORES: p.QUANT_SEGUIDORES,
+  QUANT_PUBLICACOES: p.QUANT_PUBLICACOES,
+  MEDIA_NOTA: p.MEDIA_NOTA,
+  QTD_AVALIACOES: p.QTD_AVALIACOES,
+  CONTRATOS_FINALIZADOS: p.CONTRATOS_FINALIZADOS,
+  SEGUIDO: p.SEGUIDO,
+  IS_PRO: p.isPro,
+  MEDIA_PRECO: p.MEDIA_PRECO
+})));
+
+
+
 
     res.render('pages/contratar', {
       profissionais,

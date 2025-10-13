@@ -18,6 +18,8 @@ const usuariosModel = {
 },
 
 
+
+
    
 
     create: async (dadosForm) => {
@@ -98,6 +100,28 @@ const usuariosModel = {
                 return error;
             }
         },
+
+
+        verSeEAssinante: async (idUsuario) => {
+    try {
+        const sql = `
+            SELECT 1 
+            FROM ASSINATURAS
+            WHERE ID_USUARIO = ?
+              AND STATUS_PAGAMENTO = 'approved'
+              AND NOW() BETWEEN DATA_INICIO AND DATA_FIM
+            LIMIT 1
+        `;
+        const [linhas] = await pool.query(sql, [idUsuario]);
+
+        // retorna true se achou algum registro, false se não
+        return linhas.length > 0;
+    } catch (error) {
+        console.error('Erro no model ao verificar assinatura PRO:', error);
+        return false; // se der erro, assume que não é assinante
+    }
+},
+
 
 findId: async (id) => {
     try {

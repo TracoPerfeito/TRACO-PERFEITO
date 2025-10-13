@@ -16,7 +16,7 @@
     
     border: 2px solid var(--borda-barra-pesquisa);
    
-    flex: 1; 
+      flex: 1 1 0;     
 
 }
 
@@ -114,7 +114,7 @@
     padding: 7px;
     margin-left: 10px;
     width: 50px;
-    height: auto;
+   
    
 }
 
@@ -139,16 +139,21 @@
 
 .barra-filtro-centralizada {
   display: flex;
-  align-items: center;
+  align-items: stretch;        /* faz os filhos terem mesma altura */
   justify-content: center;
-  width: 600px;
-  margin: auto;
-  gap: 10px; /* espaçamento entre barra e botão */
+  gap: 10px;
+  width: 100%;
+  max-width: 900px;            /* mantém a largura máxima desejada (ajusta se quiser 600px) */
+  margin: 0 auto;
+  box-sizing: border-box;
+  flex-wrap: nowrap;           /* evita quebra; o input vai encolher */
+        /* evita rolagem horizontal */
+  padding: 0 10px;             /* evita que encoste nas laterais em telas pequenas */
 }
 
 @media (max-width: 640px) {
   .barra-filtro-centralizada {
-    width: 90%;
+    width: 95% !important;
   }
 }
 
@@ -214,7 +219,7 @@ text-align: center;
 
 
 
-.barra-ordenar {
+.barra-ordenar, .barra-filtro-centralizada {
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -252,6 +257,7 @@ text-align: center;
   display: flex;
   align-items: center;
   gap: 6px;
+  height: 100%;
   font-family: 'Josefin Sans', sans-serif;
   background: var(--verdinho-transparente-barra);
   border: 2px solid var(--borda-barra-pesquisa);
@@ -352,4 +358,320 @@ width: 95%;
   flex-wrap: wrap;
   box-sizing: border-box;
 }
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/* === FILTRO LATERAL === */
+
+#botao-filtro {
+   white-space: nowrap; 
+  font-size: 16px;
+  color: var(--text-color);
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Josefin Sans', sans-serif;
+  background: var(--verdinho-transparente-barra);
+  border: 2px solid var(--borda-barra-pesquisa);
+  transition: all 0.2s ease;
+}
+
+#botao-filtro:hover {
+ border-color: var(--texto-barra-pesquisa);
+}
+
+/* container principal do filtro */
+.filtro-lateral {
+  position: fixed;
+  top: 160px; 
+  left: 0;
+  width: 280px;
+  background: var(--cor-fundo);
+  color: var(--text-color);
+  font-family: "Montserrat";
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0 12px 12px 0;
+  padding: 1rem;
+  z-index: 999;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+/* quando ativo */
+.filtro-lateral.aberto {
+  transform: translateX(0);
+}
+
+/* conteúdo interno */
+.filtro-secao {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+.h2-filtro{
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+.filtro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-color-mais-claro);
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.5rem 0;
+}
+
+.filtro-header ion-icon {
+  transition: transform 0.3s ease;
+}
+
+.filtro-header.ativo ion-icon {
+  transform: rotate(90deg);
+}
+
+.filtro-opcoes {
+  max-height: 0;
+  overflow: auto;
+  transition: max-height 0.3s ease;
+  padding-left: 0.5rem;
+}
+
+.filtro-opcoes.ativo {
+  max-height: 200px;
+  padding-bottom: 0.5rem;
+}
+
+.filtro-opcoes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Josefin Sans', sans-serif;
+  color: var(--text-color-mais-claro);
+  font-size: 15px;
+  cursor: pointer;
+  margin: 6px 0;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+#aplicar-filtro{
+  padding: 10px;
+  background-color: var(--cor-btn-azul);
+  font-family: "Montserrat";
+  border: none;
+  color: whitesmoke;
+  border-radius: 7px;
+  text-transform: uppercase;
+  width: 100%;
+  transition: all 0.3s;
+}
+
+#aplicar-filtro:hover{
+
+  background-color: var(--hover-btn);
+  cursor: pointer;
+  
+}
+
+
+
+/* esconde o input padrão */
+.filtro-opcoes input[type="checkbox"],
+.filtro-opcoes input[type="radio"] {
+  appearance: none; /* remove estilo padrão */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--text-color-mais-claro);
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* radios ficam redondos */
+.filtro-opcoes input[type="radio"] {
+  border-radius: 50%;
+}
+
+/* cor de foco e hover */
+.filtro-opcoes input:hover {
+  border-color: var(--texto-barra-pesquisa);
+}
+
+/* quando marcado */
+.filtro-opcoes input[type="checkbox"]:checked,
+.filtro-opcoes input[type="radio"]:checked {
+  background-color: var(--cor-btn-azul); /* 🔹 muda pra tua cor preferida */
+  border-color: var(--cor-btn-azul);
+  color: white;
+}
+
+/* ícone de check customizado (usando pseudo-elemento) */
+.filtro-opcoes input[type="checkbox"]:checked::after {
+  content: "✔";
+  font-size: 14px;
+  color: white;
+  position: absolute;
+}
+
+/* ponto central para o radio marcado */
+.filtro-opcoes input[type="radio"]:checked::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+}
+
+
+/* seta rotaciona ao abrir */
+.filtro-header.ativo ion-icon {
+  transform: rotate(90deg);
+}
+
+/* transição suave de expansão */
+.filtro-opcoes {
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+/* organização visual */
+.filtro-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 4px;
+}
+
+
+.filtro-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Container geral do slider */
+.slider-container {
+  position: relative;
+  width: 90%;
+  height: 32px; /* altura suficiente pra comportar os thumbs */
+  display: flex;
+  align-items: center;
+}
+
+/* Input range transparente, posicionado no meio da linha */
+.slider-container input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  width: 100%;
+  height: 32px;
+  background: transparent;
+  margin: 0;
+  pointer-events: none; /* evita conflitos entre os dois ranges */
+}
+
+/* Thumb (bolinha) */
+.slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: all;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cor-btn-azul);
+  border: 2px solid #fff;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Linha base (trilho) */
+.slider-track {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* Labels e valores */
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  font-size: 12px;
+  color: var(--text-color);
+}
+
+.filtro-slider p {
+  font-size: 13px;
+  color: var(--text-color);
+  margin-top: 5px;
+}
+
+/* Melhor alinhamento visual e sem corte */
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cor-btn-azul);
+  border: 2px solid #fff;
+  cursor: pointer;
+}
+
+
+
+@media (max-width: 768px) {
+  .filtro-lateral {
+    width: 100%; /* ocupa só a largura visível da tela */
+    max-width: 100vw; /* garante que nunca passe da viewport */
+    border-radius: 12px 12px 0 0;
+    left: 0;
+    bottom: 0;
+    top: auto;
+    transform: translateY(100%);
+    max-height: 75vh;
+    overflow-x: hidden; /* impede qualquer scroll lateral interno */
+    box-sizing: border-box;
+    padding: 1rem; /* mantém espaço interno */
+  }
+
+  .filtro-lateral.aberto {
+    transform: translateY(0);
+  }
 }

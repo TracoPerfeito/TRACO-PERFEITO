@@ -41,6 +41,10 @@
 
     <section class="pesquisas">
   <section class="barra-filtro-centralizada">
+
+     <button id="botao-filtro">
+     <ion-icon name="funnel"></ion-icon>
+    </button>
       <form action="/pesquisar-profissionais" id="form-pesquisa" method="get">
                          <section class="search">
                              <section class="icon" id="btn-pesquisa">
@@ -65,9 +69,7 @@
                               
                         <%- include('../partials/ordenar-profissionais') %>
 
-    <button id="botao-filtro">
-      <ion-icon name="filter-outline" id="icon-filtro"></ion-icon>
-    </button>
+   
   </section>
 </section>
 
@@ -112,7 +114,13 @@
     data-seguidores="<%= profissional.QUANT_SEGUIDORES || 0 %>"
     data-contratacoes="0"
     data-avaliacao="0"
-     data-cadastro="<%= profissional.DATA_CADASTRO ? (new Date(profissional.DATA_CADASTRO)).toISOString().split('T')[0] : '' %>">
+     data-cadastro="<%= profissional.DATA_CADASTRO ? (new Date(profissional.DATA_CADASTRO)).toISOString().split('T')[0] : '' %>"
+data-especializacao="<%= profissional.ESPECIALIZACAO_DESIGNER %>"
+data-avaliacao="<%= profissional.MEDIA_NOTA %>"
+data-media-preco="<%= profissional.MEDIA_PRECO %>"
+data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
+>
+
 
     
         <section class="card-header">
@@ -170,22 +178,320 @@
 <% } %>
 
 
-
-
-<!-- 
-    <%- include('../partials/perfis-contratar'); %>
-    <%- include('../partials/perfis-contratar'); %>
-    <%- include('../partials/perfis-contratar'); %>
-    <%- include('../partials/perfis-contratar'); %>
-    <%- include('../partials/perfis-contratar'); %>
-    <%- include('../partials/perfis-contratar'); %>
-    <%- include('../partials/perfis-contratar'); %>
-    <%- include('../partials/perfis-contratar'); %>
-
- -->
-
-
  </section>
+
+ <!-- Painel de filtro -->
+<section class="filtro-lateral" id="filtroLateral">
+  <section class="filtro-conteudo">
+    <h2 class="h2-filtro">Filtros</h2>
+    <section class="filtro-secao">
+      <section class="filtro-header">Área de atuação <ion-icon name="chevron-forward-outline"></ion-icon></section>
+      <section class="filtro-opcoes">
+          <label><input type="checkbox" data-valor="Design Gráfico"> Designer Gráfico</label>
+<label><input type="checkbox" data-valor="Ilustração"> Ilustrador(a)</label>
+<label><input type="checkbox" data-valor="Design UX/UI"> Designer de Interface (UI)</label>
+<label><input type="checkbox" data-valor="Design UX/UI"> Designer de Experiência (UX)</label>
+<label><input type="checkbox" data-valor="Design de Produto"> Designer de Produto</label>
+<label><input type="checkbox" data-valor="Design de Moda"> Designer de Moda</label>
+<label><input type="checkbox" data-valor="Design de Interiores"> Designer de Interiores</label>
+<label><input type="checkbox" data-valor="Modelagem 3D"> Artista 3D</label>
+<label><input type="checkbox" data-valor="Animação e Modelagem 2D / 3D"> Animador(a) 2D/3D</label>
+<label><input type="checkbox" data-valor="Fotografia"> Fotógrafo(a)</label>
+<label><input type="checkbox" data-valor="Videomaker"> Videomaker</label>
+<label><input type="checkbox" data-valor="Editor(a) de Vídeo"> Editor(a) de Vídeo</label>
+<label><input type="checkbox" data-valor="Arte Tradicional"> Artista Tradicional (pintura, desenho, etc.)</label>
+<label><input type="checkbox" data-valor="Letrista / Tipógrafo(a)"> Letrista / Tipógrafo(a)</label>
+<label><input type="checkbox" data-valor="Design de Logotipo"> Designer de Logotipo / Identidade Visual</label>
+<label><input type="checkbox" data-valor="Concept Artist"> Concept Artist</label>
+<label><input type="checkbox" data-valor="Web Designer"> Web Designer</label>
+<label><input type="checkbox" data-valor="Motion Designer"> Motion Designer</label>
+<label><input type="checkbox" data-valor="Design de Jogos"> Designer de Jogos</label>
+<label><input type="checkbox" data-valor="Design de Embalagens"> Designer de Embalagens</label>
+
+
+
+      </section>
+    </section>
+<section class="filtro-secao">
+  <section class="filtro-header">
+    Avaliação (média)
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </section>
+
+  <section class="filtro-opcoes filtro-slider">
+    <div class="slider-container">
+      <input type="range" id="avaliacaoMin" min="0" max="5" step="0.1" value="3">
+      <input type="range" id="avaliacaoMax" min="0" max="5" step="0.1" value="5">
+      <div class="slider-track"></div>
+    </div>
+    <div class="slider-labels">
+      <span>0</span>
+      <span>1</span>
+      <span>2</span>
+      <span>3</span>
+      <span>4</span>
+      <span>5</span>
+    </div>
+    <p>De <span id="valorMin">3</span> ★ a <span id="valorMax">5</span> ★</p>
+  </section>
+</section>
+
+
+
+<!-- Usuários Pro -->
+<section class="filtro-secao">
+  <section class="filtro-header">Usuários Pro <ion-icon name="chevron-forward-outline"></ion-icon></section>
+  <section class="filtro-opcoes">
+    <label><input type="checkbox" name="usuariosPro" value="sim"> Mostrar apenas usuários PRO</label>
+  </section>
+</section>
+
+
+<section class="filtro-secao">
+  <section class="filtro-header">Faixa de preço médio <ion-icon name="chevron-forward-outline"></ion-icon></section>
+  <section class="filtro-opcoes filtro-slider">
+    <div class="slider-container">
+      <input type="range" min="0" max="5000" step="100" value="100" class="slider" id="precoMin">
+      <input type="range" min="0" max="5000" step="100" value="4000" class="slider" id="precoMax">
+      <div class="slider-track"></div>
+      <div class="slider-fill"></div>
+    </div>
+    <div class="slider-labels">
+      <span id="precoMinLabel">R$ 0</span>
+      <span id="precoMaxLabel">Acima de R$ 5.000</span>
+    </div>
+  </section>
+</section>
+
+
+
+   <button id="aplicar-filtro">Aplicar filtros</button>
+  </section>
+</section>
+
+<script>
+  const botaoFiltro = document.getElementById("botao-filtro");
+  const filtroLateral = document.getElementById("filtroLateral");
+  const headersFiltro = document.querySelectorAll(".filtro-header");
+
+  botaoFiltro.addEventListener("click", () => {
+    filtroLateral.classList.toggle("aberto");
+  });
+
+  headersFiltro.forEach(header => {
+    header.addEventListener("click", () => {
+      const ativo = header.classList.contains("ativo");
+      document.querySelectorAll(".filtro-header").forEach(h => h.classList.remove("ativo"));
+      document.querySelectorAll(".filtro-opcoes").forEach(o => o.classList.remove("ativo"));
+      if (!ativo) {
+        header.classList.add("ativo");
+        header.nextElementSibling.classList.add("ativo");
+      }
+    });
+  });
+
+  // Filtro segue a rolagem, mas para antes do rodapé
+  const footer = document.querySelector("footer");
+  window.addEventListener("scroll", () => {
+    const rect = footer?.getBoundingClientRect();
+    if (!rect) return;
+    if (rect.top < window.innerHeight - 50) {
+      filtroLateral.style.position = "absolute";
+      filtroLateral.style.top = `${window.scrollY + rect.top - filtroLateral.offsetHeight - 50}px`;
+    } else {
+      filtroLateral.style.position = "fixed";
+      filtroLateral.style.top = "90px";
+    }
+  });
+
+
+  const minRange = document.getElementById("avaliacaoMin");
+const maxRange = document.getElementById("avaliacaoMax");
+const valMin = document.getElementById("valorMin");
+const valMax = document.getElementById("valorMax");
+
+function updateRanges() {
+  let minVal = parseFloat(minRange.value);
+  let maxVal = parseFloat(maxRange.value);
+
+  // impedir que se cruzem
+  if (minVal > maxVal - 0.1) minVal = maxVal - 0.1;
+  if (maxVal < minVal + 0.1) maxVal = minVal + 0.1;
+
+  minRange.value = minVal.toFixed(1);
+  maxRange.value = maxVal.toFixed(1);
+
+  valMin.textContent = minVal.toFixed(1);
+  valMax.textContent = maxVal.toFixed(1);
+
+  // atualizar a barra azul do intervalo
+  const track = minRange.parentNode.querySelector(".slider-track");
+  const percent1 = (minVal / 5) * 100;
+  const percent2 = (maxVal / 5) * 100;
+  track.style.background = `linear-gradient(to right, #ddd ${percent1}%, var(--cor-btn-azul) ${percent1}%, var(--cor-btn-azul) ${percent2}%, #ddd ${percent2}%)`;
+}
+
+[minRange, maxRange].forEach(el => el.addEventListener("input", updateRanges));
+
+updateRanges(); // inicializa a barra
+
+const precoMin = document.getElementById('precoMin');
+const precoMax = document.getElementById('precoMax');
+const precoMinLabel = document.getElementById('precoMinLabel');
+const precoMaxLabel = document.getElementById('precoMaxLabel');
+
+const limiteMax = 5000;
+
+function atualizarLabels() {
+  precoMinLabel.textContent = precoMin.value > 0 ? `R$ ${precoMin.value}` : 'R$ 0';
+  precoMaxLabel.textContent = precoMax.value >= limiteMax ? `Acima de R$ ${limiteMax.toLocaleString()}` : `R$ ${precoMax.value}`;
+}
+
+precoMin.addEventListener('input', atualizarLabels);
+precoMax.addEventListener('input', atualizarLabels);
+
+// Inicializa labels
+atualizarLabels();
+
+
+</script>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ Script de filtro carregado.");
+
+  const botaoAplicar = document.getElementById("aplicar-filtro");
+  const perfis = Array.from(document.querySelectorAll(".item-profissional"));
+
+  const todosPerfis = perfis.map(card => ({
+    el: card,
+    especializacao: card.dataset.especializacao?.trim().toLowerCase() || "",
+    avaliacao: parseFloat(card.dataset.avaliacao || 0),
+    preco: parseFloat(card.dataset.mediaPreco || 0),
+    isPro: card.dataset.isPro === "true",
+  }));
+
+  let ultimoFiltro = null;
+
+  // 🔹 Valores padrão (iniciais)
+  const padrao = {
+    categorias: [],
+    pro: false,
+    avaliacaoMin: parseFloat(document.getElementById("avaliacaoMin").defaultValue),
+    avaliacaoMax: parseFloat(document.getElementById("avaliacaoMax").defaultValue),
+    precoMin: parseFloat(document.getElementById("precoMin").defaultValue),
+    precoMax: parseFloat(document.getElementById("precoMax").defaultValue)
+  };
+
+  console.log("🔧 Valores padrão dos filtros:", padrao);
+
+  botaoAplicar.addEventListener("click", () => {
+    console.clear();
+    console.log("🎯 Clique em 'Aplicar filtros' detectado!");
+
+    // Captura estado atual
+    const categoriasSelecionadas = Array.from(
+      document.querySelectorAll('.filtro-opcoes input[type="checkbox"][data-valor]:checked')
+    ).map(cb => cb.dataset.valor.trim().toLowerCase());
+
+    const proChecked = document.querySelector('input[name="usuariosPro"]:checked')?.value === "sim";
+    const avaliacaoMin = parseFloat(document.getElementById("avaliacaoMin").value);
+    const avaliacaoMax = parseFloat(document.getElementById("avaliacaoMax").value);
+    const precoMin = parseFloat(document.getElementById("precoMin").value);
+    const precoMax = parseFloat(document.getElementById("precoMax").value);
+
+    console.log("📊 Estado atual:");
+    console.log("→ Categorias:", categoriasSelecionadas);
+    console.log("→ PRO:", proChecked);
+    console.log(`→ Avaliação: ${avaliacaoMin}-${avaliacaoMax}`);
+    console.log(`→ Preço: ${precoMin}-${precoMax}`);
+
+    const filtroAtual = {
+      categorias: categoriasSelecionadas,
+      pro: proChecked,
+      avaliacaoMin,
+      avaliacaoMax,
+      precoMin,
+      precoMax
+    };
+
+    // Ignorar se nada mudou desde o último clique
+    if (JSON.stringify(filtroAtual) === JSON.stringify(ultimoFiltro)) {
+      console.log("🟡 Nenhuma mudança desde o último filtro. Ignorando.");
+      return;
+    }
+    ultimoFiltro = filtroAtual;
+
+    // Identificar filtros realmente alterados
+    const filtrosAtivos = {
+      categorias: categoriasSelecionadas.length > 0,
+      pro: proChecked !== padrao.pro,
+      avaliacao: avaliacaoMin !== padrao.avaliacaoMin || avaliacaoMax !== padrao.avaliacaoMax,
+      preco: precoMin !== padrao.precoMin || precoMax !== padrao.precoMax
+    };
+
+    const algumFiltroAtivo = Object.values(filtrosAtivos).some(Boolean);
+
+    if (!algumFiltroAtivo) {
+      console.log("🔵 Nenhum filtro alterado. Exibindo todos os perfis.");
+      todosPerfis.forEach(p => (p.el.style.display = ""));
+      return;
+    }
+
+    console.log("✅ Filtros ativos:", filtrosAtivos);
+
+    let visiveis = 0;
+    todosPerfis.forEach((p, i) => {
+      let visivel = true;
+      console.groupCollapsed(`👤 Analisando perfil #${i + 1}`);
+      console.log("→ Especialização:", p.especializacao);
+      console.log("→ Avaliação:", p.avaliacao);
+      console.log("→ Preço:", p.preco);
+      console.log("→ PRO:", p.isPro);
+
+      // Filtro por categoria
+      if (filtrosAtivos.categorias) {
+        visivel = categoriasSelecionadas.some(cat => p.especializacao.includes(cat));
+        if (!visivel) console.warn("🚫 Excluído por categoria.");
+      }
+
+      // Filtro por avaliação
+      if (visivel && filtrosAtivos.avaliacao) {
+        if (p.avaliacao < avaliacaoMin || p.avaliacao > avaliacaoMax) {
+          visivel = false;
+          console.warn("🚫 Excluído por avaliação fora do intervalo.");
+        }
+      }
+
+      // Filtro por preço
+      if (visivel && filtrosAtivos.preco) {
+        if (p.preco < precoMin || p.preco > precoMax) {
+          visivel = false;
+          console.warn("🚫 Excluído por preço fora do intervalo.");
+        }
+      }
+
+      // Filtro PRO
+      if (visivel && filtrosAtivos.pro) {
+        if (!p.isPro) {
+          visivel = false;
+          console.warn("🚫 Excluído por não ser PRO.");
+        }
+      }
+
+      p.el.style.display = visivel ? "" : "none";
+      if (visivel) visiveis++;
+      console.log("📌 Resultado:", visivel ? "✅ Mantido" : "❌ Ocultado");
+      console.groupEnd();
+    });
+
+    console.log(`🎯 Filtro finalizado. Perfis visíveis: ${visiveis}/${todosPerfis.length}`);
+  });
+});
+</script>
+
 
 
  
