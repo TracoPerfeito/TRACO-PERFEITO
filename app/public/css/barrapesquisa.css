@@ -409,11 +409,23 @@ width: 95%;
   border-radius: 0 12px 12px 0;
   padding: 1rem;
   z-index: 999;
+    border: 1px solid #ccc;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
 }
+
+.filtro-lateral input[type="date"] {
+  border: 1px solid #ccc;
+  background-color: transparent;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-family: "Montserrat";
+  color: var(--text-color-mais-claro)
+}
+
 
 /* quando ativo */
 .filtro-lateral.aberto {
@@ -669,6 +681,7 @@ input[type="range"]::-moz-range-thumb {
     overflow-x: hidden; /* impede qualquer scroll lateral interno */
     box-sizing: border-box;
     padding: 1rem; /* mantém espaço interno */
+  
   }
 
   .filtro-lateral.aberto {
