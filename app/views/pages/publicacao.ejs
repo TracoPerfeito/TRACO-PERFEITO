@@ -306,22 +306,17 @@ let msgErros = {conteudo: ""};
               </svg>
 
               <section class="opcoes-menu-coment" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
-                <% if (autenticado && (id_usuario === comentario.ID_USUARIO || tipo_usuario === 'administrador')) { %>
-                  <button class="btn-excluir-comentario" title="Excluir Comentário">
-                    <ion-icon name="trash-outline"></ion-icon>Excluir
-                  </button>
-                <% } %>
+               <% if (autenticado && (id_usuario === comentario.ID_USUARIO || tipo_usuario === 'administrador')) { %>
+  <button class="btn-excluir-comentario" title="Excluir Comentário">
+    <ion-icon name="trash-outline"></ion-icon>Excluir
+  </button>
+<% } %>
+
                   <% if (!autenticado || id_usuario !== comentario.ID_USUARIO) { %>
                         <button class="btn-denunciar-comentario" title="Denunciar">
                           <ion-icon name="flag-outline"></ion-icon> Denunciar
                         </button>
                       <% } %>
-
-                 <% if (tipo_usuario && id_usuario !== comentario.ID_USUARIO) { %>
-  <button class="btn-denunciar-comentario" data-id="<%= comentario.ID_COMENTARIO %>">
-    <ion-icon name="flag-outline"></ion-icon> Denunciar
-  </button>
-<% } %>
 
               </section>
             </section>
