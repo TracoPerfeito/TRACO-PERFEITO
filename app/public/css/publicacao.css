@@ -1152,7 +1152,7 @@ body{
     display: none;
   }
   .modal-content-coment {
-      background-color: var(--cor-fundo);
+    background-color: var(--cor-fundo);
     padding: 20px;
     border-radius: 8px;
     width: 320px;

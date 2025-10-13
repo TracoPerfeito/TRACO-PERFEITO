@@ -522,9 +522,9 @@ main {
 }
 
 .btn-excluir-publicacao{
-  background-color: var(--cor-botao-excluir, #b91c1c);
+  background-color: var(--cor-botao-excluir);
   color: white;
-  font-family: "Josefin Sans", sans-serif;
+  font-family: "Josefin Sans", sans-serif !important; 
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
@@ -679,4 +679,29 @@ main {
   justify-content: space-between !important;
   width: 100% !important;
   margin-top: 0px !important;
+}
+
+.btn-excluir-proposta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: 'Josefin Sans', sans-serif !important;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.btn-excluir-proposta:hover {
+    background-color: #eee;
+}
+
+.btn-excluir-proposta {
+    color: #e74c3c;
+}
+
+.btn-excluir-proposta:hover {
+    color: #c0392b;
 }
