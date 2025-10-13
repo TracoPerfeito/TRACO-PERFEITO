@@ -103,8 +103,17 @@ gravarUsuAutenticado = async (req, res, next) => {
     img_capa_banco: usuarioEncontrado.IMG_BANNER_BANCO_USUARIO
         ? `data:image/png;base64,${usuarioEncontrado.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
         : null,
-        descricao_perfil: usuarioEncontrado.DESCRICAO_PERFIL_USUARIO
-    };
+        descricao_perfil: usuarioEncontrado.DESCRICAO_PERFIL_USUARIO,
+        isPro: false, 
+    }; 
+    
+   try {
+    const isPro = await usuario.verSeEAssinante(req.session.autenticado.id);
+    req.session.autenticado.isPro = isPro;
+} catch (err) {
+    console.error('Erro verificando assinatura PRO no login:', err);
+    req.session.autenticado.isPro = false; 
+}
     console.log("✅ Login realizado com sucesso:", req.session.autenticado);
    
 
