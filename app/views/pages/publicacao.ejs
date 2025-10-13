@@ -311,11 +311,18 @@ let msgErros = {conteudo: ""};
                     <ion-icon name="trash-outline"></ion-icon>Excluir
                   </button>
                 <% } %>
+                  <% if (!autenticado || id_usuario !== comentario.ID_USUARIO) { %>
+                        <button class="btn-denunciar-comentario" title="Denunciar">
+                          <ion-icon name="flag-outline"></ion-icon> Denunciar
+                        </button>
+                      <% } %>
+
                  <% if (tipo_usuario && id_usuario !== comentario.ID_USUARIO) { %>
   <button class="btn-denunciar-comentario" data-id="<%= comentario.ID_COMENTARIO %>">
     <ion-icon name="flag-outline"></ion-icon> Denunciar
   </button>
 <% } %>
+
               </section>
             </section>
 
