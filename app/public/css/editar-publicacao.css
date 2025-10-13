@@ -141,29 +141,16 @@
   width: 50%;
 }
 
-/* BOTÕES */
-.secao-btns-modal {
-  display: flex;
-  justify-content: flex-end; /* alinhados à direita */
-  align-items: center;       /* alinhamento vertical */
-  gap: 12px;                 /* espaço entre eles */
-  margin-top: 30px;
-}
-
-.btn-excluir-editar-publicacao {
+.btn-excluir-editar-publicacao{
   padding: 8px 16px;
   border-radius: 6px;
-  background-color: rgb(200, 50, 50);
+  background-color: red;
   color: #fff;
-  border: none;
+  border: 1px solid var(--cor-borda-btn-1);
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   cursor: pointer;
   transition: 0.3s;
-}
-
-.btn-excluir-editar-publicacao:hover {
-  background-color: rgb(150, 20, 20);
 }
 
 .btn-salvar-editar-publicacao {
@@ -290,3 +277,5 @@
 .ql-editor {
   min-height: 150px;
 }
+
+ 
