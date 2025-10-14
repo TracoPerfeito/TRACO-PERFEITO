@@ -8,8 +8,6 @@
   <!-- Fonte Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Ícones Lucide -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- Link CSS -->
   <link rel="stylesheet" href="/css/pag-adm.css">
@@ -114,15 +112,21 @@
   </p>
 
  <section class="acoes">
-  <button class="btn-acao editar"><i data-lucide="icon-fullscreen"></i></button>
+
+  <button class="btn-acao editar">
+    <div class="icon-pencil-line"></div>
+  </button>
+
   <% if (usuario.STATUS_USUARIO !== 'ativo') { %>
     <button class="btn-acao ativar" data-id="<%= usuario.ID_USUARIO %>">
       <i data-lucide="user-check"></i>
     </button>
   <% } %>
+
   <button class="btn-acao deletar" data-id="<%= usuario.ID_USUARIO %>">
     <i data-lucide="icon-shield-off"></i>
   </button>
+  
 </section >
 
 </section>
@@ -207,6 +211,10 @@
 
     <!-- LINK DAS NOTIFICAÇÕES -->
       <script src="js/simple-notify.js"></script>
+
+    <!-- Ícones Lucide -->
+      <script src="https://unpkg.com/lucide@latest"></script>
+
 
 
 

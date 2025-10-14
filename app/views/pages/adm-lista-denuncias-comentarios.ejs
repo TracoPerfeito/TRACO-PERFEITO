@@ -15,6 +15,10 @@
     <!-- Ícones Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Ícones Remix -->
+   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+
+
  
  
 
@@ -60,21 +64,22 @@
           </section>
 
           <section class="card-footer">
-            <button class="btn-btn-detalhes">🔎 Detalhes</button>
+            <button class="btn-btn-detalhes">
+              <i class="ri-search-2-line"></i> Detalhes
+            </button>
 
             <!-- Botão que abre o modal -->
             <button 
               class="btn-btn-status" 
               data-id="<%= denuncia.ID_DENUNCIA %>" 
-              data-usuario="<%= denuncia.ID_USUARIO_DENUNCIADO %>"
-            >
-              <div class="icon-pencil-line"></div>
+              data-usuario="<%= denuncia.ID_USUARIO_DENUNCIADO %>">
+              <i class="ri-edit-2-fill"></i>Status
             </button>
           </section>
         </section>
       <% }) %>
     <% } else { %>
-      <p style="text-align: center; font-size: 18px; grid-column: 1 / -1;">❌ Nenhuma denúncia encontrada</p>
+      <p style="text-align: center; font-size: 18px; grid-column: 1 / -1;"> Nenhuma denúncia encontrada</p>
     <% } %>
 
 
