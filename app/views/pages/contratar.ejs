@@ -94,10 +94,13 @@
       </p>
     <% } else { %>
       <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+         <img src="/imagens/sem-resultados.png" alt="Sem resultados">
       <p class="descricao-termo">
         Não encontramos profissionais relacionados a "<%= termoPesquisa %>". 
         Tente outro termo ou verifique a ortografia.
       </p>
+
+      
     <% } %>
   <% } %>
 </section>
@@ -113,10 +116,10 @@
     onclick="location.href='<%= (autenticado && id_usuario === profissional.ID_USUARIO) ? '/meu-perfil-artista' : ('/perfil/' + profissional.ID_USUARIO) %>'"
     data-seguidores="<%= profissional.QUANT_SEGUIDORES || 0 %>"
     data-contratacoes="0"
-    data-avaliacao="0"
+   
      data-cadastro="<%= profissional.DATA_CADASTRO ? (new Date(profissional.DATA_CADASTRO)).toISOString().split('T')[0] : '' %>"
 data-especializacao="<%= profissional.ESPECIALIZACAO_DESIGNER %>"
-data-avaliacao="<%= profissional.MEDIA_NOTA %>"
+data-avaliacao="<%= profissional.MEDIA_NOTA || 0 %>"
 data-media-preco="<%= profissional.MEDIA_PRECO %>"
 data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
 >
@@ -174,7 +177,10 @@ data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
     </section>
   <% }) %>
 <% } else { %>
-  <p>Nenhum profissional encontrado.</p>
+ <p style="font-family: 'Montserrat'; font-size: 2rem; text-align: center; color: var(--text-color);  margin-bottom: 20px;">
+  Não há profissionais no momento.
+</p>
+
 <% } %>
 
 
