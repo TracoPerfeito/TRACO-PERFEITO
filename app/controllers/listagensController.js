@@ -5,6 +5,7 @@ const comentariosModel = require("../models/comentariosModel");
 const { body, validationResult } = require("express-validator");
 const {favoritoModel} = require("../models/favoritoModel");
 const moment = require("moment");
+const { isErrored } = require("nodemailer/lib/xoauth2");
  
  
 const listagensController = {
@@ -921,6 +922,37 @@ console.log("Seguindo encontrados:", seguindoLog);
   }
 },
 
+
+exibirPagNovaPubli: async (req, res, dadosNotificacao) => {
+  console.log("📌 Chegou no exibir página de nova publicação");
+
+  try {
+    const idLogado = req.session.autenticado?.id || null;
+
+    if (!idLogado) {
+      console.log("❌ Usuário não logado");
+      
+
+req.session.dadosNotificacao = {
+  titulo: "Faça login para acessar essa página.",
+  mensagem: "",
+  tipo: "warning"
+};
+
+      return res.redirect('/login'); 
+    }
+
+    const resultado = await listagensModel.contarPublisDoMes(idLogado);
+
+    console.log("📌 Resultados publicações do mês:", resultado);
+
+    return res.render('pages/nova-publicacao', { resultado, dadosNotificacao });
+
+  } catch (error) {
+    console.error("❌ Erro ao exibir página de nova publicação:", error);
+    return res.render('pages/nova-publicacao', { resultado: null, dadosNotificacao });
+  }
+}
 
  
 }

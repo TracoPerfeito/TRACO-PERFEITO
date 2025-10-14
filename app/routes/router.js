@@ -636,7 +636,8 @@ router.get("/nova-publicacao", function (req, res) {
    const dadosNotificacao = req.session.dadosNotificacao || null;
    req.session.dadosNotificacao = null;
 
-   res.render('pages/nova-publicacao', { dadosNotificacao });
+     listagensController.exibirPagNovaPubli(req, res, dadosNotificacao);
+  
 });
 
 

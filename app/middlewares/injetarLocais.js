@@ -26,7 +26,9 @@ function injetarLocais(req, res, next) {
       linkedin: user.linkedin,
       pinterest: user.pinterest,
       instagram: user.instagram,
-      whatsapp: user.whatsapp
+      whatsapp: user.whatsapp,
+      pro: user.isPro,
+      
     };
 
     // E também mantém os "atalhos" que você já usa
@@ -45,6 +47,7 @@ function injetarLocais(req, res, next) {
     res.locals.pinterest = user.pinterest;
     res.locals.instagram = user.instagram;
     res.locals.whatsapp = user.whatsapp;
+    res.locals.pro = user.isPro;
   } else {
     res.locals.autenticado = null;
     res.locals.tipo_usuario = null;
@@ -62,6 +65,7 @@ function injetarLocais(req, res, next) {
     res.locals.pinterest = null;
     res.locals.instagram = null;
     res.locals.whatsapp = null;
+    res.locals.pro = null;
   }
 
   next();
