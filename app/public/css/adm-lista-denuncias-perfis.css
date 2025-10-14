@@ -1,0 +1,147 @@
+.secao-denuncias {
+  padding: 2rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.titulo-denuncias {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #2e2e2e;
+}
+
+.card-denuncia-perfil {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.card-denuncia-perfil:hover {
+  transform: translateY(-3px);
+}
+
+.cabecalho-denuncia-perfil {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .5rem;
+}
+
+.status-denuncia {
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.status-denuncia.pendente { background: #fff3cd; color: #856404; }
+.status-denuncia.analisando { background: #cce5ff; color: #004085; }
+.status-denuncia.resolvido { background: #d4edda; color: #155724; }
+
+.rodape-denuncia-perfil {
+  display: flex;
+  gap: .8rem;
+  margin-top: .5rem;
+}
+
+.btn-alterar-status, .btn-detalhes-denuncia {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .3s;
+}
+
+.btn-alterar-status {
+  background: #4f46e5;
+  color: white;
+}
+.btn-alterar-status:hover {
+  background: #3730a3;
+}
+
+.btn-detalhes-denuncia {
+  background: #e5e7eb;
+}
+.btn-detalhes-denuncia:hover {
+  background: #d1d5db;
+}
+
+.modal-perfil {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-conteudo-perfil {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  animation: aparecer .2s ease;
+}
+
+@keyframes aparecer {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.botoes-modal-perfil {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+}
+
+.btn-confirmar {
+  background: #16a34a;
+  color: white;
+}
+.btn-cancelar {
+  background: #ef4444;
+  color: white;
+}
+
+.msg-sem-denuncia {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #6b7280;
+    margin-top: 2rem;
+}
+
+
+
+/* Estilos adicionais para responsividade */
+
+@media (max-width: 600px) {
+  .secao-denuncias {
+    padding: 1rem;
+  }
+  .card-denuncia-perfil {
+    padding: 1rem;
+  }
+  .cabecalho-denuncia-perfil {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5rem;
+  }
+  .rodape-denuncia-perfil {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn-alterar-status, .btn-detalhes-denuncia {
+    width: 100%;
+    text-align: center;
+  }
+}

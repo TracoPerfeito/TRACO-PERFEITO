@@ -53,7 +53,6 @@
 
   <section class="topo_pagina_adm">
     <h1>Gerenciamento de Usuários</h1>
-    <button class="novo-user_adm"><i data-lucide="user-plus"></i> Novo Usuário</button>
   </section>
 
   <section class="resumo">
@@ -179,10 +178,9 @@
 
         <!-- PAGINAÇÃO DO NEGOCIO -->
 
-    <input onclick="window.location='/adicionar'" type="button" value="Novo">
 
 <% if (typeof paginador !== 'undefined' && paginador) { %>
-    <section class="notificador">
+    <section class="paginacao">
         <ul>
             <% for (var i = 1; i <= paginador.total_paginas; i++) { %>
                 <% if (paginador.pagina_atual == i) { %>

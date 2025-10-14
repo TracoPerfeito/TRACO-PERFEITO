@@ -407,6 +407,49 @@ verificarBloqueioSessaoMiddleware: async (req, res, next) => {
     }
 },
 
+  listarDenunciasUsuarios: async (req, res) => {
+    console.log("Chegou no listar denúncias de usuários");
+    try {
+      let DenunciasUsuarios = await admModel.listarDenunciasUsuariosDetalhadas();
+      console.log({ DenunciasUsuarios });
+      res.render("pages/adm-lista-denuncias-usuarios", {
+        autenticado: req.session.autenticado,
+        logado: req.session.logado,
+        denuncias: DenunciasUsuarios || []
+      });
+    } catch (error) {
+      console.error("Erro ao listar denúncias de usuários:", error);
+      res.status(500).render("pages/erro-conexao", {
+        mensagem:
+          "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+      });
+    }
+  },
+
+  alterarStatusDenunciaUsuario: async (req, res) => {
+    const { idDenuncia, idUsuarioDenunciado, acao } = req.body;
+    console.log("Dados recebidos para alterar status da denúncia de usuário:", req.body);
+
+    try {
+      if (acao === "descartar") {
+        await admModel.atualizarStatusDenunciaUsuario(idDenuncia, 'resolvido');
+      } else if (acao === "suspender") {
+        await admModel.atualizarStatusDenunciaUsuario(idDenuncia, 'analisando');
+        await admModel.suspenderUsuarioDenunciado(idUsuarioDenunciado, 'Suspensão por denúncia de usuário');
+      }
+
+      return res.json({ sucesso: true });
+
+    } catch (err) {
+      console.error("Erro ao alterar status da denúncia de usuário:", err);
+      return res.status(500).json({
+        sucesso: false,
+        mensagem: "Erro interno ao processar a denúncia."
+      });
+    }
+  },
+
+
 };
 
 module.exports = admController;

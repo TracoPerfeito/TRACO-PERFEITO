@@ -368,6 +368,61 @@ const admModel = {
         }
     },
 
+    // lista denúncias de usuários com detalhes dos usuários envolvidos
+    listarDenunciasUsuariosDetalhadas: async () => {
+        try {
+            const [denuncias] = await pool.query(`
+                SELECT 
+                    du.ID_DENUNCIA,
+                    du.ID_USUARIO_DENUNCIANTE,
+                    du.ID_USUARIO_DENUNCIADO,
+                    du.MOTIVO,
+                    du.STATUS,
+                    du.DATA_DENUNCIA,
+                    u1.NOME_USUARIO AS NOME_DENUNCIANTE,
+                    u2.NOME_USUARIO AS NOME_DENUNCIADO
+                FROM DENUNCIAS_USUARIOS du
+                JOIN USUARIOS u1 ON du.ID_USUARIO_DENUNCIANTE = u1.ID_USUARIO
+                JOIN USUARIOS u2 ON du.ID_USUARIO_DENUNCIADO = u2.ID_USUARIO
+                ORDER BY du.DATA_DENUNCIA DESC
+            `);
+            return denuncias;
+        } catch (error) {
+            console.error("Erro ao listar denúncias de usuários:", error);
+            return [];
+        }
+    },
+
+    // atualiza o status de uma denúncia de usuário
+    atualizarStatusDenunciaUsuario: async (idDenuncia, novoStatus) => {
+        try {
+            const [result] = await pool.query(
+                "UPDATE DENUNCIAS_USUARIOS SET STATUS = ? WHERE ID_DENUNCIA = ?",
+                [novoStatus, idDenuncia]
+            );
+            return result.affectedRows;
+        } catch (error) {
+            console.error("Erro ao atualizar status da denúncia:", error);
+            throw error;
+        }
+    },
+
+    // suspende o usuário denunciado
+    suspenderUsuarioDenunciado: async (idUsuario) => {
+        try {
+            const [result] = await pool.query(
+                "UPDATE USUARIOS SET STATUS_USUARIO = 'suspenso' WHERE ID_USUARIO = ?",
+                [idUsuario]
+            );
+            return result.affectedRows;
+        } catch (error) {
+            console.error("Erro ao suspender usuário:", error);
+            throw error;
+        }
+    },
+
+    
+    
 
 
 
