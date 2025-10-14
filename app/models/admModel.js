@@ -56,6 +56,32 @@ const admModel = {
  },
 
 
+ contarCadastrosRecentes: async () => {
+  try{const [resultado] = await conexao.query(`
+    WITH dias AS (
+      SELECT CURDATE() AS data
+      UNION ALL SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+      UNION ALL SELECT DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+      UNION ALL SELECT DATE_SUB(CURDATE(), INTERVAL 3 DAY)
+      UNION ALL SELECT DATE_SUB(CURDATE(), INTERVAL 4 DAY)
+      UNION ALL SELECT DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+      UNION ALL SELECT DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+    )
+    SELECT 
+      DATE_FORMAT(d.data, '%Y-%m-%d') AS data,
+      COUNT(u.ID_USUARIO) AS total
+    FROM dias d
+    LEFT JOIN usuarios u ON DATE(u.DATA_CADASTRO) = d.data
+    GROUP BY d.data
+    ORDER BY d.data ASC;
+  `);
+  return resultado;
+  }catch(error){
+     console.log(error);
+        return error; 
+  }
+},
+
     listarUsuarios: async () => {
         try {
             const [linhas] = await pool.query(

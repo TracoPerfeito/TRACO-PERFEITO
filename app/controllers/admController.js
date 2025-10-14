@@ -156,6 +156,18 @@ mostrarhome: (req, res, dadosNotificacao) => {
           const totalComuns = await admModel.contarUsuariosPorTipo('comum');
           const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
 
+           const cadastrosRecentes = await admModel.contarCadastrosRecentes();
+
+           console.log("Cadastros recentes:", cadastrosRecentes);
+
+           
+    const labelsGrafico = cadastrosRecentes.map(item =>
+      new Date(item.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    );
+    const valoresGrafico = cadastrosRecentes.map(item => item.total);
+
+
+
           console.log({ totalUsuarios, totalComuns, totalProfissionais });
 
           res.render("pages/adm-home", {
@@ -164,7 +176,9 @@ mostrarhome: (req, res, dadosNotificacao) => {
             dadosNotificacao,
             totalUsuarios,
             totalComuns,
-            totalProfissionais
+            totalProfissionais,
+             labelsGrafico: JSON.stringify(labelsGrafico),
+      valoresGrafico: JSON.stringify(valoresGrafico)
           });
 
         } catch (error) {
