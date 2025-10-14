@@ -1,11 +1,34 @@
-const ctx = document.getElementById('perfilChart').getContext('2d');
-    const perfilChart = new Chart(ctx, {
+console.log("🔍 [grafico-adm-dashboard.js] Script do gráfico carregado.");
+
+if (typeof labelsGrafico !== 'undefined' && typeof valoresGrafico !== 'undefined') {
+  console.log("✅ Variáveis EJS existem.");
+  console.log("📊 labelsGrafico =", labelsGrafico);
+  console.log("📈 valoresGrafico =", valoresGrafico);
+
+  const canvas = document.getElementById('perfilChart');
+  if (!canvas) {
+    console.error("❌ Elemento <canvas id='perfilChart'> não encontrado!");
+  } else {
+    console.log("✅ Canvas encontrado:", canvas);
+  }
+
+  const ctx = canvas?.getContext('2d');
+  if (!ctx) {
+    console.error("❌ Contexto 2D não pôde ser obtido!");
+  } else {
+    console.log("✅ Contexto 2D obtido:", ctx);
+  }
+
+  try {
+    console.log("🚀 Tentando criar gráfico com Chart.js...");
+
+    new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        labels: labelsGrafico, // datas vindas do banco
         datasets: [{
           label: 'Perfis Criados',
-          data: [150, 180, 200, 170, 190, 210, 250, 280, 230, 260, 270, 240],
+          data: valoresGrafico, // valores reais do banco
           fill: true,
           backgroundColor: 'rgba(59,130,246,0.08)',
           borderColor: 'rgba(59,130,246,1)',
@@ -26,9 +49,7 @@ const ctx = document.getElementById('perfilChart').getContext('2d');
               }
             }
           },
-          legend: {
-            display: false
-          }
+          legend: { display: false }
         },
         interaction: {
           mode: 'nearest',
@@ -38,15 +59,24 @@ const ctx = document.getElementById('perfilChart').getContext('2d');
         scales: {
           y: {
             beginAtZero: true,
-            ticks: {
-              stepSize: 50
-            }
+            ticks: { stepSize: 1 },
+            title: { display: true, text: 'Cadastros' }
           },
           x: {
-            grid: {
-              display: false
-            }
+            grid: { display: false },
+            title: { display: true, text: 'Data' }
           }
         }
       }
     });
+
+    console.log("✅ Gráfico criado com sucesso!");
+  } catch (erro) {
+    console.error("💥 Erro ao criar gráfico:", erro);
+  }
+
+} else {
+  console.warn("⚠️ Nenhum dado de gráfico disponível. Verifique se as variáveis EJS foram passadas corretamente.");
+  console.log("labelsGrafico =", typeof labelsGrafico);
+  console.log("valoresGrafico =", typeof valoresGrafico);
+}
