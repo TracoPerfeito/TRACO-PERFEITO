@@ -71,7 +71,7 @@ const admModel = {
       DATE_FORMAT(d.data, '%Y-%m-%d') AS data,
       COUNT(u.ID_USUARIO) AS total
     FROM dias d
-    LEFT JOIN usuarios u ON DATE(u.DATA_CADASTRO) = d.data
+    LEFT JOIN USUARIOS u ON DATE(u.DATA_CADASTRO) = d.data
     GROUP BY d.data
     ORDER BY d.data ASC;
   `);
