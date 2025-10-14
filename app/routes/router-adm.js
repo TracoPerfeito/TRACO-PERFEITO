@@ -109,10 +109,33 @@ router.post(
   }
 );
 
+// Listagem de denúncias de perfis
+router.get(
+  "/adm-lista-denuncias-usuarios",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.listarDenunciasUsuarios(req, res);
+  }
+);
+
+// Alterar status da denúncia (perfil)
+router.post(
+  "/alterar-status-denuncia-usuario",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.alterarStatusDenunciaUsuario(req, res);
+  }
+);
+
 // Logout do administrador
-router.get("/logout", limparSessao, function (req, res) {
-  res.redirect("/");
+router.get("/adm-logout", limparSessao, function (req, res) {
+  res.redirect("/router-adm");
 });
+
+
+
 
 
 

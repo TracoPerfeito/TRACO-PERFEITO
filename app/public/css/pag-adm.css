@@ -8,6 +8,11 @@
    
 }
 
+html, body {
+    overflow-x: hidden; /* evita scroll horizontal */
+}
+
+
 .sidebar{
     position: absolute;
     top: 50px;
@@ -388,56 +393,16 @@ h1{
   height: calc(100vh - 50px); 
 }
 
-/* .sidebar-menprincipal {
-  width: 200px;
-  background-color: var(--azul-mais-escuro);
-  color: white;
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;  
-}
-
-.sidebar-menprincipal a {
-  color: rgb(255, 255, 255);
-  text-decoration: none;
-}
-
-.sidebar-menprincipal ul {
-  list-style: none;
-  flex-grow: 1;
-}
-
-.sidebar-menprincipal ul li {
-  padding: 10px 20px;
-  cursor: pointer;
-  display: none;
-}
-
-.sidebar-menprincipal ul li:hover {
-  background-color: var(--primary-color);
-}
-
-.logout-button{
-  display: flex;
-  align-items: center;
-  padding: 5px 20px;
-}
-
-.logout-button  span{
-  margin: 2px 0 0 5px;
-
-}
-
-.logout-button:hover{
-  background-color:var(--primary-color);
-}
- */
 
 .content {
+  width: calc(100% - 260px); /* largura total menos a sidebar */
   flex-grow: 1;
   padding: 30px;
   background-color: white;
+}
+
+.sidebar.close ~ .content {
+  width: calc(100% - 78px); /* ajusta a largura quando a sidebar está fechada */
 }
 
 /* -----------PÁGINA USUÁRIOS ------------------*/

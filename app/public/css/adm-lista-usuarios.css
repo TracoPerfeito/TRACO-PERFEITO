@@ -182,8 +182,25 @@ input[type="button"]:hover {
   background-color: #4a5568;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Container da paginação */
-.notificador {
+.paginacao {
   display: flex;
   justify-content: center;
   margin-top: 15px;
@@ -192,12 +209,13 @@ input[type="button"]:hover {
   border-radius: 10px;
   box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
   user-select: none;
-  width: 1500px;
-  margin-left: 220px;
-}
+  width: 1025px;
+  margin-left: 91px;
+  margin-top: -27px;
+  }
 
 /* Lista de páginas */
-.notificador ul {
+.paginacao ul {
   display: flex;
   list-style: none;
   padding: 0;
@@ -206,7 +224,7 @@ input[type="button"]:hover {
 }
 
 /* Links das páginas */
-.notificador ul li a {
+.paginacao ul li a {
   display: inline-block;
   padding: 8px 14px;
   border: 1px solid #ddd;
@@ -218,20 +236,33 @@ input[type="button"]:hover {
 }
 
 /* Hover nos links */
-.notificador ul li a:hover {
+.paginacao ul li a:hover {
   background-color: #2d3748;
   color: white;
   border-color: #2d3748;
 }
 
 /* Página atual */
-.notificador ul li a.atual {
+.paginacao ul li a.atual {
   background-color: #2d3748;
   color: white;
   border-color: #2d3748;
   cursor: default;
   pointer-events: none;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////// */
@@ -248,7 +279,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.6rem 2rem;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -277,7 +308,7 @@ header button {
 section.resumo {
   display: flex;
   gap: 1rem;
-  margin: 1.5rem 2rem;
+  margin: 0.8rem 2rem;
 }
 
 .card {
@@ -288,7 +319,7 @@ section.resumo {
   border: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  height: 130px;
 }
 
 .card-icon {
@@ -649,3 +680,6 @@ section.lista {
 .topo_pagina_adm h1 {
   font-size: x-large;
 } 
+.topo_pagina_adm {
+  margin-left: 78px;
+}

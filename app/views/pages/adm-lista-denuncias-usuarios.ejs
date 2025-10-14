@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <title>Painel de Denúncias</title>
+    <link rel="stylesheet" href="/css/pag-adm.css">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Mo… rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swa… rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <!-- <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css"> -->
+
+    <link rel="stylesheet" href="/css/adm-lista-denuncias-perfis.css">
+    <link rel="stylesheet" href="/css/simple-notify.css">
+
+        <!-- Ícones Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body>
+
+    <!--INICIO DO MENU TOP ADM -->
+ 
+    <%- include('../partials/menu_top_adm.ejs'); %>
+ 
+    <!--FIM DO MENU TOP ADM  -->
+ 
+ 
+    <!-- MENU LATERAL DO ADM -->
+ 
+    <%- include('../partials/menu_lateral_adm.ejs'); %>
+ 
+    <!-- MENU LATERAL DO ADM -->
+ 
+
+<section class="secao-denuncias">
+    <h1 class="titulo-denuncias">📋 Denúncias de Perfil</h1>
+
+    <% if (denuncias && denuncias.length > 0) { %>
+      <% denuncias.forEach(den => { %>
+        <article class="card-denuncia-perfil">
+          <header class="cabecalho-denuncia-perfil">
+            <h2>#<%= den.ID_DENUNCIA %></h2>
+            <span class="status-denuncia <%= den.STATUS %>"><%= den.STATUS %></span>
+          </header>
+
+          <div class="conteudo-denuncia-perfil">
+            <p><strong>Denunciante:</strong> 
+              <%= den.NOME_DENUNCIANTE %> (ID: <%= den.ID_USUARIO_DENUNCIANTE %>)
+            </p>
+            <p><strong>Denunciado:</strong> 
+              <%= den.NOME_DENUNCIADO %> (ID: <%= den.ID_USUARIO_DENUNCIADO %>)
+            </p>
+            <p><strong>Motivo:</strong> <%= den.MOTIVO %></p>
+            <p><strong>Data:</strong> 
+              <%= new Date(den.DATA_DENUNCIA).toLocaleString('pt-BR') %>
+            </p>
+          </div>
+
+          <footer class="rodape-denuncia-perfil">
+            <button class="btn-detalhes-denuncia">Ver Detalhes</button>
+            <button 
+              class="btn-alterar-status" 
+              data-denuncia-id="<%= den.ID_DENUNCIA %>" 
+              data-usuario-id="<%= den.ID_USUARIO_DENUNCIADO %>"
+            >
+              Alterar Status
+            </button>
+          </footer>
+        </article>
+      <% }) %>
+    <% } else { %>
+      <p class="msg-sem-denuncia"> Nenhuma denúncia encontrada</p>
+    <% } %>
+  </section>
+
+  <!-- 🔹 MODAL -->
+  <div id="modalStatusPerfil" class="modal-perfil">
+    <div class="modal-conteudo-perfil">
+      <h2>Alterar Status da Denúncia</h2>
+
+      <label for="acaoPerfil">Ação:</label>
+      <select id="acaoPerfil">
+        <option value="">Selecione...</option>
+        <option value="suspender">Suspender Usuário</option>
+        <option value="descartar">Descartar Denúncia</option>
+      </select>
+
+      <div id="opcoesSuspensaoPerfil" style="display:none;">
+        <label for="tipoPenalidadePerfil">Tipo de Penalidade:</label>
+        <select id="tipoPenalidadePerfil"></select>
+
+        <p id="descricaoPenalidadePerfil" class="descricao-penalidade"></p>
+
+        <label for="dataFimPerfil">Data de Término:</label>
+        <input type="date" id="dataFimPerfil" />
+      </div>
+
+      <div class="botoes-modal-perfil">
+        <button id="confirmarStatusPerfil" class="btn-confirmar">Confirmar</button>
+        <button onclick="fecharModal()" class="btn-cancelar">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+    <script src="/js/adm-lista-denuncias-perfis.js"></script>
+
+        <!-- LINK DO MENU LATERAL -->
+      <script src="/js/menu-lateral-adm.js"></script>
+
+    <!-- LINK DAS NOTIFICAÇÕES -->
+      <script src="js/simple-notify.js"></script>
+
+
+
+
+</body>
+</html>
