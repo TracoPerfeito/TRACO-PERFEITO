@@ -679,7 +679,7 @@ h1{
     .header-grafico {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      flex-wrap: wrap;
       margin-bottom: 20px;
     }
 
@@ -727,6 +727,60 @@ h1{
 /* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
  */
+/* ==================== RESPONSIVO ==================== */
+
+@media(max-width: 480px) {
+    .title-page-principal {
+        margin-left: 0;
+        text-align: center;
+    }
+}
+
+@media(max-width: 768px) {
+    .card {
+        flex: 1 1 100%; /* 1 card por linha */
+    }
+    .dashboard {
+        gap: 15px;
+    }
+}
+
+@media(max-width: 1200px) {
+    .main-content {
+        margin-left: 78px;
+        padding: 15px;
+    }
+    .card {
+        flex: 1 1 45%; /* 2 cards por linha */
+    }
+    .card-grafico {
+        max-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media(max-width:1645px) {
+  .card-grafico {
+    width: 1000px;
+    margin-left: 132px;
+    margin-top: -376px;
+    transform: translateY(-29%);
+    /* max-width: 680px; */
+  }
+  .dashboard {
+    gap: 35px;
+    transform: translateY(30px)
+  }
+  .home-card {
+    width: 230px;
+    margin-top: 30px;
+    max-height: 150px;
+  }
+  .main-content {
+    margin-top: -100px;
+  }
+}
 
 @media(max-width: 1745px) {
   .card {
@@ -739,7 +793,7 @@ h1{
 
 @media(max-width: 1500px) {
   .card {
-    width: 260px;
+    width: 245px;
     height: 190px;
   }
 
@@ -747,13 +801,20 @@ h1{
   }
 }
 
-@media(max-width:1645px) {
+@media(max-width: 1475px) {
   .card-grafico {
    
   }
+
   .dashboard {
-    gap:12px;
-    transform: translateY(29px)
+    margin-right: 110px
+  }
+  .card {
+    width: 270px;
   }
 }
+
+
+
+
 
