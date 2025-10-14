@@ -11,9 +11,20 @@
 
 }
 
-.btn-fechar-modal-coment{
-    margin-top: 20px;
-    margin-left: 60px;
+.botoes-modal button[type="button"] {
+    margin-left: 50px;
+    border: none !important;
+    background-color: var(--cor-btn-azul) !important;
+    color: white !important;
+   
+}
+
+.botoes-modal button[type="button"]:hover {
+    background-color: #ccc !important;
+}
+
+.botoes-modal button[type="submit"] {
+    margin-right: 50px;
 }
 /* Botão de excluir comentário */
 .btn-excluir-comentario {
@@ -1088,6 +1099,7 @@ body{
   border-radius: 8px;
   max-width: 400px;
   width: 100%;
+  
 
 }
 
@@ -1153,7 +1165,7 @@ body{
   }
   .modal-content-coment {
     background-color: var(--cor-fundo);
-    padding: 20px;
+    padding: 60px;
     border-radius: 8px;
     width: 320px;
     max-width: 90%;
@@ -1165,6 +1177,13 @@ body{
   .modal-content-coment form{
     margin: 15px 0px;
   }
+
+.modal-content-coment label{
+    font-family: "montserrat", sans-serif;
+    margin-bottom: 6px;
+    display: block;
+    color: var(--text-color) !important;
+}
 
   .btns-denuncia{
     display: flex;
