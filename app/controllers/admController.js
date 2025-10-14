@@ -84,44 +84,49 @@ mostrarhome: (req, res, dadosNotificacao) => {
         }
     },
 
+listarUsuariosPorTipo: async (req, res) => {
+  try {
+    let tipo;
+    let view;
 
-    //Listagem para apenas comuns
-    listarUsuariosPorTipo: async (req, res) => {
-        try {
-        const usuariosComuns = await admModel.listarUsuariosPorTipo('comum');
-        console.log({usuariosComuns});
+    if (req.path.includes('profissional')) {
+      tipo = 'profissional';
+      view = 'pages/adm-listagem-profissional';
+    } else {
+      tipo = 'comum';
+      view = 'pages/adm-listagem-comum';
+    }
 
-        res.render("pages/adm-listagem-comum", {
-            autenticado: req.session.autenticado,
-            logado: req.session.logado,
-            usuarios: usuariosComuns
-        });
-        } catch (error) {
-        console.error("Erro ao listar usuários comuns:", error);
-        res.status(500).render('pages/erro-conexao', {
-        mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-        });
-        }
-    },
+    // Paginação
+    let pagina = req.query.pagina ? parseInt(req.query.pagina) : 1;
+    let regPagina = 4;
+    let inicio = (pagina - 1) * regPagina;
 
-    //Listagem para apenas profissionais
-        listarUsuariosPorTipo: async (req, res) => {
-        try {
-          const usuariosProfissionais = await admModel.listarUsuariosPorTipo('profissional');
-          console.log({usuariosProfissionais});
-    
-          res.render("pages/adm-listagem-profissional", {
-            autenticado: req.session.autenticado,
-            logado: req.session.logado,
-            usuarios: usuariosProfissionais
-          });
-        } catch (error) {
-          console.error("Erro ao listar usuários profissionais:", error);
-          res.status(500).render('pages/erro-conexao', {
-          mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-        });
-        }
-      },
+    // 🔹 Buscar os usuários da página atual do tipo
+    const usuarios = await admModel.listarUsuariosPorTipoPaginado(tipo, inicio, regPagina);
+
+    // 🔹 Total de usuários desse tipo
+    const totReg = await admModel.totalRegUsuariosPorTipo(tipo);
+    const totPaginas = Math.ceil(totReg / regPagina);
+
+    let paginador = totReg <= regPagina ? null : { pagina_atual: pagina, total_reg: totReg, total_paginas: totPaginas };
+
+    res.render(view, {
+      autenticado: req.session.autenticado,
+      logado: req.session.logado,
+      usuarios,
+      paginador
+    });
+
+  } catch (error) {
+    console.error("Erro ao listar usuários por tipo:", error);
+    res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
+  }
+},
+
+
 
         //Listagem paginação de usuários
       listarUsuariosPaginados:async (req, res) => {

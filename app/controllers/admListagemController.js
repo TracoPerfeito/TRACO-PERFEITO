@@ -1,66 +1,99 @@
 const moment = require("moment");
 const bcrypt = require("bcryptjs");
-var salt = bcrypt.genSaltSync(10);
-var pool = require("../../config/pool_conexoes");
 const admModel = require("../models/admModel");
-const listarUsuariosPaginados = async (req, res) => {
+
+const admListagemController = {
+  // 📘 LISTAGEM GERAL DE USUÁRIOS (com paginação)
+  listarUsuariosPaginados: async (req, res) => {
     res.locals.moment = moment;
 
     try {
-        let pagina = req.query.pagina == undefined ? 1 : parseInt(req.query.pagina);
-        let regPagina = 4;
-        let inicio = (pagina - 1) * regPagina;
+      const pagina = parseInt(req.query.pagina) || 1;
+      const regPagina = 4;
+      const inicio = (pagina - 1) * regPagina;
 
-        // 🔹 Obter o total geral de registros
-        let totReg = await admModel.totalRegListagem();
-        console.log("Total de registros (totReg):", totReg);
+      // 🔹 Total de registros
+      const totReg = await admModel.totalRegListagem();
+      const totPaginas = Math.ceil(totReg / regPagina);
 
-        let totPaginas = Math.ceil(totReg / regPagina);
-        console.log("Total de páginas (totPaginas):", totPaginas);
+      // 🔹 Usuários da página atual
+      const results = await admModel.findPageListagem(inicio, regPagina);
+      const usuarios = Array.isArray(results) ? results : [];
 
-        // 🔹 Obter os usuários da página atual
-        let results = await admModel.findPageListagem(inicio, regPagina);
-        let usuarios = Array.isArray(results) ? results : [];
-        console.log("Usuários da página atual:", usuarios);
+      // 🔹 Totais gerais
+      const [totais] = await admModel.totalUsuariosPorStatus();
 
-        // 🔹 Obter totais completos (independente da página)
-        let [totais] = await admModel.totalUsuariosPorStatus();
-        console.log("Objeto totais recebido do banco:", totais);
+      const paginador = totReg > regPagina
+        ? { pagina_atual: pagina, total_reg: totReg, total_paginas: totPaginas }
+        : null;
 
-        // Criar o objeto paginador
-        let paginador = totReg <= regPagina
-            ? null
-            : { pagina_atual: pagina, total_reg: totReg, total_paginas: totPaginas };
-
-        // Renderizar view com os dados
-        res.render("pages/adm-lista-usuarios", { 
-            usuarios,
-            paginador, 
-            totais, 
-            autenticado: req.session?.autenticado || false, 
-            logado: req.session?.logado || null
-        });
+      res.render("pages/adm-lista-usuarios", { 
+        usuarios,
+        paginador, 
+        totais, 
+        autenticado: req.session?.autenticado || false, 
+        logado: req.session?.logado || null
+      });
 
     } catch (error) {
-        console.log("Erro ao listar usuários paginados:", error);
-        res.status(500).render("pages/erro-conexao", {
-            mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-        });
+      console.error("Erro ao listar usuários paginados:", error);
+      res.status(500).render("pages/erro-conexao", {
+        mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+      });
     }
+  },
+
+  // 💰 LISTAGEM DE ASSINANTES (com paginação e totais financeiros)
+  listarUsuariosAssinantesPaginados: async (req, res) => {
+    res.locals.moment = moment;
+
+    try {
+      const pagina = parseInt(req.query.pagina) || 1;
+      const regPagina = 4;
+      const inicio = (pagina - 1) * regPagina;
+
+      // 🔹 Total de registros
+      const totReg = await admModel.totalRegListagemAssinantes();
+      const totPaginas = Math.ceil(totReg / regPagina);
+      console.log("total paginas", totPaginas)
+
+      // 🔹 Assinantes da página atual
+      const results = await admModel.findPageListagemAssinantes(inicio, regPagina);
+      const usuarios = Array.isArray(results) ? results : [];
+      console.log("total usuarios", usuarios)
+
+
+      // 🔹 Totais (ex: planos ativos, faturamento etc)
+      const [totais] = await admModel.contagemAssinantesPorPlanos();
+
+      // 🔹 Ganhos totais do admin (soma de pagamentos)
+      const totalGanhos = await admModel.totalGanhosAssinaturas();
+
+      const paginador = totReg > regPagina
+        ? { pagina_atual: pagina, total_reg: totReg, total_paginas: totPaginas }
+        : null;
+
+        console.log("totais", totais)
+        console.log("total ganhos", totalGanhos)
+
+
+
+      res.render("pages/adm-assinantes", { 
+        usuarios,
+        paginador, 
+        totais,
+        totalGanhos, 
+        autenticado: req.session?.autenticado || false, 
+        logado: req.session?.logado || null
+      });
+
+    } catch (error) {
+      console.error("Erro ao listar assinantes paginados:", error);
+      res.status(500).render("pages/erro-conexao", {
+        mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+      });
+    }
+  },
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = {
-    listarUsuariosPaginados
-};
+module.exports = admListagemController;

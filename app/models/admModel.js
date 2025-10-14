@@ -64,6 +64,7 @@ const admModel = {
 
 
 
+
     contarUsuariosPorTipo: async (tipo) => {
     try {
         const [resultados] = await pool.query(
@@ -158,6 +159,44 @@ contarCadastrosSemanaAnterior: async () => {
         }
     },
 
+// Pegar usuários de um tipo, paginados
+listarUsuariosPorTipoPaginado: async (tipo, inicio, regPagina) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT ID_USUARIO, NOME_USUARIO, EMAIL_USUARIO, USER_USUARIO, TIPO_USUARIO, STATUS_USUARIO, FOTO_PERFIL_BANCO_USUARIO FROM USUARIOS WHERE TIPO_USUARIO = ? LIMIT ?, ?",
+      [tipo, inicio, regPagina]
+    );
+
+    // converter blob de foto
+    const usuarios = rows.map(p => ({
+      ...p,
+      FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+        ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+        : null
+    }));
+
+    return usuarios;
+
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+},
+
+// Total de registros de um tipo
+totalRegUsuariosPorTipo: async (tipo) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) AS total FROM USUARIOS WHERE TIPO_USUARIO = ?",
+      [tipo]
+    );
+    return rows[0].total;
+  } catch (error) {
+    console.log(error);
+    return 0;
+  }
+},
+
 
 
     //TENTATIVA DE PAGINAÇÃO
@@ -200,6 +239,115 @@ contarCadastrosSemanaAnterior: async () => {
             return 0; // Retorna 0 em caso de erro
         }
     },
+
+
+
+
+    
+    findPageListagemAssinantes: async (inicio, total) => {
+  try {
+    const [linhas] = await pool.query(`
+      SELECT 
+        u.*,
+        a.PLANO,
+        a.DATA_INICIO,
+        a.DATA_FIM,
+        a.STATUS_PAGAMENTO
+      FROM USUARIOS u
+      INNER JOIN ASSINATURAS a 
+        ON u.ID_USUARIO = a.ID_USUARIO
+      WHERE 
+        a.STATUS_PAGAMENTO = 'pago'
+        AND NOW() BETWEEN a.DATA_INICIO AND IFNULL(a.DATA_FIM, NOW())
+      GROUP BY u.ID_USUARIO
+      ORDER BY a.DATA_INICIO DESC
+      LIMIT ?, ?
+    `, [inicio, total]);
+
+    const usuarios = linhas.map(p => ({
+      ...p,
+      FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
+        ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+        : null
+    }));
+
+    return usuarios;
+  } catch (error) {
+    console.error("Erro em findPageListagemAssinantes:", error);
+    return [];
+  }
+},
+
+
+
+totalRegListagemAssinantes: async () => {
+  try {
+    const [linhas] = await pool.query(`
+      SELECT COUNT(DISTINCT u.ID_USUARIO) AS TOTAL
+      FROM USUARIOS u
+      INNER JOIN ASSINATURAS a 
+        ON u.ID_USUARIO = a.ID_USUARIO
+      WHERE 
+        a.STATUS_PAGAMENTO = 'pago'
+        AND NOW() BETWEEN a.DATA_INICIO AND IFNULL(a.DATA_FIM, NOW())
+    `);
+    return linhas[0]?.TOTAL || 0;
+  } catch (error) {
+    console.error("Erro em totalRegListagemAssinantes:", error);
+    return 0;
+  }
+},
+
+
+
+totalGanhosAssinaturas: async () => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT SUM(
+        CASE
+          WHEN LOWER(a.PLANO) = 'semanal' THEN 10
+          WHEN LOWER(a.PLANO) = 'mensal' THEN 30
+          WHEN LOWER(a.PLANO) = 'anual' THEN 300
+          ELSE 0
+        END
+      ) AS total_ganho
+      FROM ASSINATURAS a
+      WHERE a.STATUS_PAGAMENTO = 'pago'
+        AND a.DATA_INICIO <= NOW()
+        AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW())
+    `);
+    return rows[0]?.total_ganho || 0;
+  } catch (err) {
+    console.error("Erro totalGanhosAssinaturas:", err);
+    return 0;
+  }
+},
+
+// retorna contagem por plano (apenas assinaturas ativas/pagas)
+contagemAssinantesPorPlano: async () => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT LOWER(a.PLANO) AS plano, COUNT(DISTINCT a.ID_USUARIO) AS total
+      FROM ASSINATURAS a
+      WHERE a.STATUS_PAGAMENTO = 'pago'
+        AND a.DATA_INICIO <= NOW()
+        AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW())
+      GROUP BY LOWER(a.PLANO);
+    `);
+
+    // transforma em objeto { semanal: X, mensal: Y, anual: Z }
+    const mapa = { semanal: 0, mensal: 0, anual: 0 };
+    rows.forEach(r => {
+      if (r.plano === 'semanal') mapa.semanal = Number(r.total);
+      if (r.plano === 'mensal')   mapa.mensal = Number(r.total);
+      if (r.plano === 'anual')    mapa.anual = Number(r.total);
+    });
+    return mapa;
+  } catch (err) {
+    console.error("Erro contagemAssinantesPorPlano:", err);
+    return { semanal: 0, mensal: 0, anual: 0 };
+  }
+},
 
     //LISTAGEM DAS DENÚNCIAS 
 

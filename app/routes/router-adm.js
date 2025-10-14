@@ -69,6 +69,16 @@ router.get(
   }
 );
 
+router.get(
+  "/assinantes",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admListagemController.listarUsuariosAssinantesPaginados(req, res);
+  }
+);
+
+
 // Listagem de denúncias de comentários
 router.get(
   "/adm-lista-denuncias-comentarios",

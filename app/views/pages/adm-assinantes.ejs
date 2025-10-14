@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerenciamento de Usuários Comum</title>
+  <title>Gerenciamento de Usuários Assinantes </title>
 
   <!-- Fonte Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-
   <!-- Ícones Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
 
   <!-- Link CSS -->
   <link rel="stylesheet" href="/css/pag-adm.css">
@@ -53,45 +51,50 @@
 <!-- MENU LATERAL DO ADM -->
 
 
-
-
   <section class="topo_pagina_adm">
-    <h1>Gerenciamento de Usuários Comuns</h1>
-  </section>
-<section class="resumo">
-    <section class="card">
-      <section class="card-icon azul"><i data-lucide="users"></i></section class=>
-      <section class="card-content">
-        <p>Total de Usuários</p>
-        <h2><%= usuarios.length %></h2> <!-- Total de usuários -->
-      </section class=>
-    </section >
-    <section class="card">
-      <section class="card-icon verde"><i data-lucide="user-check"></i></section class=>
-      <section class="card-content">
-        <p>Usuários Ativos</p>
-        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'ativo').length %></h2> <!-- Usuários Ativos -->
-      </section class=>
-    </section >
-   <section class="card">
-      <section class="card-icon amarelo"><i data-lucide="alert-triangle"></i></section class=>
-      <section class="card-content">
-        <p>Usuários Pendentes</p>
-        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'pendente').length %></h2>
-      </section class=>
-   </section >
-    <section class="card">
-      <section class="card-icon vermelho"><i data-lucide="user-x"></i></section class=>
-      <section class="card-content">
-        <p>Usuários Inativos</p>
-   <h2>
-  <%= usuarios.filter(u => u.STATUS_USUARIO === 'inativo' || u.STATUS_USUARIO === 'suspenso').length %>
-</h2> <!-- Usuários Inativos e Suspensos -->
-
-      </section class=>
-    </section >
+    <h1>Gerenciamento de Usuários Assinantes</h1>
+    
+  </section><section class="resumo">
+  <!-- Total arrecadado -->
+  <section class="card card-arrecadacao">
+    <section class="card-icon azul"><i data-lucide="dollar-sign"></i></section>
+    <section class="card-content">
+      <p>Total Arrecadado</p>
+      <h2>
+        <%= new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalGanhos || 0) %>
+      </h2>
+      <small class="muted">Receita de assinaturas ativas</small>
+    </section>
   </section>
 
+  <!-- Assinantes por plano -->
+  <section class="card">
+    <section class="card-icon verde"><i data-lucide="clock-1"></i></section>
+    <section class="card-content">
+      <p>Assinantes Semanais</p>
+      <h2><%= (totaisAssinantes.semanal || 0) %></h2>
+      <small class="muted">R$ 10 / assinante</small>
+    </section>
+  </section>
+
+  <section class="card">
+    <section class="card-icon amarelo"><i data-lucide="calendar"></i></section>
+    <section class="card-content">
+      <p>Assinantes Mensais</p>
+      <h2><%= (totaisAssinantes.mensal || 0) %></h2>
+      <small class="muted">R$ 30 / assinante</small>
+    </section>
+  </section>
+
+  <section class="card">
+    <section class="card-icon roxo"><i data-lucide="award"></i></section>
+    <section class="card-content">
+      <p>Assinantes Anuais</p>
+      <h2><%= (totaisAssinantes.anual || 0) %></h2>
+      <small class="muted">R$ 300 / assinante</small>
+    </section>
+  </section>
+</section>
 
 
   <section class="lista">
