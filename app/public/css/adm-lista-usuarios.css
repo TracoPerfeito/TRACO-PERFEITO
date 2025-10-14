@@ -49,25 +49,25 @@ strong {
 .status.ativo {
   color: #fff;
   background-color: #4caf50;
-  padding: 2px 6px;
+
   border-radius: 4px;
-  font-size: 0.9em;
+
 }
 
 .status.inativo {
-  color: #fff;
-  background-color: #ffb7b2;
-  padding: 2px 6px;
+  background-color: #c3c3c3;
+  color:rgb(72, 72, 72);
+
   border-radius: 4px;
-  font-size: 0.9em;
+
 }
 
 .status.pendente {
-  color: #fff;
-  background-color: #ff9800;
-  padding: 2px 6px;
+     background: #fef9c3;
+    color: #ca8a04;
+  
   border-radius: 4px;
-  font-size: 0.9em;
+
 }
 
 .usuario-acoes a {
@@ -143,10 +143,26 @@ tbody td img {
   font-weight: 600;
 }
 
-.status.pendente {
-  color: #ffc107;
-  font-weight: 600;
+
+
+
+
+.status.ativo i {
+  color: #4CAF50; /* verde */
 }
+
+.status.pendente i {
+  color: #FFC107; /* amarelo */
+}
+
+.status.suspenso i {
+  color: #F44336; /* vermelho */
+}
+
+.status.inativo i {
+  color: #9E9E9E; /* cinza */
+}
+
 
 td a {
   text-decoration: none;
@@ -197,22 +213,16 @@ input[type="button"]:hover {
 
 
 
-
-
-/* Container da paginação */
 .paginacao {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
-  padding: 10px 0;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+
   user-select: none;
-  width: 1025px;
-  margin-left: 91px;
-  margin-top: -27px;
-  }
+  width: 100%;        /* ocupa 100% do container pai */
+    margin-left: 40px;
+
+}
+
 
 /* Lista de páginas */
 .paginacao ul {
@@ -279,8 +289,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 2rem;
-  background: #fff;
+
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -353,11 +362,13 @@ section.resumo {
 /* Lista */
 section.lista {
   background: #fff;
-  margin: 0 2rem 2rem;
-  padding: 1rem;
+  margin: 0 2rem 5px 2rem;
+  padding: 1rem 1rem 10px 1rem;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
 }
+
+
 
 section.lista h2 {
   font-size: 1.2rem;
@@ -426,6 +437,17 @@ section.lista table tbody td {
   object-fit: cover;
 }
 
+.lista-header{
+  display: grid;
+      grid-template-columns: 2.5fr 1fr 1fr 1.5fr 1.2fr;
+      padding: 0.75rem 1rem;
+}
+
+.ver-detalhes{
+     background: #dbeafe;
+    color: #2563eb;
+}
+
 .lista-usuarios {
   display: flex;
   flex-direction: column;
@@ -452,10 +474,14 @@ section.lista table tbody td {
 
 .status {
   font-weight: 600;
-  padding: 0.3rem 0.6rem;
-  border-radius: 12px;
+ padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
   font-size: 0.8rem;
   width: fit-content;
+  min-width: 100px;
+  justify-content: center;
 }
 
 .status.ativo {
@@ -464,13 +490,14 @@ section.lista table tbody td {
 }
 
 .status.suspenso {
-  background: #fef9c3;
-  color: #ca8a04;
+    background: #fee2e2;
+  color: #dc2626;
+
 }
 
 .status.inativo {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #bdbdbd;
+  color: #414141;
 }
 
 .acoes {
@@ -680,6 +707,16 @@ section.lista {
 .topo_pagina_adm h1 {
   font-size: x-large;
 } 
+
 .topo_pagina_adm {
-  margin-left: 78px;
+ width: 50% !important;
+  padding-top: 60px; /* empurra o conteúdo pra baixo do topo fixo */
+  
 }
+
+.topo_pagina_adm h1 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #333;
+}
+

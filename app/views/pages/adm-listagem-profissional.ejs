@@ -1,90 +1,307 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/pag-adm.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciamento de Usuários Profissionais</title>
 
-    <title>Página do Administrador</title>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+  <!-- Fonte Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Ícones Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Link CSS -->
+  <link rel="stylesheet" href="/css/pag-adm.css">
+  <link rel="stylesheet" href="/css/adm-lista-usuarios.css">
+
+      
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+ <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
+      <!-- LINK DO FAVICON -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   
+      <!-- LINK DA FONTE -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
         <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 
+        
 
-
-    <link rel="stylesheet" href="/css/adm-lista-usuarios.css">
-   
 </head>
 <body>
 
-    <!--INCLUDE MENU TOP E LATERAL-->
+    <!--INICIO DO MENU TOP ADM -->
+
     <%- include('../partials/menu_top_adm.ejs'); %>
-    <%- include('../partials/menu_lateral_adm.ejs'); %>
 
-    <section class="usuarios-list">
-        <header>
-            <h2>Usuários Profissionais</h2>
-        </header>
+    <!--FIM DO MENU TOP ADM  -->
 
-        <% var usuarios = typeof usuarios !== 'undefined' ? usuarios : []; %>
 
-        <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Foto</th>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>User</th>
-                    <th>Tipo</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% usuarios.forEach(usuario => { %>
-                    <tr>
-                        <td style="text-align:center;">
-                            <% if (usuario.FOTO_PERFIL_BANCO_USUARIO) { %>
-                                <img src="/<%= usuario.FOTO_PERFIL_BANCO_USUARIO %>" 
-                                     alt="Foto de <%= usuario.NOME_USUARIO %>" 
-                                     width="50" height="50" 
-                                     style="border-radius:50%;"
-                                     onerror="this.onerror=null; this.src='/images/foto-perfil.png'">
-                            <% } else { %>
-                                <img src="/imagens/foto-perfil.png" 
-                                     alt="Sem foto" 
-                                     width="50" height="50" 
-                                     style="border-radius:50%;">
-                            <% } %>
-                        </td>
-                        <td><%= usuario.NOME_USUARIO %></td>
-                        <td><%= usuario.EMAIL_USUARIO %></td>
-                        <td><%= usuario.USER_USUARIO %></td>
-                        <td><%= usuario.TIPO_USUARIO.charAt(0).toUpperCase() + usuario.TIPO_USUARIO.slice(1) %></td>
-                        <td>
-                            <% if (usuario.STATUS_USUARIO === 'ativo') { %>
-                                <span class="status ativo" style="color: green; font-weight: bold;">Ativo</span>
-                            <% } else if (usuario.STATUS_USUARIO === 'inativo') { %>
-                                <span class="status inativo" style="color: red; font-weight: bold;">Inativo</span>
-                            <% } else { %>
-                                <span class="status pendente" style="color: orange; font-weight: bold;"><%= usuario.STATUS_USUARIO %></span>
-                            <% } %>
-                        </td>
-                        <td style="text-align:center;">
-                            <a href="/adm-usuarios/observacoes/<%= usuario.ID_USUARIO %>" title="Detalhes">🔍</a>
-                            &nbsp;
-                            <a href="/adm-usuarios/editar/<%= usuario.ID_USUARIO %>" title="Editar">✏️</a>
-                            &nbsp;
-                            <a href="/adm-usuarios/excluir/<%= usuario.ID_USUARIO %>" title="Inativar" onclick="return confirm('Tem certeza?')">🗑️</a>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
+<!-- MENU LATERAL DO ADM -->
+
+  <%- include('../partials/menu_lateral_adm.ejs'); %>
+
+<!-- MENU LATERAL DO ADM -->
+
+
+  <section class="topo_pagina_adm">
+    <h1>Gerenciamento de Usuários Profissionais</h1>
+    
+  </section>
+
+  <section class="resumo">
+    <section class="card">
+      <section class="card-icon azul"><i data-lucide="users"></i></section class=>
+      <section class="card-content">
+        <p>Total de Usuários</p>
+        <h2><%= usuarios.length %></h2> <!-- Total de usuários -->
+      </section class=>
+    </section >
+    <section class="card">
+      <section class="card-icon verde"><i data-lucide="user-check"></i></section class=>
+      <section class="card-content">
+        <p>Usuários Ativos</p>
+        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'ativo').length %></h2> <!-- Usuários Ativos -->
+      </section class=>
+    </section >
+   <section class="card">
+      <section class="card-icon amarelo"><i data-lucide="alert-triangle"></i></section class=>
+      <section class="card-content">
+        <p>Usuários Pendentes</p>
+        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'pendente').length %></h2>
+      </section class=>
+   </section >
+    <section class="card">
+      <section class="card-icon vermelho"><i data-lucide="user-x"></i></section class=>
+      <section class="card-content">
+        <p>Usuários Inativos</p>
+        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'inativo').length %></h2> <!-- Usuários Inativos -->
+      </section class=>
+    </section >
+  </section>
+
+
+  <section class="lista">
+    <h2>Lista de Usuários</h2>
+
+
+      <section class="lista-header">
+    <span class="col-usuario">Usuário</span>
+    <span class="col-status">Status</span>
+    <span class="col-tipo">Tipo</span>
+    <span class="col-login">Username</span>
+    <span class="col-acoes">Ações</span>
+  </section>
+  
+    <section class="lista-usuarios">
+
+
+      <% usuarios.forEach(usuario => { %>
+        <section class="usuario">
+  <section class="user-info">
+    
+       <img 
+                         src="<%= usuario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" 
+                          class="foto-perfil-explorar"  
+                        alt="Foto do usuário"
+                        onerror="this.onerror=null; this.src='/imagens/img.png'">
+   
+    
+    <section >
+      <%= usuario.NOME_USUARIO %><br><small><%= usuario.EMAIL_USUARIO %></small>
+    </section >
+  </section >
+ <p class="status <%= usuario.STATUS_USUARIO %>">
+  <% if (usuario.STATUS_USUARIO === 'ativo') { %>
+    <i data-lucide="user-check"></i> 
+  <% } else if (usuario.STATUS_USUARIO === 'pendente') { %>
+    <i data-lucide="alert-triangle"></i>
+  <% } else if (usuario.STATUS_USUARIO === 'suspenso') { %>
+    <i data-lucide="user-x"></i>
+  <% } else if (usuario.STATUS_USUARIO === 'inativo') { %>
+    <i data-lucide="user-x" class="inativo-icon"></i>
+  <% } %>
+  <%= usuario.STATUS_USUARIO.charAt(0).toUpperCase() + usuario.STATUS_USUARIO.slice(1) %>
+</p>
+
+  <!-- Aqui vai o tipo do usuário -->
+  <p class="data">
+    <%= usuario.TIPO_USUARIO ? usuario.TIPO_USUARIO.charAt(0).toUpperCase() + usuario.TIPO_USUARIO.slice(1) : 'Não informado' %>
+  </p>
+
+  <!-- Aqui vai o user (login) -->
+  <p class="user-nameadm">
+    <%= usuario.USER_USUARIO %>
+  </p>
+
+   <section class="acoes">
+         <button class="btn-acao ver-detalhes" title="Ver Detalhes" data-usuario='<%= JSON.stringify(usuario) %>'>
+            <i data-lucide="search"></i>
+          </button>
+          <% if(usuario.STATUS_USUARIO === 'suspenso'){ %>
+            <button class="btn-acao ativar" data-id="<%= usuario.ID_USUARIO %>" title="Ativar">
+              <i data-lucide="pencil"></i>
+            </button>
+          <% } else if(usuario.STATUS_USUARIO === 'ativo'){ %>
+            <button class="btn-acao deletar" data-id="<%= usuario.ID_USUARIO %>" title="Inativar">
+              <i data-lucide="pencil"></i>
+            </button>
+          <% } else { %>
+            <button class="btn-acao ativar" data-id="<%= usuario.ID_USUARIO %>" title="Ativar">
+              <i data-lucide="pencil"></i>
+            </button>
+          <% } %>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</section>
+
+      <% }) %>
+
+    </section >
+  </section>
+
+<!-- MODAL ÚNICO PARA ATIVAR/INATIVAR USUÁRIO -->
+<section class="overlay" id="overlay" aria-hidden="true" style="display:none;">
+  <section class="modal" role="dialog" aria-modal="true">
+    
+    <!-- Cabeçalho do Modal -->
+    <header class="modal-header">
+      <h3 id="modal-titulo">Gerenciar Usuário</h3>
+      <button class="close-modal" aria-label="Fechar">&times;</button>
+    </header>
+
+    <!-- Corpo do Modal -->
+    <section class="modal-body">
+      <section class="alerta">
+        <section class="alerta-icone">
+          <i data-lucide="alert-triangle"></i>
+        </section>
+        <section>
+          <p id="modal-mensagem"><strong>Tem certeza da ação?</strong></p>
+          <p class="detalhe" id="modal-detalhe">
+            O status do usuário será alterado de acordo com sua escolha.
+          </p>
+        </section>
+      </section>
+
+      <h4>Consequências:</h4>
+      <ul>
+        <li>Acesso ao sistema será alterado imediatamente</li>
+        <li>Dados do usuário são preservados</li>
+        <li>Notificação automática por email</li>
+      </ul>
     </section>
 
-    <script src="/js/menu-lateral-adm.js"></script>
+    <!-- Rodapé do Modal -->
+    <footer class="modal-footer">
+      <button class="btn-cancelar">Cancelar</button>
+      <button class="btn-confirmar">
+        <i data-lucide="user-x"></i> Confirmar
+      </button>
+    </footer>
+
+  </section>
+</section>
+
+
+<!-- MODAL DE DETALHES DO USUÁRIO -->
+<section class="overlay" id="overlay-detalhes" aria-hidden="true" style="display:none;">
+  <section class="modal" role="dialog" aria-modal="true">
+    
+    <!-- Cabeçalho -->
+    <header class="modal-header">
+      <h3 id="detalhes-nome">Detalhes do Usuário</h3>
+      <button class="close-modal-detalhes" aria-label="Fechar">&times;</button>
+    </header>
+
+    <!-- Corpo -->
+    <section class="modal-body" id="detalhes-corpo">
+      <section class="detalhes-usuario">
+        <img id="detalhes-foto" src="/imagens/foto-perfil.png" alt="Foto do Usuário" style="width:80px; height:80px; border-radius:50%; margin-bottom:1rem;">
+        
+        <p><strong>Email:</strong> <span id="detalhes-email"></span></p>
+        <p><strong>Username:</strong> <span id="detalhes-username"></span></p>
+        <p><strong>Tipo:</strong> <span id="detalhes-tipo"></span></p>
+        <p><strong>Status:</strong> <span id="detalhes-status"></span></p>
+        <p><strong>CPF:</strong> <span id="detalhes-cpf"></span></p>
+        <p><strong>Data de Nascimento:</strong> <span id="detalhes-nasc"></span></p>
+        <p><strong>Gênero:</strong> <span id="detalhes-genero"></span></p>
+        <p><strong>Celular:</strong> <span id="detalhes-celular"></span></p>
+        <p><strong>Data de Cadastro:</strong> <span id="detalhes-cadastro"></span></p>
+
+        <!-- Links sociais, se existirem -->
+        <p><strong>LinkedIn:</strong> <span id="detalhes-linkedin"></span></p>
+        <p><strong>Pinterest:</strong> <span id="detalhes-pinterest"></span></p>
+        <p><strong>Instagram:</strong> <span id="detalhes-instagram"></span></p>
+        <p><strong>WhatsApp:</strong> <span id="detalhes-whatsapp"></span></p>
+        <p><strong>Descrição:</strong> <span id="detalhes-descricao"></span></p>
+      </section>
+    </section>
+
+
+  </section>
+</section>
+
+
+
+
+
+        <!-- PAGINAÇÃO DO NEGOCIO -->
+
+<% if (typeof paginador !== 'undefined' && paginador) { %>
+    <section class="paginacao">
+        <ul>
+            <% for (var i = 1; i <= paginador.total_paginas; i++) { %>
+                <% if (paginador.pagina_atual == i) { %>
+                    <li><a class="atual" href="?pagina=<%= i %>"><%= i %></a></li>
+                <% } else { %>
+                    <li><a href="?pagina=<%= i %>"><%= i %></a></li>
+                <% } %>
+            <% } %>
+        </ul>
+    </section>
+<% } %>
+
+
+
+
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+
+    <!-- LINK DO MENU LATERAL -->
+      <script src="/js/menu-lateral-adm.js"></script>
+
+
+      
+            <script src="/js/modal-detalhes-usuario.js"></script>
+
+    <!-- LINK DAS NOTIFICAÇÕES -->
+      <script src="js/simple-notify.js"></script>
+
+
+
+  <script src="/js/modal_inativar_usuario.js"></script>
 </body>
 </html>

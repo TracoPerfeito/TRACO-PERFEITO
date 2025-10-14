@@ -69,6 +69,16 @@ router.get(
   }
 );
 
+router.get(
+  "/assinantes",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admListagemController.listarUsuariosAssinantesPaginados(req, res);
+  }
+);
+
+
 // Listagem de denúncias de comentários
 router.get(
   "/adm-lista-denuncias-comentarios",
@@ -87,6 +97,15 @@ router.put(
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
     admController.desativarUsuario(req, res);
+  }
+);
+
+router.put(
+  "/ativar-usuario/:id",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.ativarUsuario(req, res);
   }
 );
 
