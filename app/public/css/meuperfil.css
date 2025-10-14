@@ -1194,3 +1194,6 @@ text-overflow: ellipsis;
 
 }
 
+.sem-publicacoes p{
+  color: var(--text-color);
+}

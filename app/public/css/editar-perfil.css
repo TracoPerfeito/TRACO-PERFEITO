@@ -1,3 +1,7 @@
+*{
+  font-family: "Montserrat", sans-serif !important;
+}
+
 .config-wrapper {
   display: flex;
   flex-direction: row;
@@ -14,6 +18,8 @@ body{
   top: 80px;
  
   padding: 20px;
+  
+
 }
 
 #tools{
@@ -38,6 +44,9 @@ body{
     position: static;
     padding: 10px;
     border-bottom: 1px solid #ccc;
+  
+    
+
   }
 
   
@@ -137,8 +146,8 @@ body{
 .form-conta input,.content-conta input, .content-conta select, .form-conta select, #senhaAtual, #novaSenha, #confirmarNovaSenha {
   
   border-radius: 5px;
-    border: 1px solid #c5c5c5;
-    padding: 7px;
+  border: 1px solid #c5c5c5;
+  padding: 7px;
 }
 #senha{
   min-height: 100vh;
@@ -812,4 +821,34 @@ cursor: pointer;
       z-index: 9999;
     }
 
-  
+    .dado-basicos input{
+      background-color: transparent !important;
+     color: var(--text-color);
+    }
+
+   
+   select {
+  background-color: transparent !important;
+  color: var(--text-color);
+}
+
+option {
+ background-color: var(--cor-fundo);
+ color: var(--text-color);
+}
+
+#outra-especializacao input{
+  background-color: transparent !important;
+  color: var(--text-color);
+}
+
+#textarea{
+  background-color: transparent !important;
+ color: var(--text-color);
+}
+
+.redes-sociais-bloco input{
+  background-color: transparent !important;
+ color: var(--text-color);
+}
+
