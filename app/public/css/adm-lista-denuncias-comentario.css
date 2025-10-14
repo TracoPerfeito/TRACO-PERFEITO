@@ -92,22 +92,29 @@ header h1 {
   background: #2980b9;
   color: white;
   border-radius: 7px;
-  padding: 3%;
+  border: none;
+  padding: 4%;
+  box-sizing: border-box;
+
   /*////////////////////////////////////////////////////////////////////////////////////////////////*/
  
 }
-.btn-detalhes:hover {
+.btn-btn-detalhes:hover {
   background: #1c5985;
+  cursor: pointer;
 }
 .btn-btn-status {
   background: #16a085;
   color: white;
   border-radius: 7px;
-  padding: 3%;
+  border: none;
+  padding: 4%;
+  box-sizing: border-box;
 }
 .btn-btn-status:hover {
-  background: #117864;}
-
+  background: #117864;
+  cursor: pointer;
+}
 
 /* MODAL DE ALTERAR STATUS */
 

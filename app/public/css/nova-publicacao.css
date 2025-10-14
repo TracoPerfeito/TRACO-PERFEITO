@@ -935,3 +935,105 @@ select.erro {
   visibility: visible;
   opacity: 1;
 }
+
+
+
+.modal-conteudo-restricao{
+    background: #fff;
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: center;
+        max-width: 400px;
+        font-family: "Montserrat"
+}
+
+
+.modal-conteudo-restricao p {
+  margin-bottom: 10px;
+  font-size: 17px;
+}
+
+.modal-conteudo-restricao h2 {
+ color: #3c3c3c;
+   margin-bottom: 10px;
+}/* Botão assinar com brilho animado */
+.btn-assinar-plano {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgb(107, 128, 211);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-family: "Montserrat";
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.btn-assinar-plano::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 60%, rgba(255,255,255,0.4) 100%);
+    transform: rotate(25deg);
+    opacity: 0;
+    transition: all 0.5s ease;
+    z-index: 0;
+}
+
+.btn-assinar-plano:hover::before {
+    opacity: 1;
+    transform: translateX(50%) rotate(25deg);
+}
+
+.btn-assinar-plano:hover {
+    background: rgb(90, 109, 186);
+    transform: scale(1.05);
+}
+
+/* Botão voltar mais elegante */
+.voltar-inicio {
+    margin-top: 1rem;
+    font-family: "Montserrat";
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: rgb(107, 128, 211);
+    border: solid 1px rgb(107, 128, 211);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.voltar-inicio:hover {
+    background: rgba(101, 121, 199, 0.099);
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btns-modal-restricao{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+
+#aviso-quant-publi{
+background:  #B7E3F0;
+color: #4d4d4d;
+
+
+
+   font-family: "Montserrat";
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+    
+}

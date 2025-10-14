@@ -1081,6 +1081,7 @@ li a svg {
   padding: 3px 3px;
   border-radius: 50%;
   width: 10px;
+  height: auto;
   border: 1px solid var(--azul-menu);
   text-align: center;
   line-height: 1;

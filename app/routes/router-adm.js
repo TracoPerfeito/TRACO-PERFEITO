@@ -89,6 +89,24 @@ router.get(
   }
 );
 
+router.get(
+  "/adm-lista-denuncias-publicacoes",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.listarDenunciasPublicacoes(req, res);
+  }
+);
+
+router.get(
+  "/adm-lista-denuncias-proposta",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.listarDenunciasProposta(req, res);
+  }
+);
+
 
 // Desativar usuário (inativar)
 router.put(

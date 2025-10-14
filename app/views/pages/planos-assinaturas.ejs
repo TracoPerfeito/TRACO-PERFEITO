@@ -224,7 +224,7 @@
   <section class="highlight-box">
     <p class="p-esquerda">O plano perfeito para destacar seu talento.</p>
     <p class="p-esquerda">
-      COM O PLANO PINCEL DE OURO, 
+      COM O TRAÇO PERFEITO PRO, 
       <span class="typing"></span>
     </p>
     <button class="cta-btn" onclick="scrollToCard()">Quero conhecer</button>
@@ -251,11 +251,23 @@
       <li>Prioridade em suporte</li>
     </ul>
     <section class="btns">
-      <button class="btn btn-light">ver detalhes</button>
+      <button class="btn btn-light" onclick="scrollToComparacao()">Ver detalhes</button>
       <button class="btn btn-dark"><a href="/pagamentos">Assinar</a></button>
     </section>
   </section>
 </section>
+
+
+<script>
+
+  // scroll suave até a tabela de comparação de planos
+function scrollToComparacao() {
+  document.querySelector(".planos-comparacao").scrollIntoView({
+    behavior: "smooth"
+  });
+}
+
+</script>
 
 
   </section>

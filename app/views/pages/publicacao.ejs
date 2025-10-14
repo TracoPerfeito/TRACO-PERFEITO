@@ -491,36 +491,6 @@ let msgErros = {conteudo: ""};
                 </section>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <%- include('../partials/excluir-publi') %>
                 
                
@@ -548,8 +518,6 @@ let msgErros = {conteudo: ""};
     <form action="/denunciar-comentario" method="POST">
       <input type="hidden" name="idComentario" id="denunciarComentarioId" value="">
       <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
-
-      <p>Selecione o motivo da denúncia:</p>
 
       <label><input type="radio" name="motivo" value="Conteúdo ofensivo" required> Conteúdo ofensivo</label><br>
       <label><input type="radio" name="motivo" value="Spam"> Spam</label><br>

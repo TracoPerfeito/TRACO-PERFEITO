@@ -1042,6 +1042,27 @@ listarSeguidoresESeguindo: async (idUsuarioPerfil, idUsuarioLogado = null) => {
 },
 
 
+contarPublisDoMes: async (idUsuario) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT COUNT(*) AS total
+       FROM PUBLICACOES_PROFISSIONAL
+       WHERE ID_USUARIO = ?
+         AND MONTH(DATA_PUBLICACAO) = MONTH(NOW())
+         AND YEAR(DATA_PUBLICACAO) = YEAR(NOW())`,
+      [idUsuario]
+    );
+
+    return rows[0]?.total || 0;
+
+  } catch (err) {
+    console.error("❌ Erro em contarPublisDoMes:", err);
+    return 0;
+  }
+}
+
+
+
 
 }
 
