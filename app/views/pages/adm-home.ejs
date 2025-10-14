@@ -64,72 +64,66 @@
 
           <!-- TITULO -->
 
-<section class="title-page-principal">
-  <h2 class="page-principal-titulo">Dashboard Traço Perfeito</h2>
-</section>
-  
 
 
 
 <section class="main-content">
-    <section class="dashboard">
-      <!-- Card Total Geral -->
-      <section class="card">
-        <section class="icon-box">
-          <i class="fa fa-users" aria-hidden="true"></i>
+  
+<section class="title-page-principal">
+  <h2 class="page-principal-titulo">Dashboard Traço Perfeito</h2>
+</section>
+  
+    <section class="conteudo-grafico-cards">
+      <section class="dashboard">
+        <!-- Card Total Geral -->
+        <section class="card">
+          <section class="icon-box">
+            <i class="fa fa-users" aria-hidden="true"></i>
+          </section>
+          <a href="/adm/adm-lista-usuarios" style="text-decoration: none; color: inherit;">
+          <section class="title-card">Total de Usuários</section>
+          </a>
+          <section class="value todos-perfis"> <%= totalUsuarios %> </section>
+          <!-- <section class="change">+20% a mais do que mês passado</section> -->
         </section>
-
-        <a href="/adm/adm-lista-usuarios" style="text-decoration: none; color: inherit;">
-        <section class="title-card">Total de Usuários</section>
-        </a>
-
-        <section class="value todos-perfis"> <%= totalUsuarios %> </section>
-        <!-- <section class="change">+20% a mais do que mês passado</section> -->
-      </section>
-
-      <!-- Card Usuários Comuns -->
-      <section class="card">
-        <section class="icon-box">
-          <i class="fa fa-user" aria-hidden="true"></i>
+        <!-- Card Usuários Comuns -->
+        <section class="card">
+          <section class="icon-box">
+            <i class="fa fa-user" aria-hidden="true"></i>
+          </section>
+          <section class="title-card">Usuários Comuns</section>
+          <section class="value perfil-comum"> <%= totalComuns %> </section>
+          <!-- <section class="change negative">+10% a menos do que mês passado</section> -->
         </section>
-        <section class="title-card">Usuários Comuns</section>
-        <section class="value perfil-comum"> <%= totalComuns %> </section>
-        <!-- <section class="change negative">+10% a menos do que mês passado</section> -->
-      </section>
-
-      <!-- Card Usuários Profissionais -->
-      <section class="card">
-        <section class="icon-box">
-        <i class="fa fa-user-plus" aria-hidden="true"></i>
+        <!-- Card Usuários Profissionais -->
+        <section class="card">
+          <section class="icon-box">
+          <i class="fa fa-user-plus" aria-hidden="true"></i>
+          </section>
+          <section class="title-card">Usuários Profissionais</section>
+          <section class="value perfil-profissional"> <%= totalProfissionais %> </section>
+          <!-- <section class="change">+15% a mais do que mês passado</section> -->
         </section>
-        <section class="title-card">Usuários Profissionais</section>
-        <section class="value perfil-profissional"> <%= totalProfissionais %> </section>
-        <!-- <section class="change">+15% a mais do que mês passado</section> -->
+        </section>
+      
+      
+      <!-- GRÁFICO DE FREQUÊNCIA DE USUÁRIOS (PROTÓTIPO) -->
+        <section class="card-grafico">
+      <section class="header-grafico">
+        <section class="header-left">
+          <h2>Criação de Perfis</h2>
+          <p><%= primeiraData %> - <%= ultimaData %></p>
+        </section>
+        <section class="header-right">
+         <section class="value"> <%= totalPerfisGrafico %> <%= totalPerfisGrafico === 1 ? 'Perfil' : 'Perfis' %></section>
+         <section class="change"><%= percentualCrescimento %>% este período</section>
+        </section>
       </section>
-  </section>
-
-          
-          
-    <!-- GRÁFICO DE FREQUÊNCIA DE USUÁRIOS (PROTÓTIPO) -->
-  <section class="card-grafico">
-    <section class="header-grafico">
-      <section class="header-left">
-        <h2>Criação de Perfis</h2>
-        <p>Jan - Dez, 2025</p>
-      </section>
-      <section class="header-right">
-        <section class="value">2.430 Perfis</section>
-        <section class="change">+12.5% este ano</section>
-      </section>
+      <canvas id="perfilChart"></canvas>
+        </section>
     </section>
-    <canvas id="perfilChart"></canvas>
-  </section>
-
-
 
 </section>
-
-
 
 
 
@@ -140,8 +134,8 @@
 
 
 <script>
-  const labelsGrafico = <%- labelsGrafico %>;
-  const valoresGrafico = <%- valoresGrafico %>;
+  const labelsGrafico = <%- JSON.stringify(labelsGrafico || []) %>;
+  const valoresGrafico = <%- JSON.stringify(valoresGrafico || []) %>;
 </script>
 
 
@@ -155,8 +149,7 @@
     <!-- LINK DAS NOTIFICAÇÕES -->
       <script src="js/simple-notify.js"></script>
 
-    <!-- LINK DO GRÁFICO -->
-      <script src="js/grafico-adm-dashboard.js"></script>
+ 
 
 
 </body>

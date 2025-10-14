@@ -143,51 +143,61 @@ mostrarhome: (req, res, dadosNotificacao) => {
         }
       },
 
-      //Contagem da quantidade de usuários no site
-      listarNumeroDePerfis: async (req, res) => {
-        try {
-          const dadosNotificacao = req.session ? req.session.dadosNotificacao || null : null;
+    listarNumeroDePerfis: async (req, res) => {
+  try {
+    const dadosNotificacao = req.session ? req.session.dadosNotificacao || null : null;
+    if (req.session) req.session.dadosNotificacao = null;
 
-          if (req.session) {
-            req.session.dadosNotificacao = null;
-          }
+    const totalUsuarios = await admModel.contarUsuarios();
+    const totalComuns = await admModel.contarUsuariosPorTipo('comum');
+    const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
 
-          const totalUsuarios = await admModel.contarUsuarios();
-          const totalComuns = await admModel.contarUsuariosPorTipo('comum');
-          const totalProfissionais = await admModel.contarUsuariosPorTipo('profissional');
+    const cadastrosRecentes = await admModel.contarCadastrosRecentes();
+    console.log("Cadastros recentes:", cadastrosRecentes);
 
-           const cadastrosRecentes = await admModel.contarCadastrosRecentes();
-
-           console.log("Cadastros recentes:", cadastrosRecentes);
-
-           
+    // labels e valores para o gráfico
     const labelsGrafico = cadastrosRecentes.map(item =>
       new Date(item.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
     );
     const valoresGrafico = cadastrosRecentes.map(item => item.total);
 
+    // período do gráfico
+    const primeiraData = labelsGrafico[0] || '';
+    const ultimaData = labelsGrafico[labelsGrafico.length - 1] || '';
 
+    // total de perfis mostrados no gráfico
+    const totalPerfisGrafico = valoresGrafico.reduce((acc, val) => acc + val, 0);
 
-          console.log({ totalUsuarios, totalComuns, totalProfissionais });
+    // percentual de crescimento (comparando com semana anterior)
+    const cadastrosSemanaAnterior = await admModel.contarCadastrosSemanaAnterior();
+    const totalSemanaAnterior = cadastrosSemanaAnterior.reduce((acc, val) => acc + val.total, 0);
+    const percentualCrescimento = totalSemanaAnterior === 0 
+      ? 100 
+      : ((totalPerfisGrafico - totalSemanaAnterior) / totalSemanaAnterior * 100).toFixed(1);
 
-          res.render("pages/adm-home", {
-            autenticado: req.session?.autenticado || false,
-            logado: req.session?.logado || null,
-            dadosNotificacao,
-            totalUsuarios,
-            totalComuns,
-            totalProfissionais,
-             labelsGrafico: JSON.stringify(labelsGrafico),
-      valoresGrafico: JSON.stringify(valoresGrafico)
-          });
+    res.render("pages/adm-home", {
+      autenticado: req.session?.autenticado || false,
+      logado: req.session?.logado || null,
+      dadosNotificacao,
+      totalUsuarios,
+      totalComuns,
+      totalProfissionais,
+      labelsGrafico,
+      valoresGrafico,
+      primeiraData,
+      ultimaData,
+      totalPerfisGrafico,
+      percentualCrescimento
+    });
 
-        } catch (error) {
-          console.error("Erro ao carregar dashboard:", error);
-          res.status(500).render('pages/erro-conexao', {
-            mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-          });
-        }
-      },
+  } catch (error) {
+    console.error("Erro ao carregar dashboard:", error);
+    res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+    });
+  }
+},
+
     
     
 
@@ -283,6 +293,31 @@ mostrarhome: (req, res, dadosNotificacao) => {
     } catch (error) {
       console.error("Erro ao inativar usuário:", error);
       res.status(500).send("Erro interno ao inativar usuário.");
+    }
+  },
+
+  
+  // Inativar (desativar) um usuário
+  ativarUsuario: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const [resultado] = await pool.query(
+        "UPDATE USUARIOS SET STATUS_USUARIO = 'ativo' WHERE ID_USUARIO = ?",
+        [id]
+      );
+
+      if (resultado.affectedRows === 0) {
+        console.log("Nenhum usuário encontrado com o ID informado.");
+        return res.status(404).send("Usuário não encontrado.");
+      }
+
+      console.log(`Usuário ${id} foi ativado com sucesso!`);
+      res.sendStatus(200); // Sucesso (sem conteúdo)
+
+    } catch (error) {
+      console.error("Erro ao ativar usuário:", error);
+      res.status(500).send("Erro interno ao ativar usuário.");
     }
   },
 

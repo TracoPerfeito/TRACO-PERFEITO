@@ -44,6 +44,26 @@ const admModel = {
  },
 
 
+ totalUsuariosPorStatus: async () => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT 
+                COUNT(*) AS total,
+                SUM(CASE WHEN STATUS_USUARIO = 'ativo' THEN 1 ELSE 0 END) AS ativos,
+                SUM(CASE WHEN STATUS_USUARIO = 'pendente' THEN 1 ELSE 0 END) AS pendentes,
+                SUM(CASE WHEN STATUS_USUARIO = 'inativo' THEN 1 ELSE 0 END) AS inativos,
+                SUM(CASE WHEN STATUS_USUARIO = 'suspenso' THEN 1 ELSE 0 END) AS suspensos
+            FROM USUARIOS
+        `);
+        return rows;
+    } catch (error) {
+        console.log("Erro ao contar usuários por status:", error);
+        return [{ total: 0, ativos: 0, pendentes: 0, inativos: 0, suspensos: 0 }];
+    }
+},
+
+
+
     contarUsuariosPorTipo: async (tipo) => {
     try {
         const [resultados] = await pool.query(
@@ -79,6 +99,23 @@ const admModel = {
   }catch(error){
      console.log(error);
         return error; 
+  }
+},
+
+contarCadastrosSemanaAnterior: async () => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT DATE(DATA_CADASTRO) AS data, COUNT(*) AS total
+      FROM USUARIOS
+      WHERE DATA_CADASTRO >= CURDATE() - INTERVAL 14 DAY
+        AND DATA_CADASTRO < CURDATE() - INTERVAL 7 DAY
+      GROUP BY DATE(DATA_CADASTRO)
+      ORDER BY data ASC;
+    `);
+    return rows;
+  } catch (error) {
+    console.error("Erro em contarCadastrosSemanaAnterior:", error);
+    return [];
   }
 },
 

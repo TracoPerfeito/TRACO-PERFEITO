@@ -55,41 +55,57 @@
     <h1>Gerenciamento de Usuários</h1>
   </section>
 
-  <section class="resumo">
-    <section class="card">
-      <section class="card-icon azul"><i data-lucide="users"></i></section >
-      <section class="card-content">
-        <p>Total de Usuários</p>
-        <h2><%= usuarios.length %></h2> <!-- Total de usuários -->
-      </section >
-    </section >
-    <section class="card">
-      <section class="card-icon verde"><i data-lucide="user-check"></i></section >
-      <section class="card-content">
-        <p>Usuários Ativos</p>
-        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'ativo').length %></h2> <!-- Usuários Ativos -->
-      </section >
-    </section >
-   <section class="card">
-      <section class="card-icon amarelo"><i data-lucide="alert-triangle"></i></section >
-      <section class="card-content">
-        <p>Usuários Pendentes</p>
-        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'pendente').length %></h2>
-      </section >
-   </section >
-    <section class="card">
-      <section class="card-icon vermelho"><i data-lucide="user-x"></i></section >
-      <section class="card-content">
-        <p>Usuários Inativos</p>
-        <h2><%= usuarios.filter(u => u.STATUS_USUARIO === 'inativo').length %></h2> <!-- Usuários Inativos -->
-      </section >
-    </section >
+<section class="resumo">
+  <section class="card">
+    <section class="card-icon azul"><i data-lucide="users"></i></section>
+    <section class="card-content">
+      <p>Total de Usuários</p>
+      <h2><%= totais.total || 0 %></h2>
+    </section>
   </section>
+
+  <section class="card">
+    <section class="card-icon verde"><i data-lucide="user-check"></i></section>
+    <section class="card-content">
+      <p>Usuários Ativos</p>
+      <h2><%= totais.ativos || 0 %></h2>
+    </section>
+  </section>
+
+  <section class="card">
+    <section class="card-icon amarelo"><i data-lucide="alert-triangle"></i></section>
+    <section class="card-content">
+      <p>Usuários Pendentes</p>
+      <h2><%= totais.pendentes || 0 %></h2>
+    </section>
+  </section>
+
+  <section class="card">
+    <section class="card-icon vermelho"><i data-lucide="user-x"></i></section>
+    <section class="card-content">
+      <p>Usuários Inativos/Suspensos</p>
+    <h2><%= (Number(totais.inativos) + Number(totais.suspensos)) || 0 %></h2>
+
+    </section>
+  </section>
+</section>
+
+
 
   <section class="lista">
     <h2>Lista de Usuários</h2>
+
+
+      <section class="lista-header">
+    <span class="col-usuario">Usuário</span>
+    <span class="col-status">Status</span>
+    <span class="col-tipo">Tipo</span>
+    <span class="col-login">Username</span>
+    <span class="col-acoes">Ações</span>
+  </section>
   
     <section class="lista-usuarios">
+
 
       <% usuarios.forEach(usuario => { %>
         <section class="usuario">
@@ -99,9 +115,18 @@
       <%= usuario.NOME_USUARIO %><br><small><%= usuario.EMAIL_USUARIO %></small>
     </section >
   </section >
-  <p class="status <%= usuario.STATUS_USUARIO %>">
-    <%= usuario.STATUS_USUARIO.charAt(0).toUpperCase() + usuario.STATUS_USUARIO.slice(1) %>
-  </p>
+ <p class="status <%= usuario.STATUS_USUARIO %>">
+  <% if (usuario.STATUS_USUARIO === 'ativo') { %>
+    <i data-lucide="user-check"></i> 
+  <% } else if (usuario.STATUS_USUARIO === 'pendente') { %>
+    <i data-lucide="alert-triangle"></i>
+  <% } else if (usuario.STATUS_USUARIO === 'suspenso') { %>
+    <i data-lucide="user-x"></i>
+  <% } else if (usuario.STATUS_USUARIO === 'inativo') { %>
+    <i data-lucide="user-x" class="inativo-icon"></i>
+  <% } %>
+  <%= usuario.STATUS_USUARIO.charAt(0).toUpperCase() + usuario.STATUS_USUARIO.slice(1) %>
+</p>
 
   <!-- Aqui vai o tipo do usuário -->
   <p class="data">
@@ -113,17 +138,37 @@
     <%= usuario.USER_USUARIO %>
   </p>
 
- <section class="acoes">
-  <button class="btn-acao editar"><i data-lucide="icon-fullscreen"></i></button>
-  <% if (usuario.STATUS_USUARIO !== 'ativo') { %>
-    <button class="btn-acao ativar" data-id="<%= usuario.ID_USUARIO %>">
-      <i data-lucide="user-check"></i>
-    </button>
-  <% } %>
-  <button class="btn-acao deletar" data-id="<%= usuario.ID_USUARIO %>">
-    <i data-lucide="icon-shield-off"></i>
-  </button>
-</section >
+   <section class="acoes">
+          <button class="btn-acao ver-detalhes" title="Ver Detalhes">
+            <i data-lucide="search"></i>
+          </button>
+
+          <% if(usuario.STATUS_USUARIO === 'suspenso'){ %>
+            <button class="btn-acao ativar" data-id="<%= usuario.ID_USUARIO %>" title="Ativar">
+              <i data-lucide="pencil"></i>
+            </button>
+          <% } else if(usuario.STATUS_USUARIO === 'ativo'){ %>
+            <button class="btn-acao deletar" data-id="<%= usuario.ID_USUARIO %>" title="Inativar">
+              <i data-lucide="pencil"></i>
+            </button>
+          <% } else { %>
+            <button class="btn-acao ativar" data-id="<%= usuario.ID_USUARIO %>" title="Ativar">
+              <i data-lucide="pencil"></i>
+            </button>
+          <% } %>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
 
 </section>
 
@@ -134,46 +179,49 @@
 
   <!-- MODAIS -->
 
-  <!-- Modal de Inativar Usuário -->
-  <section class="overlay" id="overlay" aria-hidden="true">
-    <section class="modal" role="dialog" aria-modal="true">
-      <!-- Cabeçalho -->
-      <header class="modal-header">
-        <h3>Inativar Usuário</h3>
-        <button class="close-modal" aria-label="Fechar">&times;</button>
-      </header>
+<!-- MODAL ÚNICO PARA ATIVAR/INATIVAR USUÁRIO -->
+<section class="overlay" id="overlay" aria-hidden="true" style="display:none;">
+  <section class="modal" role="dialog" aria-modal="true">
+    
+    <!-- Cabeçalho do Modal -->
+    <header class="modal-header">
+      <h3 id="modal-titulo">Gerenciar Usuário</h3>
+      <button class="close-modal" aria-label="Fechar">&times;</button>
+    </header>
 
-      <!-- Corpo -->
-      <section class="modal-body">
-        <section class="alerta">
-          <section class="alerta-icone">
-            <i data-lucide="alert-triangle"></i>
-          </section >
-          <section >
-            <p><strong>Tem certeza que deseja inativar este usuário?</strong></p>
-            <p class="detalhe">
-              O usuário não poderá mais acessar o sistema até ser reativado.
-            </p>
-          </section >
-        </section >
+    <!-- Corpo do Modal -->
+    <section class="modal-body">
+      <section class="alerta">
+        <section class="alerta-icone">
+          <i data-lucide="alert-triangle"></i>
+        </section>
+        <section>
+          <p id="modal-mensagem"><strong>Tem certeza da ação?</strong></p>
+          <p class="detalhe" id="modal-detalhe">
+            O status do usuário será alterado de acordo com sua escolha.
+          </p>
+        </section>
+      </section>
 
-        <h4>Consequências da inativação:</h4>
-        <ul>
-          <li>Perda imediata de acesso ao sistema</li>
-          <li>Dados preservados para reativação</li>
-          <li>Notificação automática por email</li>
-        </ul>
-      </section >
-
-      <!-- Rodapé -->
-      <footer class="modal-footer">
-        <button class="btn-cancelar">Cancelar</button>
-        <button class="btn-confirmar">
-          <i data-lucide="user-x"></i> Confirmar Inativação
-        </button>
-      </footer>
+      <h4>Consequências:</h4>
+      <ul>
+        <li>Acesso ao sistema será alterado imediatamente</li>
+        <li>Dados do usuário são preservados</li>
+        <li>Notificação automática por email</li>
+      </ul>
     </section>
+
+    <!-- Rodapé do Modal -->
+    <footer class="modal-footer">
+      <button class="btn-cancelar">Cancelar</button>
+      <button class="btn-confirmar">
+        <i data-lucide="user-x"></i> Confirmar
+      </button>
+    </footer>
+
   </section>
+</section>
+
 
 
         <!-- PAGINAÇÃO DO NEGOCIO -->

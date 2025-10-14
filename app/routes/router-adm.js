@@ -90,6 +90,15 @@ router.put(
   }
 );
 
+router.put(
+  "/ativar-usuario/:id",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.ativarUsuario(req, res);
+  }
+);
+
 // Alterar status da denúncia (comentário)
 // Penalidades - aplicar penalidade
 router.get(

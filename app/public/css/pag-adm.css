@@ -11,17 +11,18 @@
 html, body {
     overflow-x: hidden; /* evita scroll horizontal */
 }
-
+.sidebar.close ~ .main-content {
+  margin-left: 78px;
+}
 
 .sidebar{
-    position: absolute;
-    top: 50px;
-    left: 0;
-    height: 100%;
-    width: 260px;
-    background: #132d46;
-    z-index: 100;
-    transition: all 0.5s ease;
+    position: fixed;
+  top: 50px; /* começa abaixo do topbar */
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 50px); /* ocupa o restante da tela */
+  background: #132d46;
+
 }
 
 .sidebar.close{
@@ -321,10 +322,15 @@ h1{
 
 
 .topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px; /* altura da topbar */
   background-color: #132d46;
   color: white;
   padding: 2px 20px;
- 
+  z-index: 200;   /* acima do resto da página */
 }
 
 .img-logo{
@@ -536,17 +542,8 @@ h1{
 
 .dashboard {
   display: flex;
+  flex-wrap: wrap; /* permite quebrar em linhas */
   gap: 20px;
-  /* align-items: flex-start; */
-  align-items: flex-end;
-  /* height: auto; */
-  margin-top: 40px;
-  /* margin-left: -320px; */
-  /* flex: 1; */
-  /* justify-content: space-around; */
-  flex-direction: column;
-  margin-right: -150px;
-  transform: translateY(42px);
 }
 
 .card {
@@ -558,6 +555,8 @@ h1{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+    flex: 1 1 260px; /* ocupa espaço, mínimo 260px */
+  max-width: 450px;
 }
 
 .icon-box {
@@ -603,10 +602,62 @@ h1{
 }
 
 .main-content {
+  margin-left: 260px; /* largura da sidebar */
+  padding: 20px;
+  padding-top: 70px; /* ajusta para que o conteúdo não fique por baixo do topbar */
+  height: calc(100vh - 50px); /* altura restante após topbar */
+  overflow: hidden;
+}
+
+.conteudo-grafico-cards {
+  display: flex;
+  flex-direction: row-reverse; /* cards à direita, gráfico à esquerda */
+  align-items: flex-start;
+  gap: 30px;
+  height: 100%; /* ocupa altura disponível da main-content */
+}
+
+/* Dashboard (cards) */
+.dashboard {
+  flex: 1 1 30%; /* ocupa ~30% do espaço horizontal */
   display: flex;
   flex-direction: column;
-  flex: 1;
+  gap: 20px;
+  max-height: 100%; /* não ultrapassa a altura disponível */
+  overflow: hidden; /* impede scroll vertical */
 }
+
+.card {
+  flex: 1 1 0; /* ocupa igualmente todo o espaço vertical disponível */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* mantém conteúdo distribuído */
+}
+
+/* Gráfico */
+.card-grafico {
+  flex: 1 1 60%; /* ocupa ~60% do espaço horizontal */
+  max-height: 100%; /* impede rolagem */
+}
+
+/* Responsivo: quando a tela é pequena, ficam empilhados */
+@media (max-width: 1100px) {
+  .conteudo-grafico-cards {
+    flex-direction: column-reverse; /* cards em cima, gráfico embaixo */
+    height: auto; /* altura natural */
+  }
+  
+  .dashboard, .card-grafico {
+    flex: 1 1 100%;
+    max-height: none;
+  }
+
+  .main-content {
+    height: auto; /* deixa a altura fluir naturalmente */
+    overflow-y: auto !important;
+  }
+}
+
 
 /* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -617,9 +668,9 @@ h1{
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   padding: 24px;
-  width: 100%;
-  max-width: 1039px;
-  margin: 40px auto 0 auto; /* Centralizado e com espaçamento acima */
+    width: 100%;
+  max-width: 1000px;
+  margin: 40px auto 0 auto;
 }
 
 
@@ -666,15 +717,10 @@ h1{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
  */
 
-.title-page-principal {
-  margin-top: 15px;
-  margin-left: -170px;
-  margin-bottom: 20px;
-}
 
 .page-principal-titulo {
   /* margin-bottom: 20px; */
-  margin-left: 300px;
+  margin-left: 20px;
   color: gray;
 }
 
@@ -698,17 +744,12 @@ h1{
   }
 
   .card-grafico {
-    width: 1020px;
-    margin-left: -315px;
-    transform: translateY(-93%);
   }
 }
 
 @media(max-width:1645px) {
   .card-grafico {
-    width: 980px;
-    margin-left: -310px;
-    transform: translateY(-97%);
+   
   }
   .dashboard {
     gap:12px;
