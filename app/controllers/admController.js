@@ -84,6 +84,45 @@ mostrarhome: (req, res, dadosNotificacao) => {
         }
     },
 
+    listarDenunciasPublicacoes: async (req, res, dadosNotificacao) => {
+        console.log("Chegou no listar denúncias de publicações");
+        try {
+        let DenunciasPublicacoes = await admModel.listarDenunciasPublicacoes();
+        console.log({ DenunciasPublicacoes });
+        res.render("pages/adm-lista-denuncias-publicacoes", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            denuncias: DenunciasPublicacoes || []
+        });
+        } catch (error) {
+        console.error("Erro ao listar denúncias de publicações:", error);
+        res.status(500).render("pages/erro-conexao", {
+            mensagem:
+            "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+        }
+    },
+
+    listarDenunciasProposta: async (req, res, dadosNotificacao) => { 
+        console.log("Chegou no listar denúncias de propostas de projetos");
+        try {
+        let DenunciasPropostas = await admModel.listarDenunciasPropostas();
+        console.log({ DenunciasPropostas });
+        res.render("pages/adm-lista-denuncias-proposta", {
+            autenticado: req.session.autenticado,
+            logado: req.session.logado,
+            denuncias: DenunciasPropostas || []
+        });
+        } catch (error) {
+        console.error("Erro ao listar denúncias de propostas de projetos:", error);
+        res.status(500).render("pages/erro-conexao", {
+            mensagem:
+            "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
+        });
+        }
+    },
+    
+
 listarUsuariosPorTipo: async (req, res) => {
   try {
     let tipo;
@@ -491,5 +530,6 @@ verificarBloqueioSessaoMiddleware: async (req, res, next) => {
 
 
 };
+
 
 module.exports = admController;

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Denúncias Publicações</title>
+  <link rel="stylesheet" href="/css/pag-adm.css">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Mo… rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swa… rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+  <!-- <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css"> -->
+
+  <link rel="stylesheet" href="/css/adm-lista-denuncias-comentario.css">
+
+    <!-- Ícones Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Ícones Remix -->
+   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+
+
+ 
+ 
+
+
+</head>
+<body>
+ 
+      <!--INICIO DO MENU TOP ADM -->
+ 
+    <%- include('../partials/menu_top_adm.ejs'); %>
+ 
+    <!--FIM DO MENU TOP ADM  -->
+ 
+ 
+    <!-- MENU LATERAL DO ADM -->
+ 
+    <%- include('../partials/menu_lateral_adm.ejs'); %>
+ 
+    <!-- MENU LATERAL DO ADM -->
+ 
+ 
+ 
+ 
+  <section class="container">
+    <% if (denuncias.length > 0) { %>
+      <% denuncias.forEach(denuncia => { %>
+        <section class="card">
+          <section class="card-header">
+            <h2>Denúncia #<%= denuncia.ID_DENUNCIA %></h2>
+            <span class="status <%= denuncia.STATUS %>">
+              <%= denuncia.STATUS %>
+            </span>
+          </section>
+
+     <section class="card-body">
+  <p><span class="label">Usuário Denunciante:</span> <%= denuncia.NOME_DENUNCIANTE || 'Anônimo' %></p>
+  <p><span class="label">Usuário Denunciado:</span> <%= denuncia.NOME_DENUNCIADO || 'Desconhecido' %></p>
+  <p><span class="label">Publicação:</span> <%= denuncia.NOME_PUBLICACAO || 'Conteúdo não disponível' %></p>
+  <p><span class="label">Motivo:</span> <%= denuncia.MOTIVO %></p>
+  <p><span class="label">Data da denúncia:</span> 
+    <%= new Date(denuncia.DATA_DENUNCIA).toLocaleString('pt-BR') %>
+  </p>
+</section>
+
+
+          <section class="card-footer">
+            <button class="btn-btn-detalhes">
+              <i class="ri-search-2-line"></i> Detalhes
+            </button>
+
+            <!-- Botão que abre o modal -->
+            <button 
+              class="btn-btn-status" 
+              data-id="<%= denuncia.ID_DENUNCIA %>" 
+              data-usuario="<%= denuncia.ID_USUARIO_DENUNCIADO %>">
+              <i class="ri-edit-2-fill"></i>Status
+            </button>
+          </section>
+        </section>
+      <% }) %>
+    <% } else { %>
+      <p style="text-align: center; font-size: 18px; grid-column: 1 / -1;"> Nenhuma denúncia encontrada</p>
+    <% } %>
+
+
+      <!-- MODAL DE ALTERAR STATUS -->
+      <div id="modalStatus" class="modal" data-user-id="">
+        <div class="modal-content">
+          <h2>Alterar Status da Denúncia</h2>
+
+          <label for="acao">Ação:</label>
+          <select id="acao">
+            <option value="">Selecione...</option>
+            <option value="suspender">Suspender Usuário</option>
+            <option value="descartar">Descartar Denúncia</option>
+          </select>
+
+          <div id="opcoesSuspensao" style="display:none;">
+            <label for="penalidade">Tipo de Penalidade:</label>
+            <select id="penalidade">
+              <option value="">Selecione...</option>
+              <!-- options serão preenchidas por JS -->
+            </select>
+
+            <p id="descricaoPenalidade" class="descricao"></p>
+
+            <label for="dataFim">Data de Término:</label>
+            <input type="date" id="dataFim" />
+          </div>
+
+          <button id="confirmarStatus">Confirmar</button>
+          <button onclick="fecharModal()">Cancelar</button>
+        </div>
+      </div>
+
+
+  </section>
+
+
+    <script>
+    lucide.createIcons();
+  </script>
+
+  <script src="/js/adm-alterarstatus_denuncia.js"></script>
+
+      <!-- LINK DO MENU LATERAL -->
+      <script src="/js/menu-lateral-adm.js"></script>
+
+    <!-- LINK DAS NOTIFICAÇÕES -->
+      <script src="js/simple-notify.js"></script>
+
+
+</body>
+</html>
