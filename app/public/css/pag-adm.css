@@ -536,14 +536,10 @@ h1{
 
 .dashboard {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
-  /* align-items: flex-start; */
   align-items: flex-end;
-  /* height: auto; */
   margin-top: 40px;
-  /* margin-left: -320px; */
-  /* flex: 1; */
-  /* justify-content: space-around; */
   flex-direction: column;
   margin-right: -150px;
   transform: translateY(42px);
@@ -558,6 +554,8 @@ h1{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  flex: 1 1 250px;
+  max-width: 300px;
 }
 
 .icon-box {
@@ -618,7 +616,7 @@ h1{
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   padding: 24px;
   width: 100%;
-  max-width: 1039px;
+  max-width: 1100px;
   margin: 40px auto 0 auto; /* Centralizado e com espaçamento acima */
 }
 
@@ -628,7 +626,7 @@ h1{
     .header-grafico {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      flex-wrap: wrap;
       margin-bottom: 20px;
     }
 
@@ -681,6 +679,60 @@ h1{
 /* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
  */
+/* ==================== RESPONSIVO ==================== */
+
+@media(max-width: 480px) {
+    .title-page-principal {
+        margin-left: 0;
+        text-align: center;
+    }
+}
+
+@media(max-width: 768px) {
+    .card {
+        flex: 1 1 100%; /* 1 card por linha */
+    }
+    .dashboard {
+        gap: 15px;
+    }
+}
+
+@media(max-width: 1200px) {
+    .main-content {
+        margin-left: 78px;
+        padding: 15px;
+    }
+    .card {
+        flex: 1 1 45%; /* 2 cards por linha */
+    }
+    .card-grafico {
+        max-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media(max-width:1645px) {
+  .card-grafico {
+    width: 1000px;
+    margin-left: 132px;
+    margin-top: -376px;
+    transform: translateY(-29%);
+    /* max-width: 680px; */
+  }
+  .dashboard {
+    gap: 35px;
+    transform: translateY(30px)
+  }
+  .home-card {
+    width: 230px;
+    margin-top: 30px;
+    max-height: 150px;
+  }
+  .main-content {
+    margin-top: -100px;
+  }
+}
 
 @media(max-width: 1745px) {
   .card {
@@ -693,26 +745,37 @@ h1{
 
 @media(max-width: 1500px) {
   .card {
-    width: 260px;
+    width: 245px;
     height: 190px;
   }
 
   .card-grafico {
     width: 1020px;
-    margin-left: -315px;
-    transform: translateY(-93%);
+    margin-left: 120px;
+    transform: translateY(-30%);
+  }
+
+  .dashboard {
+    margin-top: 40px;
   }
 }
 
-@media(max-width:1645px) {
+@media(max-width: 1475px) {
   .card-grafico {
-    width: 980px;
-    margin-left: -310px;
-    transform: translateY(-97%);
+    width: 900px;
+    margin-left: 115px;
+    transform: translateY(-30%);
   }
+
   .dashboard {
-    gap:12px;
-    transform: translateY(29px)
+    margin-right: 110px
+  }
+  .card {
+    width: 270px;
   }
 }
+
+
+
+
 
