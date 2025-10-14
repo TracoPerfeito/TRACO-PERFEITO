@@ -1,6 +1,7 @@
 //FAZER TUDOOOOO
 
 var pool = require("../../config/pool_conexoes");
+const { listarDenunciasPublicacoes } = require("./denunciasModel");
 
 const admModel = {
 
@@ -392,6 +393,79 @@ totalGanhosAssinaturas: async () => {
         return [];
     }
 },
+
+  listarDenunciasPublicacoes: async () => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        dp.ID_DENUNCIA,
+        dp.ID_USUARIO_DENUNCIANTE,
+        u_denunciante.NOME_USUARIO AS NOME_DENUNCIANTE,
+        
+        pp.ID_USUARIO AS ID_USUARIO_DENUNCIADO,
+        u_denunciado.NOME_USUARIO AS NOME_DENUNCIADO,
+
+        dp.ID_PUBLICACAO,
+        dp.MOTIVO,
+        dp.STATUS,
+        dp.DATA_DENUNCIA,
+        
+        cpp.IMG_PUBLICACAO,
+        pp.NOME_PUBLICACAO,
+        pp.DATA_PUBLICACAO
+      FROM DENUNCIAS_PUBLICACOES dp
+      INNER JOIN CONTEUDOS_PUBLICACAO_PROFISSIONAL cpp 
+          ON dp.ID_PUBLICACAO = cpp.ID_PUBLICACAO
+      INNER JOIN PUBLICACOES_PROFISSIONAL pp
+          ON cpp.ID_PUBLICACAO = pp.ID_PUBLICACAO
+      INNER JOIN USUARIOS u_denunciante
+          ON dp.ID_USUARIO_DENUNCIANTE = u_denunciante.ID_USUARIO
+      INNER JOIN USUARIOS u_denunciado
+          ON pp.ID_USUARIO = u_denunciado.ID_USUARIO
+    `);
+    return rows;
+  } catch (error) {
+    console.error("Erro ao buscar denúncias de publicações:", error);
+    return [];
+  }
+},
+
+
+ listarDenunciasPropostas: async () => {
+  try {
+    const [denuncias_projetos] = await pool.query(
+      `SELECT 
+          dp.ID_DENUNCIA,
+          dp.ID_USUARIO_DENUNCIANTE,
+          u_denunciante.NOME_USUARIO AS NOME_DENUNCIANTE,
+
+          pp.ID_USUARIO AS ID_USUARIO_DENUNCIADO,
+          u_denunciado.NOME_USUARIO AS NOME_DENUNCIADO,
+
+          dp.ID_PROJETO,
+          dp.MOTIVO,
+          dp.STATUS,
+          dp.DATA_DENUNCIA,
+
+          pp.TITULO_PROPOSTA,
+          pp.DESCRICAO_PROPOSTA,
+          pp.DATA_PROPOSTA
+
+       FROM DENUNCIAS_PROJETOS dp
+       INNER JOIN PROPOSTA_PROJETO pp 
+           ON dp.ID_PROJETO = pp.ID_PROPOSTA
+       INNER JOIN USUARIOS u_denunciante 
+           ON dp.ID_USUARIO_DENUNCIANTE = u_denunciante.ID_USUARIO
+       INNER JOIN USUARIOS u_denunciado 
+           ON pp.ID_USUARIO = u_denunciado.ID_USUARIO`
+    );
+    return denuncias_projetos;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+},
+
     
     listarDenunciasUsuarios: async () => {
         try{

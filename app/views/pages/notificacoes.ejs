@@ -93,6 +93,7 @@
 
   <!-- Lista de notificações -->
   <% if (notificacoes.length === 0) { %>
+       <img src="/imagens/notificacoes" alt="Sem notificações">
     <p class="empty-message">Você não tem notificações no momento.</p>
   <% } else { %>
     <form id="notificacoes-form" action="/excluir-notificacoes" method="post">

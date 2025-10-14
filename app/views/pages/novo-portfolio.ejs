@@ -84,10 +84,11 @@
                   <label id="selecionar-publi-label" for="selecionar-publicacoes">Selecione algumas publicações para seu portfólio:</label>
                 <section class="selecionar-publicacoes">
     <% if (publicacoes.length === 0) { %>
+           <img src="/imagens/sem-resultados.png" alt="Sem resultados">
       <p>Você ainda não tem publicações.</p>
     <% } else { %>
       <% publicacoes.forEach(pub => { %>
-        <div class="publicacao-item" data-id="<%= pub.ID_PUBLICACAO %>">
+        <section class="publicacao-item" data-id="<%= pub.ID_PUBLICACAO %>">
           <% if (pub.imagens && pub.imagens.length > 0) { %>
             <!-- Mostra só a primeira imagem -->
             <img
@@ -96,7 +97,7 @@
           <% } else { %>
             <span style="display:flex;align-items:center;justify-content:center;color:#555;font-size:14px;">Sem imagem</span>
           <% } %>
-        </div>
+        </section>
       <% }) %>
     <% } %>
   </section>

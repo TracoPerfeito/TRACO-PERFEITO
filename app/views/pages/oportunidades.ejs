@@ -116,6 +116,7 @@
       </p>
     <% } else { %>
       <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+         <img src="/imagens/sem-resultados.png" alt="Sem resultados">
       <p class="descricao-termo">
         Não encontramos propostas relacionadas a "<%= termoPesquisa %>". 
         Tente outro termo ou verifique a ortografia.
@@ -126,6 +127,7 @@
 
 
 <section class="grid">
+    <% if (propostas.length > 0) { %>
   <% propostas.forEach(proposta => { 
        const hoje = new Date();
 
@@ -259,9 +261,17 @@
 
 
     </section>
+    <% }) %>
+  <% } else { %>
+    <section class="no-propostas">
+       <p style="font-family: 'Montserrat'; font-size: 2rem; text-align: center; color: var(--text-color);  margin-bottom: 20px;">
+  Não há propostas no momento.
+</p>
 
-  <% }) %>
+    </section>
+  <% } %>
 </section>
+
 
 <section class="filtro-lateral" id="filtroLateral">
   <section class="filtro-conteudo">

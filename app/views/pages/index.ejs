@@ -187,10 +187,13 @@
                             </p>
                           <% } else { %>
                             <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
+
+                               <img src="/imagens/sem-resultados.png" alt="Sem resultados">
                             <p class="descricao-termo">
                               Não encontramos publicações relacionadas a "<%= termoPesquisa %>". 
                               Tente outro termo ou verifique a ortografia.
                             </p>
+
                           <% } %>
                       
                         <% } else if (mostrarTextoBusca && typeof filtroNoExplorar !== "undefined") { %>
@@ -216,12 +219,19 @@
                           <% } %>
                         <% } %>
                       </section>
-                      <section class="container-pag-explorar">
-                        <% if (publicacoes.length === 0) { %>
-                        <section class="sem-publicacoes">
-                          <p>Não há publicações no momento.</p>
+                         <% if (publicacoes.length === 0) { %>
+                           <section class="sem-publicacoes">
+                          
+                      <p style="font-family: 'Montserrat'; font-size: 2rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
+  Não há publicações no momento.
+</p>
+
                         </section>
+                     
+                     
+                       
                       <% } else { %>
+                         <section class="container-pag-explorar">
                        <% publicacoes.forEach(pub => { %>
                         <section class="item-explorar item-1" 
                         data-tags="<%= pub.TAGS %>" 
