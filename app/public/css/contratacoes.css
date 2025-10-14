@@ -76,11 +76,14 @@ main {
   gap: 1rem; /* espaço entre ícone e texto */
   padding: 1.5rem;
   border-radius: 10px;
-  background-color: var(--card-dashboard);
+  background-color: var(--cor-fundo-card-perfis);
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   transition: all 0.3s ease;
 }
 
+.card p{
+  text-align: center !important;
+}
 #card-aguardando ion-icon {
   color: #f9e87d;
 }
@@ -174,13 +177,14 @@ main {
 
 /* Card principal */
 .contratacao-card {
-  background-color: #fff;
+  background-color: var(--cor-fundo-card-perfis);
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  color: var(--text-color);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -206,8 +210,8 @@ main {
 }
 
 /* Status cores */
-.status-aguardando { background-color: #fffa5dd0; color: #dca305; margin: 0px 5px; }
-.status-aguardando-pag { background-color: #f0ac4eb0; color: #df6a0a;   margin: 0px 5px; }
+.status-aguardando { background-color: #fffb8f; color: #dca305; margin: 0px 5px; }
+.status-aguardando-pag { background-color: #ffc472; color: #df6a0a;   margin: 0px 5px; }
 .status-andamento { background-color: #5fbfffca; color: #3498db; margin: 0px 5px; }
 .status-concluido { background-color: #7aff99d5; color: #1a9e39;  margin: 0px 5px; }
 
@@ -222,7 +226,7 @@ main {
 .info-block strong {
   display: block;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 
@@ -233,11 +237,11 @@ main {
 .info-block p {
   margin: 0;
   font-weight: 600;
-  color: #555;
+   color: var(--text-color);
 }
 
 .info-block small {
-  color: #888;
+  color: var(  --text-color-mais-claro1);
 }
 
 /* Observações */
@@ -367,7 +371,7 @@ table th, table td {
 
 table th {
   background-color: var(--table);
-  color: var(--primary-color);
+  color: var(--text-color);
   font-family: 'Montserrat', sans-serif;
   font-weight: bold;
 }

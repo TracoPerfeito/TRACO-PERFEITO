@@ -58,6 +58,14 @@
 --msg-outro:   #e5e5ea;
 --msg-eu:  #7490C9;
 --selecionado:  #eee;
+--hover-btn: rgb(54, 117, 176);
+--cor-p:  #a7a7a7; 
+--cor-btn-azul2:  #124779;
+--cor-budget: #124779;
+--borda-card-proposta: #165040c6;
+--borda-inferior: hsl(0, 0%, 78%);
+  --text-color-mais-claro1: #6c776c;
+
   }
 
 /* #264869 */ 
@@ -121,5 +129,12 @@
 --msg-outro: rgb(55, 58, 70);
 --msg-eu: rgb(90, 109, 186);
 --selecionado:  rgb(51, 52, 56);
+--hover-btn:  #50849f;
+--cor-p:  #818181; 
+--cor-btn-azul2:  #316886;
+--cor-budget: rgb(107, 128, 211);
+--borda-card-proposta: hsl(248, 9%, 33%);
+--borda-inferior: hsl(248, 9%, 33%);
+  --text-color-mais-claro1:   #b7b7b7;
       }
 

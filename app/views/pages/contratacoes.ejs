@@ -26,51 +26,49 @@
 
 <h1 id="hpag" class="texto-cor">Minhas contratações</h1>
 <main>
-  <!-- Botão Criar Contratação -->
-  <a href="/criar-contratacao" class="criar-btn">+ Criar Nova Contratação</a>
-
+ 
   <!-- Cards de resumo -->
-  <div class="cards">
-  <div class="card" id="card-aguardando">
+  <section class="cards">
+  <section class="card" id="card-aguardando">
      <ion-icon name="person-add-outline"></ion-icon>
     <section class="card-text">
       <h3>Aguardando Aceite</h3>
       <p id="aguardando"><%= aguardandoAceite.length %></p>
     </section>
-  </div>
+  </section>
 
-  <div class="card" id="card-aguardando-pag">
+  <section class="card" id="card-aguardando-pag">
      <ion-icon name="card-outline"></ion-icon>
     <section class="card-text">
       <h3>Aguardando Pagamento</h3>
       <p id="aguardando-pag"><%= aguardandoPag.length %></p>
     </section>
-  </div>
+  </section>
 
-  <div class="card" id="card-andamento">
+  <section class="card" id="card-andamento">
      <ion-icon name="play-circle-outline"></ion-icon>
     <section class="card-text">
       <h3>Em Andamento</h3>
       <p id="andamento"><%= emAndamento.length %></p>
     </section>
-  </div>
+  </section>
 
-  <div class="card" id="card-concluidas">
+  <section class="card" id="card-concluidas">
      <ion-icon name="checkmark-done-outline"></ion-icon>
     <section class="card-text">
       <h3>Concluídas</h3>
       <p id="concluidas"><%= concluidas.length %></p>
     </section>
-  </div>
+  </section>
 
-  <div class="card" id="card-canceladas">
+  <section class="card" id="card-canceladas">
      <ion-icon name="close-circle-outline"></ion-icon>
     <section class="card-text">
       <h3>Canceladas</h3>
       <p id="canceladas"><%= canceladas.length %></p>
     </section>
-  </div>
-</div>
+  </section>
+</section>
 
 
 
@@ -79,52 +77,52 @@
 <!-- Contratações -->
 <% if(aguardandoAceite.length > 0) { %>
 <h2 class="texto-cor">Contratações Aguardando Aceite</h2>
-<div class="contratacoes-container">
+<section class="contratacoes-container">
   <% aguardandoAceite.forEach(c => { 
        const hoje = new Date();
        const entrega = new Date(c.DATA_ENTREGA);
        const diffDias = Math.ceil((entrega - hoje) / (1000*60*60*24));
   %>
-    <div class="contratacao-card">
+    <section class="contratacao-card">
       <!-- Cabeçalho -->
-      <div class="card-header">
+      <section class="card-header">
         <h3><%= c.NOME_PROJETO %></h3>
         <span class="status-tag status-aguardando">Aguardando Aceite</span>
-      </div>
+      </section>
 
       <!-- Informações principais -->
-      <div class="card-info">
-        <div class="info-block">
+      <section class="card-info">
+        <section class="info-block">
           <strong>Cliente</strong>
           <p><%= c.NOME_CLIENTE %></p>
           <small><%= c.EMAIL_CLIENTE %></small>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Profissional</strong>
           <p><%= c.NOME_PROFISSIONAL %></p>
           <small><%= c.EMAIL_PROFISSIONAL %></small>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Valor</strong>
           <p>R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Prazo</strong>
           <p><%= entrega.toLocaleDateString('pt-BR') %></p>
           <small class="tempo-restante"><%= diffDias >= 0 ? diffDias : 0 %> dias restantes</small>
-        </div>
-      </div>
+        </section>
+      </section>
 
       <!-- Observações -->
       <% if(c.OBSERVACOES && c.OBSERVACOES.trim() !== '') { %>
-      <div class="card-observacoes">
+      <section class="card-observacoes">
         <strong>Observações</strong>
         <p><%= c.OBSERVACOES %></p>
-      </div>
+      </section>
       <% } %>
 
       <!-- Botões -->
-      <div class="card-buttons">
+      <section class="card-buttons">
         <a href="#" class="ver-detalhes"
            data-id-contratacao="<%= c.ID_CONTRATACAO %>"
            data-projeto="<%= c.NOME_PROJETO %>"
@@ -148,62 +146,62 @@
         <% } %>
 
       
-      </div>
-    </div>
+      </section>
+    </section>
   <% }) %>
-</div>
+</section>
 <% } %>
 
 
 <!-- Contratações Aguardando Pagamento -->
 <% if(aguardandoPag.length > 0) { %>
 <h2 class="texto-cor">Contratações Aguardando Pagamento</h2>
-<div class="contratacoes-container">
+<section class="contratacoes-container">
   <% aguardandoPag.forEach(c => { 
        const hoje = new Date();
        const entrega = new Date(c.DATA_ENTREGA);
        const diffDias = Math.ceil((entrega - hoje) / (1000*60*60*24));
   %>
-    <div class="contratacao-card">
+    <section class="contratacao-card">
       <!-- Cabeçalho -->
-      <div class="card-header">
+      <section class="card-header">
         <h3><%= c.NOME_PROJETO %></h3>
         <span class="status-aguardando-pag status-tag">Aguardando Pagamento</span>
-      </div>
+      </section>
 
       <!-- Informações principais -->
-      <div class="card-info">
-        <div class="info-block">
+      <section class="card-info">
+        <section class="info-block">
           <strong>Cliente</strong>
           <p><%= c.NOME_CLIENTE %></p>
           <small><%= c.EMAIL_CLIENTE %></small>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Profissional</strong>
           <p><%= c.NOME_PROFISSIONAL %></p>
           <small><%= c.EMAIL_PROFISSIONAL %></small>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Valor</strong>
           <p>R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Prazo</strong>
           <p><%= entrega.toLocaleDateString('pt-BR') %></p>
           <small class="tempo-restante"><%= diffDias >= 0 ? diffDias : 0 %> dias restantes</small>
-        </div>
-      </div>
+        </section>
+      </section>
 
       <!-- Observações -->
       <% if(c.OBSERVACOES && c.OBSERVACOES.trim() !== '') { %>
-      <div class="card-observacoes">
+      <section class="card-observacoes">
         <strong>Observações</strong>
         <p><%= c.OBSERVACOES %></p>
-      </div>
+      </section>
       <% } %>
 
       <!-- Botões -->
-      <div class="card-buttons">
+      <section class="card-buttons">
         <a href="#" class="ver-detalhes"
            data-id-contratacao="<%= c.ID_CONTRATACAO %>"
            data-projeto="<%= c.NOME_PROJETO %>"
@@ -221,61 +219,61 @@
   <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn btn-pagar">Pagar para iniciar projeto</a>
 <% } %>
 
-      </div>
-    </div>
+      </section>
+    </section>
   <% }) %>
-</div>
+</section>
 <% } %>
 
 <!-- Contratações Em Andamento -->
 <% if(emAndamento.length > 0) { %>
 <h2 class="texto-cor">Contratações Em Andamento</h2>
-<div class="contratacoes-container">
+<section class="contratacoes-container">
   <% emAndamento.forEach(c => { 
        const hoje = new Date();
        const entrega = new Date(c.DATA_ENTREGA);
        const diffDias = Math.ceil((entrega - hoje) / (1000*60*60*24));
   %>
-    <div class="contratacao-card">
+    <section class="contratacao-card">
       <!-- Cabeçalho -->
-      <div class="card-header">
+      <section class="card-header">
         <h3><%= c.NOME_PROJETO %></h3>
         <span class=" status-andamento  status-tag">Em Andamento</span>
-      </div>
+      </section>
 
       <!-- Informações principais -->
-      <div class="card-info">
-        <div class="info-block">
+      <section class="card-info">
+        <section class="info-block">
           <strong>Cliente</strong>
           <p><%= c.NOME_CLIENTE %></p>
           <small><%= c.EMAIL_CLIENTE %></small>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Profissional</strong>
           <p><%= c.NOME_PROFISSIONAL %></p>
           <small><%= c.EMAIL_PROFISSIONAL %></small>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Valor</strong>
           <p>R$ <%= c.VALOR_TOTAL.toFixed(2) %></p>
-        </div>
-        <div class="info-block">
+        </section>
+        <section class="info-block">
           <strong>Prazo</strong>
           <p><%= entrega.toLocaleDateString('pt-BR') %></p>
           <small class="tempo-restante"><%= diffDias >= 0 ? diffDias : 0 %> dias restantes</small>
-        </div>
-      </div>
+        </section>
+      </section>
 
       <!-- Observações -->
       <% if(c.OBSERVACOES && c.OBSERVACOES.trim() !== '') { %>
-      <div class="card-observacoes">
+      <section class="card-observacoes">
         <strong>Observações</strong>
         <p><%= c.OBSERVACOES %></p>
-      </div>
+      </section>
       <% } %>
 
       <!-- Botões -->
-      <div class="card-buttons">
+      <section class="card-buttons">
         <a href="#" class="ver-detalhes"
            data-id-contratacao="<%= c.ID_CONTRATACAO %>"
            data-projeto="<%= c.NOME_PROJETO %>"
@@ -292,10 +290,10 @@
         <% if(Number(c.ID_CLIENTE) === id_usuario && c.PAGO === 'nao') { %>
           <a href="/pagarcontratacao/<%= c.ID_CONTRATACAO %>" class="btn btn-pagar">Pagar para iniciar projeto</a>
         <% } %>
-      </div>
-    </div>
+      </section>
+    </section>
   <% }) %>
-</div>
+</section>
 <% } %>
 
 
@@ -401,56 +399,55 @@
 
 
 
-<div id="modalDetalhes" class="modal-detalhes">
-  <div class="modal-detalhes__content">
+<section id="modalDetalhes" class="modal-detalhes">
+  <section class="modal-detalhes__content">
     <button id="fecharModal" class="modal-detalhes__close">×</button>
     <h2 id="modalProjeto" class="modal-info__title"></h2>
 
-    <div class="modal-info__info">
-      <div class="modal-info__info-block">
+    <section class="modal-info__info">
+      <section class="modal-info__info-block">
         <strong>Descrição do Projeto</strong>
         <p id="modalDescricao"></p>
-      </div>
-      <div class="modal-info__info-block">
+      </section>
+      <section class="modal-info__info-block">
         <strong>Cliente</strong>
         <p id="modalCliente"></p>
         <small id="modalEmailCliente"></small>
         <small id="modalUserCliente"></small>
-      </div>
-      <div class="modal-info__info-block">
+      </section>
+      <section class="modal-info__info-block">
         <strong>Profissional</strong>
         <p id="modalProfissional"></p>
         <small id="modalEmailProfissional"></small>
         <small id="modalUserProfissional"></small>
-      </div>
-      <div class="modal-info__info-block">
+      </section>
+      <section class="modal-info__info-block">
         <strong>Valor</strong>
         <p>R$ <span id="modalValor"></span></p>
-      </div>
-      <div class="modal-info__info-block">
+      </section>
+      <section class="modal-info__info-block">
         <strong>Prazo de Entrega</strong>
         <p id="modalPrazo"></p>
         <small id="modalDiasRestantes"></small>
-      </div>
-      <div class="modal-info__info-block">
+      </section>
+      <section class="modal-info__info-block">
         <strong>Data de Criação</strong>
         <p id="modalDataCriacao"></p>
-      </div>
-      <div class="modal-info__info-block modal-info__info-block--full">
+      </section>
+      <section class="modal-info__info-block modal-info__info-block--full">
         <strong>Observações</strong>
         <p id="modalObs"></p>
-      </div>
-      <div class="modal-info__info-block">
+      </section>
+      <section class="modal-info__info-block">
         <strong>Status</strong>
         <p id="modalStatus"></p>
-      </div>
-    </div>
+      </section>
+    </section>
 
-    <div class="modal-info__buttons">
-      <a href="#" id="btnPagar" class="modal-info__btn modal-info__btn--pagar">Pagar para iniciar projeto</a>
-    </div>
-  </div>
-</div>
+
+    
+  </section>
+</section>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -501,15 +498,7 @@ const modal = document.querySelector(".modal-detalhes");
         console.error("Erro ao preencher modal:", err);
       }
 
-      if(Number(btn.dataset.contratante) === usuarioLogado && btn.dataset.pago === 'nao'){
-        btnPagar.style.display = "inline-block";
-        btnPagar.href = `/pagarcontratacao/${btn.dataset.idContratacao}`;
-        console.log("Botão pagar mostrado");
-      } else {
-        btnPagar.style.display = "none";
-        console.log("Botão pagar escondido");
-      }
-
+     
       try {
         modal.style.display = "flex";
         console.log("Modal aberto");

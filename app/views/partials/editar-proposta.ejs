@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/editar-publicacao.css">
+<link rel="stylesheet" href="/css/editar-proposta.css">
 <!-- Modal para edição de proposta de projeto -->
 <section id="modal-editar-proposta" class="modal-editar-publicacao">
   <section class="modal-content-editar-publicacao">
@@ -12,50 +12,40 @@
         <section class="conteudo-editar-publicacao">
           <section class="dados">
 
-            <!-- Título -->
-            <section class="form-grupo-1">
-              <label for="titulo-editar-proposta">Título:</label>
-              <input type="text" id="titulo-editar-proposta" name="titulo_proposta" class="caixa-texto" required>
-            </section>
-
-            <!-- Categoria -->
-            <section class="form-grupo-1">
-              <label for="categoria-editar-proposta">Categoria:</label>
-              <select id="categoria-editar-proposta" name="categoria_proposta" class="caixa-texto" required>
-                <option value="">-- Selecione a categoria --</option>
-                <option value="design_grafico">Design Gráfico</option>
-                <option value="ilustracao">Ilustração</option>
-                <option value="UI/UX">UI/UX</option>
-                <option value="arte_digital">Arte Digital</option>
-                <option value="arte_3D">Arte 3D</option>
-                <option value="animacao">Animação</option>
-                <option value="branding">Branding</option>
-                <option value="tipografia">Tipografia</option>
-                <option value="modelagem_3d">Modelagem 3D</option>
-                <option value="design_de_produto">Design de Produto</option>
-                <option value="design-editorial">Design Editorial</option>
-                <option value="design_de_jogos">Design de jogos</option>
-                <option value="fotografia">Fotografia</option>
-                
-                <!-- ... (outras opções) -->
-                <option value="outro">Outros</option>
-              </select>
-
-              <section id="outra-categoria-container-proposta" style="display:none; margin-top:10px;">
-                <label for="outraCategoriaProposta">Digite a categoria:</label>
-                <input type="text" id="outraCategoriaProposta" name="outraCategoria" placeholder="Ex: Lettering">
+            <section class="inputs-1">
+              <!-- Título -->
+              <section class="form-grupo-1">
+                <label for="titulo-editar-proposta">Título:</label>
+                <input type="text" id="titulo-editar-proposta" name="titulo_proposta" class="caixa-texto" required>
               </section>
-            </section>
+              <!-- Categoria -->
+              <section class="form-grupo-1">
+                <label for="categoria-editar-proposta">Categoria:</label>
+                <select id="categoria-editar-proposta" name="categoria_proposta" class="caixa-texto" required>
+                  <option value="">-- Selecione a categoria --</option>
+                     <option value="Design Gráfico">Design Gráfico</option>
+            <option value="Ilustração">Ilustração</option>
+            <option value="UI/UX">UI/UX</option>
+            <option value="Arte Digital">Arte Digital</option>
+            <option value="Arte 3D">Arte 3D</option>
+            <option value="Animação">Animação</option>
+            <option value="Branding">Branding</option>
+            <option value="Tipografia">Tipografia</option>
+            <option value="Modelagem 3D">Modelagem 3D</option>
+            <option value="Design de Produto">Design de Produto</option>
+            <option value="Design Editorial">Design Editorial</option>
+            <option value="Design de Jogos">Design de Jogos</option>
+            <option value="Fotografia">Fotografia</option>
+            <option value="Outros">Outros</option>
+                </select>
+                <section id="outra-categoria-container-proposta" style="display:none; margin-top:10px;">
+                  <label for="outraCategoriaProposta">Digite a categoria:</label>
+                  <input type="text" id="outraCategoriaProposta" name="outraCategoria" placeholder="Ex: Lettering">
+                </section>
+              </section>
 
-         <!-- Descrição (substituindo textarea pelo Quill) -->
-<section class="form-grupo-1">
-  <label for="descricao-editar-proposta">Descrição:</label>
-  <div id="editor-descricao" style="height: 200px; background: white;"></div>
-  <input type="hidden" id="descricao-editar-proposta" name="descricao_proposta" />
-</section>
 
-
-            <!-- Orçamento -->
+                <!-- Orçamento -->
             <section class="form-grupo-1">
               <label for="orcamento-editar-proposta">Orçamento (R$):</label>
               <input type="number" id="orcamento-editar-proposta" name="orcamento" class="caixa-texto" >
@@ -67,6 +57,17 @@
               <input type="date" id="prazo-editar-proposta" name="prazo_entrega" class="caixa-texto">
             </section>
 
+            </section>
+
+         <!-- Descrição (substituindo textarea pelo Quill) -->
+<section class="form-grupo-1 form-quill">
+  <label for="descricao-editar-proposta">Descrição detalhada:</label>
+  <div id="editor-descricao" style="height: 200px; background: white;"></div>
+  <input type="hidden" id="descricao-editar-proposta" name="descricao_proposta" />
+</section>
+
+
+          
           </section>
         </section>
 
@@ -75,14 +76,8 @@
         </section>
       </form>
 
-      <!-- Botão de exclusão -->
-      <form action="/excluir-proposta" method="POST" style="display:inline;" class="btn-excluir-editar-publicacao">
-        <input type="hidden" name="idProposta" id="id-editar-proposta-excluir" value="">
-        <button type="submit" class="btn-excluir-publicacao" title="Excluir proposta" onclick="return confirm('Tem certeza que deseja excluir esta proposta?');">
-          <ion-icon name="trash-outline"></ion-icon>
-          Excluir
-        </button>
-      </form>
+     
+     
     </section>
   </section>
 </section>
@@ -157,7 +152,7 @@
   
       // Preencher campos do formulário
       document.getElementById('id-editar-proposta').value = idProposta;
-      document.getElementById('id-editar-proposta-excluir').value = idProposta;
+   
       document.getElementById('titulo-editar-proposta').value = titulo;
 
       // Se a categoria não existir nas opções, adiciona dinamicamente
@@ -242,3 +237,99 @@
     }
   </script>
   
+
+
+
+
+
+  <script>
+
+const inputTitulo = document.getElementById('titulo-editar-proposta');
+const inputCategoria = document.getElementById('categoria-editar-proposta');
+
+const inputPrazo = document.getElementById('prazo-editar-proposta');
+const inputDescricaoHidden = document.getElementById('descricao-editar-proposta');
+
+// Função auxiliar para criar/atualizar mensagem de erro
+function setErro(input, msg) {
+  input.style.border = '2px solid red';
+  let erroEl = input.parentElement.querySelector('.msg-erro');
+  if (!erroEl) {
+    erroEl = document.createElement('small');
+    erroEl.className = 'msg-erro';
+    erroEl.style.color = 'red';
+    erroEl.style.display = 'block';
+    erroEl.style.marginTop = '4px';
+    input.parentElement.appendChild(erroEl);
+  }
+  erroEl.textContent = msg;
+}
+
+// Função para remover mensagem de erro
+function clearErro(input) {
+  input.style.border = '';
+  const erroEl = input.parentElement.querySelector('.msg-erro');
+  if (erroEl) erroEl.remove();
+}
+
+formProposta.addEventListener('submit', (event) => {
+  event.preventDefault(); // impede envio imediato
+  let erro = false;
+
+  // Copiar conteúdo do Quill para input hidden
+  inputDescricaoHidden.value = quill.root.innerHTML.trim();
+
+  // Limpa erros anteriores
+  [inputTitulo, inputCategoria, inputOutraCategoria, inputPrazo, quill.root].forEach(clearErro);
+
+  // Título obrigatório
+  if (inputTitulo.value.trim() === '') {
+    setErro(inputTitulo, 'O título é obrigatório.');
+    erro = true;
+  }
+
+  // Categoria obrigatória
+  if (inputCategoria.value === '') {
+    setErro(inputCategoria, 'Escolha uma categoria.');
+    erro = true;
+  }
+
+  // Categoria "outro"
+  if (inputCategoria.value === 'outro' && inputOutraCategoria.value.trim() === '') {
+    setErro(inputOutraCategoria, 'Digite a categoria.');
+    erro = true;
+  }
+
+  // Prazo obrigatório e futuro até 31/12/2030
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const dataMax = new Date('2030-12-31');
+  const prazoValor = inputPrazo.value ? new Date(inputPrazo.value) : null;
+
+  if (!prazoValor) {
+    setErro(inputPrazo, 'Informe o prazo de entrega.');
+    erro = true;
+  } else if (prazoValor < hoje) {
+    setErro(inputPrazo, 'A data deve ser futura.');
+    erro = true;
+  } else if (prazoValor > dataMax) {
+    setErro(inputPrazo, 'A data não pode passar de 31/12/2030.');
+    erro = true;
+  }
+
+  // Descrição do Quill obrigatória
+  if (!quill.getText().trim()) {
+    setErro(quill.root, 'A descrição não pode estar vazia.');
+    erro = true;
+  }
+
+  if (!erro) {
+    // Ajusta categoria "outro" se preenchida
+    if (inputCategoria.value === 'outro') {
+      inputCategoria.value = inputOutraCategoria.value.trim();
+    }
+    formProposta.submit();
+  } else {
+    console.log('Erro na validação. Corrija os campos destacados.');
+  }
+});
+</script>

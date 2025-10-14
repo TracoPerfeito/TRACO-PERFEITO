@@ -1,101 +1,134 @@
 <section class="filtro-ordenacao">
-  <button id="btnOrdenar" class="btn-ordenar">Ordenar</button>
+  <button id="btnOrdenar" class="btn-ordenar">
+     <ion-icon name="filter-outline"></ion-icon>
+    <span id="textoOrdenar">Mais Recentes</span>
+    <span id="iconeSeta"><ion-icon name="chevron-up"></ion-icon></span>
+  </button>
   <section id="opcoesOrdenacao" class="opcoes-ordenacao oculto">
-    <section data-ordem="mais-recentes">Mais Recentes</section>
-    <section data-ordem="mais-antigos">Mais Antigos</section>
-    <section data-ordem="prazo-curto">Prazo mais curto</section>
-    <section data-ordem="prazo-longo">Prazo mais longo</section>
-    <section data-ordem="orcamento-maior">Orçamento maior</section>
-    <section data-ordem="orcamento-menor">Orçamento menor</section>
-    <section data-ordem="titulo-az">Título A-Z</section>
-    <section data-ordem="titulo-za">Título Z-A</section>
+    <section data-ordem="mais-recentes">Mais Recentes <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="mais-antigos">Mais Antigos <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="prazo-curto">Prazo mais curto <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="prazo-longo">Prazo mais longo <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="orcamento-maior">Orçamento maior <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="orcamento-menor">Orçamento menor <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="titulo-az">Título A-Z <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
+    <section data-ordem="titulo-za">Título Z-A <span class="check"><ion-icon name="checkmark-outline"></ion-icon></span></section>
   </section>
 </section>
 
-<style>
-.filtro-ordenacao { position: relative; display: inline-block; margin-left: 20px; }
-.btn-ordenar { background-color: #333; color: #fff; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
-.btn-ordenar:hover { background-color: #555; }
-.opcoes-ordenacao { position: absolute; top: 100%; left: 0; background-color: #fff; border: 1px solid #ccc; border-radius: 4px; width: max-content; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 10; }
-.opcoes-ordenacao section { padding: 8px 12px; cursor: pointer; }
-.opcoes-ordenacao section:hover { background-color: #f0f0f0; }
-.opcoes-ordenacao .selecionada { background-color: #333; color: #fff; font-weight: bold; }
-.oculto { display: none; }
-</style>
+
+
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("📌 Script de ordenação de propostas carregado");
-
   const btnOrdenar = document.getElementById("btnOrdenar");
+  const textoOrdenar = document.getElementById("textoOrdenar");
+  const iconeSeta = document.getElementById("iconeSeta");
   const opcoesOrdenacao = document.getElementById("opcoesOrdenacao");
+  const opcoes = opcoesOrdenacao.querySelectorAll("section");
 
-  btnOrdenar?.addEventListener("click", () => {
-    console.log("🔽 Botão Ordenar clicado - toggle dropdown");
-    opcoesOrdenacao.classList.toggle("oculto");
-    console.log("   Dropdown está agora:", opcoesOrdenacao.classList.contains("oculto") ? "OCULTO" : "VISÍVEL");
-  });
+  console.log("🎯 DOM carregado - iniciando script de ordenação");
 
-  const ordenarPropostas = (tipo) => {
-    console.log("➡️ ordenarPropostas chamado com tipo:", tipo);
-
-    const container = document.querySelector(".grid");
-    if (!container) { console.error("❌ container-propostas NÃO encontrado"); return; }
-
-    const propostas = Array.from(container.querySelectorAll(".card"));
-    console.log(`🔎 Encontradas ${propostas.length} propostas`);
-
-    propostas.forEach((p, i) => {
-      console.log(`  [${i}] id=${p.dataset.id} título="${p.dataset.titulo}" orçamento=${p.dataset.orcamento} prazo=${p.dataset.prazoentrega} data=${p.dataset.dataproposta}`);
-    });
-
-    try {
-      propostas.sort((a, b) => {
-        const parseDateSafe = (d) => d ? new Date(d) : new Date(0);
-        const datapA = parseDateSafe(a.dataset.dataproposta);
-        const datapB = parseDateSafe(b.dataset.dataproposta);
-        const prazoA = parseDateSafe(a.dataset.prazoentrega);
-        const prazoB = parseDateSafe(b.dataset.prazoentrega);
-        const orcA = parseFloat(a.dataset.orcamento) || 0;
-        const orcB = parseFloat(b.dataset.orcamento) || 0;
-        const tituloA = a.dataset.titulo || "";
-        const tituloB = b.dataset.titulo || "";
-
-        switch(tipo) {
-          case "mais-recentes": return datapB - datapA;
-          case "mais-antigos": return datapA - datapB;
-          case "prazo-curto": return prazoA - prazoB;
-          case "prazo-longo": return prazoB - prazoA;
-          case "orcamento-maior": return orcB - orcA;
-          case "orcamento-menor": return orcA - orcB;
-          case "titulo-az": return tituloA.localeCompare(tituloB);
-          case "titulo-za": return tituloB.localeCompare(tituloA);
-          default: return 0;
-        }
-      });
-
-      console.log("🔁 Ordenação concluída — nova ordem:");
-      propostas.forEach((p, i) => console.log(`  [${i}] id=${p.dataset.id} título="${p.dataset.titulo}"`));
-
-      propostas.forEach(p => container.appendChild(p));
-      console.log("✅ Reinsersão das propostas no DOM concluída");
-
-    } catch(err) {
-      console.error("💥 Erro durante a ordenação:", err);
-    }
+  // Função para atualizar seleção visual
+  const atualizarSelecao = (selecionada) => {
+    console.log("✅ Atualizando seleção para:", selecionada.dataset.ordem);
+    opcoes.forEach(o => o.classList.remove("selecionada"));
+    selecionada.classList.add("selecionada");
+    textoOrdenar.textContent = selecionada.textContent.replace("✔", "").trim();
+    console.log("📌 Texto do botão agora é:", textoOrdenar.textContent);
   };
 
-  const opcoes = opcoesOrdenacao.querySelectorAll("section");
+  // Toggle dropdown
+  btnOrdenar.addEventListener("click", () => {
+    const aberto = !opcoesOrdenacao.classList.toggle("oculto");
+    iconeSeta.style.transform = aberto ? "rotate(180deg)" : "rotate(0deg)";
+    console.log("📂 Dropdown aberto?", aberto);
+  });
+
+  // Clique nas opções
   opcoes.forEach(opcao => {
     opcao.addEventListener("click", () => {
-      console.log("🟢 Opção clicada:", opcao.dataset.ordem);
-      opcoes.forEach(o => o.classList.remove("selecionada"));
-      opcao.classList.add("selecionada");
+      console.log("🎯 Opção clicada:", opcao.dataset.ordem);
+      atualizarSelecao(opcao);
       ordenarPropostas(opcao.dataset.ordem);
       opcoesOrdenacao.classList.add("oculto");
+      iconeSeta.style.transform = "rotate(0deg)";
     });
   });
 
-  console.log("✅ Script de ordenação de propostas inicializado");
+  // Inicializa a opção selecionada (mais recentes por padrão)
+  let inicial = opcoesOrdenacao.querySelector(".selecionada");
+  if (!inicial) {
+    inicial = Array.from(opcoes).find(o => o.dataset.ordem === "mais-recentes");
+    if (inicial) {
+      console.log("🎯 Seleção inicial: mais recentes");
+      atualizarSelecao(inicial);
+    }
+  } else {
+    textoOrdenar.textContent = inicial.textContent.replace("✔", "").trim();
+  }
+
+  // Função para pegar data segura (trata vazio)
+  const getData = (el, campo) => {
+    const val = el.dataset[campo];
+    return val ? new Date(val) : Infinity; // Infinity para colocar no final se vazio
+  };
+
+  // Função para pegar número seguro (trata vazio)
+  const getNumero = (el, campo) => parseFloat(el.dataset[campo]) || 0;
+
+  // Função de ordenação das propostas
+  const ordenarPropostas = (tipo) => {
+    console.log("📊 Ordenando propostas por:", tipo);
+    const container = document.querySelector(".grid");
+    if (!container) {
+      console.warn("⚠️ Container de propostas não encontrado");
+      return;
+    }
+
+    const propostas = Array.from(container.querySelectorAll(".card"));
+    console.log("📌 Propostas encontradas:", propostas.length);
+    propostas.forEach((p, i) => {
+      console.log(`📝 #${i+1}: ${p.dataset.titulo || p.dataset.dataproposta} | Preço: ${p.dataset.orcamento || '0'} | Prazo: ${p.dataset.prazoentrega || 'N/A'}`);
+    });
+
+    propostas.sort((a, b) => {
+      switch(tipo) {
+        case "mais-recentes":
+          return getData(b, "dataproposta") - getData(a, "dataproposta");
+        case "mais-antigos":
+          return getData(a, "dataproposta") - getData(b, "dataproposta");
+        case "prazo-curto":
+          return getData(a, "prazoentrega") - getData(b, "prazoentrega"); // menor prazo primeiro
+        case "prazo-longo":
+          return getData(b, "prazoentrega") - getData(a, "prazoentrega"); // maior prazo primeiro
+        case "orcamento-maior":
+          return getNumero(b, "orcamento") - getNumero(a, "orcamento");
+        case "orcamento-menor":
+          return getNumero(a, "orcamento") - getNumero(b, "orcamento");
+       case "titulo-az":
+          const tituloA = (a.dataset.titulo || "").replace(/^[^a-zA-Z0-9]+/, "");
+          const tituloB = (b.dataset.titulo || "").replace(/^[^a-zA-Z0-9]+/, "");
+          return tituloA.localeCompare(tituloB);
+        case "titulo-za":
+          const tituloA2 = (a.dataset.titulo || "").replace(/^[^a-zA-Z0-9]+/, "");
+          const tituloB2 = (b.dataset.titulo || "").replace(/^[^a-zA-Z0-9]+/, "");
+          return tituloB2.localeCompare(tituloA2);
+
+           default:
+          return 0;
+      }
+    });
+
+    propostas.forEach(p => container.appendChild(p));
+    console.log("✅ Ordenação aplicada!");
+  };
+
+  // Aplica ordenação inicial
+  const inicialOrdem = opcoesOrdenacao.querySelector(".selecionada");
+  if (inicialOrdem) {
+    console.log("🎯 Aplicando ordenação inicial:", inicialOrdem.dataset.ordem);
+    ordenarPropostas(inicialOrdem.dataset.ordem);
+  }
 });
 </script>

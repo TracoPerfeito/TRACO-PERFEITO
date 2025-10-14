@@ -1,309 +1,449 @@
-// Denúncia de proposta de projeto
-exports.criarDenunciaProposta = async (req, res) => {
-  try {
-  const { idProposta, motivo } = req.body;
-  const idUsuario = req.session.autenticado?.ID_USUARIO || req.session.autenticado?.id;
-    if (!idProposta || !motivo) {
+const denunciasModel = require("../models/denunciasModel");
+const listagensModel = require("../models/listagensModel");
+const comentariosModel = require("../models/comentariosModel");
+const listagensController = require("../controllers/listagensController");
+
+// Exemplo de função para enviar notificação ao admin
+const enviarNotificacaoAdmin = async (email, mensagem) => {
+    console.log("Enviando notificação para admin:", email, mensagem);
+    // Aqui você chamaria o serviço de envio de email
+};
+
+const denunciasController = {
+
+  // =========================
+  // DENÚNCIAS DE PROPOSTA
+  // =========================
+  criarDenunciaProposta: async (req, res) => {
+    console.log("Entrou em criarDenunciaProposta");
+    try {
+      const { idProposta, motivo } = req.body;
+      const idUsuario = req.session.autenticado?.ID_USUARIO || req.session.autenticado?.id;
+
+      console.log("Dados recebidos:", { idProposta, motivo, idUsuario });
+
+      if (!idProposta || !motivo) {
+        console.log("Campos faltando, redirecionando com erro");
+        req.session.dadosNotificacao = {
+          titulo: "Erro ao denunciar proposta",
+          mensagem: "Preencha todos os campos.",
+          tipo: "error"
+        };
+        return res.redirect(req.get('referer') || "/");
+      }
+
+      const resultado = await denunciasModel.criarDenunciaProposta({ idProposta, motivo, idUsuario });
+      console.log("Resultado do insert:", resultado);
+
+     
+     const previousUrl = req.get("Referer") || "/";
+ 
+req.session.dadosNotificacao = {
+  titulo: "Denúncia enviada.",
+  mensagem: "Nossa equipe irá analisar a proposta de projeto suspeita.",
+  tipo: "success"
+};
+
+    return res.redirect(previousUrl);
+
+    } catch (error) {
+      console.error("Erro ao denunciar proposta:", error);
       req.session.dadosNotificacao = {
         titulo: "Erro ao denunciar proposta",
-        mensagem: "Preencha todos os campos.",
+        mensagem: "Ocorreu um erro ao registrar sua denúncia.",
         tipo: "error"
       };
-  return res.redirect(req.get('referer') || "/");
+      return res.redirect(req.get('referer') || "/");
     }
-    // Salvar denúncia no banco usando o model
-  await denunciasModel.criarDenunciaProposta({ idProposta, motivo, idUsuario });
-    req.session.dadosNotificacao = {
-      titulo: "Sucesso",
-      mensagem: "Proposta denunciada com sucesso!",
-      tipo: "success"
-    };
-  return res.redirect(`/propostadeprojeto/${idProposta}`);
-  } catch (error) {
-    console.error("Erro ao denunciar proposta:", error);
-    req.session.dadosNotificacao = {
-      titulo: "Erro ao denunciar proposta",
-      mensagem: "Ocorreu um erro ao registrar sua denúncia.",
-      tipo: "error"
-    };
-  return res.redirect(req.get('referer') || "/");
-  }
-};
-const comentariosModel = require("../models/comentariosModel");
-const listagensModel = require("../models/listagensModel");
-const listagensController = require("../controllers/listagensController");
-const denunciasModel = require("../models/denunciasModel");
-const { body, validationResult } = require("express-validator");
+  },
 
-// Criar denúncia de comentário
-exports.criarDenunciaComentario = async function(req, res) {
-  try {
-    const { idComentario, motivo, idPublicacao } = req.body;
-    const idUsuario = req.session.autenticado?.ID_USUARIO || null;
+  // =========================
+  // DENÚNCIAS DE COMENTÁRIO
+  // =========================
+  criarDenunciaComentario: async (req, res) => {
+    console.log("Entrou em criarDenunciaComentario");
+    try {
+      const { idComentario, motivo, idPublicacao } = req.body;
+      const idUsuario = req.session.autenticado?.ID_USUARIO || null;
 
-    if (!idComentario || !motivo) {
-      // Redireciona para a mesma página com mensagem de erro
-      return res.render("pages/publicacao", { 
+      console.log("Dados recebidos:", { idComentario, motivo, idPublicacao, idUsuario });
+
+      if (!idComentario || !motivo) {
+        console.log("Campos inválidos, renderizando erro na página");
+        return res.render("pages/publicacao", {
+          dadosNotificacao: {
+            titulo: "Erro",
+            mensagem: "Parâmetros inválidos",
+            tipo: "error"
+          },
+          idPublicacao
+        });
+      }
+
+      const insertId = await denunciasModel.criarDenunciaComentario({ idUsuario, idComentario, motivo });
+      console.log("Denúncia de comentário criada, insertId:", insertId);
+
+      const emailAdmin = 'tracoperfeito2024@outlook.com';
+      await enviarNotificacaoAdmin(emailAdmin, `Novo comentário denunciado! Motivo: ${motivo}`);
+      console.log("Notificação enviada para admin");
+
+      return res.render("pages/publicacao", {
         dadosNotificacao: {
-          titulo: "Erro",
-          mensagem: "Parâmetros inválidos",
-          tipo: "error"
+          titulo: "Sucesso",
+          mensagem: "Denúncia criada com sucesso!",
+          tipo: "success"
         },
-        // outros dados necessários da página, se precisar
+        idPublicacao
       });
+
+    } catch (error) {
+      console.error('Erro ao criar denúncia comentário:', error);
+      
+      
+     const previousUrl = req.get("Referer") || "/";
+ 
+req.session.dadosNotificacao = {
+  titulo: "Ocorreu um erro.",
+  mensagem: "Não foi possível salvar sua denúncia. Tente novamente mais tarde.",
+  tipo: "error"
+};
+
+    return res.redirect(previousUrl);
+
     }
+  },
 
-    // Inserir denúncia no banco
-    const insertId = await denunciasModel.criarDenunciaComentario({ idUsuario, idComentario, motivo });
+  listarDenunciasComentarios: async (req, res) => {
+    console.log("Entrou em listarDenunciasComentarios");
+    try {
+      const { status } = req.query;
+      console.log("Status recebido:", status);
 
-    // Enviar notificação para o admin
-    const emailAdmin = 'tracoperfeito2024@outlook.com';
-    await enviarNotificacaoAdmin(emailAdmin, `Novo comentário denunciado! Motivo: ${motivo}`);
+      const denuncias = await denunciasModel.listarDenunciasComentarios(status);
+      console.log("Denúncias retornadas:", denuncias);
 
-    // Sucesso: redireciona/renderiza mesma página com notificação
-    return res.render("pages/publicacao", { 
-      dadosNotificacao: {
-        titulo: "Sucesso",
-        mensagem: "Denúncia criada com sucesso!",
-        tipo: "success"
-      },
-      // outros dados da página (ex: lista de comentários, etc)
-      idPublicacao
-    });
-
-  } catch (error) {
-    console.error('Erro ao criar denúncia comentário:', error);
-
-    // Em caso de erro, renderiza mesma página com aviso
-    return res.render("pages/publicacao", { 
-      dadosNotificacao: {
-        titulo: "Erro",
-        mensagem: "Ocorreu um problema ao tentar denunciar o comentário",
-        tipo: "error"
-      },
-      idPublicacao
-    });
-  }
-};
-
-// Listar denúncias de comentários (API JSON)
-exports.listarDenunciasComentarios = async function(req, res) {
-  try {
-    const { status } = req.query;
-    const denuncias = await denunciasModel.listarDenunciasComentarios(status);
-    res.json(denuncias);
-  } catch (error) {
-    console.error('Erro ao listar denúncias comentários:', error);
-     res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-};
-
-// Atualizar status de denúncia de comentário
-exports.atualizarStatusDenunciaComentario = async function(req, res) {
-  try {
-    const { idDenuncia } = req.params;
-    const { novoStatus } = req.body;
-    if (!novoStatus) {
-      return res.status(400).json({ error: 'Status é obrigatório' });
+      res.json(denuncias);
+    } catch (error) {
+      console.error('Erro ao listar denúncias comentários:', error);
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
     }
-    await denunciasModel.atualizarStatusDenunciaComentario(idDenuncia, novoStatus);
-    res.json({ message: 'Status atualizado com sucesso' });
-  } catch (error) {
-    console.error('Erro ao atualizar status denúncia comentário:', error);
-     res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-};
+  },
 
-// Criar denúncia de publicação
-exports.criarDenunciaPublicacao = async function(req, res) {
+  atualizarStatusDenunciaComentario: async (req, res) => {
+    console.log("Entrou em atualizarStatusDenunciaComentario");
+    try {
+      const { idDenuncia } = req.params;
+      const { novoStatus } = req.body;
+      console.log("Dados recebidos:", { idDenuncia, novoStatus });
+
+      if (!novoStatus) return res.status(400).json({ error: 'Status é obrigatório' });
+
+      const resultado = await denunciasModel.atualizarStatusDenunciaComentario(idDenuncia, novoStatus);
+      console.log("Resultado update:", resultado);
+
+      res.json({ message: 'Status atualizado com sucesso' });
+    } catch (error) {
+      console.error('Erro ao atualizar status denúncia comentário:', error);
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
+    }
+  },
+
+  listarDenunciasComentariosView: async (req, res) => {
+    console.log("Entrou em listarDenunciasComentariosView");
+    try {
+      const { status } = req.query;
+      console.log("Status recebido:", status);
+
+      const denuncias = await denunciasModel.listarDenunciasComentarios(status);
+      console.log("Denúncias retornadas:", denuncias);
+
+      res.render('pages/adm-lista-denuncias', { denuncias, tipo: 'comentarios' });
+    } catch (error) {
+      console.error('Erro ao renderizar denúncias comentários:', error);
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
+    }
+  },
+
+  // =========================
+  // DENÚNCIAS DE PUBLICAÇÃO
+  // =========================
+ criarDenunciaPublicacao: async (req, res) => {
+  console.log("Entrou em criarDenunciaPublicacao");
   try {
     const { idPublicacao, motivo } = req.body;
-    const idUsuario = req.session.autenticado.id;
+    let idUsuario = req.session.autenticado?.id || 0; // se não logado, usa 0
 
-    if (!idUsuario || !idPublicacao || !motivo) {
-      return res.status(400).json({ error: 'Parâmetros inválidos' });
+    console.log("Dados recebidos:", { idPublicacao, motivo, idUsuario });
+
+    if (!idPublicacao || !motivo) {
+      console.log("Campos inválidos");
+
+      const previousUrl = req.get("Referer") || "/";
+     
+      
+        req.session.dadosNotificacao = {
+          titulo: "Campos inválidos!",
+          mensagem: "Selecione o motivo para a denúncia.",
+          tipo: "error"
+        };
+     
+       return res.redirect(previousUrl || "/");
+
+
     }
 
     const insertId = await denunciasModel.criarDenunciaPublicacao({ idUsuario, idPublicacao, motivo });
+    console.log("Denúncia de publicação criada, insertId:", insertId);
 
-    res.status(201).json({ message: 'Denúncia criada com sucesso', id: insertId });
+
+     const previousUrl = req.get("Referer") || "/";
+ 
+req.session.dadosNotificacao = {
+  titulo: "Denúncia enviada.",
+  mensagem: "Nossa equipe irá analisar a publicação suspeita.",
+  tipo: "success"
+};
+
+    return res.redirect(previousUrl || "/");
+
   } catch (error) {
     console.error('Erro ao criar denúncia publicação:', error);
-     res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-};
+  
 
-// Listar denúncias de publicações (API JSON)
-exports.listarDenunciasPublicacoes = async function(req, res) {
-  try {
-    const { status } = req.query;
-    const denuncias = await denunciasModel.listarDenunciasPublicacoes(status);
-    res.json(denuncias);
-  } catch (error) {
-    console.error('Erro ao listar denúncias publicações:', error);
-     res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-};
+    
+     const previousUrl = req.get("Referer") || "/";
+      
+      req.session.dadosNotificacao = {
+        titulo: "Ocorreu um erro.",
+        mensagem: "Não foi possível salvar sua denúncia. Tente novamente mais tarde.",
+        tipo: "error"
+      };
 
-// Atualizar status de denúncia de publicação
-exports.atualizarStatusDenunciaPublicacao = async function(req, res) {
-  try {
-    const { idDenuncia } = req.params;
-    const { novoStatus } = req.body;
-    if (!novoStatus) {
-      return res.status(400).json({ error: 'Status é obrigatório' });
+          return res.redirect(previousUrl || "/");
+
+
+
+  }
+},
+
+
+  listarDenunciasPublicacoes: async (req, res) => {
+    console.log("Entrou em listarDenunciasPublicacoes");
+    try {
+      const { status } = req.query;
+      console.log("Status recebido:", status);
+
+      const denuncias = await denunciasModel.listarDenunciasPublicacoes(status);
+      console.log("Denúncias retornadas:", denuncias);
+
+      res.json(denuncias);
+    } catch (error) {
+      console.error('Erro ao listar denúncias publicações:', error);
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
     }
-    await denunciasModel.atualizarStatusDenunciaPublicacao(idDenuncia, novoStatus);
-    res.json({ message: 'Status atualizado com sucesso' });
-  } catch (error) {
-    console.error('Erro ao atualizar status denúncia publicação:', error);
-     res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-};
+  },
 
-// Renderizar view de denúncias de comentários
-exports.listarDenunciasComentariosView = async function(req, res) {
-  try {
-    const { status } = req.query;
-    const denuncias = await denunciasModel.listarDenunciasComentarios(status);
-    res.render('pages/adm-lista-denuncias', { denuncias, tipo: 'comentarios' });
-  } catch (error) {
-    console.error('Erro ao renderizar denúncias comentários:', error);
-    res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-};
+  atualizarStatusDenunciaPublicacao: async (req, res) => {
+    console.log("Entrou em atualizarStatusDenunciaPublicacao");
+    try {
+      const { idDenuncia } = req.params;
+      const { novoStatus } = req.body;
+      console.log("Dados recebidos:", { idDenuncia, novoStatus });
 
-// Renderizar view de denúncias de publicações
-exports.listarDenunciasPublicacoesView = async function(req, res) {
-  try {
-    const { status } = req.query;
-    const denuncias = await denunciasModel.listarDenunciasPublicacoes(status);
-    res.render('pages/adm-lista-denuncias', { denuncias, tipo: 'publicacoes' });
-  } catch (error) {
-    console.error('Erro ao renderizar denúncias publicações:', error);
-    res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
-  }
-};
+      if (!novoStatus) return res.status(400).json({ error: 'Status é obrigatório' });
 
-// Criar denúncia de usuário
-exports.criarDenunciaUsuario = async function(req, res) {
-  try {
-    const idUsuarioDenunciante = req.session.autenticado.id;
-    const { idUsuarioDenunciado, motivo } = req.body;
+      const resultado = await denunciasModel.atualizarStatusDenunciaPublicacao(idDenuncia, novoStatus);
+      console.log("Resultado update:", resultado);
 
-    if (!idUsuarioDenunciante || !idUsuarioDenunciado || !motivo) {
-      return res.status(400).json({ erro: 'Parâmetros inválidos' });
+      res.json({ message: 'Status atualizado com sucesso' });
+    } catch (error) {
+      console.error('Erro ao atualizar status denúncia publicação:', error);
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
     }
+  },
 
-    const insertId = await denunciasModel.criarDenunciaUsuario({
-      idUsuarioDenunciante,
-      idUsuarioDenunciado,
-      motivo
-    });
+  listarDenunciasPublicacoesView: async (req, res) => {
+    console.log("Entrou em listarDenunciasPublicacoesView");
+    try {
+      const { status } = req.query;
+      console.log("Status recebido:", status);
 
-    res.json({ sucesso: true, id: insertId });
-  } catch (error) {
-    console.error('Erro ao criar denúncia de usuário:', error);
-    res.status(500).json({ erro: 'Erro interno' });
-  }
+      const denuncias = await denunciasModel.listarDenunciasPublicacoes(status);
+      console.log("Denúncias retornadas:", denuncias);
+
+      res.render('pages/adm-lista-denuncias', { denuncias, tipo: 'publicacoes' });
+    } catch (error) {
+      console.error('Erro ao renderizar denúncias publicações:', error);
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
+    }
+  },
+
+  // =========================
+  // DENÚNCIAS DE USUÁRIOS
+  // =========================
+  criarDenunciaUsuario: async (req, res) => {
+    console.log("Entrou em criarDenunciaUsuario");
+    try {
+      const idUsuarioDenunciante = req.session.autenticado?.id;
+      const { idUsuarioDenunciado, motivo } = req.body;
+
+      console.log("Dados recebidos:", { idUsuarioDenunciante, idUsuarioDenunciado, motivo });
+
+      if (!idUsuarioDenunciante || !idUsuarioDenunciado || !motivo) {
+        console.log("Campos inválidos");
+       
+          const previousUrl = req.get("Referer") || "/";
+     
+      
+        req.session.dadosNotificacao = {
+          titulo: "Campos inválidos!",
+          mensagem: "Selecione o motivo para a denúncia.",
+          tipo: "error"
+        };
+     
+       return res.redirect(previousUrl || "/");
+
+      }
+
+      const insertId = await denunciasModel.criarDenunciaUsuario({ idUsuarioDenunciante, idUsuarioDenunciado, motivo });
+      console.log("Denúncia de usuário criada, insertId:", insertId);
+
+
+      
+
+     const previousUrl = req.get("Referer") || "/";
+ 
+req.session.dadosNotificacao = {
+  titulo: "Denúncia enviada.",
+  mensagem: "Nossa equipe irá analisar o usuário suspeito.",
+  tipo: "success"
 };
 
-// Listar denúncias de usuários
-exports.listarDenunciasUsuarios = async function(req, res) {
-  try {
-    const { status } = req.query;
-    const denuncias = await denunciasModel.listarDenunciasUsuarios(status);
-    res.json(denuncias);
-  } catch (error) {
-    console.error('Erro ao listar denúncias de usuários:', error);
-    res.status(500).json({ erro: 'Erro interno' });
-  }
+    return res.redirect(previousUrl);
+
+
+
+
+    } catch (error) {
+      console.error('Erro ao criar denúncia de usuário:', error);
+     
+
+
+      
+     const previousUrl = req.get("Referer") || "/";
+ 
+req.session.dadosNotificacao = {
+  titulo: "Ocorreu um erro.",
+  mensagem: "Não foi possível salvar sua denúncia. Tente novamente mais tarde.",
+  tipo: "error"
 };
 
-// Atualizar status de denúncia de usuário
-exports.atualizarStatusDenunciaUsuario = async function(req, res) {
-  try {
-    const { idDenuncia } = req.params;
-    const { novoStatus } = req.body;
+    return res.redirect(previousUrl);
 
-    if (!novoStatus) return res.status(400).json({ erro: 'Status é obrigatório' });
+    }
+  },
 
-    await denunciasModel.atualizarStatusDenunciaUsuario(idDenuncia, novoStatus);
-    res.json({ sucesso: true, message: 'Status atualizado' });
-  } catch (error) {
-    console.error('Erro ao atualizar status denúncia de usuário:', error);
-    res.status(500).json({ erro: 'Erro interno' });
-  }
-};
+  listarDenunciasUsuarios: async (req, res) => {
+    console.log("Entrou em listarDenunciasUsuarios");
+    try {
+      const { status } = req.query;
+      console.log("Status recebido:", status);
 
-// Criar denúncia de projeto
-exports.criarDenunciaProjeto = async function(req, res) {
+      const denuncias = await denunciasModel.listarDenunciasUsuarios(status);
+      console.log("Denúncias retornadas:", denuncias);
+
+      res.json(denuncias);
+    } catch (error) {
+      console.error('Erro ao listar denúncias de usuários:', error);
+      res.status(500).json({ erro: 'Erro interno' });
+    }
+  },
+
+  atualizarStatusDenunciaUsuario: async (req, res) => {
+    console.log("Entrou em atualizarStatusDenunciaUsuario");
+    try {
+      const { idDenuncia } = req.params;
+      const { novoStatus } = req.body;
+      console.log("Dados recebidos:", { idDenuncia, novoStatus });
+
+      if (!novoStatus) return res.status(400).json({ erro: 'Status é obrigatório' });
+
+      const resultado = await denunciasModel.atualizarStatusDenunciaUsuario(idDenuncia, novoStatus);
+      console.log("Resultado update:", resultado);
+
+      res.json({ sucesso: true, message: 'Status atualizado' });
+    } catch (error) {
+      console.error('Erro ao atualizar status denúncia de usuário:', error);
+      res.status(500).json({ erro: 'Erro interno' });
+    }
+  },
+
+  // =========================
+  // DENÚNCIAS DE PROJETO
+  // =========================
+  criarDenunciaProjeto: async (req, res) => {
+    console.log("Entrou em criarDenunciaProjeto");
     try {
       const { idProjeto, motivo } = req.body;
-      const idUsuario = req.session.autenticado.id; // pega usuário logado
+      const idUsuario = req.session.autenticado?.id;
+
+      console.log("Dados recebidos:", { idProjeto, motivo, idUsuario });
 
       const resultado = await denunciasModel.criarDenunciaProjeto({ idProjeto, idUsuario, motivo });
+      console.log("Resultado insert projeto:", resultado);
 
       if (resultado.error) {
         req.session.dadosNotificacao = { titulo: 'Erro', mensagem: resultado.error, tipo: 'erro' };
+        console.log("Erro ao criar denúncia:", resultado.error);
       } else {
         req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Denúncia enviada com sucesso!', tipo: 'sucesso' };
+        console.log("Denúncia de projeto criada com sucesso");
       }
 
-      res.redirect('/projetos'); // ajusta a rota conforme sua tela
+      res.redirect('/projetos');
     } catch (error) {
       console.error('Erro ao criar denúncia de projeto:', error);
-       res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
     }
   },
 
-// Listar denúncias de projetos
-exports.listarDenunciasProjetos = async function(req, res) {
+  listarDenunciasProjetos: async (req, res) => {
+    console.log("Entrou em listarDenunciasProjetos");
     try {
       const denuncias = await denunciasModel.listarDenunciasProjetos();
-      res.render('denuncias/listaProjetos', { denuncias }); // view EJS
+      console.log("Denúncias de projetos retornadas:", denuncias);
+
+      res.render('denuncias/listaProjetos', { denuncias });
     } catch (error) {
       console.error('Erro ao listar denúncias de projetos:', error);
-      res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
     }
   },
 
-// Atualizar status de denúncia de projeto
-exports.atualizarStatusProjeto = async function(req, res) {
+  atualizarStatusProjeto: async (req, res) => {
+    console.log("Entrou em atualizarStatusProjeto");
     try {
       const { idDenuncia, novoStatus } = req.body;
+      console.log("Dados recebidos:", { idDenuncia, novoStatus });
 
       const resultado = await denunciasModel.atualizarStatusDenunciaProjeto(idDenuncia, novoStatus);
+      console.log("Resultado update:", resultado);
 
       if (resultado && resultado.affectedRows > 0) {
         req.session.dadosNotificacao = { titulo: 'Sucesso', mensagem: 'Status atualizado!', tipo: 'sucesso' };
+        console.log("Status da denúncia atualizado com sucesso");
       } else {
         req.session.dadosNotificacao = { titulo: 'Erro', mensagem: 'Não foi possível atualizar o status.', tipo: 'erro' };
+        console.log("Falha ao atualizar status da denúncia");
       }
 
       res.redirect('/denuncias-projetos');
     } catch (error) {
       console.error('Erro ao atualizar status da denúncia de projeto:', error);
-     res.status(500).render('pages/erro-conexao', {
-      mensagem: "Não foi possível acessar o banco de dados. Tente novamente mais tarde."
-    });
+      res.status(500).render('pages/erro-conexao', { mensagem: "Não foi possível acessar o banco de dados." });
     }
   }
+
+};
+
+module.exports = denunciasController;

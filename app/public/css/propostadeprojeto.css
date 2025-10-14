@@ -49,40 +49,162 @@ body {
 }
 
 
+
+.h1-btn-pontos{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+        border-bottom: 2px solid var(--borda-inferior);
+}
+
+/* ===== Layout da proposta aberta ===== */
 .conteudo {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-template-areas: "publicacao-texto p-rel";
-    gap: 10%;
-    margin-bottom: 50px;
-    color: var(--text-color);
-    
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px 40px; /* era 60px — reduzi */
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden; /* impede scroll lateral */
 }
 
-
-
-
+/* Área esquerda */
 .containerp {
-    margin-left: 70px;
-    padding: 20px;
-    max-width: 800px;
-    
-
+  flex: 0 0 60%;
+  max-width: 60%;
+  background-color: var(--cor-fundo-conteudo, transparent);
+  padding: 0px 20px 20px 20px ;
+  border-radius: 10px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
-  
 
+/* Área direita */
+.info-proposta {
+  flex: 0 0 40%;
+  max-width: 40%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  padding: 0px 10px 10px 10px;
+  box-sizing: border-box;
+}
 
-.projeto {
+.pedidodescrito{
+    color: var(--text-color) !important;
+    font-size: 18px;
+}
+.pedidodescrito h2{
+ color: var(--text-color) !important;
+}
+.card-info p{
+    text-transform: capitalize;
+    font-size: 16px;
+}
+
+/* Cards */
+.card-info {
+  background-color: var(--cor-fundo-comentario);
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  font-family: 'Josefin Sans';
+  font-size: 15px;
+  transition: transform 0.2s ease;
+  border: 1px solid  var(--borda-card-proposta);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-sizing: border-box;
+}
+.info-proposta ion-icon {
+    font-size: 20px !important; /* força o tamanho */
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px; /* garante que o container não encolha */
+    min-height: 20px;
+    display: block; /* evita que o flex encolha o ícone */
+    color: var(--cor-btn-azul);
+}
+
+.info-proposta p.label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+#titulo ion-icon {
+    color: #4A90E2; /* Azul */
+}
+
+#categoria ion-icon {
+    color: #F5A623; /* Laranja */
+}
+
+#profissional ion-icon {
+     color: #d23245; /* Vermelho */
+}
+
+#estilo ion-icon {
+    color: #BD10E0; /* Roxo */
+}
+
+#orcamento ion-icon {
    
-    margin-right: 20px;
+    color: #7ED321; /* Verde */
+}
+
+#entrega ion-icon {
+    color: #F8E71C; /* Amarelo */
+}
+
+.card-info ion-icon {
+    flex-shrink: 0; /* impede o encolhimento */
+}
+
+
+
+.texto-det{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+.det{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+/* Evita scroll horizontal global */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .conteudo {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .containerp, .info-proposta {
+    max-width: 100%;
+    min-width: 100%;
+    flex: 1 1 100%;
+  }
 
 }
+
+
 
 
 .perfil {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 20px 0px;
     justify-content: space-between;
     color: var(--text-color);
 }
@@ -134,6 +256,7 @@ body {
     font-size: 20px;
     color: var(--h2-proposta);
     font-family: "Montserrat";
+    color: var(--text-color) !important;
    
 }
  
@@ -171,8 +294,13 @@ body {
 
 .info-proposta p {
     padding-bottom: 10px;
-    color: var(--text-color);
+    color: var(--text-color-mais-claro1);
    
+}
+
+.info-proposta h2{
+   
+    color: var(--text-color);
 }
 
 
@@ -194,19 +322,7 @@ body {
     }
 
 
-    
 
-    
-.conteudo {
-    display: block;
-}
-
-.containerp {
-    display: block;
-    padding: 20px;
-    margin: 0px;
-
-}
  
 
 .projeto {
@@ -244,14 +360,6 @@ body {
   
     max-width: none;
 }
-
-.outras-p-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-
     }
 
     @media (max-width: 500px){
@@ -283,25 +391,23 @@ body {
 .icone-menu {
     cursor: pointer;
     fill: var(--text-color, #000);
-    transform: translateX(10px);
-    margin-left: 60%;
+   
    
 }
-
 .opcoes-menu {
-    position: absolute;
-    top: 28px;
-    font-family: "Josefin Sans";
-    min-width: 140px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: none; /* começa escondido */
-    flex-direction: column;
-    z-index: 1000;
-    margin-left: 60%;
+  position: absolute;
+  top: 28px;
+  right: 0; /* em vez de margin-left: 60% */
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+  z-index: 2000; /* z-index maior que o da section */
 }
+
 
 .opcoes-menu button,
 .opcoes-menu .form-excluir button {

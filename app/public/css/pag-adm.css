@@ -545,7 +545,7 @@ h1{
   /* flex: 1; */
   /* justify-content: space-around; */
   flex-direction: column;
-  margin-right: 150px;
+  margin-right: -150px;
   transform: translateY(42px);
 }
 
@@ -613,15 +613,17 @@ h1{
  */
 
 .card-grafico {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      padding: 24px;
-      width: 1039px;
-      margin-left: 135px;
-      transform: translateY(-77%);
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  width: 100%;
+  max-width: 1039px;
+  margin: 40px auto 0 auto; /* Centralizado e com espaçamento acima */
+}
 
-    }
+
+    
 
     .header-grafico {
       display: flex;
@@ -713,3 +715,4 @@ h1{
     transform: translateY(29px)
   }
 }
+
