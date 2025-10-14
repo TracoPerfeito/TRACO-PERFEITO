@@ -568,7 +568,7 @@ main {
   margin: 10% auto;
   padding: 20px;
   border-radius: 8px;
-  width: 90%;
+  width: 70%;
   max-width: 400px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.18);
 }
@@ -577,12 +577,12 @@ main {
     background: #fff6f6;
 }
 
-.modal-content h2 {
+.modal-content h3 {
   margin-bottom: 18px;
   font-size: 1.35em;
   color: #222;
   text-align: center;
-    font-family: "Josefin Sans";
+   font-family: "montserrat";;
 }
 
 .modal-content label {
@@ -602,6 +602,7 @@ main {
     font-size: 1em;
     color: #222;
     cursor: pointer;
+    font-family: "montserrat";
 }
 .modal-content form input[type="radio"] {
     margin-right: 8px;
@@ -622,6 +623,7 @@ main {
     cursor: pointer;
     transition: background 0.2s;
     font-family: 'Montserrat';
+
   
 }
 .modal-content button[type="button"] {
@@ -704,4 +706,23 @@ main {
 
 .btn-excluir-proposta:hover {
     color: #c0392b;
+}
+
+#fechar-modal-excluir{
+  margin-left: 90px;
+  background: #183153;
+
+}
+
+#fechar-modal-excluir:hover{
+  background: #0f223a;
+}
+
+#excluir{
+  margin-right: 90px;
+  background-color: #e74c3c;
+}
+
+#excluir:hover{
+  background-color: #c0392b;
 }
