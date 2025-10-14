@@ -57,7 +57,7 @@ const admModel = {
 
 
  contarCadastrosRecentes: async () => {
-  try{const [resultado] = await conexao.query(`
+  try{const [resultado] = await pool.query(`
     WITH dias AS (
       SELECT CURDATE() AS data
       UNION ALL SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY)
