@@ -63,8 +63,9 @@ const admListagemController = {
       console.log("total usuarios", usuarios)
 
 
-      // 🔹 Totais (ex: planos ativos, faturamento etc)
-      const [totais] = await admModel.contagemAssinantesPorPlanos();
+     // 🔹 Totais (ex: planos ativos, faturamento etc)
+const totais = await admModel.contagemAssinantesPorPlano();
+
 
       // 🔹 Ganhos totais do admin (soma de pagamentos)
       const totalGanhos = await admModel.totalGanhosAssinaturas();

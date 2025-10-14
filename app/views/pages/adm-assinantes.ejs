@@ -54,7 +54,7 @@
   <section class="topo_pagina_adm">
     <h1>Gerenciamento de Usuários Assinantes</h1>
     
-  </section><section class="resumo">
+</section><section class="resumo">
   <!-- Total arrecadado -->
   <section class="card card-arrecadacao">
     <section class="card-icon azul"><i data-lucide="dollar-sign"></i></section>
@@ -72,8 +72,8 @@
     <section class="card-icon verde"><i data-lucide="clock-1"></i></section>
     <section class="card-content">
       <p>Assinantes Semanais</p>
-      <h2><%= (totaisAssinantes.semanal || 0) %></h2>
-      <small class="muted">R$ 10 / assinante</small>
+      <h2><%= totais.semanal.total || 0 %></h2>
+      <small class="muted">Ativas: <%= totais.semanal.ativas || 0 %> | R$ 10 / assinante</small>
     </section>
   </section>
 
@@ -81,8 +81,8 @@
     <section class="card-icon amarelo"><i data-lucide="calendar"></i></section>
     <section class="card-content">
       <p>Assinantes Mensais</p>
-      <h2><%= (totaisAssinantes.mensal || 0) %></h2>
-      <small class="muted">R$ 30 / assinante</small>
+      <h2><%= totais.mensal.total || 0 %></h2>
+      <small class="muted">Ativas: <%= totais.mensal.ativas || 0 %> | R$ 30 / assinante</small>
     </section>
   </section>
 
@@ -90,8 +90,8 @@
     <section class="card-icon roxo"><i data-lucide="award"></i></section>
     <section class="card-content">
       <p>Assinantes Anuais</p>
-      <h2><%= (totaisAssinantes.anual || 0) %></h2>
-      <small class="muted">R$ 300 / assinante</small>
+      <h2><%= totais.anual.total || 0 %></h2>
+      <small class="muted">Ativas: <%= totais.anual.ativas || 0 %> | R$ 300 / assinante</small>
     </section>
   </section>
 </section>

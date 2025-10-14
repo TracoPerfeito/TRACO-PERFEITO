@@ -243,111 +243,130 @@ totalRegUsuariosPorTipo: async (tipo) => {
 
 
 
-    
-    findPageListagemAssinantes: async (inicio, total) => {
+
+
+
+
+
+
+
+    // 🔹 Assinantes paginados (todas, com status ativo calculado)
+findPageListagemAssinantes: async (inicio, total) => {
   try {
-    const [linhas] = await pool.query(`
-      SELECT 
-        u.*,
-        a.PLANO,
-        a.DATA_INICIO,
-        a.DATA_FIM,
-        a.STATUS_PAGAMENTO
-      FROM USUARIOS u
-      INNER JOIN ASSINATURAS a 
-        ON u.ID_USUARIO = a.ID_USUARIO
-      WHERE 
-        a.STATUS_PAGAMENTO = 'pago'
-        AND NOW() BETWEEN a.DATA_INICIO AND IFNULL(a.DATA_FIM, NOW())
-      GROUP BY u.ID_USUARIO
-      ORDER BY a.DATA_INICIO DESC
-      LIMIT ?, ?
-    `, [inicio, total]);
+    console.log("📌 Início findPageListagemAssinantes:", inicio, "Registros por página:", total);
+
+    const [linhas] = await pool.query(
+      `SELECT u.*, 
+              a.PLANO,
+              a.DATA_INICIO,
+              a.DATA_FIM,
+              a.STATUS_PAGAMENTO,
+              (a.DATA_INICIO <= NOW() AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW())) AS ATIVA
+       FROM USUARIOS u
+       INNER JOIN ASSINATURAS a ON u.ID_USUARIO = a.ID_USUARIO
+       LIMIT ?, ?`,
+      [inicio, total]
+    );
+
+    console.log("📌 Resultados da query:", linhas.length, "linhas encontradas");
 
     const usuarios = linhas.map(p => ({
       ...p,
+      ATIVA: !!p.ATIVA,  // true/false se a assinatura está ativa agora
       FOTO_PERFIL_BANCO_USUARIO: p.FOTO_PERFIL_BANCO_USUARIO
         ? `data:image/png;base64,${p.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
         : null
     }));
 
+    console.log("📌 Usuários mapeados:", usuarios.length);
+
     return usuarios;
   } catch (error) {
-    console.error("Erro em findPageListagemAssinantes:", error);
+    console.log("❌ Erro em findPageListagemAssinantes:", error);
     return [];
   }
 },
 
-
-
+// 🔹 Total de registros (contando todas as assinaturas, independente de estarem ativas)
 totalRegListagemAssinantes: async () => {
   try {
-    const [linhas] = await pool.query(`
-      SELECT COUNT(DISTINCT u.ID_USUARIO) AS TOTAL
-      FROM USUARIOS u
-      INNER JOIN ASSINATURAS a 
-        ON u.ID_USUARIO = a.ID_USUARIO
-      WHERE 
-        a.STATUS_PAGAMENTO = 'pago'
-        AND NOW() BETWEEN a.DATA_INICIO AND IFNULL(a.DATA_FIM, NOW())
-    `);
+    const [linhas] = await pool.query(
+      `SELECT COUNT(DISTINCT u.ID_USUARIO) AS TOTAL
+       FROM USUARIOS u
+       INNER JOIN ASSINATURAS a ON u.ID_USUARIO = a.ID_USUARIO`
+    );
+
+    console.log("📌 Total registros encontrados:", linhas[0]?.TOTAL);
+
     return linhas[0]?.TOTAL || 0;
   } catch (error) {
-    console.error("Erro em totalRegListagemAssinantes:", error);
+    console.log("❌ Erro em totalRegListagemAssinantes:", error);
     return 0;
   }
-},
-
-
-
-totalGanhosAssinaturas: async () => {
-  try {
-    const [rows] = await pool.query(`
-      SELECT SUM(
-        CASE
-          WHEN LOWER(a.PLANO) = 'semanal' THEN 10
-          WHEN LOWER(a.PLANO) = 'mensal' THEN 30
-          WHEN LOWER(a.PLANO) = 'anual' THEN 300
-          ELSE 0
-        END
-      ) AS total_ganho
-      FROM ASSINATURAS a
-      WHERE a.STATUS_PAGAMENTO = 'pago'
-        AND a.DATA_INICIO <= NOW()
-        AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW())
-    `);
-    return rows[0]?.total_ganho || 0;
-  } catch (err) {
-    console.error("Erro totalGanhosAssinaturas:", err);
-    return 0;
-  }
-},
-
-// retorna contagem por plano (apenas assinaturas ativas/pagas)
+},// 🔹 Contagem por plano (total e ativas)
 contagemAssinantesPorPlano: async () => {
   try {
     const [rows] = await pool.query(`
-      SELECT LOWER(a.PLANO) AS plano, COUNT(DISTINCT a.ID_USUARIO) AS total
-      FROM ASSINATURAS a
-      WHERE a.STATUS_PAGAMENTO = 'pago'
-        AND a.DATA_INICIO <= NOW()
-        AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW())
-      GROUP BY LOWER(a.PLANO);
-    `);
+  SELECT LOWER(a.PLANO) AS plano, 
+         COUNT(DISTINCT a.ID_USUARIO) AS total,
+         SUM(CASE 
+             WHEN a.DATA_INICIO <= NOW() 
+              AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW()) 
+             THEN 1 ELSE 0 END) AS ativas
+  FROM ASSINATURAS a
+  -- filtra pagamentos aprovados
+  WHERE a.STATUS_PAGAMENTO IN ('pago','approved')
+  GROUP BY LOWER(a.PLANO)
+`);
 
-    // transforma em objeto { semanal: X, mensal: Y, anual: Z }
-    const mapa = { semanal: 0, mensal: 0, anual: 0 };
+    console.log("📌 Linhas contagem por plano:", rows);
+
+    const mapa = { 
+      semanal: { total:0, ativas:0 }, 
+      mensal: { total:0, ativas:0 }, 
+      anual: { total:0, ativas:0 } 
+    };
+
     rows.forEach(r => {
-      if (r.plano === 'semanal') mapa.semanal = Number(r.total);
-      if (r.plano === 'mensal')   mapa.mensal = Number(r.total);
-      if (r.plano === 'anual')    mapa.anual = Number(r.total);
+      if (mapa[r.plano]) {
+        mapa[r.plano] = { total: Number(r.total), ativas: Number(r.ativas) };
+      }
     });
+
+    console.log("📌 Mapa final de assinantes por plano:", mapa);
     return mapa;
   } catch (err) {
-    console.error("Erro contagemAssinantesPorPlano:", err);
-    return { semanal: 0, mensal: 0, anual: 0 };
+    console.error("❌ Erro contagemAssinantesPorPlano:", err);
+    return { semanal: { total:0, ativas:0 }, mensal: { total:0, ativas:0 }, anual: { total:0, ativas:0 } };
   }
 },
+
+// 🔹 Total ganhos (somente assinaturas ativas)
+totalGanhosAssinaturas: async () => {
+  try {
+    const [rows] = await pool.query(`
+  SELECT IFNULL(SUM(
+    CASE 
+      WHEN LOWER(a.PLANO) = 'semanal' AND a.DATA_INICIO <= NOW() AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW()) THEN 10
+      WHEN LOWER(a.PLANO) = 'mensal'   AND a.DATA_INICIO <= NOW() AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW()) THEN 30
+      WHEN LOWER(a.PLANO) = 'anual'    AND a.DATA_INICIO <= NOW() AND (a.DATA_FIM IS NULL OR a.DATA_FIM >= NOW()) THEN 300
+      ELSE 0
+    END
+  ), 0) AS total_ganhos
+  FROM ASSINATURAS a
+  WHERE a.STATUS_PAGAMENTO IN ('pago','approved')
+`);
+
+
+    console.log("📌 Total ganhos encontrado:", rows[0]?.total_ganhos);
+    return rows[0]?.total_ganhos || 0;
+  } catch (err) {
+    console.error("❌ Erro totalGanhosAssinaturas:", err);
+    return 0;
+  }
+},
+
+
 
     //LISTAGEM DAS DENÚNCIAS 
 

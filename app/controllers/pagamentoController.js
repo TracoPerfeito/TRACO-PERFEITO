@@ -88,12 +88,12 @@ const pagamentoController = {
 const idNotificacao = await notificacoesModel.criarNotificacao({
   idUsuario: req.session.autenticado.id,
   titulo: "🎉 Pagamento aprovado com sucesso!",
-  preview: `✅ Seu pagamento foi confirmado, ${req.session.autenticado.nome_usuario}. Agora você já pode aproveitar todos os benefícios do Plano Pincel de Ouro!✨`,
+  preview: `✅ Seu pagamento foi confirmado. Agora você já pode aproveitar todos os benefícios do Traço Perfeito Pro! ✨`,
 
   conteudo: `
     <section class="payment-banner">
       <section class="payment-content">
-        <h1>🎉 Pagamento aprovado, ${req.session.autenticado.nome_usuario}! ✅</h1>
+        <h1>🎉 Pagamento aprovado, ${req.session.autenticado.nome}! ✅</h1>
         <p>Obrigado por confiar no Traço Perfeito! Seu pagamento foi processado com sucesso e sua conta já foi atualizada. 🙌</p>
         <p>Aproveite agora mesmo as funcionalidades exclusivas para destacar seus trabalhos e se conectar a novos clientes! 💼✨</p>
         
@@ -108,7 +108,7 @@ const idNotificacao = await notificacoesModel.criarNotificacao({
 console.log("Notificação criada com ID:", idNotificacao);
 
             
-     
+req.session.autenticado.isPro = 1;
 
 
             
@@ -127,7 +127,7 @@ console.log("Notificação criada com ID:", idNotificacao);
                 await notificacoesModel.criarNotificacao({
                     idUsuario: req.session.autenticado.id,
                     titulo: "⚠️ Erro no pagamento",
-                    preview: `❌ Olá, ${req.session.autenticado.nome_usuario}! Ocorreu um problema ao processar seu pagamento. Verifique os dados ou tente novamente.`,
+                    preview: `❌ Olá, ${req.session.autenticado.nome}! Ocorreu um problema ao processar seu pagamento. Verifique os dados ou tente novamente.`,
 
                     conteudo: `
                     <section class="payment-error-banner">
@@ -222,7 +222,7 @@ gravarPagamentoContratacao: async (req, res) => {
                 await notificacoesModel.criarNotificacao({
                     idUsuario: req.session.autenticado.id,
                     titulo: "⚠️ Erro no pagamento",
-                    preview: `❌ Olá, ${req.session.autenticado.nome_usuario}! Ocorreu um problema ao processar seu pagamento. Verifique os dados ou tente novamente.`,
+                    preview: `❌ Olá, ${req.session.autenticado.nome}! Ocorreu um problema ao processar seu pagamento. Verifique os dados ou tente novamente.`,
 
                     conteudo: `
                     <section class="payment-error-banner">

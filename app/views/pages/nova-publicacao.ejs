@@ -55,6 +55,56 @@
     
     <%- include('../partials/menu-logado'); %>
 
+
+ <% if (pro === false) { %>
+  <% if (resultado >= 3) { %>
+    <!-- Modal travando a tela -->
+    <section id="modal-limite" style="
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    ">
+      <section class="modal-conteudo-restricao">
+        <h2>Limite de publicações mensais atingido!</h2>
+        <p>Usuários gratuitos podem fazer até 3 publicações por mês.</p>
+        <p>Assine o Traço Perfeito Pro para ter publicações ilimitadas e outros benefícios.</p>
+        <section class="btns-modal-restricao">
+          <button onclick="window.location='/'" class="voltar-inicio">Voltar à página inicial</button>
+          <button onclick="window.location='/planos-assinaturas'" class="btn-assinar-plano">Assinar Traço Perfeito Pro</button>
+        </section>
+      </section>
+    </section>
+
+    <script>
+      // Impede qualquer interação com a página
+      document.body.style.overflow = 'hidden';
+    </script>
+
+  <% } else { %>
+    <!-- Aviso vermelho para quem ainda pode publicar -->
+ <% 
+  const restantes = 3 - resultado; 
+  const palavra = restantes === 1 ? 'publicação' : 'publicações';
+%>
+
+<section id="aviso-quant-publi">
+  <p>Você ainda pode fazer <%= restantes %> <%= palavra %> este mês.</p>
+  <button onclick="window.location='/planos-assinaturas'" class="btn-assinar-plano"
+    >
+    Assine o Traço Perfeito Pro e publique ilimitado
+  </button>
+</section>
+
+  <% } %>
+<% } %>
+
+
+
 <main>
     
             <h1 class="novaPublicacao">Nova Publicação</h1>
