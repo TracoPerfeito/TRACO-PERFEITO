@@ -14,7 +14,7 @@
 
 <main class="page-detalhes-container">
     <!-- Detalhes da Contratação oaq-->
-    <div class="page-detalhes-box">
+    <section class="page-detalhes-box">
         <h2>Detalhes da Contratação</h2>
         <p><strong>Projeto:</strong> <%= contratacao.NOME_PROJETO %></p>
         <p><strong>Contratante:</strong> <%= contratacao.NOME_CONTRATANTE %></p>
@@ -25,30 +25,30 @@
         <p><strong>Valor:</strong> R$ <%= contratacao.VALOR_TOTAL.toFixed(2) %></p>
         <p><strong>Prazo de entrega:</strong> <%= contratacao.DATA_ENTREGA.toLocaleDateString('pt-BR') %></p>
 
-        <div class="page-detalhes-hr"></div>
+        <section class="page-detalhes-hr"></section>
 
         <section class="page-detallhes-box-attention">
             <h3>Atenção!</h3>
             <p>Após realizar o pagamento, o projeto será iniciado pelo contratado.</p>
             <p>Certifique-se de que os dados estão corretos antes de prosseguir.</p>
-        </section>  </div>
+        </section>  </section>
 
     <!-- Resumo e Pagamento -->
-    <div class="box box-summary">
+    <section class="box box-summary">
         <h2 id="resumo">Resumo do Pagamento</h2>
-        <div class="summary-line">
+        <section class="summary-line">
             <span>Projeto:</span>
             <span><%= contratacao.NOME_PROJETO %></span>
-        </div>
-        <div class="summary-line">
+        </section>
+        <section class="summary-line">
             <span>Valor Total:</span>
             <span>R$ <%= contratacao.VALOR_TOTAL.toFixed(2) %></span>
-        </div>
-        <div class="hr-delicate"></div>
+        </section>
+        <section class="hr-delicate"></section>
 
         <!-- Botão Mercado Pago -->
-        <div id="button-checkout"></div>
-    </div>
+        <section id="button-checkout"></section>
+    </section>
 </main><%- include('../partials/rodape'); %>
 
 <script src="https://sdk.mercadopago.com/js/v2"></script>

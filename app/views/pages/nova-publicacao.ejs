@@ -128,7 +128,7 @@
                         <section class="form-grupo-1" id="titulo-publicacao">
                             <label for="titulo">Título:</label> <br>
                             <input type="text" id="titulo" name="titulo" class="caixa-texto" required>
-                            <div id="erro-titulo" class="mensagem-erro"></div>
+                            <section id="erro-titulo" class="mensagem-erro"></section>
                         </section>
                         <section class="form-grupo-1" id="categoria-publicacao">
                         <label for="categoria">Categoria:</label> <br>
@@ -149,7 +149,7 @@
                             <option value="Fotografia">Fotografia</option>
                             <option value="Outros">Outros</option>
                         </select>
-                        <div id="erro-select" class="mensagem-erro"></div>
+                        <section id="erro-select" class="mensagem-erro"></section>
 
                         
 <section id="outra-categoria-container" style="display:none; margin-top:10px;">
@@ -177,14 +177,14 @@ select.addEventListener('change', () => {
                             <label for="descricao">Descrição:</label> <br>
                             <textarea id="descricao" name="descricao" class="caixa-texto grande
                             " ></textarea>
-                            <div id="erro-descricao" class="mensagem-erro"></div>
+                            <section id="erro-descricao" class="mensagem-erro"></section>
                         </section>
                         <section class="form-grupo-1" id="tags-publicacao" >
                             <label for="descricao">Tags:</label> <br>
                            <input   id="tagInput"  name='input-custom-dropdown' class='tags-look tagify--custom-dropdown caixa-texto' placeholder='Adicione tags à sua publicação...' value='Design Gráfico, Arte Digital'>
                           
                           </section>
-                          <div id="erro-tags" class="mensagem-erro"></div>
+                          <section id="erro-tags" class="mensagem-erro"></section>
                     </section>
         
                     <!-----------------colocar aquele negocio do upload---------------------->
@@ -195,7 +195,7 @@ select.addEventListener('change', () => {
   <input type="file" id="image-input" name="images" accept="image/*" multiple />
   <span class="image-count" id="image-count">Nenhuma imagem selecionada. Selecione de 1 até 10 imagens</span>
 </section>
-<div id="erro-imagens" class="mensagem-erro"></div>
+<section id="erro-imagens" class="mensagem-erro"></section>
     <section class="preview-section" id="preview-section" style="display:none;">
       <section class="main-image-container" id="main-image-container">
         <img id="main-image" src="" alt="Main preview" />
@@ -240,23 +240,23 @@ select.addEventListener('change', () => {
 
 
 
-  <div id="limite-modal" class="modais">
-  <div class="dentromodais" >
+  <section id="limite-modal" class="modais">
+  <section class="dentromodais" >
     <p>Limite máximo de 10 imagens. As imagens extras foram descartadas.</p>
     <button onclick="fecharModal()" style="margin-top: 10px; padding: 6px 12px;">OK</button>
-  </div>
-</div>
+  </section>
+</section>
 
 
 <!-- Modal de aviso de múltiplas imagens -->
 
 
-<div id="avisoimgs-modal" class="modal-aviso-imgs modais">
-  <div class="modal-conteudo dentromodais">
+<section id="avisoimgs-modal" class="modal-aviso-imgs modais">
+  <section class="modal-conteudo dentromodais">
     <p><strong>Aviso:</strong> É recomendado que todas as imagens tenham proporções semelhantes para uma melhor visualização.</p>
     <button onclick="fecharModalavisoimgs()">Entendi</button>
-  </div>
-</div>
+  </section>
+</section>
 
 
         
@@ -450,7 +450,7 @@ function mostrarOrdem() {
   const boxes = Array.from(document.querySelectorAll('#thumbnail-row .img-box'));
   const ordemAtual = boxes.map(el => el.getAttribute('data-nome'));
   console.log('Ordem atual:', ordemAtual);
-  alert('Ordem atual:\n' + ordemAtual.join('\n')); // ou use um <div> para exibir se preferir
+  alert('Ordem atual:\n' + ordemAtual.join('\n')); 
 }
 // tirar até aqui 
 
@@ -777,8 +777,8 @@ function validarImagens() {
     const tagsArray = tagify.value.map(tag => tag.value);
     document.getElementById('confirm-tags').textContent = tagsArray.join(', ');
 
-    const confirmImagesDiv = document.getElementById('confirm-images');
-    confirmImagesDiv.innerHTML = '';
+    const confirmImagessection = document.getElementById('confirm-images');
+    confirmImagessection.innerHTML = '';
     modalImageFiles.forEach(file => {
       const reader = new FileReader();
       reader.onload = e => {
@@ -787,7 +787,7 @@ function validarImagens() {
         img.style.width = '80px';
         img.style.height = '80px';
         img.style.objectFit = 'cover';
-        confirmImagesDiv.appendChild(img);
+        confirmImagessection.appendChild(img);
       };
       reader.readAsDataURL(file);
     });

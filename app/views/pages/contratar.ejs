@@ -126,6 +126,9 @@ data-media-preco="<%= profissional.MEDIA_PRECO %>"
 data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
 >
 
+  <% if(profissional.isPro) { %>
+        <section class="badge-pro">PRO</section>
+    <% } %>
 
     
         <section class="card-header">
@@ -233,19 +236,19 @@ data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
   </section>
 
   <section class="filtro-opcoes filtro-slider">
-    <div class="slider-container">
+    <section class="slider-container">
       <input type="range" id="avaliacaoMin" min="0" max="5" step="0.1" value="3">
       <input type="range" id="avaliacaoMax" min="0" max="5" step="0.1" value="5">
-      <div class="slider-track"></div>
-    </div>
-    <div class="slider-labels">
+      <section class="slider-track"></section>
+    </section>
+    <section class="slider-labels">
       <span>0</span>
       <span>1</span>
       <span>2</span>
       <span>3</span>
       <span>4</span>
       <span>5</span>
-    </div>
+    </section>
     <p>De <span id="valorMin">3</span> ★ a <span id="valorMax">5</span> ★</p>
   </section>
 </section>
@@ -264,16 +267,16 @@ data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
 <section class="filtro-secao">
   <section class="filtro-header">Faixa de preço médio <ion-icon name="chevron-forward-outline"></ion-icon></section>
   <section class="filtro-opcoes filtro-slider">
-    <div class="slider-container">
+    <section class="slider-container">
       <input type="range" min="0" max="5000" step="100" value="100" class="slider" id="precoMin">
       <input type="range" min="0" max="5000" step="100" value="4000" class="slider" id="precoMax">
-      <div class="slider-track"></div>
-      <div class="slider-fill"></div>
-    </div>
-    <div class="slider-labels">
+      <section class="slider-track"></section>
+      <section class="slider-fill"></section>
+    </section>
+    <section class="slider-labels">
       <span id="precoMinLabel">R$ 0</span>
       <span id="precoMaxLabel">Acima de R$ 5.000</span>
-    </div>
+    </section>
   </section>
 </section>
 

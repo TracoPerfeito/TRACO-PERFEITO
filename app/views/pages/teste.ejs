@@ -66,16 +66,16 @@
   <section id="banner-perfil">
     <img src="<%= usuario.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>" id="banner-perfil">
   
- <div id="menu-usuario-wrapper">
+ <section id="menu-usuario-wrapper">
     <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff" onclick="toggleMenu()">
       <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
     </svg>
 
-    <div class="opcoes-menu-usuario" id="menuUsuario">
+    <section class="opcoes-menu-usuario" id="menuUsuario">
       <button class="btn-compartilhar" title="Compartilhar">Compartilhar</button>
       <button class="btn-denunciar" title="Denunciar">Denunciar</button>
-    </div>
-  </div>
+    </section>
+  </section>
 
 
   
@@ -206,7 +206,7 @@
   onmouseenter="mostrarControles(this)" 
   onmouseleave="esconderControles(this)">
   
-  <div class="container-imgs" 
+  <section class="container-imgs" 
     ontouchstart="startSwipe(event, this)" 
     ontouchmove="swipeMove(event)" 
     ontouchend="endSwipe(event, this)">
@@ -228,7 +228,7 @@
         alt="Imagem padrão"
       />
     <% } %>
-  </div>
+  </section>
 
   <% if (pub.imagens && pub.imagens.length > 1) { %>
     <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
@@ -238,11 +238,11 @@
       <ion-icon name="chevron-forward-outline"></ion-icon>
     </button>
 
-    <div class="indicadores">
+    <section class="indicadores">
       <% pub.imagens.forEach((_, idx) => { %>
         <span class="indicador<%= idx === 0 ? ' ativo' : '' %>"></span>
       <% }) %>
-    </div>
+    </section>
   <% } %>
 </section>
 
@@ -449,11 +449,11 @@
 <% if (podeAvaliar) { %>
   <form id="formAvaliacao" action="/enviar-avaliacao" method="POST">
     <label>Deixe sua avaliação:</label>
-    <div id="estrelas">
+    <section id="estrelas">
       <% for(let i=1; i<=5; i++){ %>
         <ion-icon name="star-outline" class="estrela" data-valor="<%= i %>"></ion-icon>
       <% } %>
-    </div>
+    </section>
 
     <input type="hidden" name="nota" id="nota" value="0">
        <input type="hidden" name="idProfissional" id="idProfissionalAvaliado" value="<%= usuario.ID_USUARIO %>">

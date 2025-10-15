@@ -30,7 +30,7 @@
     <section class="container-slider">
 
         <!-- Swiper Wrapper -->
-        <div class="swiper-wrapper">
+        <section class="swiper-wrapper">
 
             <!-- Slide 1 -->
 
@@ -60,18 +60,18 @@
 
           
 
-        </div> <!-- Fim do swiper-wrapper -->
+        </section> <!-- Fim do swiper-wrapper -->
 
         <!-- Controle de navegação -->
-        <div class="tranding-slider-control">
-            <div class="swiper-button-prev slider-arrow">
+        <section class="tranding-slider-control">
+            <section class="swiper-button-prev slider-arrow">
               
-            </div>
-            <div class="swiper-button-next slider-arrow">
+            </section>
+            <section class="swiper-button-next slider-arrow">
               
-            </div>
-            <div class="swiper-pagination"></div>
-        </div>
+            </section>
+            <section class="swiper-pagination"></section>
+        </section>
 
     </section>
 

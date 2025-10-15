@@ -13,28 +13,28 @@
 <%- include('../partials/menu-logado'); %>
 
 <section id="principal-content">
-    <div class="container">
+    <section class="container">
 
        
-        <div class="box">
+        <section class="box">
             <h3>Complete sua assinatura</h3>
             <p>Por favor, preencha seus dados para finalizar a assinatura.</p>
 
-            <div class="input-group">
+            <section class="input-group">
                 <input type="text" placeholder="Nome completo" value="<%= nome_usuario %>">
-            </div>
-            <div class="input-group">
+            </section>
+            <section class="input-group">
                 <input type="email" placeholder="E-mail" value="<%= email_usuario %>">
-            </div>
-            <div class="input-group input-flex">
+            </section>
+            <section class="input-group input-flex">
                 <input type="tel" id="celular" placeholder="Celular" value="<%= celular_usuario %>">
                 <input type="text" id="cpf" placeholder="CPF" value="<%= cpf_usuario %>" readonly>
-            </div>
+            </section>
 
-            <div class="hr-delicate"></div>
+            <section class="hr-delicate"></section>
 
             <p>Selecione o período de assinatura:</p>
-            <div class="period-buttons">
+            <section class="period-buttons">
                 <input type="radio" id="semanal" name="periodo" value="Semanal" data-preco="10" data-plano="semanal" checked class="plano-btn">
                 <label for="semanal">Semanal</label>
 
@@ -43,32 +43,32 @@
 
                 <input type="radio" id="anual" name="periodo" value="Anual" data-preco="300" data-plano="anual" class="plano-btn">
                 <label for="anual">Anual</label>
-            </div>
-        </div>
+            </section>
+        </section>
 
         <!-- Resumo da assinatura -->
-        <div class="box box-summary">
+        <section class="box box-summary">
             <h3>Resumo da assinatura</h3>
-            <div class="summary-line">
+            <section class="summary-line">
                 <span id="resumo-plano">Assinatura (Semanal)</span>
                 <span id="resumo-preco">R$ 10,00</span>
-            </div>
-            <div class="hr-delicate"></div>
-            <div class="plan-description">
+            </section>
+            <section class="hr-delicate"></section>
+            <section class="plan-description">
                 Acesso ilimitado a portfólios, publicações e propostas.<br>
                 Prioridade nas oportunidades.<br>
                 Destaques nas pesquisas.<br>
                 Sem taxa de vendas.<br>
                 Sem anúncios.
-            </div>
-            <div class="total">
+            </section>
+            <section class="total">
                 <span>Total</span>
                 <span id="total-preco">R$ 10,00</span>
-            </div>
-            <div id="button-checkout"></div>
-        </div>
+            </section>
+            <section id="button-checkout"></section>
+        </section>
 
-    </div>
+    </section>
 </section>
 
 

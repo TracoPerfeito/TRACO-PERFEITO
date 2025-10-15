@@ -339,14 +339,14 @@ background-color: var(--cor-fundo);
            <% publicacoesPortfolio.forEach(function(pub) { %>
         <section class="item-deletar" data-id="<%= pub.ID_PUBLICACAO %>">
           <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
-            <div class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
+            <section class="container-imgs" ontouchstart="startSwipe(event, this)" ontouchmove="swipeMove(event)" ontouchend="endSwipe(event, this)">
               <% pub.imagens.forEach(function(img, idx) { %>
                 <img
                   src="data:image/jpeg;base64,<%= img.toString('base64') %>"
                   class="publicacao-img<%= idx === 0 ? ' ativa' : '' %>"
                   alt="Imagem da publicação"/>
               <% }); %>
-            </div>
+            </section>
           
           </section>
         </section>

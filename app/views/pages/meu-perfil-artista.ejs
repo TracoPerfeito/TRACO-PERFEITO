@@ -274,7 +274,7 @@ errosArray.forEach((itemErro) => {
              <a href="/publicacao/<%= pub.ID_PUBLICACAO %>">
           <!-- Carrossel de imagens -->
           <section class="carrossel-imagens-explorar" onmouseenter="mostrarControles(this)" onmouseleave="esconderControles(this)">
-        <div class="container-imgs" 
+        <section class="container-imgs" 
     ontouchstart="startSwipe(event, this)" 
     ontouchmove="swipeMove(event)" 
     ontouchend="endSwipe(event, this)">
@@ -296,7 +296,7 @@ errosArray.forEach((itemErro) => {
         alt="Imagem padrão"
       />
     <% } %>
-  </div>
+  </section>
   
             <% if (pub.imagens.length > 1) { %>
               <button class="seta-carrossel esquerda" onclick="event.preventDefault();prevImg(this)">
@@ -306,11 +306,11 @@ errosArray.forEach((itemErro) => {
                 <ion-icon name="chevron-forward-outline"></ion-icon>
               </button>
   
-              <div class="indicadores">
+              <section class="indicadores">
                 <% pub.imagens.forEach((_, idx) => { %>
                   <span class="indicador<%= idx === 0 ? ' ativo' : '' %>"></span>
                 <% }) %>
-              </div>
+              </section>
             <% } %>
             </a>
           </section>

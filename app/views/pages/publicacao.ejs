@@ -416,25 +416,25 @@ let msgErros = {conteudo: ""};
                 
                
 <!-- Modal Excluir Comentário -->
-<div id="modalExcluirComentario" class="modal-coment hidden">
-  <div class="modal-content-coment">
+<section id="modalExcluirComentario" class="modal-coment hidden">
+  <section class="modal-content-coment">
     <h2>Excluir Comentário</h2>
     <form action="/excluir-comentario" method="POST">
   <input type="hidden" name="idComentario" id="excluirComentarioId" value="">
   <input type="hidden" name="idPublicacao" value="<%= publicacao.ID_PUBLICACAO %>">
       <p>Tem certeza que deseja excluir este comentário?</p>
-      <div class="botoes-modal">
+      <section class="botoes-modal">
         <button type="button" id="desistirdeexcluir"
         class="btn-fechar-modal-coment" >Cancelar</button>
         <button type="submit" id="excluir-coment-but">Sim, excluir</button>
-      </div>
+      </section>
     </form>
-  </div>
-</div>
+  </section>
+</section>
 
 <!-- Modal Denunciar Comentário -->
-<div id="modalDenunciarComentario" class="modal-coment hidden">
-  <div class="modal-content-coment">
+<section id="modalDenunciarComentario" class="modal-coment hidden">
+  <section class="modal-content-coment">
     <h2>Denunciar Comentário</h2>
     <form action="/denunciar-comentario" method="POST">
       <input type="hidden" name="idComentario" id="denunciarComentarioId" value="">
@@ -452,8 +452,8 @@ let msgErros = {conteudo: ""};
         <button type="submit">Enviar Denúncia</button>
       </section>
     </form>
-  </div>
-</div>
+  </section>
+</section>
 
  
  

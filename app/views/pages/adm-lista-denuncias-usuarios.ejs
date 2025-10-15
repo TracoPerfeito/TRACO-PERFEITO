@@ -45,7 +45,7 @@
             <span class="status-denuncia <%= den.STATUS %>"><%= den.STATUS %></span>
           </header>
 
-          <div class="conteudo-denuncia-perfil">
+          <section class="conteudo-denuncia-perfil">
             <p><strong>Denunciante:</strong> 
               <%= den.NOME_DENUNCIANTE %> (ID: <%= den.ID_USUARIO_DENUNCIANTE %>)
             </p>
@@ -56,7 +56,7 @@
             <p><strong>Data:</strong> 
               <%= new Date(den.DATA_DENUNCIA).toLocaleString('pt-BR') %>
             </p>
-          </div>
+          </section>
 
           <footer class="rodape-denuncia-perfil">
             <button class="btn-detalhes-denuncia">Ver Detalhes</button>
@@ -76,8 +76,8 @@
   </section>
 
   <!-- 🔹 MODAL -->
-  <div id="modalStatusPerfil" class="modal-perfil">
-    <div class="modal-conteudo-perfil">
+  <section id="modalStatusPerfil" class="modal-perfil">
+    <section class="modal-conteudo-perfil">
       <h2>Alterar Status da Denúncia</h2>
 
       <label for="acaoPerfil">Ação:</label>
@@ -87,7 +87,7 @@
         <option value="descartar">Descartar Denúncia</option>
       </select>
 
-      <div id="opcoesSuspensaoPerfil" style="display:none;">
+      <section id="opcoesSuspensaoPerfil" style="display:none;">
         <label for="tipoPenalidadePerfil">Tipo de Penalidade:</label>
         <select id="tipoPenalidadePerfil"></select>
 
@@ -95,14 +95,14 @@
 
         <label for="dataFimPerfil">Data de Término:</label>
         <input type="date" id="dataFimPerfil" />
-      </div>
+      </section>
 
-      <div class="botoes-modal-perfil">
+      <section class="botoes-modal-perfil">
         <button id="confirmarStatusPerfil" class="btn-confirmar">Confirmar</button>
         <button onclick="fecharModal()" class="btn-cancelar">Cancelar</button>
-      </div>
-    </div>
-  </div>
+      </section>
+    </section>
+  </section>
 
 
 

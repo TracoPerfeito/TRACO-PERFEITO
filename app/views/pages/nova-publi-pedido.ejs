@@ -61,7 +61,7 @@
         <section class="campo-form">
           <label for="titulo">Título:</label>
           <input type="text" id="titulo" name="titulo" required />
-          <div class="error-msg" id="errorTitulo"></div>
+          <section class="error-msg" id="errorTitulo"></section>
         </section>
 
         <section class="campo-form">
@@ -84,7 +84,7 @@
             <option value="Fotografia">Fotografia</option>
             <option value="Outros">Outros</option>
           </select>
-          <div class="error-msg" id="errorCategoria"></div>
+          <section class="error-msg" id="errorCategoria"></section>
         </section>
         <section class="campo-form">
           
@@ -94,18 +94,18 @@
         <section class="campo-form">
           <label for="prazoEntrega">Prazo de entrega (data):</label>
           <input type="date" id="prazoEntrega" name="prazoEntrega" required />
-          <div class="error-msg" id="errorPrazo"></div>
+          <section class="error-msg" id="errorPrazo"></section>
         </section>
         <section class="campo-form">
           <label for="orcamento">Orçamento (R$):</label>
           <input type="number" id="orcamento" name="orcamento" min="0" step="0.01" required />
-          <div class="error-msg" id="errorOrcamento"></div>
+          <section class="error-msg" id="errorOrcamento"></section>
         </section>
       </section>
       <!-- Coluna direita: Quill -->
       <section class="form-quill">
         <label for="descricao">Descrição detalhada:</label>
-        <div id="editor"></div>
+        <section id="editor"></section>
         <input type="hidden" id="descricao" name="descricao" />
       </section>
     </section>

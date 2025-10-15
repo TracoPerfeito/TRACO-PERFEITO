@@ -1,10 +1,10 @@
 <!-- <section class="filtros-publicacoes">
-  <div class="filtro">
+  <section class="filtro">
     <label>Cores:</label>
-    <div class="opcoes-cores" style="display:flex; flex-wrap:wrap; gap:5px;">
+    <section class="opcoes-cores" style="display:flex; flex-wrap:wrap; gap:5px;">
 
-    </div>
-  </div>
+    </section>
+  </section>
   <button id="aplicar-filtros">Filtrar</button>
 </section>
 
@@ -36,13 +36,13 @@ const tonsCores = {
 const containerCores = document.querySelector(".opcoes-cores");
 for (const [nome, tons] of Object.entries(tonsCores)) {
   tons.forEach(cor => {
-    const div = document.createElement("div");
-    div.className = "cor-opcao";
-    div.style.backgroundColor = cor;
-    div.dataset.cor = nome; // agrupa por cor popular
-    div.title = nome;
-    div.addEventListener("click", ()=> div.classList.toggle("selecionada"));
-    containerCores.appendChild(div);
+    const section = document.createElement("section");
+    section.className = "cor-opcao";
+    section.style.backgroundColor = cor;
+    section.dataset.cor = nome; // agrupa por cor popular
+    section.title = nome;
+    section.addEventListener("click", ()=> section.classList.toggle("selecionada"));
+    containerCores.appendChild(section);
   });
 }
 
