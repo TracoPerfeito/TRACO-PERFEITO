@@ -1269,19 +1269,21 @@ if (resultado.mudou && resultado.status === 1 && idUsuario != idDonoPublicacao) 
     try {
       const { idProposta } = req.body;
       if (!idProposta) {
-        return res.status(400).send("ID da proposta não enviado.");
-      }
-      const proposta = await publicacoesModel.findIdProposta(idProposta);
-      if (!proposta) {
-        return res.status(404).send("Proposta não encontrada.");
-      }
-      const idUsuario = req.session.autenticado.id;
-      const tipoUsuario = req.session.autenticado.tipo;
-      // Permitir exclusão se for dono OU administrador
-      if (proposta.ID_USUARIO !== idUsuario && tipoUsuario !== 'administrador') {
-        return res.status(403).send("Você não tem permissão para excluir esta proposta de projeto.");
-      }
+        
 
+            
+      req.session.dadosNotificacao = {
+        titulo: "Id da proposta não enviado.",
+        mensagem: "Não foi possível escluir sua proposta.",
+        tipo: "error"
+      };
+
+
+
+
+      return res.redirect("/oportunidades"); 
+      }
+      
 
 
       let resultado = await publicacoesModel.excluirProposta(idProposta);
@@ -1301,7 +1303,7 @@ if (resultado.mudou && resultado.status === 1 && idUsuario != idDonoPublicacao) 
 
 
 
-      return res.redirect("/"); 
+      return res.redirect("/oportunidades"); 
     } catch (erro) {
       console.error("Erro ao excluir proposta:", erro);
       

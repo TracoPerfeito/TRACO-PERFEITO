@@ -188,8 +188,8 @@
                           <% } else { %>
                             <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
 
-                               <img src="/imagens/sem-resultados.png" alt="Sem resultados">
-                            <p class="descricao-termo">
+                               <img src="/imagens/sem-resultados.png" alt="Sem resultados" style="opacity:0.5; margin: 15px auto; width: 200px;">
+                            <p class="descricao-termo" style="padding: 5px;">
                               Não encontramos publicações relacionadas a "<%= termoPesquisa %>". 
                               Tente outro termo ou verifique a ortografia.
                             </p>
@@ -219,18 +219,22 @@
                           <% } %>
                         <% } %>
                       </section>
-                         <% if (publicacoes.length === 0) { %>
-                           <section class="sem-publicacoes">
-                          
-                      <p style="font-family: 'Montserrat'; font-size: 2rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
-  Não há publicações no momento.
-</p>
 
-                        </section>
-                     
-                     
-                       
-                      <% } else { %>
+
+
+                        <% if (
+  publicacoes.length === 0 && 
+  !termoPesquisa && 
+  (typeof filtroNoExplorar === "undefined" || !filtroNoExplorar)
+) { %>
+  <section class="sem-publicacoes" style=" opacity: 0.6;display: flex; justify-content: center; flex-direction: column;  gap: 10px;">
+    <img src="/imagens/sem-resultados.png" alt="Sem publicações" style=" margin: 20px auto; width: 200px;">
+    <p style="font-family: 'Montserrat'; font-size: 1.5rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
+      Não há publicações no momento.
+    </p>
+  </section>
+<% } else { %>
+
                          <section class="container-pag-explorar">
                        <% publicacoes.forEach(pub => { %>
                         <section class="item-explorar item-1" 

@@ -93,8 +93,10 @@
 
   <!-- Lista de notificações -->
   <% if (notificacoes.length === 0) { %>
-       <img src="/imagens/notificacoes" alt="Sem notificações">
-    <p class="empty-message">Você não tem notificações no momento.</p>
+       <section style="opacity: 0.6; display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px auto;">
+         <img src="/imagens/sem-notificacoes.png" alt="Sem notificações" style="width: 200px;">
+             <p class="empty-message">Você não tem notificações no momento.</p>
+       </section>
   <% } else { %>
     <form id="notificacoes-form" action="/excluir-notificacoes" method="post">
       <input type="hidden" name="ids[]" class="hidden-id" value="">

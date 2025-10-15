@@ -736,7 +736,7 @@ router.post(
 
 router.get("/propostadeprojeto/:id", function (req, res){ //pagina de proposta de projeto
   const dadosNotificacao = req.session.dadosNotificacao || null;
-  req.session.dadosNotificacao = null;
+  
     listagensController.exibirProposta(req, res, dadosNotificacao);
 
 });

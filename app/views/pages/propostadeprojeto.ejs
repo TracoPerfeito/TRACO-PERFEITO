@@ -16,13 +16,22 @@
    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">  
    <script src="/js/proposta.js"></script>
+   
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="/js/simple-notify.js"></script>
 </head>
 <body>
-   <% if (typeof dadosNotificacao !== 'undefined' && dadosNotificacao) { %>
-      <script>
-        alert('<%= dadosNotificacao.mensagem %>');
-      </script>
-   <% } %>
+ 
+
+   
+ <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
+
 
    <!-- Aviso de conta pendente -->
    <% if (status_usuario === 'pendente') { %>
@@ -99,11 +108,12 @@
             <!-- Perfil do usuário -->
             <section class="perfil">
                <section class="foto-nome">
-                  <% if (proposta.FOTO_PERFIL) { %>
-                     <img src="data:image/jpeg;base64,<%= proposta.FOTO_PERFIL %>" class="foto-perfil-explorar">
-                  <% } else { %>
-                     <img src="/imagens/fotoperfil-default.jpeg" class="foto-perfil-explorar">
-                  <% } %>
+                     <img 
+                         src="<%= proposta.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" 
+                          class="foto-perfil-explorar"
+                        alt="Foto do usuário"
+                        onerror="this.onerror=null; this.src='/imagens/img.png'">
+       
                   <p class="nome-dono-post-ex">
                      <a href="/perfil/<%= proposta.ID_USUARIO %>"><%= proposta.NOME_USUARIO %></a>
                   </p>
@@ -300,6 +310,22 @@
 
 
 
+   
+
+<!-- Modal de confirmação de exclusão -->
+<section id="modal-excluir-proposta" class="modal">
+  <section class="modal-content">
+    <h3>Tem certeza que deseja excluir esta proposta?</h3>
+    <form id="formExcluirProposta" action="/excluir-proposta" method="POST">
+      <input type="hidden" name="idProposta" id="id-proposta-excluir" value="<%= proposta.ID_PROPOSTA %>">
+      <section class="btns-enviar-denuncia">
+        <button type="button" id="fechar-modal-excluir">Cancelar</button>
+        <button type="submit" id="excluir">Excluir</button>
+      </section>
+    </form>
+  </section>
+</section>
+
 
 
    
@@ -317,38 +343,40 @@
    <!-- Scripts -->
    <script src="/js/voltar.js"></script>
    <script src="/js/mobile-navbar.js"></script>
-   <script>
-      // Remover proposta da página após exclusão
-      document.addEventListener('DOMContentLoaded', function() {
-         var excluirForm = document.querySelector('.form-excluir-proposta');
-         if(excluirForm) {
-            excluirForm.addEventListener('submit', function(e) {
-               e.preventDefault();
-               if(confirm('Tem certeza que deseja excluir esta proposta?')) {
-                  var idProposta = excluirForm.querySelector('input[name="idProposta"]').value;
-                  fetch('/excluir-proposta', {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-                     body: 'idProposta=' + encodeURIComponent(idProposta)
-                  })
-                  .then(res => res.json())
-                  .then(data => {
-                     if(data.sucesso) {
-                        var card = document.querySelector('.containerp');
-                        if(card) card.remove();
-                        alert('Proposta excluída com sucesso!');
-                     } else {
-                        alert(data.erro || 'Erro ao excluir a proposta.');
-                     }
-                  })
+   
+<script>
 
-                  .catch(() => {
-                     alert('Erro ao excluir a proposta.');
-                  });
-               }
-            });
-         }
-      });
-   </script>
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const modalExcluir = document.getElementById("modal-excluir-proposta");
+  const inputExcluir = document.getElementById("id-proposta-excluir");
+  const btnFecharExcluir = document.getElementById("fechar-modal-excluir");
+  const formExcluir = document.getElementById("formExcluirProposta");
+
+  // Botões de excluir em cada card
+  document.querySelectorAll(".btn-excluir-proposta").forEach(btn => {
+    btn.addEventListener("click", () => {
+      inputExcluir.value = btn.dataset.id; // seta o ID da proposta no form do modal
+      modalExcluir.style.display = "block";
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  // Fechar modal
+  btnFecharExcluir.addEventListener("click", () => {
+    modalExcluir.style.display = "none";
+    document.body.style.overflow = "auto";
+  });
+
+  // Fechar clicando fora
+  modalExcluir.addEventListener("click", (e) => {
+    if (e.target === modalExcluir) {
+      modalExcluir.style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+  });
+});
+
+</script>
 </body>
 </html>

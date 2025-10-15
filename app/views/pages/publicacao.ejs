@@ -93,8 +93,12 @@ let msgErros = {conteudo: ""};
                <section class="publi-person-button">
   <section class="publi-info">
     <!-- Foto do perfil do usuário -->
-    <img src="<%= publicacao.FOTO_PERFIL_BANCO_USUARIO || '/imagens/default-profile.png' %>" class="foto-de-perfil" alt="Foto do perfil">
- 
+       <img 
+                         src="<%= publicacao.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" 
+                          class="foto-de-perfil"
+                        alt="Foto do usuário"
+                        onerror="this.onerror=null; this.src='/imagens/img.png'">
+       
     <!-- Link para o perfil do usuário, usando o ID do usuário -->
     <a href="<%= (autenticado && id_usuario === publicacao.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + publicacao.ID_USUARIO %>">
       <p class="nome-dono-post"><%= publicacao.NOME_USUARIO %></p>
@@ -290,7 +294,11 @@ let msgErros = {conteudo: ""};
         <section class="comentario" data-id-comentario="<%= comentario.ID_COMENTARIO %>">
           <section class="comentario-info-total">
             <section class="comentario-info">
-              <img src="<%= comentario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/default-profile.png' %>"  class="foto-de-perfil">
+               <img 
+                         src="<%= comentario.FOTO_PERFIL_BANCO_USUARIO || '/imagens/img.png' %>" 
+                          class="foto-de-perfil"
+                        alt="Foto do usuário"
+                        onerror="this.onerror=null; this.src='/imagens/img.png'">
               <a href="<%= (autenticado && id_usuario === comentario.ID_USUARIO) ? '/meu-perfil-artista' : '/perfil/' + comentario.ID_USUARIO %>">
                 <p class="nome-comentario"><%= comentario.NOME_USUARIO %></p>
               </a>
@@ -326,12 +334,14 @@ let msgErros = {conteudo: ""};
           <!-- Conteúdo do comentário -->
           <section class="escrita-comentario">
             <p><%= comentario.CONTEUDO_COMENTARIO %></p>
-          </section>
+          </section>jdjd
         </section>
       <% }) %>
     <% } else { %>
-         <img src="/imagens/mensagens.png" alt="Sem resultados">
-      <p>Seja o primeiro a comentar!</p>
+         <section style="display: flex; flex-direction:column; align-items: center; opacity: 0.5;">
+           <img src="/imagens/msgs.png" alt="Sem resultados" style="width:40%;  margin:20px auto;">
+                 <p>Seja o primeiro a comentar!</p>
+         </section>
     <% } %>
   </section>
 </section>
@@ -339,96 +349,7 @@ let msgErros = {conteudo: ""};
              
  
  
-            <section class="publi-relacionadas">
- 
- 
-                    <h2 id="publi-rel-nome-secao">
-                        Publicações Relacionadas
-                    </h2>
-                   
-               
-                <section class="publicacoes-rel-caixas">
-   
-                    <section class="publi-re">
-                        <img src="/imagens/2.jpg" >
- 
-                        <section class="publi-rel-info">
- 
-                            <section class="foto-nome-p-rel">
-                                <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                                <a href=/perfil>
-                                    <p>Joaquina Fernandes</p>
-                                </a>
-                            </section>
-                            <button class="like-button" title="Curtir">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </section>
- 
-                    </section>
- 
- 
-                    <section class="publi-re">
-                        <img src="/imagens/aao.jpg" >
- 
-                        <section class="publi-rel-info">
- 
-                            <section class="foto-nome-p-rel">
-                                <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                                <a href=/perfil>
-                                    <p>Joaquina Fernandes</p>
-                                </a>
-                            </section>
-                            <button class="like-button" title="Curtir">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </section>
- 
-                    </section>
- 
- 
-                    <section class="publi-re">
-                        <img src="/imagens/aas.jpg" >
- 
-                        <section class="publi-rel-info">
- 
-                            <section class="foto-nome-p-rel">
-                                <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                                <a href=/perfil>
-                                    <p>Joaquina Fernandes</p>
-                                </a>
-                            </section>
-                            <button class="like-button" title="Curtir">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </section>
- 
-                    </section>
- 
-                   
-                    <section class="publi-re">
-                        <img src="/imagens/aad.jpg" >
- 
-                        <section class="publi-rel-info">
- 
-                            <section class="foto-nome-p-rel">
-                                <img src="/imagens/fotoperfil1.jpeg" class="foto-de-perfil" >
-                                <a href=/perfil>
-                                    <p>Joaquina Fernandes</p>
-                                </a>
-                            </section>
-                            <button class="like-button" title="Curtir">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </section>
- 
-                    </section>
- 
-                   
-   
-                </section>
- 
-            </section>
+           
  
  
             </section>

@@ -94,8 +94,8 @@
       </p>
     <% } else { %>
       <h1 class="titulo-termo">Nenhum resultado encontrado</h1>
-         <img src="/imagens/sem-resultados.png" alt="Sem resultados">
-      <p class="descricao-termo">
+       <img src="/imagens/sem-resultados.png" alt="Sem resultados" style="opacity:0.5; margin: 15px auto; width: 200px;">
+                            <p class="descricao-termo" style="padding: 5px;">
         Não encontramos profissionais relacionados a "<%= termoPesquisa %>". 
         Tente outro termo ou verifique a ortografia.
       </p>
@@ -107,10 +107,12 @@
 
  
            
- <section class="container-perfis">
+ 
 
 
     <% if (profissionais.length > 0) { %>
+
+      <section class="container-perfis">
   <% profissionais.forEach(profissional => { %>
     <section class="card item-profissional"
     onclick="location.href='<%= (autenticado && id_usuario === profissional.ID_USUARIO) ? '/meu-perfil-artista' : ('/perfil/' + profissional.ID_USUARIO) %>'"
@@ -175,16 +177,22 @@ data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
             </section>
         </section>
     </section>
+    
   <% }) %>
-<% } else { %>
- <p style="font-family: 'Montserrat'; font-size: 2rem; text-align: center; color: var(--text-color);  margin-bottom: 20px;">
-  Não há profissionais no momento.
-</p>
 
-<% } %>
-
-
+  
  </section>
+<% } else if (profissionais.length === 0 && !termoPesquisa) { %>
+   <!-- Caso não haja profissionais e não seja uma pesquisa -->
+    <section class="sem-profissionais" style="opacity: 0.6; display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 10px;">
+      <img src="/imagens/sem-resultados.png" alt="Sem profissionais" style="margin: 20px auto; width: 200px;">
+      <p style="font-family: 'Montserrat'; font-size: 1.5rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
+        Não há profissionais no momento.
+      </p>
+    </section>
+  <% } %>
+
+
 
  <!-- Painel de filtro -->
 <section class="filtro-lateral" id="filtroLateral">

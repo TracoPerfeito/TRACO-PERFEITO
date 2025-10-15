@@ -178,7 +178,14 @@
           <section class="section">
             <h5>CPF</h5>
   
-            <input type="text"  name="cpf"   value="<%= valores.cpf %>" class=" dados-basicos     <%= cssErros.cpf %>"  required><br>
+            <input type="text" 
+             name="cpf"
+               value="<%= valores.cpf %>"
+             class=" dados-basicos  <%= cssErros.cpf %>"
+              maxlength="14"
+      inputmode="numeric"
+      autocomplete="off"
+        required><br>
              <span class="msg-erro"><%= msgErros.cpf %></span>
              <span class="msg-erro" for="cpf"></span>
           </section>
@@ -205,7 +212,10 @@
                    </section>
             <section class="section">
               <h5>Celular</h5>
-              <input type="text"  name="celular"  value="<%= valores.celular %>" class="dados-basicos   <%= cssErros.celular %>" required><br>
+              <input type="text"  name="celular"  value="<%= valores.celular %>" class="dados-basicos   <%= cssErros.celular %>" 
+              inputmode="numeric"
+      autocomplete="off"
+              required><br>
                <span class="msg-erro"><%= msgErros.celular %></span>
                <span class="msg-erro" for="celular"></span>
             </section>
@@ -228,7 +238,7 @@
                   <p> Insira sua data de nascimento: </p>
                   <input type="date" class="data-nasc"  name="data_nasc" required> <br>
   
-                  <span class="msg-erro" for="dataNasc"></span>
+                  <span class="msg-erro" for="dataNasc" style="transform: translateY(-10px);"></span>
               </section>
   
   
@@ -243,7 +253,7 @@
                     <option value="outro">Outro</option>
                   </select>
   
-                  <span class="msg-erro" for="genero"></span>
+                  <span class="msg-erro" for="genero" style="transform: translateY(-10px);"></span>
               </section>
   
           </section>
@@ -336,6 +346,102 @@
             });
         });
     </script>
+
+    <script>
+  // selectores específicos (usando name, como pediu)
+  const cpfInput = document.querySelector('input[name="cpf"]');
+  const celularInput = document.querySelector('input[name="celular"]');
+
+  // --- CPF ---
+  function aplicarMascaraCPF(e) {
+    let valor = e.target.value;
+    // remove tudo que não for dígito
+    valor = valor.replace(/\D/g, '');
+
+    // limita a 11 dígitos
+    if (valor.length > 11) valor = valor.slice(0, 11);
+
+    // aplica formatação: 000.000.000-00
+    valor = valor.replace(/^(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+    valor = valor.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+
+    e.target.value = valor;
+  }
+
+  // lida com paste pra limpar caracteres estranhos
+  function handlePasteCPF(e) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const digits = pasted.replace(/\D/g, '').slice(0, 11);
+    e.target.value = digits;
+    // dispara input para formatar
+    aplicarMascaraCPF({ target: e.target });
+  }
+
+  // --- CELULAR (dinâmico 10 ou 11 dígitos) ---
+  function aplicarMascaraCelular(e) {
+    let valor = e.target.value;
+    valor = valor.replace(/\D/g, ''); // só dígitos
+
+    // limita a 11 dígitos (DDD + número)
+    if (valor.length > 11) valor = valor.slice(0, 11);
+
+    // separa DDD do restante
+    const ddd = valor.slice(0, 2);
+    const resto = valor.slice(2);
+
+    let formatado = '';
+    if (resto.length === 0) {
+      formatado = ddd ? `(${ddd}` : '';
+    } else if (resto.length <= 8) {
+      // formato para 8 dígitos no número: (AA) 0000-0000
+      const parte1 = resto.slice(0, 4);
+      const parte2 = resto.slice(4);
+      formatado = `(${ddd}) ${parte1}${parte2 ? '-' + parte2 : ''}`;
+    } else {
+      // resto.length === 9 -> formato (AA)0 0000-0000
+      const primeira = resto.slice(0, 1);
+      const parte1 = resto.slice(1, 5);
+      const parte2 = resto.slice(5);
+      formatado = `(${ddd})${primeira} ${parte1}${parte2 ? '-' + parte2 : ''}`;
+    }
+
+    // se DDD incompleto (menos de 2 dígitos)
+    if (ddd.length < 2) {
+      formatado = `(${ddd}`;
+    }
+
+    e.target.value = formatado;
+  }
+
+  function handlePasteCelular(e) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const digits = pasted.replace(/\D/g, '').slice(0, 11);
+    e.target.value = digits;
+    aplicarMascaraCelular({ target: e.target });
+  }
+
+  // --- eventos ---
+  if (cpfInput) {
+    cpfInput.addEventListener('input', aplicarMascaraCPF);
+    cpfInput.addEventListener('paste', handlePasteCPF);
+    // previne entrada de letras via keypress (opcional, mas útil)
+    cpfInput.addEventListener('keypress', function (ev) {
+      if (!/\d/.test(ev.key)) ev.preventDefault();
+    });
+  }
+
+  if (celularInput) {
+    celularInput.addEventListener('input', aplicarMascaraCelular);
+    celularInput.addEventListener('paste', handlePasteCelular);
+    celularInput.addEventListener('keypress', function (ev) {
+      if (!/\d/.test(ev.key)) ev.preventDefault();
+    });
+  }
+</script>
+
       <script src="js/voltar.js"></script>
     
 </body>

@@ -905,7 +905,8 @@ button:hover {
   display: none; /* inicialmente escondido */
   flex-direction: column;
   gap: 5px;
-  background: rgba(0,0,0,0.05);
+  background: #fafafa;
+  color: #484848;
   border-radius: 5px;
   padding: 5px;
   z-index: 30;
@@ -920,12 +921,13 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: #7490C9;
-  color: #fff;
+  width: 100%;
   border: none;
+  border-bottom: 1px solid #484848;
   padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
+  font-family: "Josefin Sans";
   font-size: 13px;
   transition: all 0.2s;
 }

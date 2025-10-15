@@ -140,12 +140,26 @@ previewMsg = texto;
                     as msgs vao aqui -->
 
 
-                        <section id="msg-placeholder" class="placeholder">
-                          Selecione um contato para começar a conversar.
-
-
-                             <img src="/imagens/mensagens.png" alt="Sem resultados">
-                        </section>
+                     <section 
+  id="msg-placeholder" 
+  class="placeholder" 
+  style="
+    margin: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    justify-content: center; 
+    align-items: center; /* <-- adiciona isso */
+    text-align: center;  /* <-- garante que o texto fique centralizado */
+  "
+>
+  <p style="font-family: 'Montserrat';">Selecione um contato para começar a conversar.</p>
+  <img 
+    src="/imagens/msgs.png" 
+    alt="Sem resultados" 
+    style="opacity: 0.6; width: 200px;"
+  >
+</section>
 
 
         

@@ -117,6 +117,12 @@ errosArray.forEach((itemErro) => {
 
 
 
+
+ <%- include('../partials/modal-seguidores') %>
+  
+  
+
+
 <script>
   window.onload = function() {
     console.log('Data received:', valores);
@@ -140,8 +146,9 @@ errosArray.forEach((itemErro) => {
    
     <section class="base_cabecalho">
       <section id="banner-perfil">
-         <img src="<%= valores.img_capa_banco %>" alt="Capa do perfil" id="banner-perfil">
-
+       
+ <img src="<%= valores.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.png' %>" id="banner-perfil">
+  
       </section>
       <section class="coluna_contaneir">
         <section class="coluna-esquerda">
@@ -149,10 +156,8 @@ errosArray.forEach((itemErro) => {
           <section class="img__container">
 
           
-            
- <img src="<%= valores.img_perfil_banco %>" alt="Foto de perfil" id="imgFoto">
-           
-       
+  <img src="<%= valores.FOTO_PERFIL_BANCO_USUARIO || '/imagens/foto-perfil.png' %>" alt="Perfil" id="imgFoto">
+        
             
            
           </section>
@@ -178,8 +183,17 @@ errosArray.forEach((itemErro) => {
          <% if (tipo_usuario === 'profissional') { %>
             <ul class="quan-p-t-c">
               <li title="Quantidade de publicações feitas por você."><span> <%=publicacoes.length %></span>Publicações</li>
-              <li title="Quantidade de portfólios criados por você."><span><%= qntPortfolios %></span>Portfólios</li>
+              <li title="Quantidade de portfólios criados por você."><span><%= valores.QTD_PORTFOLIOS %></span>Portfólios</li>
               <li title="Quantidade de vezes que você foi contratado através plataforma."><span>0</span>Contratações</li>
+
+                       
+<li id="btnAbrirModalSeguidores" 
+    data-userid="<%= valores.ID_USUARIO %>" 
+    title="Quantidade de seguidores de <%= valores.NOME_USUARIO %>">
+  <span><%= valores.QTD_SEGUIDORES; %></span> Seguidores
+</li>
+
+              
               
             </ul>
           <% } %>
@@ -242,16 +256,17 @@ errosArray.forEach((itemErro) => {
                 <% if (tipo_usuario === 'profissional') { %>
                   <a href=/nova-publicacao class="btn-link">Nova Publicação</a>
                 <% } else { %>
-                  <a href=/nova-publi-c-c class="btn-link">Nova Proposta de Projeto</a>
+                  <a href=/nova-publi-pedido class="btn-link">Nova Proposta de Projeto</a>
                 <% } %>
 
 
           </section>
 
           
-<section class="publi">
+
   
             <% if (publicacoes.length > 0) { %>
+              <section class="publi">
       <% publicacoes.forEach(pub => { %>
       
         <section class="publi-perfil">
@@ -335,17 +350,19 @@ errosArray.forEach((itemErro) => {
   
     
       <% }) %>
-    <% } else { %>
-      <section class="sem-publicacoes">
-           <img src="/imagens/sem-resultados.png" alt="Sem resultados">
-        <p>Você ainda não publicou nada.</p>
       </section>
+    <% } else { %>
+      <section class="sem-profissionais" style="opacity: 0.6; display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 10px;">
+      <img src="/imagens/sem-resultados.png" alt="Sem publicações" style="margin: 20px auto; width: 160px;">
+      <p style="font-family: 'Montserrat'; font-size: 1rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
+        Você ainda não publicou nada.      </p>
+    </section>
     <% } %>
   </section>
 </section>
 
         
-        </section>
+        
       </section>
     
 
@@ -353,50 +370,58 @@ errosArray.forEach((itemErro) => {
 
     
 <% if (tipo_usuario === 'profissional') { %>
-    <h2 id="secao-avaliacoes-h2">
-        Avaliações de seus clientes
-    </h2>
-    
+   
+  <h2 id="secao-avaliacoes-h2">
+    Avaliações de seus clientes
+</h2>
+<% if (avaliacoes.length > 0) { %>
+    <small id="qtd-ava">
+  <%= avaliacoes.length %> 
+  <%= avaliacoes.length === 1 ? 'avaliação' : 'avaliações' %> 
+  - Média: <%= usuario.MEDIA_NOTA %>
+</small>
+
     <section class="carousel-container">
-     <!--   <button class="carousel-button prev">&#10094;</button>
-        
-         <section id="secao-avaliacoes" class="carousel-track">
+        <button class="carousel-button prev">&#10094;</button>
+        <section id="secao-avaliacoes" class="carousel-track">
+            <% avaliacoes.forEach(av => { %>
+                <section class="avaliacao">
+                    <section class="info-criador-ava">
+                     
+                        <img src="<%= av.FOTO_AVALIADOR || '/imagens/foto-perfil.png' %>" class="foto-de-perfil">
+                        <a href="/perfil/<%= av.ID_AVALIADOR %>">
+                            <p class="nome-criador-ava"><%= av.NOME_AVALIADOR %></p>
+                        </a>
+                    </section>
+                    
+                    <section class="estrelinhas-avaliacao">
+                    <% for(let i=1; i<=5; i++) { %>
+    <% if(i <= av.NOTA) { %>
+        <ion-icon name="star" class="estrela-preenchida"></ion-icon>
+    <% } else { %>
+        <ion-icon name="star-outline" class="estrela-vazia"></ion-icon>
+    <% } %>
+<% } %>
 
-
-            
-          
-
-
-
-            <section class="avaliacao">
-                <section class="info-criador-ava">
-                    <img src="imagens/fotoperfil1.jpeg" class="foto-de-perfil">
-                    <a href="/perfil">
-                        <p class="nome-criador-ava"> Mariana Sanchez</p>
-                    </a>
+                    </section>
+                    
+                    <section class="conteudo-avaliacao">
+                        <p><%= av.COMENTARIO %></p>
+                    </section>
                 </section>
-                <section class="estrelinhas-avaliacao">
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon>
-                    <ion-icon name="star-outline" class="far estrela"></ion-icon> <br>
-                </section>
-                <section class="conteudo-avaliacao">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipis
-                        is ea expedita modi atque magn
-                        am tenetur obcaecati labore!</p>
-                </section>
-            </section>
-           
-        </section> 
-
-        
-        
-        <button class="carousel-button next">&#10095;</button> -->
-
-        <p class="aviso-avaliacoes">Você ainda não possui nenhuma avaliação.</p>
+            <% }) %>
+        </section>
+        <button class="carousel-button next">&#10095;</button>
     </section>
+<% } else { %>
+     <section class="sem-profissionais" style="opacity: 0.6; display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 10px;">
+      <img src="/imagens/estrelinha.png" alt="Sem avaliações" style="margin: 20px auto; width: 150px;">
+      <p style="font-family: 'Montserrat'; font-size: 1rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
+        Você ainda não possui avaliações.
+      </p>
+    </section>
+<% } %>
+
     <% } %>
 
 

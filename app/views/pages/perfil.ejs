@@ -67,13 +67,14 @@
     <img src="<%= usuario.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.png' %>" id="banner-perfil">
   
  <section id="menu-usuario-wrapper">
-    <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff" onclick="toggleMenu()">
+    <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff" onclick="abrirMenuzin()">
       <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
     </svg>
 
     <section class="opcoes-menu-usuario" id="menuUsuario">
-      <button class="btn-compartilhar" title="Compartilhar">Compartilhar</button>
-      <button class="btn-denunciar" title="Denunciar">Denunciar</button>
+    
+     <button class="btn-denunciar-usuario" data-id="<%= usuario.ID_USUARIO %>">Denunciar Usuário</button>
+
     </section>
   </section>
 
@@ -188,8 +189,9 @@
           </section>
 
        
-<section class="publi">
+
   <% if (publicacoes.length > 0) { %>
+    <section class="publi">
     <% publicacoes.forEach(pub => { %>
       
       <section class="publi-perfil">
@@ -385,13 +387,16 @@
 
  
     <% }) %>
+    </section>
   <% } else { %>
-    <section class="sem-publicacoes">
-         <img src="/imagens/sem-resultados.png" alt="Sem resultados">
-      <p>Este usuário ainda não publicou nada.</p>
+   <section class="sem-profissionais" style="opacity: 0.6; display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 10px;">
+      <img src="/imagens/sem-resultados.png" alt="Sem publicações" style="margin: 20px auto; width: 160px;">
+      <p style="font-family: 'Montserrat'; font-size: 1rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
+        Este usuário ainda não publicou nada.
+      </p>
     </section>
   <% } %>
-</section>
+
 
 
         
@@ -445,8 +450,12 @@
         <button class="carousel-button next">&#10095;</button>
     </section>
 <% } else { %>
-     <img src="/imagens/sem-resultados.png" alt="Sem resultados">
-    <p class="nao-tem">Este profissional ainda não tem avaliações.</p>
+     <section class="sem-profissionais" style="opacity: 0.6; display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 10px;">
+      <img src="/imagens/estrelinha.png" alt="Sem avaliações" style="margin: 20px auto; width: 150px;">
+      <p style="font-family: 'Montserrat'; font-size: 1rem; text-align: center; color: var(--text-color); margin-bottom: 20px;">
+        Este usuário ainda não recebeu nenhuma avaliação.
+      </p>
+    </section>
 <% } %>
 
 
@@ -554,22 +563,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 <script>
-function toggleMenu() {
-  const menuUser = document.getElementById('menuUsuario');
-  menuUser.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+function abrirMenuzin() {
+  const menuzin = document.getElementById('menuUsuario');
+  menuzin.classList.toggle('ativo');
 }
 </script>
+
 
 <section id="modalDenunciaUsuario" class="modal">
   <section class="modal-content">
     <h3>Qual o motivo da denúncia?</h3>
-    <form id="formDenunciaUsuario">
+    <form id="formDenunciaUsuario" action="/denunciar-usuario" method="post">
       <input type="hidden" name="idUsuarioDenunciado" id="idUsuarioDenunciadoInput">
 
-      <label><input type="radio" name="motivo" value="Assédio"> Assédio</label><br>
-      <label><input type="radio" name="motivo" value="Conteúdo inapropriado"> Conteúdo inapropriado</label><br>
-      <label><input type="radio" name="motivo" value="Outro"> Outro</label><br><br>
+      <label>
+    <input type="radio" name="motivo" value="Assédio">
+    Assédio
+  </label>
 
+  <label>
+    <input type="radio" name="motivo" value="Racismo">
+    Racismo
+  </label>
+
+  <label>
+    <input type="radio" name="motivo" value="Plágio">
+    Plágio
+  </label>
+
+  <label>
+    <input type="radio" name="motivo" value="Perfil falso">
+    Perfil falso
+  </label>
+
+  <label>
+    <input type="radio" name="motivo" value="Conteúdo ofensivo">
+    Conteúdo ofensivo
+  </label>
+
+  <label>
+    <input type="radio" name="motivo" value="Preconceito">
+    Preconceito
+  </label>
+
+  <label>
+    <input type="radio" name="motivo" value="Outro">
+    Outro
+  </label>
       <button type="submit">Enviar denúncia</button>
       <button type="button" id="fecharModalUsuario">Cancelar</button>
     </form>

@@ -25,7 +25,7 @@ const listagensController = {
 //         return { 
 //           ...prof, 
 //           QUANT_SEGUIDORES,
-//           QUANT_PUBLICACOES
+//           QUANT_PUBLICACOESdkl
 //         };
 //       })
 //     );
@@ -279,7 +279,15 @@ exibirPerfil: async (req, res, dadosNotificacao) => {
     const usuario = await listagensModel.findIdusuario(id, idLogado);
 
     if (!usuario) {
-      return res.status(404).send('Usuário não encontrado');
+       console.log("Não obteve resultados na busca! nao achou o usuario");
+
+      req.session.dadosNotificacao = {
+        titulo: "Perfil não encontrado.",
+        mensagem: "O perfil que você tentou acessar não existe.",
+        tipo: "error"
+      };
+
+      return res.redirect("/");
     }
 
 
@@ -547,7 +555,7 @@ listarPropostas: async  (req, res, dadosNotificacao) => {
 
  
  
-  exibirProposta: async (req, res) => {
+  exibirProposta: async (req, res, dadosNotificacao) => {
   const id = req.params.id;
   try {
     const proposta = await listagensModel.findIdProposta(id, req.session.autenticado.id);
@@ -601,12 +609,7 @@ const sessao = req.session.autenticado;
     });
     
 
- 
 
-  
-    
-    const dadosNotificacao = req.session.dadosNotificacao || null;
-    req.session.dadosNotificacao = null;
 
     console.log("Dados de notificação:", dadosNotificacao);
     res.render('pages/propostadeprojeto', {
@@ -621,6 +624,7 @@ const sessao = req.session.autenticado;
       tipo_usuario: usuario ? (usuario.TIPO_USUARIO || usuario.tipo) : null,
       dadosNotificacao
     });
+       req.session.dadosNotificacao = null;
   } catch (erro) {
     console.log(erro);
    

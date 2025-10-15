@@ -18,7 +18,7 @@ function injetarLocais(req, res, next) {
       email: user.email,
       celular: user.celular,
       tipo: user.tipo,
-      status: user.status,
+      status: user.status_usuario,
       cpf: user.cpf,
       img_perfil_banco: user.img_perfil_banco || "/imagens/foto-perfil.png",
       img_capa_banco: user.img_capa_banco || "/imagens/bg.jpg",
@@ -33,7 +33,7 @@ function injetarLocais(req, res, next) {
 
     // E também mantém os "atalhos" que você já usa
     res.locals.tipo_usuario = user.tipo;
-    res.locals.status_usuario = user.status;
+    res.locals.status_usuario = user.status_usuario;
     res.locals.cpf_usuario = user.cpf;
     res.locals.nome_usuario = user.nome;
     res.locals.id_usuario = user.id;

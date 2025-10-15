@@ -36,11 +36,16 @@ body("nome").isLength({ min: 3, max: 50 }).withMessage('O nome deve ter de 3 a 5
 
     body("email").isEmail().withMessage('Insira um e-mail válido.'),
 
-    body('celular').isLength({ min: 10, max: 14 } ).withMessage('Número de celular inválido.')
+    body('celular') .customSanitizer(valor => valor.replace(/\D/g, ""))
+    .isLength({ min: 10, max: 14 } )
+    .withMessage('Número de celular inválido.')
+   
 
        .custom(celular => verificadorCelular(celular)).withMessage('Número de celular inválido.'),
 
-    body('cpf').isLength({ min: 11, max: 14 }).withMessage('CPF inválido.')
+    body('cpf')
+    .customSanitizer(valor => valor.replace(/\D/g, ""))
+    .isLength({ min: 11, max: 14 }).withMessage('CPF inválido.')
 
     .custom((cpf) => {
         if (validarCPF(cpf)) {
@@ -237,7 +242,7 @@ cadastrarUsuario: async (req, res) => {
         var dadosForm = {
             nome_usuario: req.body.nome,
             email_usuario: req.body.email,
-            celular_usuario: req.body.celular,
+            celular_usuario: req.body.celular.replace(/[^\d]/g, ''),
             senha_usuario: bcrypt.hashSync(req.body.password, salt),
             cpf_usuario: req.body.cpf.replace(/[^\d]/g, ''),
             data_nasc_usuario: req.body.data_nasc,
@@ -317,13 +322,16 @@ cadastrarUsuario: async (req, res) => {
      }
 
 
+req.session.autenticado = {
+    id: idUsuario,
+    tipo: dadosForm.tipo_usuario,
+    nome: dadosForm.nome_usuario,
+    email: dadosForm.email_usuario,
+    user: dadosForm.user_usuario,
+    status_usuario: "pendente",
+    isPro: false
+};
 
-      req.session.autenticado = {
-        id: idUsuario,
-        tipo: dadosForm.tipo_usuario,
-        nome: dadosForm.nome_usuario,
-        user: dadosForm.user_usuario
-      };
 
         const nome = dadosForm.nome_usuario;
         
@@ -350,8 +358,10 @@ cadastrarUsuario: async (req, res) => {
        
 
         } catch (error) {
-            console.log(error);
-            res.json({ erro: "Falha ao acessar dados" });
+            console.log("Problema:", error);
+             res.status(500).render('pages/erro-conexao', {
+      mensagem: "Não foi possível concluir seu cadastro. Tente novamente mais tarde."
+    });
            
         }
           
@@ -394,8 +404,20 @@ cadastrarUsuario: async (req, res) => {
     mostrarPerfil: async (req, res) => {
     try {
         let results = await usuariosModel.findId(req.session.autenticado.id);
-        const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
+     
+                if(!results){
+                  console.log("Não obteve resultados na busca!");
 
+              req.session.dadosNotificacao = {
+                titulo: "Ocorreu um erro.",
+                mensagem: "Não foi possível acessar seu perfil. Tente novamente mais tarde.",
+                tipo: "error"
+              };
+
+              return res.redirect("/");
+                }
+
+        console.log("Resultados do model:", results);
         const publicacoes = await listagensModel.listarPublicacoesUsuarioLogado(req.session.autenticado.id,  req.session.autenticado.id);
 
         const publicacoesComContagem = await Promise.all(
@@ -413,62 +435,27 @@ cadastrarUsuario: async (req, res) => {
           })
         );
 
-        const qntPortfolios = await listagensModel.contarPortfoliosUsuario(req.session.autenticado.id);
+
+    const avaliacoes = await listagensModel.listarAvaliacoes(req.session.autenticado.id);
+   
+    console.log("Avaliações do usuário:");
+      avaliacoes.forEach(av => {
+        console.log({
+          ID_AVALIACAO: av.ID_AVALIACAO,
+          ID_PROFISSIONAL: av.ID_PROFISSIONAL,
+          ID_AVALIADOR: av.ID_AVALIADOR,
+          COMENTARIO: av.COMENTARIO,
+          NOTA: av.NOTA,
+          DATA_CRIACAO: av.DATA_CRIACAO,
+          NOME_AVALIADOR: av.NOME_AVALIADOR,
+          FOTO_AVALIADOR: av.FOTO_AVALIADOR ? "(tem)" : "(não tem)"
+        });
+      });
  
-const usuario = results[0];
-
-let imgPerfil = usuario.FOTO_PERFIL_BANCO_USUARIO
-  ? "data:image/jpeg;base64," + usuario.FOTO_PERFIL_BANCO_USUARIO.toString("base64")
-  : usuario.FOTO_PERFIL_PASTA_USUARIO || "imagens/foto-perfil.png";
-
-let imgCapa = usuario.IMG_BANNER_BANCO_USUARIO
-  ? "data:image/jpeg;base64," + usuario.IMG_BANNER_BANCO_USUARIO.toString("base64")
-  : usuario.IMG_BANNER_PASTA_USUARIO || "imagens/bg.png";
-
-
-  const campos = {
-      id_usu: usuario.ID_USUARIO,
-      nome_usu: usuario.NOME_USUARIO,
-      email_usu: usuario.EMAIL_USUARIO,
-      celular_usu: usuario.CELULAR_USUARIO, 
-      // img_perfil_pasta: usuario.FOTO_PERFIL_PASTA_USUARIO,
-        img_perfil_banco: imgPerfil,
-  img_capa_banco: imgCapa,
-      nomeusu_usu: usuario.USER_USUARIO,
-      especializacao: dadosProfissional?.[0]?.ESPECIALIZACAO_DESIGNER || "",
-      linkedin: usuario.LINKEDIN_USUARIO || "",
-      pinterest: usuario.PINTEREST_USUARIO || "",
-      instagram: usuario.INSTAGRAM_USUARIO || "",
-      whatsapp: usuario.WHATSAPP_USUARIO || "",
-      senha_usu: ""
-    };
-
-         const notificacao = req.session.notificacao || null;
-         delete req.session.notificacao; 
-console.log("Resultado da consulta:", {
-  ID_USUARIO: results[0].ID_USUARIO,
-  NOME_USUARIO: results[0].NOME_USUARIO,
-  EMAIL_USUARIO: results[0].EMAIL_USUARIO,
-  CELULAR_USUARIO: results[0].CELULAR_USUARIO,
-  SENHA_USUARIO: results[0].SENHA_USUARIO,
-  CPF_USUARIO: results[0].CPF_USUARIO,
-  DATA_NASC_USUARIO: results[0].DATA_NASC_USUARIO,
-  GENERO_USUARIO: results[0].GENERO_USUARIO,
-  FOTO_PERFIL_BANCO_USUARIO: results[0].FOTO_PERFIL_BANCO_USUARIO ? "sim" : "não",
-  IMG_BANNER_BANCO_USUARIO: results[0].IMG_BANNER_BANCO_USUARIO ? "sim" : "não",
-  DESCRICAO_PERFIL_USUARIO: results[0].DESCRICAO_PERFIL_USUARIO,
-  LINKEDIN_USUARIO: results[0].LINKEDIN_USUARIO,
-  PINTEREST_USUARIO: results[0].PINTEREST_USUARIO,
-  INSTAGRAM_USUARIO: results[0].INSTAGRAM_USUARIO,
-  WHATSAPP_USUARIO: results[0].WHATSAPP_USUARIO,
-  TIPO_USUARIO: results[0].TIPO_USUARIO,
-  STATUS_USUARIO: results[0].STATUS_USUARIO,
-  USER_USUARIO: results[0].USER_USUARIO,
-});
-
-        res.render("pages/meu-perfil-artista", { listaErros: null, dadosNotificacao: notificacao,  valores: campos, msgErro: null, publicacoes: publicacoesComContagem, qntPortfolios });
+        res.render("pages/meu-perfil-artista", { listaErros: null, dadosNotificacao: null,  valores: results, msgErro: null, publicacoes: publicacoesComContagem, avaliacoes: avaliacoes });
     } catch (e) {
         console.log(e);
+        console.log("caiu no catch")
         res.render("pages/meu-perfil-artista", {
            listaErros:  [],
             valores: {
@@ -480,11 +467,13 @@ console.log("Resultado da consulta:", {
             },
             dadosNotificacao: null,
             msgErro: "Erro ao carregar perfil",
-            publicacoes: [] ,
-            qntPortfolios: 0
+            publicacoes: [],
+             avaliacoes: []
         });
     }
 },
+
+
 
 
 
@@ -635,7 +624,9 @@ if (duplicado) {
               tipo: "error"
             },
             valores: req.body,
-            abaAtiva: "dados-pessoais"
+            abaAtiva: "dados-pessoais",
+             img_perfil: req.session.autenticado.img_perfil_banco,
+  img_capa: req.session.autenticado.img_capa_banco
   });
 }
 
@@ -710,7 +701,7 @@ if (usuarioSucesso || profissionalSucesso) {
     req.session.autenticado.img_capa_banco = `data:image/png;base64,${dadosForm.IMG_BANNER_BANCO_USUARIO.toString('base64')}`;
   }
 
-  req.session.notificacao = {
+  req.session.dadosNotificacao = {
     titulo: "Perfil atualizado!",
     mensagem: "Seus dados foram salvos e já estão visíveis no seu perfil.",
     tipo: "success"
@@ -750,6 +741,11 @@ if (usuarioSucesso || profissionalSucesso) {
           });
     }
 },
+
+
+
+
+
 
 
 
@@ -1054,10 +1050,9 @@ if (!erros.isEmpty()) {
 
 
 
-
 mostrarPerfilEditar: async (req, res) => {
     try {
-        let results = await usuariosModel.findId(req.session.autenticado.id);
+        let results = await usuariosModel.findIdAntigo(req.session.autenticado.id);
          const dadosProfissional = await usuariosModel.findProfissional(req.session.autenticado.id);
 
          const usuario = results[0];
@@ -1106,6 +1101,29 @@ let imgCapa = usuario.IMG_BANNER_BANCO_USUARIO
     });
 }
 },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1218,27 +1236,28 @@ enviarEmailparaAtivarConta: async (req, res) => {
 
   try {
   const idUsuario = req.session.autenticado.id;
-const usuario = await usuariosModel.findId(idUsuario); 
-if (!usuario) {
-  console.log("Usuário não encontrado no DB:", idUsuario);
- res.redirect(redirectTo);
-}
-console.log("Email do usuário:", usuario[0].EMAIL_USUARIO,);
+  const emailUser = req.session.autenticado.email;
+// const usuario = await usuariosModel.findId(idUsuario); 
+// if (!usuario) {
+//   console.log("Usuário não encontrado no DB:", idUsuario);
+//  res.redirect(redirectTo);
+// }
+console.log("Email do usuário:", emailUser );
 
 
 
     const token = jwt.sign(
-      { userId: usuario[0].ID_USUARIO },
+      { userId: idUsuario },
       process.env.SECRET_KEY,
       { expiresIn: '1h' }
     );
 
-    const html = require('../util/email-ativar-conta')(process.env.URL_BASE, token, usuario[0].NOME_USUARIO);
+    const html = require('../util/email-ativar-conta')(process.env.URL_BASE, token, req.session.autenticado.nome);
 
-    enviarEmail(usuario[0].EMAIL_USUARIO, "Confirme seu e-mail no Traço Perfeito", null, html, () => {
+    enviarEmail(emailUser, "Confirme seu e-mail no Traço Perfeito", null, html, () => {
       req.session.dadosNotificacao = {
         titulo: "Sucesso!",
-        mensagem: `Enviamos um e-mail de confirmação para ${usuario[0].EMAIL_USUARIO}.`,
+        mensagem: `Enviamos um e-mail de confirmação para ${emailUser}.`,
         tipo: "success"
       };
       
@@ -1347,8 +1366,13 @@ ativarConta: async (req, res) => {
             id: user.ID_USUARIO,
             tipo: user.TIPO_USUARIO,
             nome: user.NOME_USUARIO,
-            user: user.USER_USUARIO
+            user: user.USER_USUARIO,
+                status_usuario: "ativo", 
+                 isPro: false 
           };
+
+       
+
 
           const nome = req.session.autenticado.nome;
 
