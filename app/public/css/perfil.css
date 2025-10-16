@@ -12,6 +12,42 @@
   
 }
 
+
+.badge-pro {
+  position: relative; 
+  padding: 2px 8px;
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: #fff;
+  display: inline-block;  
+  background: #92b8f2; 
+  border-radius: 5px;
+  overflow: hidden;
+  max-height: 15px;
+}
+
+.badge-pro::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.4), rgba(255,255,255,0), rgba(255,255,255,0.4));
+  transform: skewX(-20deg);
+  animation: shine-loop 2s linear infinite;
+}
+
+@keyframes shine-loop {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+
 .btn-voltar{
   border-radius: 50%;
   border: 1px solid var(--cor-btn-voltar-borda);
@@ -253,8 +289,8 @@ span {
  
 
 .embaixo {
-    margin-right: 100px;
-    margin-left: 100px;
+    /* margin-right: 100px;
+    margin-left: 100px; */
     padding-bottom: 30px;
     display: flex;
     flex-direction: column;

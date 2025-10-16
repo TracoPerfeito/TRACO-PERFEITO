@@ -215,79 +215,85 @@ const listagensModel = {
 
 findIdusuario: async (idUsuarioPerfil, idLogado = null) => {
   try {
-      const [linhas] = await pool.query(`
-        SELECT 
-          u.ID_USUARIO,
-          u.NOME_USUARIO,
-          u.USER_USUARIO,
-               u.TIPO_USUARIO,
-          u.FOTO_PERFIL_BANCO_USUARIO,
-          u.IMG_BANNER_BANCO_USUARIO,
-          u.DESCRICAO_PERFIL_USUARIO,
-          u.DATA_CADASTRO,
-          up.ESPECIALIZACAO_DESIGNER,
-          IFNULL(s.QUANT_SEGUIDORES, 0) AS QTD_SEGUIDORES,
-          IFNULL(p.QUANT_PUBLICACOES, 0) AS QTD_PUBLICACOES,
-          IFNULL(port.QTD_PORTFOLIOS, 0) AS QTD_PORTFOLIOS,
-          IFNULL(a.MEDIA_NOTA, 0) AS MEDIA_NOTA,
-          IFNULL(a.QTD_AVALIACOES, 0) AS QTD_AVALIACOES,
-          IFNULL(c.CONTRATOS_FINALIZADOS, 0) AS CONTRATOS_FINALIZADOS,
-          IF(f.ID_SEGUIDO IS NOT NULL AND f.STATUS_SEGUINDO = 1, 'seguindo', 'seguir') AS SEGUIDO
-        FROM USUARIOS u
-        LEFT JOIN USUARIO_PROFISSIONAL up ON up.ID_USUARIO = u.ID_USUARIO
-        LEFT JOIN (
-            SELECT ID_SEGUIDO, COUNT(*) AS QUANT_SEGUIDORES
-            FROM SEGUINDO
-            WHERE STATUS_SEGUINDO = 1
-            GROUP BY ID_SEGUIDO
-        ) s ON s.ID_SEGUIDO = u.ID_USUARIO
-        LEFT JOIN (
-            SELECT ID_USUARIO, COUNT(*) AS QUANT_PUBLICACOES
-            FROM PUBLICACOES_PROFISSIONAL
-            GROUP BY ID_USUARIO
-        ) p ON p.ID_USUARIO = u.ID_USUARIO
-        LEFT JOIN (
-            SELECT ID_USUARIO, COUNT(*) AS QTD_PORTFOLIOS
-            FROM PORTFOLIOS
-            GROUP BY ID_USUARIO
-        ) port ON port.ID_USUARIO = u.ID_USUARIO
-        LEFT JOIN (
-            SELECT 
-                ID_PROFISSIONAL, 
-                ROUND(AVG(NOTA), 1) AS MEDIA_NOTA,  
-                COUNT(*) AS QTD_AVALIACOES
-            FROM AVALIACOES_PROFISSIONAL
-            GROUP BY ID_PROFISSIONAL
-        ) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
-        LEFT JOIN (
-            SELECT ID_PROFISSIONAL, COUNT(*) AS CONTRATOS_FINALIZADOS
-            FROM CONTRATACOES
-            WHERE STATUS = 'FINALIZADA'
-            GROUP BY ID_PROFISSIONAL
-        ) c ON c.ID_PROFISSIONAL = u.ID_USUARIO
-        LEFT JOIN SEGUINDO f 
-            ON f.ID_SEGUIDO = u.ID_USUARIO 
-            AND f.ID_USUARIO = ?
-        WHERE u.ID_USUARIO = ?
-      `, [idLogado, idUsuarioPerfil]);
+    const [linhas] = await pool.query(`
+      SELECT 
+        u.ID_USUARIO,
+        u.NOME_USUARIO,
+        u.USER_USUARIO,
+        u.TIPO_USUARIO,
+        u.FOTO_PERFIL_BANCO_USUARIO,
+        u.IMG_BANNER_BANCO_USUARIO,
+        u.DESCRICAO_PERFIL_USUARIO,
+        u.DATA_CADASTRO,
+        up.ESPECIALIZACAO_DESIGNER,
+        IFNULL(s.QUANT_SEGUIDORES, 0) AS QTD_SEGUIDORES,
+        IFNULL(p.QUANT_PUBLICACOES, 0) AS QTD_PUBLICACOES,
+        IFNULL(port.QTD_PORTFOLIOS, 0) AS QTD_PORTFOLIOS,
+        IFNULL(a.MEDIA_NOTA, 0) AS MEDIA_NOTA,
+        IFNULL(a.QTD_AVALIACOES, 0) AS QTD_AVALIACOES,
+        IFNULL(c.CONTRATOS_FINALIZADOS, 0) AS CONTRATOS_FINALIZADOS,
+        IF(f.ID_SEGUIDO IS NOT NULL AND f.STATUS_SEGUINDO = 1, 'seguindo', 'seguir') AS SEGUIDO,
+        -- LEFT JOIN para trazer se é PRO
+        IF(pro.ID_USUARIO IS NOT NULL, TRUE, FALSE) AS isPro
+      FROM USUARIOS u
+      LEFT JOIN USUARIO_PROFISSIONAL up ON up.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN (
+          SELECT ID_SEGUIDO, COUNT(*) AS QUANT_SEGUIDORES
+          FROM SEGUINDO
+          WHERE STATUS_SEGUINDO = 1
+          GROUP BY ID_SEGUIDO
+      ) s ON s.ID_SEGUIDO = u.ID_USUARIO
+      LEFT JOIN (
+          SELECT ID_USUARIO, COUNT(*) AS QUANT_PUBLICACOES
+          FROM PUBLICACOES_PROFISSIONAL
+          GROUP BY ID_USUARIO
+      ) p ON p.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN (
+          SELECT ID_USUARIO, COUNT(*) AS QTD_PORTFOLIOS
+          FROM PORTFOLIOS
+          GROUP BY ID_USUARIO
+      ) port ON port.ID_USUARIO = u.ID_USUARIO
+      LEFT JOIN (
+          SELECT ID_PROFISSIONAL, ROUND(AVG(NOTA), 1) AS MEDIA_NOTA, COUNT(*) AS QTD_AVALIACOES
+          FROM AVALIACOES_PROFISSIONAL
+          GROUP BY ID_PROFISSIONAL
+      ) a ON a.ID_PROFISSIONAL = u.ID_USUARIO
+      LEFT JOIN (
+          SELECT ID_PROFISSIONAL, COUNT(*) AS CONTRATOS_FINALIZADOS
+          FROM CONTRATACOES
+          WHERE STATUS = 'FINALIZADA'
+          GROUP BY ID_PROFISSIONAL
+      ) c ON c.ID_PROFISSIONAL = u.ID_USUARIO
+      LEFT JOIN SEGUINDO f 
+          ON f.ID_SEGUIDO = u.ID_USUARIO 
+          AND f.ID_USUARIO = ?
+      -- LEFT JOIN na tabela ASSINATURAS para checar se é PRO
+      LEFT JOIN (
+          SELECT ID_USUARIO
+          FROM ASSINATURAS
+          WHERE STATUS_PAGAMENTO = 'approved'
+            AND NOW() BETWEEN DATA_INICIO AND DATA_FIM
+      ) pro ON pro.ID_USUARIO = u.ID_USUARIO
+      WHERE u.ID_USUARIO = ?
+    `, [idLogado, idUsuarioPerfil]);
 
-      if (linhas.length === 0) return null;
+    if (linhas.length === 0) return null;
 
-      const usuario = linhas[0];
+    const usuario = linhas[0];
 
-      // imagens
-      usuario.FOTO_PERFIL_BANCO_USUARIO = usuario.FOTO_PERFIL_BANCO_USUARIO
-        ? `data:image/png;base64,${usuario.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
-        : null;
-      usuario.IMG_BANNER_BANCO_USUARIO = usuario.IMG_BANNER_BANCO_USUARIO
-        ? `data:image/png;base64,${usuario.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
-        : null;
+    // transforma imagens em base64
+    usuario.FOTO_PERFIL_BANCO_USUARIO = usuario.FOTO_PERFIL_BANCO_USUARIO
+      ? `data:image/png;base64,${usuario.FOTO_PERFIL_BANCO_USUARIO.toString('base64')}`
+      : null;
+    usuario.IMG_BANNER_BANCO_USUARIO = usuario.IMG_BANNER_BANCO_USUARIO
+      ? `data:image/png;base64,${usuario.IMG_BANNER_BANCO_USUARIO.toString('base64')}`
+      : null;
 
-      return usuario;
+    return usuario;
 
   } catch (error) {
-      console.log(error);
-      throw error;
+    console.error("Erro no findIdusuario:", error);
+    throw error;
   }
 },
 

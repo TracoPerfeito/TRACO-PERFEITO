@@ -156,13 +156,13 @@ findId: async (id) => {
         u.ID_USUARIO,
         u.NOME_USUARIO,
         u.USER_USUARIO,
-          u.DATA_NASC_USUARIO,
-            u.CELULAR_USUARIO,
-              u.EMAIL_USUARIO,
-                u.WHATSAPP_USUARIO,
-                  u.LINKEDIN_USUARIO,
-                    u.PINTEREST_USUARIO,
-                      u.INSTAGRAM_USUARIO,
+        u.DATA_NASC_USUARIO,
+        u.CELULAR_USUARIO,
+        u.EMAIL_USUARIO,
+        u.WHATSAPP_USUARIO,
+        u.LINKEDIN_USUARIO,
+        u.PINTEREST_USUARIO,
+        u.INSTAGRAM_USUARIO,
         u.TIPO_USUARIO,
         u.FOTO_PERFIL_BANCO_USUARIO,
         u.IMG_BANNER_BANCO_USUARIO,
@@ -174,7 +174,9 @@ findId: async (id) => {
         IFNULL(port.QTD_PORTFOLIOS, 0) AS QTD_PORTFOLIOS,
         IFNULL(a.MEDIA_NOTA, 0) AS MEDIA_NOTA,
         IFNULL(a.QTD_AVALIACOES, 0) AS QTD_AVALIACOES,
-        IFNULL(c.CONTRATOS_FINALIZADOS, 0) AS CONTRATOS_FINALIZADOS
+        IFNULL(c.CONTRATOS_FINALIZADOS, 0) AS CONTRATOS_FINALIZADOS,
+        -- verifica se o usuário é PRO
+        IF(pro.ID_USUARIO IS NOT NULL, TRUE, FALSE) AS isPro
       FROM USUARIOS u
       LEFT JOIN USUARIO_PROFISSIONAL up ON up.ID_USUARIO = u.ID_USUARIO
       LEFT JOIN (
@@ -207,8 +209,16 @@ findId: async (id) => {
           WHERE STATUS = 'FINALIZADA'
           GROUP BY ID_PROFISSIONAL
       ) c ON c.ID_PROFISSIONAL = u.ID_USUARIO
+      -- JOIN para verificar assinatura ativa PRO
+      LEFT JOIN (
+          SELECT ID_USUARIO
+          FROM ASSINATURAS
+          WHERE STATUS_PAGAMENTO = 'approved'
+            AND NOW() BETWEEN DATA_INICIO AND DATA_FIM
+      ) pro ON pro.ID_USUARIO = u.ID_USUARIO
       WHERE u.ID_USUARIO = ?
     `, [id]);
+
 
     if (linhas.length === 0) {
       throw new Error("Usuário não encontrado");

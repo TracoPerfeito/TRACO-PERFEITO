@@ -9,6 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swa… rel="stylesheet">
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
   <!-- <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css"> -->
+   
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="/js/simple-notify.js"></script>
+
 
   <link rel="stylesheet" href="/css/adm-lista-denuncias-comentario.css">
 
@@ -26,6 +31,12 @@
 </head>
 <body>
  
+   <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
       <!--INICIO DO MENU TOP ADM -->
  
     <%- include('../partials/menu_top_adm.ejs'); %>
@@ -39,6 +50,8 @@
  
     <!-- MENU LATERAL DO ADM -->
  
+ 
+    <h1 class="titulo-denuncias">📋 Denúncias de propostas de projeto</h1>
  
  
  
@@ -66,8 +79,8 @@
 
 
           <section class="card-footer">
-            <button class="btn-btn-detalhes">
-              <i class="ri-search-2-line"></i> Detalhes
+            <button class="btn-btn-detalhes" onclick="window.location.href='/propostadeprojeto/<%= denuncia.ID_PROPOSTA %>'">
+              <i class="ri-search-2-line"></i> Ver proposta
             </button>
 
             <!-- Botão que abre o modal -->
@@ -85,35 +98,33 @@
     <% } %>
 
 
-      <!-- MODAL DE ALTERAR STATUS -->
-      <section id="modalStatus" class="modal" data-user-id="">
-        <section class="modal-content">
-          <h2>Alterar Status da Denúncia</h2>
+  <!-- MODAL DE ALTERAR STATUS -->
+<section id="modalStatus" class="modal">
+  <section class="modal-content">
+    <h2>Alterar Status da Denúncia</h2>
 
-          <label for="acao">Ação:</label>
-          <select id="acao">
-            <option value="">Selecione...</option>
-            <option value="suspender">Suspender Usuário</option>
-            <option value="descartar">Descartar Denúncia</option>
-          </select>
+    <form id="formStatusProposta" method="POST">
+      <input type="hidden" name="idDenuncia" id="idDenunciaProposta">
+      <input type="hidden" name="idUsuario" id="idUsuarioProposta">
 
-          <section id="opcoesSuspensao" style="display:none;">
-            <label for="penalidade">Tipo de Penalidade:</label>
-            <select id="penalidade">
-              <option value="">Selecione...</option>
-              <!-- options serão preenchidas por JS -->
-            </select>
+      <label for="acaoProposta">Ação:</label>
+      <select id="acaoProposta" name="acao">
+        <option value="">Selecione...</option>
+        <option value="suspender">Suspender Usuário</option>
+        <option value="descartar">Descartar Denúncia</option>
+      </select>
 
-            <p id="descricaoPenalidade" class="descricao"></p>
-
-            <label for="dataFim">Data de Término:</label>
-            <input type="date" id="dataFim" />
-          </section>
-
-          <button id="confirmarStatus">Confirmar</button>
-          <button onclick="fecharModal()">Cancelar</button>
-        </section>
+      <section id="opcoesSuspensaoProposta" style="display:none;">
+        <p>O usuário será suspenso imediatamente.</p>
       </section>
+
+      <section class="botoes-modal">
+        <button type="submit" class="btn-confirmar">Confirmar</button>
+        <button type="button" onclick="fecharModalProposta()" class="btn-cancelar">Cancelar</button>
+      </section>
+    </form>
+  </section>
+</section>
 
 
   </section>
@@ -123,7 +134,64 @@
     lucide.createIcons();
   </script>
 
-  <script src="/js/adm-alterarstatus_denuncia.js"></script>
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modalStatus");
+  const btnsStatus = document.querySelectorAll(".btn-btn-status"); // 🔹 corrigido aqui
+  const acao = document.getElementById("acaoProposta");
+  const opcoesSuspensao = document.getElementById("opcoesSuspensaoProposta");
+  const form = document.getElementById("formStatusProposta");
+
+  // Abrir modal e preencher IDs
+  btnsStatus.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idDenuncia = btn.getAttribute("data-id");
+      const idUsuario = btn.getAttribute("data-usuario");
+
+      document.getElementById("idDenunciaProposta").value = idDenuncia;
+      document.getElementById("idUsuarioProposta").value = idUsuario;
+
+      modal.style.display = "block";
+      acao.value = "";
+      opcoesSuspensao.style.display = "none";
+    });
+  });
+
+  // Fechar modal
+  function fecharModalProposta() {
+    modal.style.display = "none";
+    acao.value = "";
+    opcoesSuspensao.style.display = "none";
+  }
+  window.fecharModalProposta = fecharModalProposta;
+  window.addEventListener("click", e => { if (e.target === modal) fecharModalProposta(); });
+
+  // Mostrar aviso de suspensão
+  acao.addEventListener("change", () => {
+    opcoesSuspensao.style.display = acao.value === "suspender" ? "block" : "none";
+  });
+
+  // Mudar ação do form dependendo da escolha
+  form.addEventListener("submit", e => {
+    if (!acao.value) {
+      e.preventDefault();
+      return alert("Selecione uma ação antes de confirmar.");
+    }
+
+    const idUsuario = document.getElementById("idUsuarioProposta").value;
+
+    if (acao.value === "suspender") {
+      form.action = "/adm/desativar-usuario/" + idUsuario; // rota de suspensão
+      form.method = "POST"; // ou PUT, dependendo da tua rota
+    } else if (acao.value === "descartar") {
+      form.action = "/adm/excluir-denuncia-proposta"; // rota pra excluir denúncia
+      form.method = "POST";
+    }
+  });
+});
+</script>
+
+
 
       <!-- LINK DO MENU LATERAL -->
       <script src="/js/menu-lateral-adm.js"></script>

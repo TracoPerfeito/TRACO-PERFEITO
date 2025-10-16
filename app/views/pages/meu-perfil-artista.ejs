@@ -164,7 +164,12 @@ errosArray.forEach((itemErro) => {
 
         <section class="embaixo">
           <h2 id="dados-principais-perfil">
-          <h3 id="nome-perfil"> <%= nome_usuario %></h3>
+     
+            <h3 id="nome-perfil"> <%= nome_usuario %> <% if (valores.isPro) { %>
+              <section class="badge-pro">PRO</section>
+            <% } %></h3> 
+         
+
           <p><%= valores.especializacao %></p>
           <p>@<%= user_usuario %></p>
           

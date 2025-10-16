@@ -85,7 +85,9 @@ router.get(
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
-    admController.listarDenunciasComentarios(req, res);
+     const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+    admController.listarDenunciasComentarios(req, res, dadosNotificacao);
   }
 );
 
@@ -94,7 +96,9 @@ router.get(
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
-    admController.listarDenunciasPublicacoes(req, res);
+     const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+    admController.listarDenunciasPublicacoes(req, res, dadosNotificacao);
   }
 );
 
@@ -103,13 +107,13 @@ router.get(
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
-    admController.listarDenunciasProposta(req, res);
+     const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+    admController.listarDenunciasProposta(req, res, dadosNotificacao);
   }
 );
 
-
-// Desativar usuário (inativar)
-router.put(
+router.post(
   "/desativar-usuario/:id",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
@@ -118,7 +122,7 @@ router.put(
   }
 );
 
-router.put(
+router.post(
   "/ativar-usuario/:id",
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
@@ -152,7 +156,9 @@ router.get(
   verificarUsuAutenticado,
   verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
   (req, res) => {
-    admController.listarDenunciasUsuarios(req, res);
+    const dadosNotificacao = req.session.dadosNotificacao || null;
+    req.session.dadosNotificacao = null;
+    admController.listarDenunciasUsuarios(req, res, dadosNotificacao);
   }
 );
 
@@ -172,7 +178,41 @@ router.get("/adm-logout", limparSessao, function (req, res) {
 });
 
 
+router.post(
+  "/excluir-denuncia-usuario",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.excluirDenunciaUsuario(req, res);
+  }
+);
 
+router.post(
+  "/excluir-denuncia-comentario",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.excluirDenunciaComentario(req, res);
+  }
+);
+
+router.post(
+  "/excluir-denuncia-proposta",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.excluirDenunciaProposta(req, res);
+  }
+);
+
+router.post(
+  "/excluir-denuncia-publicacao",
+  verificarUsuAutenticado,
+  verificarUsuAutorizado(["administrador"], "pages/acesso-negado"),
+  (req, res) => {
+    admController.excluirDenunciaPublicacao(req, res);
+  }
+);
 
 
 

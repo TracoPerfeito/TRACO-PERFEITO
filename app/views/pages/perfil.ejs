@@ -50,7 +50,10 @@
   <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
 <% } else if (tipo_usuario === 'comum') { %>
   <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
-<% } else { %>
+<% } else if (tipo_usuario === 'administrador') { %>
+  <%- include('../partials/menu_adm_base', { tipo_usuario: tipo_usuario }) %>
+
+ <% } else { %>
   <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
 <% } %>
 
@@ -67,7 +70,7 @@
     <img src="<%= usuario.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.png' %>" id="banner-perfil">
   
  <section id="menu-usuario-wrapper">
-    <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff" onclick="abrirMenuzin()">
+    <svg class="icone-menu" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-color);" onclick="abrirMenuzin()">
       <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
     </svg>
 
@@ -90,7 +93,9 @@
 
 
         <section class="embaixo">
-          <h2 id="dados-principais-perfil"> <%= usuario.NOME_USUARIO %> </h2>
+          <h2 id="dados-principais-perfil"> <%= usuario.NOME_USUARIO %> <% if (usuario.isPro) { %>
+              <section class="badge-pro">PRO</section>
+            <% } %> </h2>
           <p><%= usuario.ESPECIALIZACAO_DESIGNER %></p>
 
           <p>@<%= usuario.USER_USUARIO %></p>

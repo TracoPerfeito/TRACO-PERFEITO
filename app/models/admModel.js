@@ -699,7 +699,69 @@ totalGanhosAssinaturas: async () => {
         }
     },
 
+
+
+    excluirDenunciaUsuario: async (idDenuncia) => {
+      try {
+       
+        await pool.query('DELETE FROM DENUNCIAS_USUARIOS WHERE ID_DENUNCIA = ?', [idDenuncia]);
+      
+        console.log("Denúncia excluída com sucesso.");
+        return true;
+      } catch (error) {
+        console.error('Erro ao excluir denúncia: ', error);
+        return false;
+      }
+    },
     
+
+
+    
+
+    excluirDenunciaComentario: async (idDenuncia) => {
+      try {
+       
+        await pool.query('DELETE FROM DENUNCIAS_COMENTARIOS WHERE ID_DENUNCIA = ?', [idDenuncia]);
+      
+        console.log("Denúncia excluída com sucesso.");
+        return true;
+      } catch (error) {
+        console.error('Erro ao excluir denúncia: ', error);
+        return false;
+      }
+    },
+    
+    
+
+    excluirDenunciaProposta: async (idDenuncia) => {
+      try {
+       
+        await pool.query('DELETE FROM DENUNCIAS_PROJETOS WHERE ID_DENUNCIA = ?', [idDenuncia]);
+      
+        console.log("Denúncia excluída com sucesso.");
+        return true;
+      } catch (error) {
+        console.error('Erro ao excluir denúncia: ', error);
+        return false;
+      }
+    },
+    
+    
+    
+    
+
+    excluirDenunciaPublicacao: async (idDenuncia) => {
+      try {
+       
+        await pool.query('DELETE FROM DENUNCIAS_PUBLICACOES WHERE ID_DENUNCIA = ?', [idDenuncia]);
+      
+        console.log("Denúncia excluída com sucesso.");
+        return true;
+      } catch (error) {
+        console.error('Erro ao excluir denúncia: ', error);
+        return false;
+      }
+    },
     
 
 

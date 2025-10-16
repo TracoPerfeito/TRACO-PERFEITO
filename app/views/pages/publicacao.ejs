@@ -41,15 +41,17 @@
  
  
  
- 
-<% if (tipo_usuario === 'profissional') { %>
+ <% if (tipo_usuario === 'profissional') { %>
   <%- include('../partials/menu-logado', { tipo_usuario: tipo_usuario }) %>
 <% } else if (tipo_usuario === 'comum') { %>
   <%- include('../partials/menu-c-c', { tipo_usuario: tipo_usuario }) %>
-<% } else { %>
+<% } else if (tipo_usuario === 'administrador') { %>
+  <%- include('../partials/menu_adm_base', { tipo_usuario: tipo_usuario }) %>
+
+ <% } else { %>
   <%- include('../partials/menu', { tipo_usuario: tipo_usuario }) %>
 <% } %>
- 
+
  
 <% if (dadosNotificacao && Object.keys(dadosNotificacao).length > 0) { %>
   <script>

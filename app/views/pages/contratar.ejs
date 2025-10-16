@@ -126,14 +126,14 @@ data-media-preco="<%= profissional.MEDIA_PRECO %>"
 data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
 >
 
-  <% if(profissional.isPro) { %>
+  <% if (profissional.isPro) { %>
         <section class="badge-pro">PRO</section>
-    <% } %>
+      <% } %>
 
     
         <section class="card-header">
            <img src="<%= profissional.IMG_BANNER_BANCO_USUARIO || '/imagens/bg.jpg' %>"  alt="Background Image"  class="background-image" onerror="this.onerror=null; this.src='/imagens/bg.png'">
-
+ 
         </section>
         <section class="card-content">
             <section class="profile">
@@ -142,7 +142,8 @@ data-is-pro="<%= profissional.isPro ? 'true' : 'false' %>"
                 <section class="info-prof">
   <section class="info-header">
     <section class="informacoes-card">
-        <h2 class="name"><%= profissional.NOME_USUARIO %></h2>
+        <h2 class="name"><%= profissional.NOME_USUARIO %></h2>  
+        
         <p class="role"><%= profissional.ESPECIALIZACAO_DESIGNER || 'Profissional' %></p>
     </section>
     <section class="nota-prof">

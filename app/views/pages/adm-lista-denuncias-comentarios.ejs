@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="/css/pag-adm.css">
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Mo… rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swa… rel="stylesheet">
+  
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="/js/simple-notify.js"></script>
+
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
   <!-- <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css"> -->
 
@@ -26,6 +31,12 @@
 </head>
 <body>
  
+   <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
       <!--INICIO DO MENU TOP ADM -->
  
     <%- include('../partials/menu_top_adm.ejs'); %>
@@ -41,6 +52,8 @@
  
  
  
+    <h1 class="titulo-denuncias">📋 Denúncias de comentários</h1>
+ 
  
   <section class="container">
     <% if (denuncias.length > 0) { %>
@@ -54,8 +67,8 @@
           </section>
 
           <section class="card-body">
-            <p><span class="label">Usuário Denunciante:</span> <%= denuncia.ID_USUARIO_DENUNCIANTE || 'Anônimo' %></p>
-            <p><span class="label">Usuário Denunciado:</span> <%= denuncia.ID_USUARIO_DENUNCIADO || 'Desconhecido' %></p>
+            <p><span class="label">Id Usuário Denunciante:</span> <%= denuncia.ID_USUARIO_DENUNCIANTE || 'Anônimo' %></p>
+            <p><span class="label">Id Usuário Denunciado:</span> <%= denuncia.ID_USUARIO_DENUNCIADO || 'Desconhecido' %></p>
             <p><span class="label">Comentário:</span> <%= denuncia.CONTEUDO_COMENTARIO %></p>
             <p><span class="label">Motivo:</span> <%= denuncia.MOTIVO %></p>
             <p><span class="label">Data da denúncia:</span> 
@@ -64,9 +77,7 @@
           </section>
 
           <section class="card-footer">
-            <button class="btn-btn-detalhes">
-              <i class="ri-search-2-line"></i> Detalhes
-            </button>
+           
 
             <!-- Botão que abre o modal -->
             <button 
@@ -84,44 +95,136 @@
 
 
       <!-- MODAL DE ALTERAR STATUS -->
-      <section id="modalStatus" class="modal" data-user-id="">
-        <section class="modal-content">
-          <h2>Alterar Status da Denúncia</h2>
+<!-- MODAL DE ALTERAR STATUS -->
+<section id="modalStatus" class="modal">
+  <section class="modal-content">
+    <h2>Alterar Status da Denúncia</h2>
 
-          <label for="acao">Ação:</label>
-          <select id="acao">
-            <option value="">Selecione...</option>
-            <option value="suspender">Suspender Usuário</option>
-            <option value="descartar">Descartar Denúncia</option>
-          </select>
+    <form id="formStatus" method="POST">
+      <input type="hidden" name="idDenuncia" id="idDenunciaInput">
+      <input type="hidden" name="idUsuario" id="idUsuarioInput">
 
-          <section id="opcoesSuspensao" style="display:none;">
-            <label for="penalidade">Tipo de Penalidade:</label>
-            <select id="penalidade">
-              <option value="">Selecione...</option>
-              <!-- options serão preenchidas por JS -->
-            </select>
+      <label for="acao">Ação:</label>
+      <select id="acao" name="acao">
+        <option value="">Selecione...</option>
+        <option value="suspender">Suspender Usuário</option>
+        <option value="descartar">Descartar Denúncia</option>
+      </select>
 
-            <p id="descricaoPenalidade" class="descricao"></p>
-
-            <label for="dataFim">Data de Término:</label>
-            <input type="date" id="dataFim" />
-          </section>
-
-          <button id="confirmarStatus">Confirmar</button>
-          <button onclick="fecharModal()">Cancelar</button>
-        </section>
+      <section id="opcoesSuspensao" style="display:none;">
+        <p>O usuário será suspenso.</p>
       </section>
 
-
+      <section class="botoes-modal">
+        <button type="submit" class="btn-confirmar">Confirmar</button>
+        <button type="button" onclick="fecharModal()" class="btn-cancelar">Cancelar</button>
+      </section>
+    </form>
   </section>
+</section>
+ </section>
+ 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modalStatus");
+  const btnsStatus = document.querySelectorAll(".btn-btn-status");
+  const acao = document.getElementById("acao");
+  const opcoesSuspensao = document.getElementById("opcoesSuspensao");
+  const form = document.getElementById("formStatus");
 
+  // Abrir modal e preencher IDs
+  btnsStatus.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idDenuncia = btn.getAttribute("data-id");
+      const idUsuario = btn.getAttribute("data-usuario");
+
+      document.getElementById("idDenunciaInput").value = idDenuncia;
+      document.getElementById("idUsuarioInput").value = idUsuario;
+
+      modal.style.display = "block";
+      acao.value = "";
+      opcoesSuspensao.style.display = "none";
+    });
+  });
+
+  // Fechar modal
+  function fecharModal() {
+    modal.style.display = "none";
+    acao.value = "";
+    opcoesSuspensao.style.display = "none";
+  }
+  window.fecharModal = fecharModal;
+  window.addEventListener("click", e => { if (e.target === modal) fecharModal(); });
+
+  // Mostrar aviso de suspensão
+  acao.addEventListener("change", () => {
+    opcoesSuspensao.style.display = acao.value === "suspender" ? "block" : "none";
+  });
+
+  // Mudar ação do form dependendo da opção
+  form.addEventListener("submit", e => {
+    if (!acao.value) {
+      e.preventDefault();
+      return alert("Selecione uma ação antes de confirmar.");
+    }
+
+    if (acao.value === "suspender") {
+      form.action = "/adm/desativar-usuario/" + document.getElementById("idUsuarioInput").value;
+      form.method = "POST"; // ou PUT se quiser
+    } else if (acao.value === "descartar") {
+      form.action = "/adm/excluir-denuncia-comentario";
+      form.method = "POST";
+    }
+  });
+});
+</script>
 
     <script>
     lucide.createIcons();
   </script>
 
-  <script src="/js/adm-alterarstatus_denuncia.js"></script>
+<script>
+
+
+  const modal = document.getElementById("modalStatus");
+const form = document.getElementById("formStatus");
+const acao = document.getElementById("acao");
+
+// Abrir modal
+document.querySelectorAll(".btn-btn-status").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const idDenuncia = btn.getAttribute("data-id");
+    const idUsuario = btn.getAttribute("data-usuario");
+
+    document.getElementById("idDenunciaInput").value = idDenuncia;
+    document.getElementById("idUsuarioInput").value = idUsuario;
+
+    acao.value = "";
+    modal.style.display = "block";
+  });
+});
+
+// Fechar modal
+function fecharModal() { modal.style.display = "none"; }
+window.addEventListener("click", e => { if (e.target === modal) fecharModal(); });
+
+// Ajusta action do form dinamicamente
+form.addEventListener("submit", e => {
+  const acaoSelecionada = acao.value;
+  if (!acaoSelecionada) {
+    e.preventDefault();
+    alert("Selecione uma ação antes de confirmar.");
+    return;
+  }
+
+  if (acaoSelecionada === "suspender") {
+    form.action = "/adm/desativar-usuario/" + document.getElementById("idUsuarioInput").value;
+  } else if (acaoSelecionada === "descartar") {
+    form.action = "/adm/excluir-denuncia-comentario";
+  }
+});
+
+</script>
 
       <!-- LINK DO MENU LATERAL -->
       <script src="/js/menu-lateral-adm.js"></script>

@@ -73,7 +73,8 @@ mostrarhome: (req, res, dadosNotificacao) => {
         res.render("pages/adm-lista-denuncias-comentarios", {
             autenticado: req.session.autenticado,
             logado: req.session.logado,
-            denuncias: DenunciasComentarios || []
+            denuncias: DenunciasComentarios || [],
+            dadosNotificacao
         });
         } catch (error) {
         console.error("Erro ao listar denúncias de comentários:", error);
@@ -92,7 +93,8 @@ mostrarhome: (req, res, dadosNotificacao) => {
         res.render("pages/adm-lista-denuncias-publicacoes", {
             autenticado: req.session.autenticado,
             logado: req.session.logado,
-            denuncias: DenunciasPublicacoes || []
+            denuncias: DenunciasPublicacoes || [],
+            dadosNotificacao
         });
         } catch (error) {
         console.error("Erro ao listar denúncias de publicações:", error);
@@ -111,7 +113,8 @@ mostrarhome: (req, res, dadosNotificacao) => {
         res.render("pages/adm-lista-denuncias-proposta", {
             autenticado: req.session.autenticado,
             logado: req.session.logado,
-            denuncias: DenunciasPropostas || []
+            denuncias: DenunciasPropostas || [],
+            dadosNotificacao
         });
         } catch (error) {
         console.error("Erro ao listar denúncias de propostas de projetos:", error);
@@ -332,11 +335,31 @@ listarUsuariosPorTipo: async (req, res) => {
       }
 
       console.log(`Usuário ${id} foi inativado com sucesso!`);
-      res.sendStatus(200); // Sucesso (sem conteúdo)
+      
+      const previousUrl = req.get("Referer") || "/";
+     
+      
+        req.session.dadosNotificacao = {
+          titulo: "Usuário suspenso",
+          mensagem: "Usuário suspenso com sucesso",
+          tipo: "success"
+        };
+     
+       return res.redirect(previousUrl || "/");
 
     } catch (error) {
       console.error("Erro ao inativar usuário:", error);
-      res.status(500).send("Erro interno ao inativar usuário.");
+    
+       const previousUrl = req.get("Referer") || "/";
+     
+      
+        req.session.dadosNotificacao = {
+          titulo: "Ocorreu um erro",
+          mensagem: "Não foi possível suspender o usuário",
+          tipo: "error"
+        };
+     
+       return res.redirect(previousUrl || "/");
     }
   },
 
@@ -357,11 +380,29 @@ listarUsuariosPorTipo: async (req, res) => {
       }
 
       console.log(`Usuário ${id} foi ativado com sucesso!`);
-      res.sendStatus(200); // Sucesso (sem conteúdo)
+     const previousUrl = req.get("Referer") || "/";
+     
+      
+        req.session.dadosNotificacao = {
+          titulo: "Usuário ativado",
+          mensagem: "O usuário agora está ativo.",
+          tipo: "success"
+        };
+     
+       return res.redirect(previousUrl || "/");
 
     } catch (error) {
       console.error("Erro ao ativar usuário:", error);
-      res.status(500).send("Erro interno ao ativar usuário.");
+      const previousUrl = req.get("Referer") || "/";
+     
+      
+        req.session.dadosNotificacao = {
+          titulo: "Ocorreu um erro",
+          mensagem: "Não foi possível ativar o usuário",
+          tipo: "error"
+        };
+     
+       return res.redirect(previousUrl || "/");
     }
   },
 
@@ -486,7 +527,7 @@ verificarBloqueioSessaoMiddleware: async (req, res, next) => {
     }
 },
 
-  listarDenunciasUsuarios: async (req, res) => {
+  listarDenunciasUsuarios: async (req, res, dadosNotificacao) => {
     console.log("Chegou no listar denúncias de usuários");
     try {
       let DenunciasUsuarios = await admModel.listarDenunciasUsuariosDetalhadas();
@@ -494,7 +535,8 @@ verificarBloqueioSessaoMiddleware: async (req, res, next) => {
       res.render("pages/adm-lista-denuncias-usuarios", {
         autenticado: req.session.autenticado,
         logado: req.session.logado,
-        denuncias: DenunciasUsuarios || []
+        denuncias: DenunciasUsuarios || [],
+        dadosNotificacao
       });
     } catch (error) {
       console.error("Erro ao listar denúncias de usuários:", error);
@@ -528,6 +570,182 @@ verificarBloqueioSessaoMiddleware: async (req, res, next) => {
     }
   },
 
+
+
+
+    // Excluir publicação (apenas dono)
+    excluirDenunciaUsuario: async (req, res) => {
+      try {
+        const { idDenuncia } = req.body;
+        if (!idDenuncia) {
+          return res.status(400).send("ID da denuncia não enviado.");
+        }
+      
+  
+        let resultado = await admModel.excluirDenunciaUsuario(idDenuncia);
+        console.log(resultado);
+  
+              
+     
+  
+   const previousUrl = req.get("Referer") || "/";
+     
+      
+         req.session.dadosNotificacao = {
+          titulo: "Denúncia descartada!",
+          mensagem: "A denúncia foi excluída com sucesso.",
+          tipo: "success"
+        };
+     
+       return res.redirect(previousUrl || "/");
+      } catch (erro) {
+        console.error("Erro ao excluir denuncia", erro);
+        
+        
+              
+   const previousUrl = req.get("Referer") || "/";
+        req.session.dadosNotificacao = {
+          titulo: "Ocorreu um erro.",
+          mensagem: "Não foi possível descartar a denúncia.",
+          tipo: "error"
+        };
+  
+  return res.redirect(previousUrl || "/");
+      }
+    },
+  
+
+
+    
+
+    // Excluir publicação (apenas dono)
+    excluirDenunciaComentario: async (req, res) => {
+      try {
+        const { idDenuncia } = req.body;
+        if (!idDenuncia) {
+          return res.status(400).send("ID da denuncia não enviado.");
+        }
+      
+  
+        let resultado = await admModel.excluirDenunciaComentario(idDenuncia);
+        console.log(resultado);
+  
+              
+     
+  
+   const previousUrl = req.get("Referer") || "/";
+     
+      
+         req.session.dadosNotificacao = {
+          titulo: "Denúncia descartada!",
+          mensagem: "A denúncia foi excluída com sucesso.",
+          tipo: "success"
+        };
+     
+       return res.redirect(previousUrl || "/");
+      } catch (erro) {
+        console.error("Erro ao excluir denuncia", erro);
+        
+        
+              
+   const previousUrl = req.get("Referer") || "/";
+        req.session.dadosNotificacao = {
+          titulo: "Ocorreu um erro.",
+          mensagem: "Não foi possível descartar a denúncia.",
+          tipo: "error"
+        };
+  
+  return res.redirect(previousUrl || "/");
+      }
+    },
+  
+
+
+    
+
+    // Excluir publicação (apenas dono)
+    excluirDenunciaProposta: async (req, res) => {
+      try {
+        const { idDenuncia } = req.body;
+        if (!idDenuncia) {
+          return res.status(400).send("ID da denuncia não enviado.");
+        }
+      
+  
+        let resultado = await admModel.excluirDenunciaProposta(idDenuncia);
+        console.log(resultado);
+  
+              
+     
+  
+   const previousUrl = req.get("Referer") || "/";
+     
+      
+         req.session.dadosNotificacao = {
+          titulo: "Denúncia descartada!",
+          mensagem: "A denúncia foi excluída com sucesso.",
+          tipo: "success"
+        };
+     
+       return res.redirect(previousUrl || "/");
+      } catch (erro) {
+        console.error("Erro ao excluir denuncia", erro);
+        
+        
+              
+   const previousUrl = req.get("Referer") || "/";
+        req.session.dadosNotificacao = {
+          titulo: "Ocorreu um erro.",
+          mensagem: "Não foi possível descartar a denúncia.",
+          tipo: "error"
+        };
+  
+  return res.redirect(previousUrl || "/");
+      }
+    },
+  
+  
+    
+    excluirDenunciaPublicacao: async (req, res) => {
+      try {
+        const { idDenuncia } = req.body;
+        if (!idDenuncia) {
+          return res.status(400).send("ID da denuncia não enviado.");
+        }
+      
+  
+        let resultado = await admModel.excluirDenunciaPublicacao(idDenuncia);
+        console.log(resultado);
+  
+              
+     
+  
+   const previousUrl = req.get("Referer") || "/";
+     
+      
+         req.session.dadosNotificacao = {
+          titulo: "Denúncia descartada!",
+          mensagem: "A denúncia foi excluída com sucesso.",
+          tipo: "success"
+        };
+     
+       return res.redirect(previousUrl || "/");
+      } catch (erro) {
+        console.error("Erro ao excluir denuncia", erro);
+        
+        
+              
+   const previousUrl = req.get("Referer") || "/";
+        req.session.dadosNotificacao = {
+          titulo: "Ocorreu um erro.",
+          mensagem: "Não foi possível descartar a denúncia.",
+          tipo: "error"
+        };
+  
+  return res.redirect(previousUrl || "/");
+      }
+    },
+  
 
 };
 

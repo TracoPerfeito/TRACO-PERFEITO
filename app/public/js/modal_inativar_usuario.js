@@ -1,9 +1,9 @@
 console.log("Script do modal carregado.");
 
-// Elementos
+// Elementos do modal
 const overlay = document.getElementById("overlay");
-const fecharModal = overlay.querySelector(".close-modal");
-const cancelar = overlay.querySelector(".btn-cancelar");
+const fecharModalBtn = overlay.querySelector(".close-modal");
+const cancelarBtn = overlay.querySelector(".btn-cancelar");
 const btnConfirmar = overlay.querySelector(".btn-confirmar");
 const tituloModal = overlay.querySelector("#modal-titulo");
 const mensagemModal = overlay.querySelector("#modal-mensagem");
@@ -16,6 +16,7 @@ let acaoUsuario = null;
 const botoesStatus = document.querySelectorAll(".btn-acao.deletar, .btn-acao.ativar");
 console.log("Botões encontrados:", botoesStatus.length);
 
+// Abrir modal ao clicar nos botões
 botoesStatus.forEach(btn => {
   btn.addEventListener("click", () => {
     usuarioId = btn.dataset.id;
@@ -23,7 +24,7 @@ botoesStatus.forEach(btn => {
 
     console.log(`Botão clicado para usuário ID: ${usuarioId} | Ação: ${acaoUsuario}`);
 
-    // Atualiza o modal
+    // Atualiza conteúdo do modal
     tituloModal.textContent = acaoUsuario === "inativar" ? "Inativar Usuário" : "Ativar Usuário";
     mensagemModal.innerHTML = `<strong>Tem certeza que deseja ${acaoUsuario} este usuário?</strong>`;
     btnConfirmar.innerHTML = `
@@ -37,7 +38,7 @@ botoesStatus.forEach(btn => {
 });
 
 // Fechar modal
-[fecharModal, cancelar].forEach(el => {
+[fecharModalBtn, cancelarBtn].forEach(el => {
   el.addEventListener("click", () => {
     overlay.style.display = "none";
     usuarioId = null;
@@ -47,17 +48,19 @@ botoesStatus.forEach(btn => {
 });
 
 // Confirmar ação
-btnConfirmar.addEventListener("click", async () => {
+btnConfirmar.addEventListener("click", async (e) => {
+  e.preventDefault(); // evita submit caso esteja dentro de um form
   if (!usuarioId) return;
 
   console.log(`Confirmando ação: ${acaoUsuario} para usuário ID: ${usuarioId}`);
 
   try {
-    const url = acaoUsuario === "inativar" 
-      ? `/adm/desativar-usuario/${usuarioId}` 
+    // Ambas as rotas agora são POST
+    const url = acaoUsuario === "inativar"
+      ? `/adm/desativar-usuario/${usuarioId}`
       : `/adm/ativar-usuario/${usuarioId}`;
 
-    const response = await fetch(url, { method: "PUT" });
+    const response = await fetch(url, { method: "POST" });
 
     if (response.ok) {
       new Notify({
@@ -96,7 +99,7 @@ btnConfirmar.addEventListener("click", async () => {
   acaoUsuario = null;
 });
 
-// Fechar clicando fora do modal
+// Fechar modal clicando fora
 overlay.addEventListener("click", e => {
   if (e.target === overlay) {
     overlay.style.display = "none";
@@ -106,5 +109,6 @@ overlay.addEventListener("click", e => {
   }
 });
 
+// Atualiza os ícones do Lucide
 lucide.createIcons();
 console.log("Ícones do lucide atualizados.");

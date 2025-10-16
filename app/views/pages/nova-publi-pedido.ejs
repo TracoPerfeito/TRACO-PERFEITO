@@ -43,14 +43,16 @@
 <% } %>
 
 <main>
-  <h1 class="novaPublicacao">Nova Publicação</h1>
+  <h1 class="novaPublicacao">Nova Proposta de Projeto</h1>
   <br><br>
+
+    <% if (tipo_usuario === 'profissional') { %>
   <p class="instrucao-tipo-btn">Selecione o tipo de publicação que você deseja fazer:</p>
   <section class="button-group">
     <button class="nao-ativo" title="Crie uma nova publicação para seu portfólio."><a href="/nova-publicacao">Nova Publicação</a></button>
     <button class="ativo" title="Publique uma proposta de projeto para os profissionais da plataforma."><a href="/nova-publi-pedido">Proposta de projeto</a></button>
   </section>
-
+<% } %>
   <p class="p-explicativo-np">Especifique o que você deseja para que os artistas em nosso site possam entrar em contato com você.</p>
 
   <form id="propostaForm" action="/enviar-proposta-projeto" method="POST" novalidate class="form-duas-colunas">

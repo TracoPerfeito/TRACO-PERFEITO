@@ -8,6 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Mo… rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swa… rel="stylesheet">
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+  
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+   <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
+   <script src="/js/simple-notify.js"></script>
+
   <!-- <link rel="stylesheet" href="/css/adm-lista-denuncias-comentarios.css"> -->
 
   <link rel="stylesheet" href="/css/adm-lista-denuncias-comentario.css">
@@ -26,6 +31,12 @@
 </head>
 <body>
  
+   <%  if (dadosNotificacao) { %>
+        <script>
+                notify("<%= dadosNotificacao.titulo%>","<%= dadosNotificacao.mensagem%>", "<%= dadosNotificacao.tipo%>", "top right");
+                                   
+        </script>
+    <% } %>
       <!--INICIO DO MENU TOP ADM -->
  
     <%- include('../partials/menu_top_adm.ejs'); %>
@@ -40,9 +51,10 @@
     <!-- MENU LATERAL DO ADM -->
  
  
- 
+    <h1 class="titulo-denuncias">📋 Denúncias de publicações</h1>
  
   <section class="container">
+    
     <% if (denuncias.length > 0) { %>
       <% denuncias.forEach(denuncia => { %>
         <section class="card">
@@ -65,7 +77,7 @@
 
 
           <section class="card-footer">
-            <button class="btn-btn-detalhes">
+            <button class="btn-btn-detalhes" onclick="window.location.href='/publicacao/<%= denuncia.ID_PUBLICACAO %>'">
               <i class="ri-search-2-line"></i> Detalhes
             </button>
 
@@ -83,46 +95,91 @@
       <p style="text-align: center; font-size: 18px; grid-column: 1 / -1;"> Nenhuma denúncia encontrada</p>
     <% } %>
 
+<!-- MODAL DE ALTERAR STATUS -->
+<section id="modalStatus" class="modal">
+  <section class="modal-content">
+    <h2>Alterar Status da Denúncia</h2>
 
-      <!-- MODAL DE ALTERAR STATUS -->
-      <section id="modalStatus" class="modal" data-user-id="">
-        <section class="modal-content">
-          <h2>Alterar Status da Denúncia</h2>
+    <form id="formStatusPublicacao" method="POST">
+      <input type="hidden" name="idDenuncia" id="idDenunciaPublicacao">
+      <input type="hidden" name="idUsuario" id="idUsuarioPublicacao">
 
-          <label for="acao">Ação:</label>
-          <select id="acao">
-            <option value="">Selecione...</option>
-            <option value="suspender">Suspender Usuário</option>
-            <option value="descartar">Descartar Denúncia</option>
-          </select>
+      <label for="acaoPublicacao">Ação:</label>
+      <select id="acaoPublicacao" name="acao">
+        <option value="">Selecione...</option>
+        <option value="suspender">Suspender Usuário</option>
+        <option value="descartar">Descartar Denúncia</option>
+      </select>
 
-          <section id="opcoesSuspensao" style="display:none;">
-            <label for="penalidade">Tipo de Penalidade:</label>
-            <select id="penalidade">
-              <option value="">Selecione...</option>
-              <!-- options serão preenchidas por JS -->
-            </select>
-
-            <p id="descricaoPenalidade" class="descricao"></p>
-
-            <label for="dataFim">Data de Término:</label>
-            <input type="date" id="dataFim" />
-          </section>
-
-          <button id="confirmarStatus">Confirmar</button>
-          <button onclick="fecharModal()">Cancelar</button>
-        </section>
+      <section id="opcoesSuspensaoPublicacao" style="display:none;">
+        <p>O usuário será suspenso.</p>
       </section>
 
-
+      <section class="botoes-modal">
+        <button type="submit" class="btn-confirmar">Confirmar</button>
+        <button type="button" onclick="fecharModalPublicacao()" class="btn-cancelar">Cancelar</button>
+      </section>
+    </form>
   </section>
+</section>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modalStatus");
+  const btnsStatus = document.querySelectorAll(".btn-btn-status");
+  const acao = document.getElementById("acaoPublicacao");
+  const opcoesSuspensao = document.getElementById("opcoesSuspensaoPublicacao");
+  const form = document.getElementById("formStatusPublicacao");
 
-    <script>
-    lucide.createIcons();
-  </script>
+  // Abrir modal e preencher IDs
+  btnsStatus.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idDenuncia = btn.getAttribute("data-id");
+      const idUsuario = btn.getAttribute("data-usuario");
 
-  <script src="/js/adm-alterarstatus_denuncia.js"></script>
+      document.getElementById("idDenunciaPublicacao").value = idDenuncia;
+      document.getElementById("idUsuarioPublicacao").value = idUsuario;
+
+      modal.style.display = "block";
+      acao.value = "";
+      opcoesSuspensao.style.display = "none";
+    });
+  });
+
+  // Fechar modal
+  function fecharModalPublicacao() {
+    modal.style.display = "none";
+    acao.value = "";
+    opcoesSuspensao.style.display = "none";
+  }
+  window.fecharModalPublicacao = fecharModalPublicacao;
+  window.addEventListener("click", e => { if (e.target === modal) fecharModalPublicacao(); });
+
+  // Mostrar aviso de suspensão
+  acao.addEventListener("change", () => {
+    opcoesSuspensao.style.display = acao.value === "suspender" ? "block" : "none";
+  });
+
+  // Mudar ação do form dependendo da opção
+  form.addEventListener("submit", e => {
+    if (!acao.value) {
+      e.preventDefault();
+      return alert("Selecione uma ação antes de confirmar.");
+    }
+
+    const idUsuario = document.getElementById("idUsuarioPublicacao").value;
+
+    if (acao.value === "suspender") {
+      form.action = "/adm/desativar-usuario/" + idUsuario;
+      form.method = "POST";
+    } else if (acao.value === "descartar") {
+      form.action = "/adm/excluir-denuncia-publicacao";
+      form.method = "POST";
+    }
+  });
+});
+</script>
+
 
       <!-- LINK DO MENU LATERAL -->
       <script src="/js/menu-lateral-adm.js"></script>
